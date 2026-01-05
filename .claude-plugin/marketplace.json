@@ -1,0 +1,13 @@
+{
+  "name": "spx-claude",
+  "owner": {
+    "name": "Simon Heimlicher"
+  },
+  "plugins": [
+    {
+      "name": "test",
+      "source": "./plugins/test",
+      "description": "BDD testing skills: /test (foundational), /python-test, /typescript-test"
+    }
+  ]
+}
