@@ -1,0 +1,11 @@
+{
+  "name": "python",
+  "version": "1.0.0",
+  "description": "Python development workflow with testing, implementation, and review skills",
+  "author": {
+    "name": "Simon Heimlicher"
+  },
+  "repository": "https://github.com/simonheimlicher/spx-claude",
+  "license": "MIT",
+  "keywords": ["python", "testing", "code-review", "architecture", "automation"]
+}

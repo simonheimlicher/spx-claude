@@ -17,7 +17,7 @@
     {
       "name": "claude",
       "source": "./plugins/claude",
-      "description": "Claude Code skills: /skill-creator: create maintainable and reusable skills"
+      "description": "Claude Code skills: /skill-creator (create skills), /ci (git commit with Conventional Commits), commit-message (comprehensive commit guidance)"
     }
   ]
 }

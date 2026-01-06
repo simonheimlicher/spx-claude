@@ -1,0 +1,11 @@
+{
+  "name": "claude",
+  "version": "1.0.0",
+  "description": "Claude Code productivity skills and commands",
+  "author": {
+    "name": "Simon Heimlicher"
+  },
+  "repository": "https://github.com/simonheimlicher/spx-claude",
+  "license": "MIT",
+  "keywords": ["claude-code", "skills", "git", "commit", "conventional-commits"]
+}

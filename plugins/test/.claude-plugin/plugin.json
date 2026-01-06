@@ -1,0 +1,11 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "BDD testing methodology with three-tier testing (Unit, Integration, E2E)",
+  "author": {
+    "name": "Simon Heimlicher"
+  },
+  "repository": "https://github.com/simonheimlicher/spx-claude",
+  "license": "MIT",
+  "keywords": ["testing", "bdd", "tdd", "unit-tests", "integration-tests", "e2e"]
+}
