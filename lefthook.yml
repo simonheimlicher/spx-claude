@@ -1,0 +1,5 @@
+pre-commit:
+  commands:
+    dprint:
+      glob: "*.{md,json}"
+      run: dprint fmt {staged_files}

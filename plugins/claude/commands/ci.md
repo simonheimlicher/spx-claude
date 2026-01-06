@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*)
-description: Create a git commit with Conventional Commits format
+description: Commit with Conventional Commits
 argument-hint: [files-to-stage]
 ---
 
@@ -26,9 +26,11 @@ argument-hint: [files-to-stage]
 Create a git commit following Conventional Commits.
 
 ### If files specified: `$ARGUMENTS`
+
 Stage those files, then commit.
 
 ### If no files specified
+
 Review the status above. If nothing is staged, ask which files to stage.
 
 ## Commit Format
@@ -42,6 +44,7 @@ Review the status above. If nothing is staged, ask which files to stage.
 **Types:** feat | fix | docs | style | refactor | perf | test | ci | build | revert | ctx
 
 **Rules:**
+
 - Imperative mood: "add" not "added"
 - Subject: 50 chars max, no period
 - Body: wrap at 72 chars, explain WHY not HOW
