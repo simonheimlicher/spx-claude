@@ -13,6 +13,11 @@
       "name": "python",
       "source": "./plugins/python",
       "description": "Python workflow: /python-test, /python-auto, /python-coder, /python-reviewer, /python-architect, /python-architecture-reviewer"
+    },
+    {
+      "name": "claude",
+      "source": "./plugins/claude",
+      "description": "Claude Code skills: /skill-creator: create maintainable and reusable skills"
     }
   ]
 }
