@@ -1,5 +1,5 @@
 ---
-name: commit-message
+name: committing-changes
 description: |
   Write git commit messages following Conventional Commits with pre-commit verification.
   This skill should be used when users ask to commit changes, write a commit message,

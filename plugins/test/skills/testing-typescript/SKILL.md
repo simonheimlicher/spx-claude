@@ -1,14 +1,14 @@
 ---
-name: typescript-test
-description: "TypeScript-specific testing patterns. REQUIRES reading /test first for foundational principles."
+name: testing-typescript
+description: "TypeScript-specific testing patterns. REQUIRES reading /testing first for foundational principles."
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
 # TypeScript Testing Patterns
 
-> **PREREQUISITE:** Read the foundational `/test` skill first. This skill only provides TypeScript-specific patterns.
+> **PREREQUISITE:** Read the foundational `/testing` skill first. This skill only provides TypeScript-specific patterns.
 
-This skill provides TypeScript-specific implementations of the three-tier testing methodology defined in `/test`.
+This skill provides TypeScript-specific implementations of the three-tier testing methodology defined in `/testing`.
 
 ---
 
@@ -126,7 +126,7 @@ function createAuditResult(overrides: Partial<AuditResult> = {}): AuditResult {
 
 function createConfig(overrides: Partial<Config> = {}): Config {
   return {
-    site_dir: "./test-site",
+    site_dir: "./testing-site",
     base_url: "http://localhost:1313",
     url_sets: { default: ["/"] },
     ...overrides,
@@ -364,10 +364,10 @@ test.skipIf(!credentials)("CLI full workflow succeeds", async () => {
 
 ```typescript
 // playwright.config.ts
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/testing";
 
 export default defineConfig({
-  testDir: "./test/e2e",
+  testDir: "./testing/e2e",
   use: {
     baseURL: process.env.TEST_BASE_URL || "http://localhost:3000",
   },
@@ -384,7 +384,7 @@ export default defineConfig({
 
 ```typescript
 // test/e2e/workflow.spec.ts
-import { test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/testing";
 
 test("user can run audit from dashboard", async ({ page }) => {
   await page.goto("/dashboard");
@@ -442,4 +442,4 @@ export default defineConfig({
 
 ---
 
-_For foundational principles (no mocking, progress vs regression tests, escalation justification), see `/test`._
+_For foundational principles (no mocking, progress vs regression tests, escalation justification), see `/testing`._

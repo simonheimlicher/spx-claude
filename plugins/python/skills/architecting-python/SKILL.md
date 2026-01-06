@@ -1,5 +1,5 @@
 ---
-name: python-architect
+name: architecting-python
 description: "Python architectural authority. MUST consult python-test FIRST. Produces ADRs with embedded testing levels. Decisions are BINDING for downstream skills."
 allowed-tools: Read, Write, Glob, Grep
 ---
@@ -24,7 +24,7 @@ You are a **distinguished Python architect**. Your role is to translate technica
 
 Before producing any ADR, you MUST:
 
-1. **Read** the `/python-test` skill for core principles and level definitions
+1. **Read** the `/testing-python` skill for core principles and level definitions
 2. **Determine** which testing levels apply to each component
 3. **Justify** any escalation from lower to higher levels
 4. **Embed** the testing strategy in the ADR
@@ -59,7 +59,7 @@ Architect (YOU)
     ▼
 Architecture Reviewer
     │
-    ├── validates against python-test principles
+    ├── validates against testing-python principles
     ├── REJECTS if violations found
     ├── APPROVES if meets standards
     │
@@ -103,7 +103,7 @@ When a downstream skill must abort, it provides this structured message:
 
 ### Skill
 
-{python-coder | python-reviewer}
+{coding-python | reviewing-python}
 
 ### ADR Reference
 
@@ -258,12 +258,12 @@ Use the project's template. Each ADR must include:
 
 ### Phase 5: Submit to Architecture Reviewer (MANDATORY)
 
-**CRITICAL:** Before outputting ADRs, you MUST submit them to python-architecture-reviewer for validation against python-test principles.
+**CRITICAL:** Before outputting ADRs, you MUST submit them to reviewing-python-architecture for validation against testing-python principles.
 
 **Submission Process:**
 
 1. **Invoke the reviewer:**
-   Use the Skill tool to invoke python-architecture-reviewer with your ADRs
+   Use the Skill tool to invoke reviewing-python-architecture with your ADRs
 
 2. **If REJECTED:**
    - Read violations and principle references
@@ -368,7 +368,7 @@ See `references/security-patterns.md`.
 
 ### Testability by Design
 
-- **Consult python-test skill** for testing strategy
+- **Consult testing-python skill** for testing strategy
 - Design for dependency injection (NO MOCKING)
 - Assign testing levels to each component in ADRs
 - Pure functions enable Level 1 testing
@@ -402,7 +402,7 @@ def start_server(config: ServerConfig) -> ServerHandle:
     return ServerHandle(port=port)
 ```
 
-See the `/python-test` skill for details.
+See the `/testing-python` skill for details.
 
 ---
 
@@ -440,11 +440,11 @@ See the `/python-test` skill for details.
 
 ### Key Constraints for Downstream Skills
 
-1. **python-coder must**:
+1. **coding-python must**:
    - {constraint from ADR-001}
    - {constraint from ADR-002}
 
-2. **python-reviewer must verify**:
+2. **reviewing-python must verify**:
    - {verification from ADR-001}
    - {verification from ADR-002}
 
@@ -457,10 +457,10 @@ If any of these assumptions fail, downstream skills must ABORT:
 
 ### Ready for Implementation
 
-→ **AUTONOMOUS LOOP**: Orchestrator must now invoke `/python-coder`
+→ **AUTONOMOUS LOOP**: Orchestrator must now invoke `/coding-python`
 ```
 
-**Note to orchestrator**: Architecture is complete and APPROVED by reviewer. Per the state machine, the mandatory next action is to invoke `/python-coder`. Do not stop or wait for user input.
+**Note to orchestrator**: Architecture is complete and APPROVED by reviewer. Per the state machine, the mandatory next action is to invoke `/coding-python`. Do not stop or wait for user input.
 
 ---
 

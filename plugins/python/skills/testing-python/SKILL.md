@@ -1,12 +1,12 @@
 ---
-name: python-test
-description: "Python-specific testing patterns. REQUIRES reading /test first for foundational principles. No mocking. DI + real infrastructure."
+name: testing-python
+description: "Python-specific testing patterns. REQUIRES reading /testing first for foundational principles. No mocking. DI + real infrastructure."
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
 # Python Testing Patterns
 
-> **PREREQUISITE:** Read the foundational `/test` skill first. This skill provides Python-specific implementations.
+> **PREREQUISITE:** Read the foundational `/testing` skill first. This skill provides Python-specific implementations.
 
 ## Foundational Stance
 

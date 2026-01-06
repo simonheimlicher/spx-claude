@@ -281,9 +281,51 @@ Gather context to ensure successful implementation:
 **Key elements**:
 
 - Step-by-step workflow
-- Good/bad examples
+- Input → Output examples (not just good/bad)
+- Copyable workflow checklists
 - Official documentation links
 - Decision trees for branching
+
+### Input → Output Examples Pattern
+
+For skills where output quality matters, show explicit pairs:
+
+````markdown
+**Example 1:**
+Input: Added user authentication with JWT tokens
+Output:
+```
+feat(auth): implement JWT-based authentication
+
+Add login endpoint and token validation middleware
+```
+
+**Example 2:**
+Input: Fixed bug where dates displayed incorrectly
+Output:
+```
+fix(reports): correct date formatting in timezone conversion
+```
+````
+
+This is MORE effective than describing the format in prose.
+
+### Copyable Workflow Checklist Pattern
+
+For complex multi-step workflows, provide copyable progress tracker:
+
+````markdown
+Copy this checklist and track progress:
+
+```
+- [ ] Step 1: Analyze input
+- [ ] Step 2: Validate data
+- [ ] Step 3: Process changes
+- [ ] Step 4: Verify output
+```
+````
+
+Claude can copy this into responses and check items as completed.
 
 **Example frontmatter**:
 

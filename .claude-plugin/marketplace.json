@@ -7,17 +7,17 @@
     {
       "name": "test",
       "source": "./plugins/test",
-      "description": "BDD testing skills: /test (foundational), /typescript-test"
+      "description": "BDD testing skills: /testing (foundational), /testing-typescript"
     },
     {
       "name": "python",
       "source": "./plugins/python",
-      "description": "Python workflow: /python-test, /python-auto, /python-coder, /python-reviewer, /python-architect, /python-architecture-reviewer"
+      "description": "Python workflow: /autopython (command), /testing-python, /coding-python, /reviewing-python, /architecting-python, /reviewing-python-architecture"
     },
     {
       "name": "claude",
       "source": "./plugins/claude",
-      "description": "Claude Code skills: /skill-creator (create skills), /ci (git commit with Conventional Commits), commit-message (comprehensive commit guidance)"
+      "description": "Claude Code: /creating-skills, /committing-changes, /ci (commit command)"
     }
   ]
 }

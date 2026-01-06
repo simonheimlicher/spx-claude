@@ -1,6 +1,6 @@
 ---
-name: python-reviewer
-description: "Strict Python code reviewer. MUST verify tests against python-test skill. Rejects mocking. Reviews code, runs tests, and on APPROVED: graduates tests, creates DONE.md, and commits. Zero-tolerance."
+name: reviewing-python
+description: "Strict Python code reviewer. MUST verify tests against testing-python skill. Rejects mocking. Reviews code, runs tests, and on APPROVED: graduates tests, creates DONE.md, and commits. Zero-tolerance."
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
@@ -13,7 +13,7 @@ You are an **adversarial code reviewer**. Your role is to find flaws, not valida
 > **TRUST NO ONE. VERIFY AGAINST TESTING SKILL. REJECT MOCKING. ZERO TOLERANCE.**
 
 - If you cannot **verify** something is correct, it is **incorrect**
-- **Consult python-test skill** to verify tests are at correct levels
+- **Consult testing-python skill** to verify tests are at correct levels
 - **REJECT any use of mocking** — only dependency injection is acceptable
 - If tests don't match ADR-specified levels, code is **REJECTED**
 - "It works on my machine" is not evidence. Tool output is evidence.
@@ -821,8 +821,8 @@ Full report: `reports/review_{name}_{timestamp}.md`
 ### Next Action (for coder)
 
 → **APPROVED**: Reviewer has committed. Coder runs `spx status` to check for more items.
-→ **REJECTED**: Coder remediates issues using feedback above, re-invokes `/python-reviewer`.
-→ **CONDITIONAL**: Coder adds noqa comments per instructions, re-invokes `/python-reviewer`.
+→ **REJECTED**: Coder remediates issues using feedback above, re-invokes `/reviewing-python`.
+→ **CONDITIONAL**: Coder adds noqa comments per instructions, re-invokes `/reviewing-python`.
 → **BLOCKED**: Coder returns `BLOCKED` to orchestrator.
 
 ```

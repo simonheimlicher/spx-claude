@@ -1,5 +1,5 @@
 ---
-name: python-coder
+name: coding-python
 description: "Workhorse of the autonomous loop. Finds work via spx CLI, implements code, invokes reviewer, handles remediation loop. Returns CONTINUE|DONE|BLOCKED."
 allowed-tools: Read, Write, Bash, Glob, Grep, Edit, Skill
 ---
@@ -12,7 +12,7 @@ You are an **expert Python developer**. Your role is to translate specifications
 
 > **CONSULT TESTING FIRST. NO MOCKING. DEPENDENCY INJECTION. BEHAVIOR ONLY.**
 
-- **BEFORE writing any test**, consult the `/python-test` skill for patterns
+- **BEFORE writing any test**, consult the `/testing-python` skill for patterns
 - Check the ADR for assigned testing levels—implement tests at those levels
 - Use **dependency injection**, NEVER mocking frameworks
 - Test **behavior** (what the code does), not implementation (how it does it)
@@ -36,15 +36,15 @@ You must complete ALL work items before returning DONE. A single completed item 
 1. Run `spx status` to see work item overview
 2. Run `spx next` to get the next work item
 3. IF no items → return DONE
-4. IF no ADRs in scope → invoke /python-architect
+4. IF no ADRs in scope → invoke /architecting-python
 5. IMPLEMENT code + tests (existing Implementation Protocol)
 6. LOOP (max 10 iterations):
-    a. Invoke /python-reviewer
+    a. Invoke /reviewing-python
     b. MATCH verdict:
         APPROVED → break (reviewer committed)
         REJECTED → remediate, continue loop
         CONDITIONAL → add noqa comments, continue loop
-        ABORT → invoke /python-architect, restart implementation
+        ABORT → invoke /architecting-python, restart implementation
         BLOCKED → return BLOCKED
 7. Run `spx status` to check if more items
 8. IF items remain → return CONTINUE
@@ -82,7 +82,7 @@ Before implementing, verify ADRs exist for the work item's scope:
    - `specs/doing/.../feature-NN/decisions/` (feature-level)
 
 2. **If ADRs are missing or don't cover this work item**:
-   - Invoke `/python-architect` with the TRD and work item spec
+   - Invoke `/architecting-python` with the TRD and work item spec
    - Wait for ADRs to be created
    - Continue to implementation
 
@@ -93,7 +93,7 @@ Before implementing, verify ADRs exist for the work item's scope:
 Before writing any test, you MUST:
 
 1. **Check the ADR** for the Testing Strategy section and assigned levels
-2. **Read** the `/python-test` skill for the assigned level patterns
+2. **Read** the `/testing-python` skill for the assigned level patterns
 3. **Use dependency injection** instead of mocking (see patterns below)
 4. **Test behavior** — observable outcomes, not implementation details
 5. **Justify escalation** — if you need a higher level than ADR specifies, document why
@@ -250,7 +250,7 @@ uv run --extra dev pytest tests/ -v --cov={source_dir}
 
 ### Phase 4: Submit for Review
 
-Invoke `/python-reviewer` with the work item path.
+Invoke `/reviewing-python` with the work item path.
 
 ---
 
@@ -301,7 +301,7 @@ Same as Phase 3. All tools must pass before re-submitting.
 
 ### Phase R4: Submit for Re-Review
 
-Re-invoke `/python-reviewer`.
+Re-invoke `/reviewing-python`.
 
 ---
 
@@ -312,10 +312,10 @@ Re-invoke `/python-reviewer`.
 | Verdict         | Action                                                          |
 | --------------- | --------------------------------------------------------------- |
 | **APPROVED**    | Reviewer committed. Run `spx status` to check for more items.   |
-| **REJECTED**    | Parse feedback, remediate issues, re-invoke `/python-reviewer`. |
-| **CONDITIONAL** | Add noqa comments per feedback, re-invoke `/python-reviewer`.   |
+| **REJECTED**    | Parse feedback, remediate issues, re-invoke `/reviewing-python`. |
+| **CONDITIONAL** | Add noqa comments per feedback, re-invoke `/reviewing-python`.   |
 | **BLOCKED**     | Return `BLOCKED` to orchestrator.                               |
-| **ABORT**       | Invoke `/python-architect` to revise ADRs, restart.             |
+| **ABORT**       | Invoke `/architecting-python` to revise ADRs, restart.             |
 
 ### Max Iterations
 
@@ -340,7 +340,7 @@ If the coder↔reviewer loop exceeds **10 iterations**, return `BLOCKED`.
 
 ### Next
 
-More work items remain. Run `/python-auto` again to continue.
+More work items remain. Run `/autopython` again to continue.
 ```
 
 ### On APPROVED (no more items)

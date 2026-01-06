@@ -13,8 +13,8 @@ Simon Heimlicher's Claude Code plugin marketplace, based on the spec-driven deve
 
 Skills follow a **reference pattern** to avoid duplication:
 
-1. **Foundational skill** (`/test`) - Contains core principles, methodology, and language-agnostic patterns
-2. **Language-specific skills** (`/python-test`, `/typescript-test`) - Reference the foundational skill, provide only language-specific implementations
+1. **Foundational skill** (`/testing`) - Contains core principles, methodology, and language-agnostic patterns
+2. **Language-specific skills** (`/testing-python`, `/testing-typescript`) - Reference the foundational skill, provide only language-specific implementations
 
 **Usage:** Always read the foundational skill first, then the language-specific skill for concrete patterns.
 
@@ -33,7 +33,7 @@ Claude Code skills cannot automatically invoke other skills. However, skills can
 2. Reference foundational concepts by skill name
 3. Be invoked sequentially by the user/AI
 
-## Test Plugin (`/test`)
+## Test Plugin (`/testing`)
 
 The test plugin provides BDD testing methodology with three-tier testing:
 
@@ -49,29 +49,34 @@ The test plugin provides BDD testing methodology with three-tier testing:
 - Progress tests (may fail) go in `specs/.../tests/`
 - Regression tests (must pass) go in `test/` or `tests/`
 
-## Python Plugin (`/python-*`)
+## Python Plugin
 
 Complete Python development workflow with testing, implementation, and review.
 
 ### Skills
 
-| Skill                           | Purpose                                             |
-| ------------------------------- | --------------------------------------------------- |
-| `/python-test`                  | Python-specific testing patterns (requires `/test`) |
-| `/python-auto`                  | Autonomous implementation orchestrator              |
-| `/python-coder`                 | Implementation workhorse with remediation loop      |
-| `/python-reviewer`              | Strict code review with zero-tolerance              |
-| `/python-architect`             | ADR producer with testing strategy                  |
-| `/python-architecture-reviewer` | ADR validator against testing principles            |
+| Skill                           | Purpose                                                 |
+| ------------------------------- | ------------------------------------------------------- |
+| `/testing-python`               | Python-specific testing patterns (requires `/testing`)  |
+| `/coding-python`                | Implementation workhorse with remediation loop          |
+| `/reviewing-python`             | Strict code review with zero-tolerance                  |
+| `/architecting-python`          | ADR producer with testing strategy                      |
+| `/reviewing-python-architecture`| ADR validator against testing principles                |
+
+### Commands
+
+| Command        | Purpose                                    |
+| -------------- | ------------------------------------------ |
+| `/autopython`  | Autonomous implementation orchestrator     |
 
 ### Workflow
 
 ```
-/python-auto → /python-coder → /python-reviewer
+/autopython → /coding-python → /reviewing-python
                     ↓
-            /python-architect (if ADRs needed)
+            /architecting-python (if ADRs needed)
                     ↓
-    /python-architecture-reviewer (validates ADRs)
+    /reviewing-python-architecture (validates ADRs)
 ```
 
 ### Work Item Discovery
@@ -87,3 +92,20 @@ Use the `spx` CLI to find work items:
 - Reality is the oracle
 - Behavior testing, not implementation testing
 - Tests at appropriate levels (Unit/Integration/E2E)
+
+## Claude Plugin
+
+Productivity skills and commands for Claude Code.
+
+### Skills
+
+| Skill               | Purpose                                    |
+| ------------------- | ------------------------------------------ |
+| `/creating-skills`  | Create production-grade, reusable skills   |
+| `/committing-changes` | Comprehensive git commit message guidance |
+
+### Commands
+
+| Command | Purpose                                         |
+| ------- | ----------------------------------------------- |
+| `/ci`   | Git commit with Conventional Commits (auto-context) |

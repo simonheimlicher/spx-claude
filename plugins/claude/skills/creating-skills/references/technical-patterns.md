@@ -330,3 +330,56 @@ const result = await withTimeout(fetchData(), 5000);
 | Batch size          | 100 items | API rate limits    |
 | Concurrent requests | 5         | Prevent overload   |
 ```
+
+---
+
+## Reference File Organization
+
+### Avoid Deeply Nested References
+
+Keep references **one level deep** from SKILL.md. Claude may only partially read files referenced from other referenced files.
+
+**Bad** (too deep - Claude may miss info):
+
+```
+SKILL.md → advanced.md → details.md → actual info here
+```
+
+**Good** (one level - Claude reads complete files):
+
+```
+SKILL.md → advanced.md (complete info)
+         → reference.md (complete info)
+         → examples.md (complete info)
+```
+
+### Table of Contents for Long References
+
+For reference files >100 lines, include TOC at top. This ensures Claude sees full scope even with partial reads:
+
+```markdown
+# API Reference
+
+## Contents
+
+- Authentication and setup
+- Core methods (create, read, update, delete)
+- Advanced features (batch operations, webhooks)
+- Error handling patterns
+- Code examples
+
+## Authentication and setup
+
+...
+```
+
+### File Path Format
+
+Always use forward slashes, even on Windows:
+
+```
+✅ Good: scripts/helper.py, reference/guide.md
+❌ Bad: scripts\helper.py, reference\guide.md
+```
+
+Unix-style paths work across all platforms.

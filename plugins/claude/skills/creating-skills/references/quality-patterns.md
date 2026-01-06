@@ -313,6 +313,71 @@ except:
     pass  # Never do this - errors are hidden
 ```
 
+---
+
+## Consistent Terminology
+
+Pick ONE term and use it throughout the skill:
+
+| Good (consistent)      | Bad (mixed)                                    |
+| ---------------------- | ---------------------------------------------- |
+| Always "API endpoint"  | Mix "endpoint", "URL", "route", "path"         |
+| Always "field"         | Mix "field", "box", "element", "input"         |
+| Always "extract"       | Mix "extract", "pull", "get", "retrieve"       |
+
+Consistency helps Claude understand and follow instructions reliably.
+
+---
+
+## Avoid Time-Sensitive Information
+
+Don't include information that will become outdated:
+
+**Bad** (will become wrong):
+
+```markdown
+If you're doing this before August 2025, use the old API.
+After August 2025, use the new API.
 ```
 
+**Good** (use "old patterns" section):
+
+```markdown
+## Current Method
+
+Use the v2 API endpoint: `api.example.com/v2/messages`
+
+## Old Patterns
+
+<details>
+<summary>Legacy v1 API (deprecated)</summary>
+
+The v1 API used: `api.example.com/v1/messages`
+
+This endpoint is no longer supported.
+</details>
 ```
+
+---
+
+## Provide Defaults, Not Options
+
+Don't present multiple approaches unless necessary:
+
+**Bad** (confusing):
+
+```markdown
+You can use pypdf, or pdfplumber, or PyMuPDF, or pdf2image...
+```
+
+**Good** (default with escape hatch):
+
+````markdown
+Use pdfplumber for text extraction:
+
+```python
+import pdfplumber
+```
+
+For scanned PDFs requiring OCR, use pdf2image with pytesseract instead.
+````

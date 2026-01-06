@@ -1,5 +1,5 @@
 ---
-name: skill-creator
+name: creating-skills
 description: |
   Creates production-grade, reusable skills that extend Claude's capabilities.
   This skill should be used when users want to create a new skill, improve an
@@ -209,6 +209,16 @@ skill-name/
 | Form              | Imperative ("Do X" not "You should X")                  |
 | Scope             | What it does AND does not do                            |
 
+### Naming Convention
+
+Prefer **gerund form** (verb + -ing) for skill names:
+
+```
+✅ Preferred: committing-changes, processing-pdfs, analyzing-code
+✓ Acceptable: commit-helper, pdf-processor, code-analyzer
+❌ Avoid: helper, utils, tools (too vague)
+```
+
 ### What Goes in references/
 
 Embed domain knowledge gathered during discovery:
@@ -254,6 +264,22 @@ Generate assets when domain requires **exact templates or boilerplate**:
 - CHANGELOG.md
 - LICENSE (inherited from repo)
 - Duplicate information
+
+### Companion Slash Commands
+
+Consider creating a `/command` alongside complex skills:
+
+| Skill provides           | Command provides           |
+| ------------------------ | -------------------------- |
+| Comprehensive guidance   | Quick action               |
+| Learning resource        | Auto-executed context      |
+| Reference for edge cases | Streamlined daily workflow |
+
+**Pattern**: Skill = deep knowledge, Command = fast execution with `!` prefix for auto-context.
+
+Example: `commit-message` skill (comprehensive) + `/ci` command (auto-gathers git status/diff).
+
+See slash command docs: `https://code.claude.com/docs/en/slash-commands`
 
 ### What Generated Skill Does at Runtime
 
@@ -341,6 +367,18 @@ See `references/skill-patterns.md` for complete frontmatter spec and body patter
 
 Before delivering a skill, verify:
 
+### Core Quality
+
+- [ ] `name`: gerund preferred (`committing-changes`), lowercase, hyphens, ≤64 chars
+- [ ] `description`: [What]+[When], ≤1024 chars, third-person, clear triggers
+- [ ] SKILL.md <500 lines
+- [ ] Progressive disclosure (details in references/)
+- [ ] References one level deep (no nested references)
+- [ ] Long references (>100 lines) have TOC
+- [ ] Consistent terminology throughout
+- [ ] No time-sensitive information (use "old patterns" section)
+- [ ] Forward slashes only in paths
+
 ### Domain Discovery Complete
 
 - [ ] Core concepts discovered and understood
@@ -350,27 +388,19 @@ Before delivering a skill, verify:
 - [ ] Official documentation linked
 - [ ] User was NOT asked for domain knowledge
 
-### Frontmatter
-
-- [ ] `name`: lowercase, hyphens, ≤64 chars, matches directory
-- [ ] `description`: [What]+[When], ≤1024 chars, clear triggers
-- [ ] `allowed-tools`: Set if restricted access needed
-
-### Structure
-
-- [ ] SKILL.md <500 lines
-- [ ] Progressive disclosure (details in references/)
-
 ### Knowledge Coverage
 
 - [ ] **Procedural** (HOW): Workflows, decision trees, error handling
 - [ ] **Domain** (WHAT): Concepts, best practices, anti-patterns
+- [ ] Input→Output examples (for output-quality skills)
+- [ ] Copyable checklists (for complex workflows)
+- [ ] Default recommendations (not too many options)
 
 ### Zero-Shot Implementation (in generated skill)
 
 - [ ] Includes "Before Implementation" section
 - [ ] Gathers runtime context (codebase, conversation, user guidelines)
-- [ ] Domain expertise embedded in `references/` (structured per domain needs)
+- [ ] Domain expertise embedded in `references/`
 - [ ] Only asks user for THEIR requirements (not domain knowledge)
 
 ### Reusability
@@ -379,27 +409,24 @@ Before delivering a skill, verify:
 - [ ] Clarifications capture variable elements (user's context)
 - [ ] Constants encoded (domain patterns, best practices)
 
+### Testing (see `references/testing-patterns.md`)
+
+- [ ] At least 3 evaluation scenarios created
+- [ ] Tested with target models (Haiku, Sonnet, Opus)
+- [ ] Feedback loops for quality-critical operations
+
 ### Type-Specific (see `references/skill-patterns.md`)
 
 - [ ] Builder: Clarifications, output spec, standards, checklist
-- [ ] Guide: Workflow, examples, official docs
+- [ ] Guide: Workflow, input→output examples, official docs
 - [ ] Automation: Scripts, dependencies, error handling
 - [ ] Analyzer: Scope, criteria, output format
 - [ ] Validator: Criteria, scoring, thresholds, remediation
 
----
+### Companion Command (optional)
 
-## Reference Files
-
-| File                                 | When to Read                                              |
-| ------------------------------------ | --------------------------------------------------------- |
-| `references/creation-workflow.md`    | Detailed step-by-step creation process                    |
-| `references/skill-patterns.md`       | Frontmatter spec, type-specific patterns, assets guidance |
-| `references/reusability-patterns.md` | Procedural+domain knowledge, varies vs constant           |
-| `references/quality-patterns.md`     | Clarifications, enforcement, checklists                   |
-| `references/technical-patterns.md`   | Error handling, security, dependencies                    |
-| `references/workflows.md`            | Sequential and conditional workflow patterns              |
-| `references/output-patterns.md`      | Template and example patterns                             |
+- [ ] Consider `/command` for daily-use skills
+- [ ] Use `!` prefix for auto-context gathering
 
 ---
 
@@ -412,5 +439,16 @@ Before delivering a skill, verify:
 | `references/reusability-patterns.md` | Procedural+domain knowledge, varies vs constant           |
 | `references/quality-patterns.md`     | Clarifications, enforcement, checklists                   |
 | `references/technical-patterns.md`   | Error handling, security, dependencies                    |
+| `references/testing-patterns.md`     | Multi-model testing, evaluation-driven development        |
 | `references/workflows.md`            | Sequential and conditional workflow patterns              |
 | `references/output-patterns.md`      | Template and example patterns                             |
+
+---
+
+## Final Verification
+
+After creating a skill, verify against official best practices:
+
+1. **Fetch current guidance**: WebFetch `https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices`
+2. **Compare**: Check skill follows current recommendations
+3. **Update**: Fix any gaps identified
