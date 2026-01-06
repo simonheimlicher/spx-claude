@@ -1,0 +1,11 @@
+{
+  "name": "typescript",
+  "version": "0.1.0",
+  "description": "TypeScript development workflow with testing, implementation, review, and architecture skills. Pure XML structure, no inter-skill invocations.",
+  "author": {
+    "name": "Simon Heimlicher"
+  },
+  "repository": "https://github.com/simonheimlicher/spx-claude",
+  "license": "MIT",
+  "keywords": ["typescript", "testing", "code-review", "architecture", "tdd", "dependency-injection"]
+}

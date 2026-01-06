@@ -79,10 +79,21 @@ This repo contains skills and commands for testing, Python and Typescript develo
 
 BDD testing methodology with three-tier testing (Unit, Integration, E2E).
 
-| Skill                 | Purpose                         |
-| --------------------- | ------------------------------- |
-| `/testing`            | Foundational testing principles |
-| `/testing-typescript` | TypeScript-specific patterns    |
+| Skill      | Purpose                         |
+| ---------- | ------------------------------- |
+| `/testing` | Foundational testing principles |
+
+### typescript
+
+Complete TypeScript development workflow.
+
+| Type  | Name                                 | Purpose                            |
+| ----- | ------------------------------------ | ---------------------------------- |
+| Skill | `/testing-typescript`                | TypeScript-specific testing        |
+| Skill | `/coding-typescript`                 | Implementation with remediation    |
+| Skill | `/reviewing-typescript`              | Strict code review                 |
+| Skill | `/architecting-typescript`           | ADR producer with testing strategy |
+| Skill | `/reviewing-typescript-architecture` | ADR validator                      |
 
 ### python
 
@@ -114,6 +125,7 @@ If you just want to use these skills without forking:
 ```bash
 /plugin marketplace add simonheimlicher/spx-claude
 /plugin install test@spx-claude
+/plugin install typescript@spx-claude
 /plugin install python@spx-claude
 /plugin install claude@spx-claude
 ```

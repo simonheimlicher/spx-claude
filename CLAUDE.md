@@ -49,6 +49,29 @@ The test plugin provides BDD testing methodology with three-tier testing:
 - Progress tests (may fail) go in `specs/.../tests/`
 - Regression tests (must pass) go in `test/` or `tests/`
 
+## TypeScript Plugin
+
+Complete TypeScript development workflow with testing, implementation, and review.
+
+### Skills
+
+| Skill                                | Purpose                                                    |
+| ------------------------------------ | ---------------------------------------------------------- |
+| `/testing-typescript`                | TypeScript-specific testing patterns (requires `/testing`) |
+| `/coding-typescript`                 | Implementation workhorse with remediation loop             |
+| `/reviewing-typescript`              | Strict code review with zero-tolerance                     |
+| `/architecting-typescript`           | ADR producer with testing strategy                         |
+| `/reviewing-typescript-architecture` | ADR validator against testing principles                   |
+
+### Core Principles
+
+- No mocking - dependency injection only
+- Reality is the oracle
+- Behavior testing, not implementation testing
+- Tests at appropriate levels (Unit/Integration/E2E)
+- Pure XML structure in all skills
+- Self-contained skills (no inter-skill invocations)
+
 ## Python Plugin
 
 Complete Python development workflow with testing, implementation, and review.
@@ -68,23 +91,6 @@ Complete Python development workflow with testing, implementation, and review.
 | Command       | Purpose                                |
 | ------------- | -------------------------------------- |
 | `/autopython` | Autonomous implementation orchestrator |
-
-### Workflow
-
-```
-/autopython → /coding-python → /reviewing-python
-                    ↓
-            /architecting-python (if ADRs needed)
-                    ↓
-    /reviewing-python-architecture (validates ADRs)
-```
-
-### Work Item Discovery
-
-Use the `spx` CLI to find work items:
-
-- `spx status` - Overview of work items and their status
-- `spx next` - Get the next work item to work on
 
 ### Core Principles
 

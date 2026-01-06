@@ -1,0 +1,164 @@
+# Review Protocol (Phases 0-5)
+
+## Phase 0: Identify Scope
+
+1. Determine the target files/directories to review
+2. Check if project has configs in `tsconfig.json`, `eslint.config.js`
+3. If project configs exist, prefer them; otherwise use skill's strict configs
+
+## Phase 1: Static Analysis
+
+Run all tools. ALL must pass.
+
+### Tool Invocation Strategy
+
+Priority order:
+
+1. **npm scripts (preferred)**: `npm run typecheck`, `npm run lint`
+2. **npx (fallback)**: `npx tsc --noEmit`, `npx eslint src/`
+3. **Direct command**: `tsc`, `eslint` if globally installed
+
+### Detecting Project Configuration
+
+```bash
+# Check for npm scripts
+cat package.json | jq '.scripts'
+
+# Use correct invocation:
+npm run typecheck  # If scripts defined
+npx tsc --noEmit   # If no scripts
+```
+
+### 1.1 TypeScript Compiler (Type Safety)
+
+```bash
+npm run typecheck
+# Or: npx tsc --noEmit
+```
+
+**Blocking**: ANY error from tsc = REJECTION
+
+### 1.2 ESLint (Linting & Security)
+
+```bash
+npm run lint
+# Or: npx eslint src/ test/
+```
+
+**Blocking**: Any error-level violation = REJECTION
+**Warning**: Warning-level violations are noted but not blocking
+
+### 1.3 Semgrep (Security Patterns)
+
+```bash
+semgrep scan --config {skill_dir}/rules/semgrep_sec.yaml src/
+# Or: semgrep scan --config auto src/
+```
+
+**Blocking**: ANY finding from Semgrep = REJECTION
+
+## Phase 2: Infrastructure Provisioning
+
+Before running tests, ensure required infrastructure is available.
+
+### Detect Infrastructure Requirements
+
+```bash
+# Find infrastructure-related test patterns
+grep -r "describe.*integration\|describe.*e2e" test/
+
+# Check for docker-compose
+ls docker-compose*.yml 2>/dev/null
+```
+
+Common patterns:
+
+| Pattern             | Infrastructure  | How to Start                |
+| ------------------- | --------------- | --------------------------- |
+| `test/integration/` | Real binaries   | Ensure Hugo/Caddy installed |
+| `test/e2e/`         | Chrome + server | `npm run dev` + Chrome      |
+| `docker-compose.*`  | Docker services | `docker compose up -d`      |
+
+### Provision Infrastructure
+
+```bash
+# For Docker services
+docker compose up -d
+docker compose ps --format json | jq '.Health'
+```
+
+### Infrastructure Failures
+
+If infrastructure cannot start:
+
+1. Document what was tried and what failed
+2. Report the blocker
+3. Use verdict **BLOCKED**, not REJECTED
+
+```markdown
+## Infrastructure Provisioning Failed
+
+**Required**: Docker with PostgreSQL container
+**Attempted**: `docker compose up -d`
+**Error**: `docker: command not found`
+
+**Verdict**: BLOCKED (infrastructure unavailable, not a code defect)
+```
+
+## Phase 3: Test Execution
+
+Run the **full** test suite with coverage. ALL tests must pass.
+
+```bash
+npx vitest run --coverage
+# Or: npm test -- --coverage
+```
+
+**Blocking**: ANY test failure = REJECTION
+
+### Coverage Requirements (MANDATORY)
+
+| Scenario                      | Verdict      | Rationale              |
+| ----------------------------- | ------------ | ---------------------- |
+| Coverage ≥80%                 | PASS         | Verified               |
+| Coverage <80%                 | WARNING      | Note in report         |
+| Coverage = 0%                 | REJECTED     | No tests covering code |
+| Coverage plugin NOT installed | **REJECTED** | Coverage unverifiable  |
+| vitest fails to run           | **REJECTED** | Tests unverifiable     |
+
+**Crystal Clear**: You cannot approve code with unmeasured coverage.
+
+### Distinguish Failure Types
+
+| Failure Type           | Example                         | Verdict  |
+| ---------------------- | ------------------------------- | -------- |
+| **Code defect**        | Assertion failed                | REJECTED |
+| **Infrastructure**     | "Connection refused"            | BLOCKED  |
+| **Missing dependency** | Import error for test framework | REJECTED |
+
+## Phase 4: Manual Code Review
+
+Read ALL code under review. See `references/manual-review-checklist.md` for full checklist.
+
+Key areas:
+
+- Type Safety (no unjustified `any`, no `@ts-ignore`)
+- Error Handling (no empty catch blocks)
+- Resource Management (streams/connections closed)
+- Security (no hardcoded secrets, no eval)
+- Code Quality (JSDoc, no dead code)
+- Testing (see `references/verification-tests.md`)
+
+## Phase 5: Determine Verdict
+
+Based on findings:
+
+| Verdict         | Criteria                                  | Next Phase           |
+| --------------- | ----------------------------------------- | -------------------- |
+| **APPROVED**    | All checks pass, no issues                | Phase 6 (Graduation) |
+| **CONDITIONAL** | Only false-positive violations            | Return to coder      |
+| **REJECTED**    | Real bugs, security issues, test failures | Return to coder      |
+| **BLOCKED**     | Infrastructure cannot be provisioned      | Fix environment      |
+
+**If verdict is APPROVED**: Continue to `workflows/graduation-protocol.md`
+**If verdict is NOT APPROVED**: Return rejection feedback
