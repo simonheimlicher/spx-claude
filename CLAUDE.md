@@ -49,4 +49,41 @@ The test plugin provides BDD testing methodology with three-tier testing:
 - Progress tests (may fail) go in `specs/.../tests/`
 - Regression tests (must pass) go in `test/` or `tests/`
 
-See individual skill files for detailed patterns and examples.
+## Python Plugin (`/python-*`)
+
+Complete Python development workflow with testing, implementation, and review.
+
+### Skills
+
+| Skill                           | Purpose                                             |
+| ------------------------------- | --------------------------------------------------- |
+| `/python-test`                  | Python-specific testing patterns (requires `/test`) |
+| `/python-auto`                  | Autonomous implementation orchestrator              |
+| `/python-coder`                 | Implementation workhorse with remediation loop      |
+| `/python-reviewer`              | Strict code review with zero-tolerance              |
+| `/python-architect`             | ADR producer with testing strategy                  |
+| `/python-architecture-reviewer` | ADR validator against testing principles            |
+
+### Workflow
+
+```
+/python-auto → /python-coder → /python-reviewer
+                    ↓
+            /python-architect (if ADRs needed)
+                    ↓
+    /python-architecture-reviewer (validates ADRs)
+```
+
+### Work Item Discovery
+
+Use the `spx` CLI to find work items:
+
+- `spx status` - Overview of work items and their status
+- `spx next` - Get the next work item to work on
+
+### Core Principles
+
+- No mocking - dependency injection only
+- Reality is the oracle
+- Behavior testing, not implementation testing
+- Tests at appropriate levels (Unit/Integration/E2E)
