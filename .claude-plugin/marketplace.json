@@ -7,7 +7,12 @@
     {
       "name": "test",
       "source": "./plugins/test",
-      "description": "BDD testing skills: /testing (foundational), /testing-typescript"
+      "description": "BDD testing skills: /testing (foundational)"
+    },
+    {
+      "name": "typescript",
+      "source": "./plugins/typescript",
+      "description": "TypeScript workflow: /testing-typescript, /coding-typescript, /reviewing-typescript, /architecting-typescript, /reviewing-typescript-architecture"
     },
     {
       "name": "python",
