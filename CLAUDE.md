@@ -109,3 +109,7 @@ Productivity skills and commands for Claude Code.
 | Command | Purpose                                             |
 | ------- | --------------------------------------------------- |
 | `/ci`   | Git commit with Conventional Commits (auto-context) |
+
+## Discovering Other Installed Skills
+
+Search for `SKILL.md` in `.claude/plugins/cache/{marketplace-name}/{plugin-name}/`
