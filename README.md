@@ -4,104 +4,50 @@ A single repo for all your skills and commands, instantly available across every
 
 ## How It Works
 
-You write a skill once. You want it in every project. You want edits to propagate immediately.
+You write a skill once but want to use it in all projects and your improvements must propagate immediately.
 
-The solution: keep all your skills and commands in one local repo. Add it once. Available everywhere.
+There is a solution: keep all your skills and commands in one local repo that matches Claude Code's expectations for a [plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces).
 
-```
-# After setup, in any project:
-/testing           # Your testing methodology
-/ci                # Your commit workflow
-/coding-python     # Your Python patterns
-```
+### Start by cloning an existing plugin marketplace
 
-Edit the source files, run one command, every project has the latest.
+For example, to clone this marketplace as a template into `~/Code/claude-repo`:
 
-## Quick Start
-
-### 1. Create a repo for your skills and commands
-
-```bash
-mkdir -p ~/Code/my-skills
+```zsh
+git clone https://github.com/simonheimlicher/spx-claude.git ~/Code/claude-repo
 ```
 
-### 2. Add your first skill
+### 1. Add the marketplace to Claude Code at `user` level (once)
 
-```bash
-mkdir -p ~/Code/my-skills/plugins/dev/.claude-plugin
-mkdir -p ~/Code/my-skills/plugins/dev/skills/my-skill
+```zsh
+claude plugin marketplace add simonheimlicher/spx-claude
 ```
 
-Create the skill file:
+### 2. Add a first plugin
 
-```bash
-cat > ~/Code/my-skills/plugins/dev/skills/my-skill/SKILL.md << 'EOF'
----
-description: My custom skill
----
-# My Skill
-
-Instructions for Claude...
-EOF
+```zsh
+claude plugin install claude
 ```
 
-Skills are grouped into plugins (think: namespaces). Create the plugin manifest:
-
-```bash
-cat > ~/Code/my-skills/plugins/dev/.claude-plugin/plugin.json << 'EOF'
-{
-  "name": "dev",
-  "version": "1.0.0",
-  "description": "My dev tools"
-}
-EOF
-```
-
-### 3. Create the marketplace catalog
-
-The marketplace is just an index pointing to your plugins:
-
-```bash
-mkdir -p ~/Code/my-skills/.claude-plugin
-
-cat > ~/Code/my-skills/.claude-plugin/marketplace.json << 'EOF'
-{
-  "name": "my-skills",
-  "owner": {"name": "Your Name"},
-  "plugins": [{"name": "dev", "source": "./plugins/dev"}]
-}
-EOF
-```
-
-### 4. Add to Claude Code (once)
-
-```
-/plugin marketplace add ~/Code/my-skills
-```
-
-### 5. Install
-
-```
-/plugin install dev@my-skills
-```
-
-Now `/my-skill` is available in all projects.
+Now the slash command `/ci` and the skill `creating-skills` are available in all projects.
 
 ## Repository Structure
 
+Refer to the [official plugin marketplace documentation](https://code.claude.com/docs/en/plugin-marketplaces) for the latest version.
+
 ```
-my-skills/
-├── .claude-plugin/
-│   └── marketplace.json      # Index of all plugins
-└── plugins/
-    └── dev/                   # A plugin (namespace)
-        ├── .claude-plugin/
-        │   └── plugin.json    # Plugin metadata
-        ├── skills/            # Your skills live here
-        │   └── my-skill/
-        │       └── SKILL.md
-        └── commands/          # Your commands live here
-            └── build.md
+~/Code/claude-repo
+├── .claude-plugin
+│   └── marketplace.json
+├── plugins
+│   ├── claude
+│   │   ├── .claude-plugin
+│   │   │   └── plugin.json
+│   │   ├── commands
+│   │   │   └── ci.md
+│   │   └── skills
+│   │       ├── committing-changes
+│   │       │   └── SKILL.md
+[...]
 ```
 
 | Concept         | What it is                                 |
@@ -113,26 +59,21 @@ my-skills/
 
 ## Updating After Edits
 
+Enable `auto-update` by running `Claude Code` in a terminal:
+
 ```bash
-# Edit any skill or command in ~/Code/my-skills/...
+# Start Claude Code
+claude
 
-# Refresh (picks up all changes)
-/plugin marketplace update
+# Navigate to plugin marketplace
+/plugin marketplace
+
+# Select your marketplace and turn on `Enable auto-update`
 ```
-
-## Sharing
-
-Push to GitHub. Others add your marketplace:
-
-```
-/plugin marketplace add owner/repo
-```
-
-Same repo works locally and as public distribution.
 
 ## What's in This Repo
 
-This repo contains skills and commands for testing, Python development, and Claude Code productivity.
+This repo contains skills and commands for testing, Python and Typescript development, and Claude Code productivity.
 
 ### test
 
