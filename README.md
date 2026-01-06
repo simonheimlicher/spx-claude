@@ -24,10 +24,10 @@ claude plugins add claude --marketplace https://github.com/simonheimlicher/spx-c
 
 BDD testing methodology with three-tier testing (Unit, Integration, E2E).
 
-| Skill              | Purpose                         |
-| ------------------ | ------------------------------- |
-| `/test`            | Foundational testing principles |
-| `/typescript-test` | TypeScript-specific patterns    |
+| Skill                 | Purpose                         |
+| --------------------- | ------------------------------- |
+| `/testing`            | Foundational testing principles |
+| `/testing-typescript` | TypeScript-specific patterns    |
 
 **Core principles:** No mocking, dependency injection, reality as the oracle.
 
@@ -35,23 +35,24 @@ BDD testing methodology with three-tier testing (Unit, Integration, E2E).
 
 Complete Python development workflow.
 
-| Skill                           | Purpose                            |
-| ------------------------------- | ---------------------------------- |
-| `/python-auto`                  | Autonomous implementation          |
-| `/python-coder`                 | Implementation with remediation    |
-| `/python-reviewer`              | Strict code review                 |
-| `/python-architect`             | ADR producer with testing strategy |
-| `/python-architecture-reviewer` | ADR validator                      |
-| `/python-test`                  | Python-specific testing patterns   |
+| Type    | Name                             | Purpose                            |
+| ------- | -------------------------------- | ---------------------------------- |
+| Command | `/autopython`                    | Autonomous implementation          |
+| Skill   | `/coding-python`                 | Implementation with remediation    |
+| Skill   | `/reviewing-python`              | Strict code review                 |
+| Skill   | `/architecting-python`           | ADR producer with testing strategy |
+| Skill   | `/reviewing-python-architecture` | ADR validator                      |
+| Skill   | `/testing-python`                | Python-specific testing patterns   |
 
 ### claude
 
 Claude Code productivity skills.
 
-| Skill            | Purpose                              |
-| ---------------- | ------------------------------------ |
-| `/skill-creator` | Create maintainable skills           |
-| `/ci`            | Git commit with Conventional Commits |
+| Type    | Name                 | Purpose                              |
+| ------- | -------------------- | ------------------------------------ |
+| Skill   | `/creating-skills`   | Create maintainable skills           |
+| Skill   | `/committing-changes`| Comprehensive commit message guide   |
+| Command | `/ci`                | Git commit with Conventional Commits |
 
 ## Documentation
 
