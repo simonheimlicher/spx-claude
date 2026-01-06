@@ -46,11 +46,11 @@ The coder will:
 
 The coder returns one of three values:
 
-| Result    | Meaning                      | Your Action             |
-| --------- | ---------------------------- | ----------------------- |
-| `CONTINUE`| Item done, more items remain | Report and stop         |
-| `DONE`    | All items complete           | Report completion       |
-| `BLOCKED` | Cannot proceed               | Report blocker and stop |
+| Result     | Meaning                      | Your Action             |
+| ---------- | ---------------------------- | ----------------------- |
+| `CONTINUE` | Item done, more items remain | Report and stop         |
+| `DONE`     | All items complete           | Report completion       |
+| `BLOCKED`  | Cannot proceed               | Report blocker and stop |
 
 ### Step 4: Report
 
@@ -66,7 +66,7 @@ More work items remain. Run `/python-auto` again to continue.
 
 **On DONE:**
 
-```markdown
+````markdown
 ## Implementation Complete
 
 All work items have been implemented and approved.
@@ -78,7 +78,9 @@ All work items have been implemented and approved.
 ```bash
 uv run --extra dev pytest tests/ -v
 ```
-```
+````
+
+````
 
 **On BLOCKED:**
 
@@ -88,7 +90,7 @@ uv run --extra dev pytest tests/ -v
 {Include reason from coder}
 
 Please resolve the issue and run `/python-auto` to resume.
-```
+````
 
 ---
 
@@ -103,4 +105,4 @@ Please resolve the issue and run `/python-auto` to resume.
 
 ---
 
-*You are a thin dispatcher. Invoke, report. Nothing more.*
+_You are a thin dispatcher. Invoke, report. Nothing more._

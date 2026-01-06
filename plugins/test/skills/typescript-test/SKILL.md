@@ -14,11 +14,11 @@ This skill provides TypeScript-specific implementations of the three-tier testin
 
 ## TypeScript Tooling
 
-| Level | Tools | Speed |
-| --- | --- | --- |
-| 1: Unit | Vitest, temp directories, dependency injection | <50ms |
-| 2: Integration | Vitest + real binaries (Hugo, Caddy), test harnesses | <1s |
-| 3: E2E | Vitest/Playwright + Chrome, real services, credentials | <30s |
+| Level          | Tools                                                  | Speed |
+| -------------- | ------------------------------------------------------ | ----- |
+| 1: Unit        | Vitest, temp directories, dependency injection         | <50ms |
+| 2: Integration | Vitest + real binaries (Hugo, Caddy), test harnesses   | <1s   |
+| 3: E2E         | Vitest/Playwright + Chrome, real services, credentials | <30s  |
 
 ---
 
@@ -346,18 +346,14 @@ describe("LHCI End-to-End", () => {
 import { execa } from "execa";
 
 test.skipIf(!credentials)("CLI full workflow succeeds", async () => {
-  const result = await execa(
-    "node",
-    ["./bin/cli.js", "run", "--url", credentials!.testSiteUrl, "--upload"],
-    {
-      env: {
-        ...process.env,
-        LHCI_SERVER_URL: credentials!.lhciServerUrl,
-        LHCI_TOKEN: credentials!.lhciToken,
-      },
-      reject: false,
-    }
-  );
+  const result = await execa("node", ["./bin/cli.js", "run", "--url", credentials!.testSiteUrl, "--upload"], {
+    env: {
+      ...process.env,
+      LHCI_SERVER_URL: credentials!.lhciServerUrl,
+      LHCI_TOKEN: credentials!.lhciToken,
+    },
+    reject: false,
+  });
 
   expect(result.exitCode).toBe(0);
   expect(result.stdout).toContain("Audit complete");
@@ -437,12 +433,12 @@ export default defineConfig({
 
 ## Quick Reference
 
-| Pattern | Level 1 | Level 2 | Level 3 |
-| --- | --- | --- | --- |
-| Dependencies | Injected types/functions | Real via harness | Real via credentials |
-| Data | Factories + tmpdir | Fixtures + harness | Test accounts |
-| Speed | <50ms | <1s | <30s |
-| CI | Every commit | Every commit | Nightly/pre-release |
+| Pattern      | Level 1                  | Level 2            | Level 3              |
+| ------------ | ------------------------ | ------------------ | -------------------- |
+| Dependencies | Injected types/functions | Real via harness   | Real via credentials |
+| Data         | Factories + tmpdir       | Fixtures + harness | Test accounts        |
+| Speed        | <50ms                    | <1s                | <30s                 |
+| CI           | Every commit             | Every commit       | Nightly/pre-release  |
 
 ---
 

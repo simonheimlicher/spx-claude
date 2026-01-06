@@ -31,11 +31,11 @@ Before producing any ADR, you MUST:
 
 ### Testing Levels Summary
 
-| Level | Name        | Dependencies           | When to Use                              |
-| ----- | ----------- | ---------------------- | ---------------------------------------- |
-| 1     | Unit        | OS primitives only     | Pure logic, command building, parsing    |
-| 2     | Integration | Docker/Colima          | Real binaries with local backend         |
-| 3     | E2E         | Network + test accounts| Real services, OAuth, rate limits        |
+| Level | Name        | Dependencies            | When to Use                           |
+| ----- | ----------- | ----------------------- | ------------------------------------- |
+| 1     | Unit        | OS primitives only      | Pure logic, command building, parsing |
+| 2     | Integration | Docker/Colima           | Real binaries with local backend      |
+| 3     | E2E         | Network + test accounts | Real services, OAuth, rate limits     |
 
 ### Core Testing Principles (from python-test)
 
@@ -102,24 +102,31 @@ When a downstream skill must abort, it provides this structured message:
 ## ABORT: Architectural Assumption Failed
 
 ### Skill
+
 {python-coder | python-reviewer}
 
 ### ADR Reference
+
 `specs/decisions/adr-{NNN}_{slug}.md` or capability/feature path
 
 ### What Was Attempted
+
 {Describe the implementation or review step}
 
 ### What Failed
+
 {Describe the specific failure}
 
 ### Architectural Assumption Violated
+
 {Quote the ADR decision that doesn't hold}
 
 ### Evidence
+
 {Error messages, test failures, or logical contradictions}
 
 ### Request
+
 Re-evaluation by python-architect required before proceeding.
 ```
 
@@ -132,6 +139,7 @@ Before creating ADRs, you must understand:
 ### 1. Technical Requirements Document
 
 Read the TRD to understand:
+
 - Functional requirements (what the system must do)
 - Non-functional requirements (performance, security, etc.)
 - System design overview
@@ -140,6 +148,7 @@ Read the TRD to understand:
 ### 2. Project Context
 
 Read the project's methodology:
+
 - `context/1-structure.md` - Project structure
 - `context/2-workflow.md` - Workflow and completion model
 - `context/templates/` - ADR template format
@@ -147,6 +156,7 @@ Read the project's methodology:
 ### 3. Existing Decisions
 
 Read existing ADRs to ensure consistency:
+
 - `specs/decisions/` - Project-level ADRs
 - Any capability/feature-level ADRs
 
@@ -156,11 +166,11 @@ Read existing ADRs to ensure consistency:
 
 You produce ADRs. The scope depends on what you're deciding:
 
-| Decision Scope | ADR Location | Example |
-|----------------|--------------|---------|
-| Project-wide | `specs/decisions/adr-{NNN}_{slug}.md` | "Use Pydantic for all data validation" |
-| Capability-specific | `specs/doing/capability-NN/decisions/adr-{NNN}_{slug}.md` | "Clone tree approach for snapshots" |
-| Feature-specific | `specs/doing/.../feature-NN/decisions/adr-{NNN}_{slug}.md` | "Use rclone sync with --checksum" |
+| Decision Scope      | ADR Location                                               | Example                                |
+| ------------------- | ---------------------------------------------------------- | -------------------------------------- |
+| Project-wide        | `specs/decisions/adr-{NNN}_{slug}.md`                      | "Use Pydantic for all data validation" |
+| Capability-specific | `specs/doing/capability-NN/decisions/adr-{NNN}_{slug}.md`  | "Clone tree approach for snapshots"    |
+| Feature-specific    | `specs/doing/.../feature-NN/decisions/adr-{NNN}_{slug}.md` | "Use rclone sync with --checksum"      |
 
 ### ADR Numbering
 
@@ -184,6 +194,7 @@ Execute these phases IN ORDER.
 ### Phase 1: Identify Decisions Needed
 
 For each TRD section, ask:
+
 - What architectural choices does this imply?
 - What patterns or approaches should be mandated?
 - What constraints should be imposed?
@@ -194,6 +205,7 @@ List decisions needed before writing any ADRs.
 ### Phase 2: Analyze Python-Specific Implications
 
 For each decision, consider:
+
 - **Type system**: How will types be annotated? What protocols needed?
 - **Architecture**: Which pattern applies (DDD, hexagonal, etc.)?
 - **Security**: What boundaries need protection?
@@ -220,11 +232,11 @@ Use the project's template. Each ADR must include:
 
 ### Level Assignments
 
-| Component | Level | Justification |
-|-----------|-------|---------------|
-| {component_1} | 1 (Unit) | {why Level 1 is sufficient} |
-| {component_2} | 2 (VM) | {why Level 2 is needed} |
-| {component_3} | 3 (Internet) | {why Level 3 is needed} |
+| Component     | Level        | Justification               |
+| ------------- | ------------ | --------------------------- |
+| {component_1} | 1 (Unit)     | {why Level 1 is sufficient} |
+| {component_2} | 2 (VM)       | {why Level 2 is needed}     |
+| {component_3} | 3 (Internet) | {why Level 3 is needed}     |
 
 ### Escalation Rationale
 
@@ -421,10 +433,10 @@ See the `/python-test` skill for details.
 
 ### ADRs Written
 
-| ADR | Scope | Decision Summary |
-|-----|-------|------------------|
-| `adr-001_type-safety.md` | Project | Use strict Mypy, Pydantic at boundaries |
-| `adr-002_clone-tree.md` | Capability-10 | Clone-based snapshot traversal |
+| ADR                      | Scope         | Decision Summary                        |
+| ------------------------ | ------------- | --------------------------------------- |
+| `adr-001_type-safety.md` | Project       | Use strict Mypy, Pydantic at boundaries |
+| `adr-002_clone-tree.md`  | Capability-10 | Clone-based snapshot traversal          |
 
 ### Key Constraints for Downstream Skills
 
@@ -471,11 +483,11 @@ Use dependency injection for all external tool invocations.
 
 ### Testing Strategy
 
-| Component        | Level   | Justification                          |
-| ---------------- | ------- | -------------------------------------- |
-| Command building | 1 (Unit)| Pure function, no external deps        |
-| Tool invocation  | 2 (VM)  | Needs real binary to verify acceptance |
-| Full workflow    | 3 (Internet) | Needs real remote services        |
+| Component        | Level        | Justification                          |
+| ---------------- | ------------ | -------------------------------------- |
+| Command building | 1 (Unit)     | Pure function, no external deps        |
+| Tool invocation  | 2 (VM)       | Needs real binary to verify acceptance |
+| Full workflow    | 3 (Internet) | Needs real remote services             |
 ```
 
 ### Pattern: Configuration Loading
@@ -495,11 +507,11 @@ Use Pydantic or dataclass with validation for all configuration.
 
 ### Testing Strategy
 
-| Component        | Level   | Justification                    |
-| ---------------- | ------- | -------------------------------- |
-| Schema parsing   | 1 (Unit)| Pure validation logic            |
-| File loading     | 1 (Unit)| Uses DI for fs operations        |
-| Config merging   | 1 (Unit)| Pure function with typed inputs  |
+| Component      | Level    | Justification                   |
+| -------------- | -------- | ------------------------------- |
+| Schema parsing | 1 (Unit) | Pure validation logic           |
+| File loading   | 1 (Unit) | Uses DI for fs operations       |
+| Config merging | 1 (Unit) | Pure function with typed inputs |
 ```
 
 ### Pattern: CLI Structure
@@ -519,11 +531,11 @@ Use click or argparse with subcommand pattern.
 
 ### Testing Strategy
 
-| Component        | Level   | Justification                      |
-| ---------------- | ------- | ---------------------------------- |
-| Argument parsing | 1 (Unit)| Can test with CLI's parse methods  |
-| Command routing  | 1 (Unit)| Pure function mapping              |
-| Full CLI         | 3 (Internet)| Needs real invocation to verify |
+| Component        | Level        | Justification                     |
+| ---------------- | ------------ | --------------------------------- |
+| Argument parsing | 1 (Unit)     | Can test with CLI's parse methods |
+| Command routing  | 1 (Unit)     | Pure function mapping             |
+| Full CLI         | 3 (Internet) | Needs real invocation to verify   |
 ```
 
 ---
@@ -539,4 +551,4 @@ For methodology, use the `spx` CLI (`spx status`, `spx next`).
 
 ---
 
-*Remember: Your decisions shape everything downstream. A well-designed architecture enables clean implementation. A flawed architecture causes downstream skills to abort. Design carefully.*
+_Remember: Your decisions shape everything downstream. A well-designed architecture enables clean implementation. A flawed architecture causes downstream skills to abort. Design carefully._

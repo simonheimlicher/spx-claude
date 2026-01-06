@@ -325,13 +325,13 @@ class Snapshot:
 
 ### When to Use Dataclasses vs Pydantic
 
-| Use Case | Choice |
-|----------|--------|
-| System boundary (input/output) | Pydantic |
-| Internal domain object | dataclass |
-| Needs validation | Pydantic |
-| Needs serialization | Pydantic |
-| Simple value object | dataclass (frozen=True) |
+| Use Case                       | Choice                  |
+| ------------------------------ | ----------------------- |
+| System boundary (input/output) | Pydantic                |
+| Internal domain object         | dataclass               |
+| Needs validation               | Pydantic                |
+| Needs serialization            | Pydantic                |
+| Simple value object            | dataclass (frozen=True) |
 
 ---
 

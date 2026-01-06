@@ -35,13 +35,13 @@ Please provide this information or point me to existing test infrastructure.
 
 ## Harness Categories
 
-| Dependency Type | Harness Strategy | Reset Strategy |
-|-----------------|------------------|----------------|
-| **Database** | Docker container or test DB | Truncate tables / drop schema |
-| **CLI Binary** | Installed binary + temp dirs | Delete temp dirs |
-| **HTTP Service** | Local server or test container | Restart or clear state |
-| **File System** | Temp directories | Delete on teardown |
-| **Message Queue** | Docker container | Purge queues |
+| Dependency Type   | Harness Strategy               | Reset Strategy                |
+| ----------------- | ------------------------------ | ----------------------------- |
+| **Database**      | Docker container or test DB    | Truncate tables / drop schema |
+| **CLI Binary**    | Installed binary + temp dirs   | Delete temp dirs              |
+| **HTTP Service**  | Local server or test container | Restart or clear state        |
+| **File System**   | Temp directories               | Delete on teardown            |
+| **Message Queue** | Docker container               | Purge queues                  |
 
 ---
 
@@ -74,72 +74,68 @@ test/
 
 ```typescript
 // test/harnesses/hugo.ts
-import { execa, ExecaReturnValue } from 'execa'
-import { mkdtemp, rm, cp } from 'fs/promises'
-import { join } from 'path'
-import { tmpdir } from 'os'
+import { execa, ExecaReturnValue } from "execa";
+import { mkdtemp, rm, cp } from "fs/promises";
+import { join } from "path";
+import { tmpdir } from "os";
 
 type HugoHarness = {
-  siteDir: string
-  outputDir: string
-  build: (args?: string[]) => Promise<ExecaReturnValue>
-  cleanup: () => Promise<void>
-}
+  siteDir: string;
+  outputDir: string;
+  build: (args?: string[]) => Promise<ExecaReturnValue>;
+  cleanup: () => Promise<void>;
+};
 
 async function verifyHugoInstalled(): Promise<void> {
   try {
-    await execa('hugo', ['version'])
+    await execa("hugo", ["version"]);
   } catch {
-    throw new Error(
-      'Hugo binary not found. Install Hugo or skip integration tests.\n' +
-      'Install: https://gohugo.io/installation/'
-    )
+    throw new Error("Hugo binary not found. Install Hugo or skip integration tests.\n" + "Install: https://gohugo.io/installation/");
   }
 }
 
-async function createHugoHarness(
-  fixturePath?: string
-): Promise<HugoHarness> {
-  await verifyHugoInstalled()
-  
-  const siteDir = await mkdtemp(join(tmpdir(), 'hugo-test-site-'))
-  const outputDir = join(siteDir, 'public')
-  
+async function createHugoHarness(fixturePath?: string): Promise<HugoHarness> {
+  await verifyHugoInstalled();
+
+  const siteDir = await mkdtemp(join(tmpdir(), "hugo-test-site-"));
+  const outputDir = join(siteDir, "public");
+
   // Copy fixture or create minimal site
   if (fixturePath) {
-    await cp(fixturePath, siteDir, { recursive: true })
+    await cp(fixturePath, siteDir, { recursive: true });
   } else {
-    await createMinimalSite(siteDir)
+    await createMinimalSite(siteDir);
   }
-  
+
   return {
     siteDir,
     outputDir,
-    
+
     async build(args: string[] = []) {
-      return execa('hugo', [
-        '--source', siteDir,
-        '--destination', outputDir,
-        ...args
-      ])
+      return execa("hugo", ["--source", siteDir, "--destination", outputDir, ...args]);
     },
-    
+
     async cleanup() {
-      await rm(siteDir, { recursive: true, force: true })
-    }
-  }
+      await rm(siteDir, { recursive: true, force: true });
+    },
+  };
 }
 
 async function createMinimalSite(dir: string): Promise<void> {
-  const { writeFile, mkdir } = await import('fs/promises')
-  
-  await writeFile(join(dir, 'config.toml'), `
+  const { writeFile, mkdir } = await import("fs/promises");
+
+  await writeFile(
+    join(dir, "config.toml"),
+    `
 title = "Test Site"
 baseURL = "http://localhost:1313/"
-`)
-  
-  await mkdir(join(dir, 'content'), { recursive: true })
-  await writeFile(join(dir, 'content', '_index.md'), `
+`
+  );
+
+  await mkdir(join(dir, "content"), { recursive: true });
+  await writeFile(
+    join(dir, "content", "_index.md"),
+    `
 ---
 title: "Home"
 ---
@@ -147,87 +143,91 @@ title: "Home"
 # Welcome
 
 This is a test site.
-`)
-  
-  await mkdir(join(dir, 'layouts', '_default'), { recursive: true })
-  await writeFile(join(dir, 'layouts', '_default', 'baseof.html'), `
+`
+  );
+
+  await mkdir(join(dir, "layouts", "_default"), { recursive: true });
+  await writeFile(
+    join(dir, "layouts", "_default", "baseof.html"),
+    `
 <!DOCTYPE html>
 <html>
 <head><title>{{ .Title }}</title></head>
 <body>{{ block "main" . }}{{ end }}</body>
 </html>
-`)
-  await writeFile(join(dir, 'layouts', '_default', 'list.html'), `
+`
+  );
+  await writeFile(
+    join(dir, "layouts", "_default", "list.html"),
+    `
 {{ define "main" }}{{ .Content }}{{ end }}
-`)
-  await writeFile(join(dir, 'layouts', '_default', 'single.html'), `
+`
+  );
+  await writeFile(
+    join(dir, "layouts", "_default", "single.html"),
+    `
 {{ define "main" }}{{ .Content }}{{ end }}
-`)
+`
+  );
 }
 
-export { createHugoHarness, verifyHugoInstalled }
+export { createHugoHarness, verifyHugoInstalled };
 ```
 
 ### Using the Hugo Harness
 
 ```typescript
 // test/integration/hugo-build.test.ts
-import { createHugoHarness } from '../harnesses/hugo'
-import { existsSync, readFileSync } from 'fs'
-import { join } from 'path'
+import { createHugoHarness } from "../harnesses/hugo";
+import { existsSync, readFileSync } from "fs";
+import { join } from "path";
 
-describe('Hugo Build Integration', () => {
-  test('builds minimal site successfully', async () => {
-    const harness = await createHugoHarness()
-    
+describe("Hugo Build Integration", () => {
+  test("builds minimal site successfully", async () => {
+    const harness = await createHugoHarness();
+
     try {
-      const result = await harness.build()
-      
-      expect(result.exitCode).toBe(0)
-      expect(existsSync(join(harness.outputDir, 'index.html'))).toBe(true)
+      const result = await harness.build();
+
+      expect(result.exitCode).toBe(0);
+      expect(existsSync(join(harness.outputDir, "index.html"))).toBe(true);
     } finally {
-      await harness.cleanup()
+      await harness.cleanup();
     }
-  })
-  
-  test('builds with minify flag', async () => {
-    const harness = await createHugoHarness()
-    
+  });
+
+  test("builds with minify flag", async () => {
+    const harness = await createHugoHarness();
+
     try {
-      const result = await harness.build(['--minify'])
-      
-      expect(result.exitCode).toBe(0)
-      
-      const html = readFileSync(
-        join(harness.outputDir, 'index.html'), 
-        'utf-8'
-      )
+      const result = await harness.build(["--minify"]);
+
+      expect(result.exitCode).toBe(0);
+
+      const html = readFileSync(join(harness.outputDir, "index.html"), "utf-8");
       // Minified HTML has no unnecessary whitespace
-      expect(html).not.toMatch(/\n\s+\n/)
+      expect(html).not.toMatch(/\n\s+\n/);
     } finally {
-      await harness.cleanup()
+      await harness.cleanup();
     }
-  })
-  
-  test('fails on invalid config', async () => {
-    const harness = await createHugoHarness()
-    const { writeFile } = await import('fs/promises')
-    
+  });
+
+  test("fails on invalid config", async () => {
+    const harness = await createHugoHarness();
+    const { writeFile } = await import("fs/promises");
+
     // Corrupt the config
-    await writeFile(
-      join(harness.siteDir, 'config.toml'), 
-      'invalid toml {{{'
-    )
-    
+    await writeFile(join(harness.siteDir, "config.toml"), "invalid toml {{{");
+
     try {
-      const result = await harness.build().catch(e => e)
-      
-      expect(result.exitCode).not.toBe(0)
+      const result = await harness.build().catch((e) => e);
+
+      expect(result.exitCode).not.toBe(0);
     } finally {
-      await harness.cleanup()
+      await harness.cleanup();
     }
-  })
-})
+  });
+});
 ```
 
 ---
@@ -236,48 +236,47 @@ describe('Hugo Build Integration', () => {
 
 ```typescript
 // test/harnesses/caddy.ts
-import { execa, ExecaChildProcess } from 'execa'
-import { writeFile, mkdtemp, rm } from 'fs/promises'
-import { join } from 'path'
-import { tmpdir } from 'os'
-import getPort from 'get-port'
+import { execa, ExecaChildProcess } from "execa";
+import { writeFile, mkdtemp, rm } from "fs/promises";
+import { join } from "path";
+import { tmpdir } from "os";
+import getPort from "get-port";
 
 type CaddyHarness = {
-  port: number
-  baseUrl: string
-  rootDir: string
-  start: () => Promise<void>
-  stop: () => Promise<void>
-  cleanup: () => Promise<void>
-}
+  port: number;
+  baseUrl: string;
+  rootDir: string;
+  start: () => Promise<void>;
+  stop: () => Promise<void>;
+  cleanup: () => Promise<void>;
+};
 
 async function verifyCaddyInstalled(): Promise<void> {
   try {
-    await execa('caddy', ['version'])
+    await execa("caddy", ["version"]);
   } catch {
-    throw new Error(
-      'Caddy binary not found. Install Caddy or skip integration tests.\n' +
-      'Install: https://caddyserver.com/docs/install'
-    )
+    throw new Error("Caddy binary not found. Install Caddy or skip integration tests.\n" + "Install: https://caddyserver.com/docs/install");
   }
 }
 
 async function createCaddyHarness(staticDir: string): Promise<CaddyHarness> {
-  await verifyCaddyInstalled()
-  
-  const port = await getPort()
-  const configDir = await mkdtemp(join(tmpdir(), 'caddy-test-'))
-  const caddyfilePath = join(configDir, 'Caddyfile')
-  
-  let process: ExecaChildProcess | null = null
-  
+  await verifyCaddyInstalled();
+
+  const port = await getPort();
+  const configDir = await mkdtemp(join(tmpdir(), "caddy-test-"));
+  const caddyfilePath = join(configDir, "Caddyfile");
+
+  let process: ExecaChildProcess | null = null;
+
   return {
     port,
     baseUrl: `http://localhost:${port}`,
     rootDir: staticDir,
-    
+
     async start() {
-      await writeFile(caddyfilePath, `
+      await writeFile(
+        caddyfilePath,
+        `
 :${port} {
   root * ${staticDir}
   file_server
@@ -285,100 +284,101 @@ async function createCaddyHarness(staticDir: string): Promise<CaddyHarness> {
     output discard
   }
 }
-`)
-      
-      process = execa('caddy', ['run', '--config', caddyfilePath], {
-        reject: false
-      })
-      
+`
+      );
+
+      process = execa("caddy", ["run", "--config", caddyfilePath], {
+        reject: false,
+      });
+
       // Wait for server to be ready
-      await waitForServer(`http://localhost:${port}`, 5000)
+      await waitForServer(`http://localhost:${port}`, 5000);
     },
-    
+
     async stop() {
       if (process) {
-        process.kill()
-        await process.catch(() => {}) // Ignore kill errors
-        process = null
+        process.kill();
+        await process.catch(() => {}); // Ignore kill errors
+        process = null;
       }
     },
-    
+
     async cleanup() {
-      await this.stop()
-      await rm(configDir, { recursive: true, force: true })
-    }
-  }
+      await this.stop();
+      await rm(configDir, { recursive: true, force: true });
+    },
+  };
 }
 
 async function waitForServer(url: string, timeoutMs: number): Promise<void> {
-  const start = Date.now()
-  
+  const start = Date.now();
+
   while (Date.now() - start < timeoutMs) {
     try {
-      const response = await fetch(url)
+      const response = await fetch(url);
       if (response.ok || response.status === 404) {
-        return // Server is up
+        return; // Server is up
       }
     } catch {
       // Server not ready yet
     }
-    await new Promise(r => setTimeout(r, 100))
+    await new Promise((r) => setTimeout(r, 100));
   }
-  
-  throw new Error(`Server at ${url} did not start within ${timeoutMs}ms`)
+
+  throw new Error(`Server at ${url} did not start within ${timeoutMs}ms`);
 }
 
-export { createCaddyHarness, verifyCaddyInstalled }
+export { createCaddyHarness, verifyCaddyInstalled };
 ```
 
 ### Using the Caddy Harness
 
 ```typescript
 // test/integration/caddy-server.test.ts
-import { createHugoHarness } from '../harnesses/hugo'
-import { createCaddyHarness } from '../harnesses/caddy'
+import { createHugoHarness } from "../harnesses/hugo";
+import { createCaddyHarness } from "../harnesses/caddy";
 
-describe('Caddy Server Integration', () => {
-  test('serves Hugo-built site', async () => {
+describe("Caddy Server Integration", () => {
+  test("serves Hugo-built site", async () => {
     // Build the site first
-    const hugo = await createHugoHarness()
-    await hugo.build()
-    
+    const hugo = await createHugoHarness();
+    await hugo.build();
+
     // Serve with Caddy
-    const caddy = await createCaddyHarness(hugo.outputDir)
-    
+    const caddy = await createCaddyHarness(hugo.outputDir);
+
     try {
-      await caddy.start()
-      
-      const response = await fetch(`${caddy.baseUrl}/`)
-      const html = await response.text()
-      
-      expect(response.status).toBe(200)
-      expect(html).toContain('Welcome')
+      await caddy.start();
+
+      const response = await fetch(`${caddy.baseUrl}/`);
+      const html = await response.text();
+
+      expect(response.status).toBe(200);
+      expect(html).toContain("Welcome");
     } finally {
-      await caddy.cleanup()
-      await hugo.cleanup()
+      await caddy.cleanup();
+      await hugo.cleanup();
     }
-  })
-  
-  test('returns 404 for missing pages', async () => {
-    const hugo = await createHugoHarness()
-    await hugo.build()
-    
-    const caddy = await createCaddyHarness(hugo.outputDir)
-    
+  });
+
+  test("returns 404 for missing pages", async () => {
+    const hugo = await createHugoHarness();
+    await hugo.build();
+
+    const caddy = await createCaddyHarness(hugo.outputDir);
+
     try {
-      await caddy.start()
-      
-      const response = await fetch(`${caddy.baseUrl}/nonexistent-page/`)
-      
-      expect(response.status).toBe(404)
+      await caddy.start();
+
+      const response = await fetch(`${caddy.baseUrl}/nonexistent-page/`);
+
+      expect(response.status).toBe(404);
     } finally {
-      await caddy.cleanup()
-      await hugo.cleanup()
+      await caddy.cleanup();
+      await hugo.cleanup();
     }
-  })
-})
+  });
+});
 ```
 
 ---
@@ -387,136 +387,127 @@ describe('Caddy Server Integration', () => {
 
 ```typescript
 // test/harnesses/postgres.ts
-import { Pool } from 'pg'
-import { execa } from 'execa'
-import { readFile } from 'fs/promises'
+import { Pool } from "pg";
+import { execa } from "execa";
+import { readFile } from "fs/promises";
 
 type PostgresHarness = {
-  connectionString: string
-  pool: Pool
-  query: <T>(sql: string, params?: unknown[]) => Promise<T[]>
-  seed: (sqlFile: string) => Promise<void>
-  reset: () => Promise<void>
-  cleanup: () => Promise<void>
-}
+  connectionString: string;
+  pool: Pool;
+  query: <T>(sql: string, params?: unknown[]) => Promise<T[]>;
+  seed: (sqlFile: string) => Promise<void>;
+  reset: () => Promise<void>;
+  cleanup: () => Promise<void>;
+};
 
 const TEST_DB_CONFIG = {
-  host: process.env.TEST_DB_HOST || 'localhost',
-  port: parseInt(process.env.TEST_DB_PORT || '5432'),
-  database: process.env.TEST_DB_NAME || 'test_db',
-  user: process.env.TEST_DB_USER || 'postgres',
-  password: process.env.TEST_DB_PASSWORD || 'postgres',
-}
+  host: process.env.TEST_DB_HOST || "localhost",
+  port: parseInt(process.env.TEST_DB_PORT || "5432"),
+  database: process.env.TEST_DB_NAME || "test_db",
+  user: process.env.TEST_DB_USER || "postgres",
+  password: process.env.TEST_DB_PASSWORD || "postgres",
+};
 
 async function createPostgresHarness(): Promise<PostgresHarness> {
   // Verify database is available
-  const connectionString = 
-    `postgresql://${TEST_DB_CONFIG.user}:${TEST_DB_CONFIG.password}@` +
-    `${TEST_DB_CONFIG.host}:${TEST_DB_CONFIG.port}/${TEST_DB_CONFIG.database}`
-  
-  const pool = new Pool(TEST_DB_CONFIG)
-  
+  const connectionString = `postgresql://${TEST_DB_CONFIG.user}:${TEST_DB_CONFIG.password}@` + `${TEST_DB_CONFIG.host}:${TEST_DB_CONFIG.port}/${TEST_DB_CONFIG.database}`;
+
+  const pool = new Pool(TEST_DB_CONFIG);
+
   try {
-    await pool.query('SELECT 1')
+    await pool.query("SELECT 1");
   } catch (error) {
-    throw new Error(
-      `Cannot connect to test database.\n` +
-      `Connection string: ${connectionString}\n` +
-      `Start database: docker-compose -f docker-compose.test.yml up -d postgres\n` +
-      `Error: ${error}`
-    )
+    throw new Error(`Cannot connect to test database.\n` + `Connection string: ${connectionString}\n` + `Start database: docker-compose -f docker-compose.test.yml up -d postgres\n` + `Error: ${error}`);
   }
-  
+
   return {
     connectionString,
     pool,
-    
+
     async query<T>(sql: string, params?: unknown[]): Promise<T[]> {
-      const result = await pool.query(sql, params)
-      return result.rows as T[]
+      const result = await pool.query(sql, params);
+      return result.rows as T[];
     },
-    
+
     async seed(sqlFile: string): Promise<void> {
-      const sql = await readFile(sqlFile, 'utf-8')
-      await pool.query(sql)
+      const sql = await readFile(sqlFile, "utf-8");
+      await pool.query(sql);
     },
-    
+
     async reset(): Promise<void> {
       // Drop and recreate public schema
       await pool.query(`
         DROP SCHEMA public CASCADE;
         CREATE SCHEMA public;
         GRANT ALL ON SCHEMA public TO ${TEST_DB_CONFIG.user};
-      `)
+      `);
     },
-    
+
     async cleanup(): Promise<void> {
-      await pool.end()
-    }
-  }
+      await pool.end();
+    },
+  };
 }
 
-export { createPostgresHarness, TEST_DB_CONFIG }
+export { createPostgresHarness, TEST_DB_CONFIG };
 ```
 
 ### Using the Postgres Harness
 
 ```typescript
 // test/integration/database.test.ts
-import { createPostgresHarness } from '../harnesses/postgres'
+import { createPostgresHarness } from "../harnesses/postgres";
 
-describe('User Repository Integration', () => {
-  let db: Awaited<ReturnType<typeof createPostgresHarness>>
-  
+describe("User Repository Integration", () => {
+  let db: Awaited<ReturnType<typeof createPostgresHarness>>;
+
   beforeAll(async () => {
-    db = await createPostgresHarness()
-    await db.seed('test/fixtures/schema.sql')
-  })
-  
+    db = await createPostgresHarness();
+    await db.seed("test/fixtures/schema.sql");
+  });
+
   afterAll(async () => {
-    await db.cleanup()
-  })
-  
+    await db.cleanup();
+  });
+
   beforeEach(async () => {
     // Clear data but keep schema
-    await db.query('TRUNCATE users CASCADE')
-  })
-  
-  test('creates and retrieves user', async () => {
-    const repo = createUserRepository(db.pool)
-    
+    await db.query("TRUNCATE users CASCADE");
+  });
+
+  test("creates and retrieves user", async () => {
+    const repo = createUserRepository(db.pool);
+
     const created = await repo.create({
-      email: 'test@example.com',
-      name: 'Test User'
-    })
-    
-    const retrieved = await repo.findById(created.id)
-    
+      email: "test@example.com",
+      name: "Test User",
+    });
+
+    const retrieved = await repo.findById(created.id);
+
     expect(retrieved).toEqual({
       id: created.id,
-      email: 'test@example.com',
-      name: 'Test User',
-    })
-  })
-  
-  test('returns null for nonexistent user', async () => {
-    const repo = createUserRepository(db.pool)
-    
-    const result = await repo.findById('nonexistent-id')
-    
-    expect(result).toBeNull()
-  })
-  
-  test('enforces unique email constraint', async () => {
-    const repo = createUserRepository(db.pool)
-    
-    await repo.create({ email: 'dupe@example.com', name: 'First' })
-    
-    await expect(
-      repo.create({ email: 'dupe@example.com', name: 'Second' })
-    ).rejects.toThrow(/unique/)
-  })
-})
+      email: "test@example.com",
+      name: "Test User",
+    });
+  });
+
+  test("returns null for nonexistent user", async () => {
+    const repo = createUserRepository(db.pool);
+
+    const result = await repo.findById("nonexistent-id");
+
+    expect(result).toBeNull();
+  });
+
+  test("enforces unique email constraint", async () => {
+    const repo = createUserRepository(db.pool);
+
+    await repo.create({ email: "dupe@example.com", name: "First" });
+
+    await expect(repo.create({ email: "dupe@example.com", name: "Second" })).rejects.toThrow(/unique/);
+  });
+});
 ```
 
 ---
@@ -543,11 +534,11 @@ class HugoHarness:
     site_dir: Path
     output_dir: Path
     _temp_dir: Optional[tempfile.TemporaryDirectory] = None
-    
+
     def build(self, args: list[str] = None) -> HugoResult:
         args = args or []
         result = subprocess.run(
-            ["hugo", "--source", str(self.site_dir), 
+            ["hugo", "--source", str(self.site_dir),
              "--destination", str(self.output_dir)] + args,
             capture_output=True,
             text=True
@@ -557,7 +548,7 @@ class HugoHarness:
             stdout=result.stdout,
             stderr=result.stderr
         )
-    
+
     def cleanup(self):
         if self._temp_dir:
             self._temp_dir.cleanup()
@@ -573,16 +564,16 @@ def verify_hugo_installed():
 
 def create_hugo_harness(fixture_path: Optional[Path] = None) -> HugoHarness:
     verify_hugo_installed()
-    
+
     temp_dir = tempfile.TemporaryDirectory(prefix="hugo-test-")
     site_dir = Path(temp_dir.name)
     output_dir = site_dir / "public"
-    
+
     if fixture_path:
         shutil.copytree(fixture_path, site_dir, dirs_exist_ok=True)
     else:
         _create_minimal_site(site_dir)
-    
+
     harness = HugoHarness(
         site_dir=site_dir,
         output_dir=output_dir,
@@ -595,7 +586,7 @@ def _create_minimal_site(site_dir: Path):
 title = "Test Site"
 baseURL = "http://localhost:1313/"
 ''')
-    
+
     content_dir = site_dir / "content"
     content_dir.mkdir()
     (content_dir / "_index.md").write_text('''
@@ -605,10 +596,10 @@ title: "Home"
 
 # Welcome
 ''')
-    
+
     layouts_dir = site_dir / "layouts" / "_default"
     layouts_dir.mkdir(parents=True)
-    
+
     (layouts_dir / "baseof.html").write_text('''
 <!DOCTYPE html>
 <html>
@@ -629,10 +620,10 @@ from harnesses.hugo import create_hugo_harness
 
 def test_builds_minimal_site():
     harness = create_hugo_harness()
-    
+
     try:
         result = harness.build()
-        
+
         assert result.exit_code == 0
         assert (harness.output_dir / "index.html").exists()
     finally:
@@ -640,10 +631,10 @@ def test_builds_minimal_site():
 
 def test_builds_with_minify():
     harness = create_hugo_harness()
-    
+
     try:
         result = harness.build(["--minify"])
-        
+
         assert result.exit_code == 0
         html = (harness.output_dir / "index.html").read_text()
         # Minified HTML has minimal whitespace
@@ -671,165 +662,159 @@ Test that your HTTP client code works with real HTTP responses.
 
 ```typescript
 // test/harnesses/http-server.ts
-import { createServer, Server, IncomingMessage, ServerResponse } from 'http'
-import getPort from 'get-port'
+import { createServer, Server, IncomingMessage, ServerResponse } from "http";
+import getPort from "get-port";
 
 type Route = {
-  method: string
-  path: string
-  status: number
-  body: string | object
-  headers?: Record<string, string>
-}
+  method: string;
+  path: string;
+  status: number;
+  body: string | object;
+  headers?: Record<string, string>;
+};
 
 type HttpServerHarness = {
-  port: number
-  baseUrl: string
-  addRoute: (route: Route) => void
-  start: () => Promise<void>
-  stop: () => Promise<void>
-  getRequests: () => Array<{ method: string; path: string; body: string }>
-}
+  port: number;
+  baseUrl: string;
+  addRoute: (route: Route) => void;
+  start: () => Promise<void>;
+  stop: () => Promise<void>;
+  getRequests: () => Array<{ method: string; path: string; body: string }>;
+};
 
 async function createHttpServerHarness(): Promise<HttpServerHarness> {
-  const port = await getPort()
-  const routes: Route[] = []
-  const requests: Array<{ method: string; path: string; body: string }> = []
-  let server: Server | null = null
-  
+  const port = await getPort();
+  const routes: Route[] = [];
+  const requests: Array<{ method: string; path: string; body: string }> = [];
+  let server: Server | null = null;
+
   return {
     port,
     baseUrl: `http://localhost:${port}`,
-    
+
     addRoute(route: Route) {
-      routes.push(route)
+      routes.push(route);
     },
-    
+
     async start() {
       server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
         // Collect request body
-        const chunks: Buffer[] = []
+        const chunks: Buffer[] = [];
         for await (const chunk of req) {
-          chunks.push(chunk as Buffer)
+          chunks.push(chunk as Buffer);
         }
-        const body = Buffer.concat(chunks).toString()
-        
+        const body = Buffer.concat(chunks).toString();
+
         requests.push({
-          method: req.method || 'GET',
-          path: req.url || '/',
-          body
-        })
-        
+          method: req.method || "GET",
+          path: req.url || "/",
+          body,
+        });
+
         // Find matching route
-        const route = routes.find(
-          r => r.method === req.method && r.path === req.url
-        )
-        
+        const route = routes.find((r) => r.method === req.method && r.path === req.url);
+
         if (route) {
-          res.statusCode = route.status
+          res.statusCode = route.status;
           if (route.headers) {
             Object.entries(route.headers).forEach(([k, v]) => {
-              res.setHeader(k, v)
-            })
+              res.setHeader(k, v);
+            });
           }
-          const responseBody = typeof route.body === 'string' 
-            ? route.body 
-            : JSON.stringify(route.body)
-          res.end(responseBody)
+          const responseBody = typeof route.body === "string" ? route.body : JSON.stringify(route.body);
+          res.end(responseBody);
         } else {
-          res.statusCode = 404
-          res.end('Not Found')
+          res.statusCode = 404;
+          res.end("Not Found");
         }
-      })
-      
-      await new Promise<void>(resolve => {
-        server!.listen(port, resolve)
-      })
+      });
+
+      await new Promise<void>((resolve) => {
+        server!.listen(port, resolve);
+      });
     },
-    
+
     async stop() {
       if (server) {
-        await new Promise<void>(resolve => server!.close(() => resolve()))
-        server = null
+        await new Promise<void>((resolve) => server!.close(() => resolve()));
+        server = null;
       }
     },
-    
+
     getRequests() {
-      return [...requests]
-    }
-  }
+      return [...requests];
+    },
+  };
 }
 
-export { createHttpServerHarness }
+export { createHttpServerHarness };
 ```
 
 ### Using the HTTP Harness
 
 ```typescript
 // test/integration/api-client.test.ts
-import { createHttpServerHarness } from '../harnesses/http-server'
-import { createApiClient } from '../../src/api/client'
+import { createHttpServerHarness } from "../harnesses/http-server";
+import { createApiClient } from "../../src/api/client";
 
-describe('API Client Integration', () => {
-  let server: Awaited<ReturnType<typeof createHttpServerHarness>>
-  
+describe("API Client Integration", () => {
+  let server: Awaited<ReturnType<typeof createHttpServerHarness>>;
+
   beforeEach(async () => {
-    server = await createHttpServerHarness()
-  })
-  
+    server = await createHttpServerHarness();
+  });
+
   afterEach(async () => {
-    await server.stop()
-  })
-  
-  test('fetches resources', async () => {
+    await server.stop();
+  });
+
+  test("fetches resources", async () => {
     server.addRoute({
-      method: 'GET',
-      path: '/api/users/123',
+      method: "GET",
+      path: "/api/users/123",
       status: 200,
-      body: { id: '123', name: 'Test User' },
-      headers: { 'Content-Type': 'application/json' }
-    })
-    await server.start()
-    
-    const client = createApiClient(server.baseUrl)
-    const user = await client.getUser('123')
-    
-    expect(user).toEqual({ id: '123', name: 'Test User' })
-  })
-  
-  test('handles 404 responses', async () => {
+      body: { id: "123", name: "Test User" },
+      headers: { "Content-Type": "application/json" },
+    });
+    await server.start();
+
+    const client = createApiClient(server.baseUrl);
+    const user = await client.getUser("123");
+
+    expect(user).toEqual({ id: "123", name: "Test User" });
+  });
+
+  test("handles 404 responses", async () => {
     server.addRoute({
-      method: 'GET',
-      path: '/api/users/999',
+      method: "GET",
+      path: "/api/users/999",
       status: 404,
-      body: { error: 'Not found' }
-    })
-    await server.start()
-    
-    const client = createApiClient(server.baseUrl)
-    const result = await client.getUser('999')
-    
-    expect(result).toBeNull()
-  })
-  
-  test('sends correct request body', async () => {
+      body: { error: "Not found" },
+    });
+    await server.start();
+
+    const client = createApiClient(server.baseUrl);
+    const result = await client.getUser("999");
+
+    expect(result).toBeNull();
+  });
+
+  test("sends correct request body", async () => {
     server.addRoute({
-      method: 'POST',
-      path: '/api/users',
+      method: "POST",
+      path: "/api/users",
       status: 201,
-      body: { id: 'new-id' }
-    })
-    await server.start()
-    
-    const client = createApiClient(server.baseUrl)
-    await client.createUser({ name: 'New User', email: 'new@test.com' })
-    
-    const requests = server.getRequests()
-    expect(requests[0].body).toBe(
-      JSON.stringify({ name: 'New User', email: 'new@test.com' })
-    )
-  })
-})
+      body: { id: "new-id" },
+    });
+    await server.start();
+
+    const client = createApiClient(server.baseUrl);
+    await client.createUser({ name: "New User", email: "new@test.com" });
+
+    const requests = server.getRequests();
+    expect(requests[0].body).toBe(JSON.stringify({ name: "New User", email: "new@test.com" }));
+  });
+});
 ```
 
 ---
@@ -838,44 +823,44 @@ describe('API Client Integration', () => {
 
 ```typescript
 // test/setup.ts
-import { beforeAll, afterAll } from 'vitest'
+import { beforeAll, afterAll } from "vitest";
 
 // Environment check - fail fast if dependencies aren't available
 beforeAll(async () => {
   const checks = [
-    { name: 'Hugo', cmd: 'hugo version' },
-    { name: 'Caddy', cmd: 'caddy version' },
-  ]
-  
-  const { execa } = await import('execa')
-  
+    { name: "Hugo", cmd: "hugo version" },
+    { name: "Caddy", cmd: "caddy version" },
+  ];
+
+  const { execa } = await import("execa");
+
   for (const check of checks) {
     try {
-      await execa('sh', ['-c', check.cmd])
+      await execa("sh", ["-c", check.cmd]);
     } catch {
-      console.warn(`⚠️  ${check.name} not available - some integration tests will be skipped`)
+      console.warn(`⚠️  ${check.name} not available - some integration tests will be skipped`);
     }
   }
-})
+});
 
 // vitest.config.ts
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    include: ['test/**/*.test.ts'],
-    setupFiles: ['test/setup.ts'],
+    include: ["test/**/*.test.ts"],
+    setupFiles: ["test/setup.ts"],
     testTimeout: 30000, // Integration tests can be slow
     hookTimeout: 30000,
-    
+
     // Run integration tests sequentially to avoid port conflicts
     poolOptions: {
       threads: {
-        singleThread: true
-      }
-    }
-  }
-})
+        singleThread: true,
+      },
+    },
+  },
+});
 ```
 
 ---
@@ -884,7 +869,7 @@ export default defineConfig({
 
 ```yaml
 # docker-compose.test.yml
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -914,8 +899,8 @@ services:
   mailhog:
     image: mailhog/mailhog
     ports:
-      - "1025:1025"  # SMTP
-      - "8025:8025"  # Web UI / API
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI / API
 ```
 
 ```bash
@@ -955,13 +940,13 @@ If the test requires production credentials or external services, escalate to Le
 ✅ Hugo builds your site structure  
 ✅ Caddy serves your files correctly  
 ✅ Your HTTP client handles real responses  
-✅ Your file operations work on real filesystems  
+✅ Your file operations work on real filesystems
 
 ## What Level 2 Cannot Prove
 
 ❌ That production credentials work  
 ❌ That third-party APIs behave the same in prod  
 ❌ That the full user workflow succeeds  
-❌ That performance is acceptable  
+❌ That performance is acceptable
 
 **When you need these guarantees, escalate to Level 3.**

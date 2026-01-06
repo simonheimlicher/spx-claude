@@ -20,11 +20,11 @@ allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 
 ## Python Tooling
 
-| Level         | Tools                                      | Speed   |
-| ------------- | ------------------------------------------ | ------- |
-| 1: Unit       | pytest, tmp_path, dependency injection     | <100ms  |
-| 2: Integration | pytest + Docker/Colima, real binaries     | <1s     |
-| 3: E2E        | pytest + real services, test accounts     | <10s    |
+| Level          | Tools                                  | Speed  |
+| -------------- | -------------------------------------- | ------ |
+| 1: Unit        | pytest, tmp_path, dependency injection | <100ms |
+| 2: Integration | pytest + Docker/Colima, real binaries  | <1s    |
+| 3: E2E         | pytest + real services, test accounts  | <10s   |
 
 ---
 
@@ -321,12 +321,12 @@ def test_files_synced():
 
 ## Quick Reference
 
-| Pattern      | Level 1                         | Level 2                | Level 3                    |
-| ------------ | ------------------------------- | ---------------------- | -------------------------- |
-| Dependencies | Injected callables/dataclasses  | Real via harness       | Real via credentials       |
-| Data         | Factories + tmp_path            | Fixtures + harness     | Test accounts              |
-| Speed        | <100ms                          | <1s                    | <10s                       |
-| CI           | Every commit                    | Every commit           | Nightly/pre-release        |
+| Pattern      | Level 1                        | Level 2            | Level 3              |
+| ------------ | ------------------------------ | ------------------ | -------------------- |
+| Dependencies | Injected callables/dataclasses | Real via harness   | Real via credentials |
+| Data         | Factories + tmp_path           | Fixtures + harness | Test accounts        |
+| Speed        | <100ms                         | <1s                | <10s                 |
+| CI           | Every commit                   | Every commit       | Nightly/pre-release  |
 
 ---
 

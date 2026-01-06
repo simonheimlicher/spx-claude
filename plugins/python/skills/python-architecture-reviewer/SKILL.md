@@ -24,27 +24,31 @@ Review ADRs against python-test principles. Point out what violates principles, 
 From /python-test:
 
 **Level definitions:**
+
 - Level 1: Pure logic, no external dependencies
 - Level 2: Real service running locally (Docker/VM/localhost) - ONLY if service can run locally
 - Level 3: Real internet service (for SaaS APIs)
 
 **Critical rule:**
+
 - SaaS services (Trakt, GitHub, Stripe, Auth0, etc.) have **NO Level 2**
 - Only services that can run locally (PostgreSQL, Redis, etc.) have Level 2
 
 **Mocking prohibition:**
+
 - NO `unittest.mock.patch` for external services
 - NO `respx.mock` for internet APIs
 - NO "Mock at boundary" language for external services
 - Use dependency injection with Protocol interfaces instead
 
 **Reality principle:**
+
 - "Reality is the oracle, not mocks"
 - Tests must verify behavior against real systems at appropriate levels
 
 ## Output Format
 
-```markdown
+````markdown
 # ARCHITECTURE REVIEW
 
 **Decision:** [APPROVED | REJECTED]
@@ -60,9 +64,11 @@ From /python-test:
 **Why this fails:** {Direct explanation}
 
 **Correct approach:**
+
 ```{language}
 {Show what the architecture should be}
 ```
+````
 
 ---
 
@@ -85,7 +91,8 @@ From /python-test:
 
 {If REJECTED: "Revise and resubmit"}
 {If APPROVED: "Architecture meets standards"}
-```
+
+````
 
 ## What to Avoid
 
@@ -128,7 +135,7 @@ Trakt.tv is a SaaS service that cannot run locally. python-test states:
 ```markdown
 | List operations | 1 (Unit) | DI with TraktListProvider protocol |
 | List operations | 3 (Internet) | Real Trakt API with test account |
-```
+````
 
 ---
 
@@ -142,6 +149,7 @@ Testing Principles section says "Mock at the PyTrakt API boundary" - this violat
 **Correct approach:**
 
 Use dependency injection:
+
 ```python
 class TraktListProvider(Protocol):
     def __call__(self, list_name: str, username: str) -> Any | None: ...
@@ -170,6 +178,7 @@ class TraktListProvider(Protocol):
 ---
 
 Revise and resubmit.
+
 ```
 
 ## Key Principles
@@ -183,3 +192,4 @@ Revise and resubmit.
 ---
 
 *Review with authority from expertise, not role play.*
+```

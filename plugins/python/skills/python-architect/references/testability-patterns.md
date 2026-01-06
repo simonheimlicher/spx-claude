@@ -21,6 +21,7 @@ Different situations call for different tests. Start by understanding the situat
 **What you need**: A test with a KNOWN input and EXPECTED output that you can step through in a debugger.
 
 **Example**:
+
 ```python
 def test_parse_user_basic() -> None:
     """Debugging: Can I step through parse_user with a known input?"""
@@ -44,6 +45,7 @@ def test_parse_user_basic() -> None:
 **What you need**: A regression test that captures the exact scenario that caused the bug.
 
 **Example**:
+
 ```python
 def test_parse_user_handles_unicode_name() -> None:
     """Regression: Bug #42 - Unicode names were truncated."""
@@ -67,6 +69,7 @@ def test_parse_user_handles_unicode_name() -> None:
 **What you need**: Tests that serve as executable documentation of correct behavior.
 
 **Example**:
+
 ```python
 class TestUserValidation:
     """Documents: What inputs are valid/invalid for user creation?"""
@@ -95,6 +98,7 @@ class TestUserValidation:
 **What you need**: Property-based tests that explore the input space automatically.
 
 **Example**:
+
 ```python
 from hypothesis import given, strategies as st
 
@@ -119,6 +123,7 @@ def test_parse_user_never_crashes_on_any_name(name: str) -> None:
 **What you need**: Integration tests that exercise the real interactions.
 
 **Example**:
+
 ```python
 def test_user_service_creates_and_retrieves_user(
     db_connection: Connection,
@@ -145,14 +150,14 @@ def test_user_service_creates_and_retrieves_user(
 
 Given a situation, select the appropriate test type.
 
-| Situation | Test Type | Characteristics |
-|-----------|-----------|-----------------|
-| Debugging during development | Named unit test | Known input, expected output, debuggable |
-| Preventing known bugs | Regression test | Documents the bug, exact failure scenario |
-| Documenting behavior | Golden/known-good tests | Executable specification |
-| Exploring edge cases | Property-based (Hypothesis) | Random inputs, invariant assertions |
-| Verifying integration | Integration test | Real/realistic components |
-| Proving E2E flow | E2E test | Full system, external interfaces |
+| Situation                    | Test Type                   | Characteristics                           |
+| ---------------------------- | --------------------------- | ----------------------------------------- |
+| Debugging during development | Named unit test             | Known input, expected output, debuggable  |
+| Preventing known bugs        | Regression test             | Documents the bug, exact failure scenario |
+| Documenting behavior         | Golden/known-good tests     | Executable specification                  |
+| Exploring edge cases         | Property-based (Hypothesis) | Random inputs, invariant assertions       |
+| Verifying integration        | Integration test            | Real/realistic components                 |
+| Proving E2E flow             | E2E test                    | Full system, external interfaces          |
 
 ---
 

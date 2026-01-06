@@ -4,13 +4,13 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|-------|
-| **Status** | `APPROVED` / `REJECTED` |
-| **Files Reviewed** | [count] |
-| **Critical Issues** | [count] |
-| **Warnings** | [count] |
-| **Tests Passed** | [passed]/[total] |
+| Metric              | Value                   |
+| ------------------- | ----------------------- |
+| **Status**          | `APPROVED` / `REJECTED` |
+| **Files Reviewed**  | [count]                 |
+| **Critical Issues** | [count]                 |
+| **Warnings**        | [count]                 |
+| **Tests Passed**    | [passed]/[total]        |
 
 ## Verdict
 
@@ -30,9 +30,9 @@
 
 **Issues Found**: [count]
 
-| File | Line | Error Code | Message |
-|------|------|------------|---------|
-| `path/to/file.py` | 42 | `[error-code]` | Description |
+| File              | Line | Error Code     | Message     |
+| ----------------- | ---- | -------------- | ----------- |
+| `path/to/file.py` | 42   | `[error-code]` | Description |
 
 ### Ruff (Linting & Security)
 
@@ -44,9 +44,9 @@
 
 **Issues Found**: [count]
 
-| File | Line | Rule | Message |
-|------|------|------|---------|
-| `path/to/file.py` | 42 | `S101` | Description |
+| File              | Line | Rule   | Message     |
+| ----------------- | ---- | ------ | ----------- |
+| `path/to/file.py` | 42   | `S101` | Description |
 
 ### Semgrep (Security Patterns)
 
@@ -58,9 +58,9 @@
 
 **Issues Found**: [count]
 
-| File | Line | Rule ID | Message |
-|------|------|---------|---------|
-| `path/to/file.py` | 42 | `no-eval-exec` | Description |
+| File              | Line | Rule ID        | Message     |
+| ----------------- | ---- | -------------- | ----------- |
+| `path/to/file.py` | 42   | `no-eval-exec` | Description |
 
 ---
 
@@ -74,17 +74,17 @@
 [pytest output here]
 ```
 
-| Metric | Value |
-|--------|-------|
-| **Passed** | [count] |
-| **Failed** | [count] |
+| Metric      | Value   |
+| ----------- | ------- |
+| **Passed**  | [count] |
+| **Failed**  | [count] |
 | **Skipped** | [count] |
-| **Errors** | [count] |
+| **Errors**  | [count] |
 
 ### Failed Tests
 
-| Test | File | Reason |
-|------|------|--------|
+| Test        | File                    | Reason               |
+| ----------- | ----------------------- | -------------------- |
 | `test_name` | `tests/test_file.py:42` | Brief failure reason |
 
 ---
@@ -99,6 +99,7 @@
 - [ ] Clear module boundaries
 
 **Observations**:
+
 - [Observation 1]
 - [Observation 2]
 
@@ -110,6 +111,7 @@
 - [ ] No magic numbers or hardcoded values
 
 **Observations**:
+
 - [Observation 1]
 - [Observation 2]
 
@@ -121,6 +123,7 @@
 - [ ] Resource cleanup in finally blocks or context managers
 
 **Observations**:
+
 - [Observation 1]
 - [Observation 2]
 
@@ -138,6 +141,7 @@
 - **Category**: Type Error / Security / Test Failure / Logic Error
 - **Description**: [Clear description of the issue]
 - **Suggested Fix**:
+
   ```python
   # Before
   [problematic code]
@@ -163,4 +167,4 @@
 
 ---
 
-*Review completed: [timestamp]*
+_Review completed: [timestamp]_

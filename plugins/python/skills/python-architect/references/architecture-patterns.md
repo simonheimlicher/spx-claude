@@ -14,13 +14,13 @@ Structure code around the business domain, not technical concerns.
 
 ### Building Blocks
 
-| Concept | Definition | Example |
-|---------|------------|---------|
-| **Entity** | Has identity, mutable | `User`, `Order` |
-| **Value Object** | No identity, immutable | `Money`, `Address` |
-| **Aggregate** | Cluster of entities with root | `Order` (with `OrderLines`) |
-| **Repository** | Persistence abstraction | `UserRepository` |
-| **Service** | Stateless domain logic | `PaymentService` |
+| Concept          | Definition                    | Example                     |
+| ---------------- | ----------------------------- | --------------------------- |
+| **Entity**       | Has identity, mutable         | `User`, `Order`             |
+| **Value Object** | No identity, immutable        | `Money`, `Address`          |
+| **Aggregate**    | Cluster of entities with root | `Order` (with `OrderLines`) |
+| **Repository**   | Persistence abstraction       | `UserRepository`            |
+| **Service**      | Stateless domain logic        | `PaymentService`            |
 
 ### Entity
 
@@ -341,6 +341,7 @@ Prefer pure functions for business logic.
 ### What is Pure?
 
 A pure function:
+
 - Returns the same output for the same input
 - Has no side effects (no I/O, no mutation)
 

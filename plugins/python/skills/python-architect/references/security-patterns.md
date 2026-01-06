@@ -14,12 +14,12 @@ Different applications have different threat models. The ADR must specify which 
 
 ### Application Context Guide
 
-| Application Type | Trust Boundary | User Input | External Services |
-|------------------|----------------|------------|-------------------|
-| **CLI tool** | User invoking the tool is trusted | Validate format, not intent | Verify SSL |
-| **Web service** | All input is untrusted | Validate everything | Verify SSL, authenticate |
-| **Internal script** | Depends on deployment | Validate format | Depends on network |
-| **Library/package** | Consumers are untrusted | Validate everything | N/A |
+| Application Type    | Trust Boundary                    | User Input                  | External Services        |
+| ------------------- | --------------------------------- | --------------------------- | ------------------------ |
+| **CLI tool**        | User invoking the tool is trusted | Validate format, not intent | Verify SSL               |
+| **Web service**     | All input is untrusted            | Validate everything         | Verify SSL, authenticate |
+| **Internal script** | Depends on deployment             | Validate format             | Depends on network       |
+| **Library/package** | Consumers are untrusted           | Validate everything         | N/A                      |
 
 ### Example ADR Section
 
@@ -267,12 +267,12 @@ result = eval(user_expr)  # Can still be exploited
 
 ### Alternatives
 
-| Need | Solution |
-|------|----------|
-| Dynamic dispatch | Dictionary of functions |
-| User expressions | Domain-specific parser |
-| Plugin system | importlib with allowlist |
-| Template rendering | Jinja2 with sandbox |
+| Need               | Solution                 |
+| ------------------ | ------------------------ |
+| Dynamic dispatch   | Dictionary of functions  |
+| User expressions   | Domain-specific parser   |
+| Plugin system      | importlib with allowlist |
+| Template rendering | Jinja2 with sandbox      |
 
 ### Dynamic Dispatch Example
 
@@ -424,12 +424,12 @@ obj = pickle.loads(user_data)  # Can execute arbitrary code!
 
 ### Safe Alternatives
 
-| Need | Solution |
-|------|----------|
-| Data serialization | JSON, MessagePack |
-| Python objects | Pydantic models |
-| Caching | JSON with schema validation |
-| Internal IPC | Protocol Buffers, MessagePack |
+| Need               | Solution                      |
+| ------------------ | ----------------------------- |
+| Data serialization | JSON, MessagePack             |
+| Python objects     | Pydantic models               |
+| Caching            | JSON with schema validation   |
+| Internal IPC       | Protocol Buffers, MessagePack |
 
 ### When Pickle is Acceptable
 

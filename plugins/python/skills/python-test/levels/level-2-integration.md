@@ -6,11 +6,11 @@ Level 2 tests verify that real tools work together in a controlled local environ
 
 ## What Level 2 Provides
 
-| Component   | What's Real              | What's Controlled       |
-| ----------- | ------------------------ | ----------------------- |
-| Database    | Real Postgres in Docker  | Ephemeral test database |
-| Binaries    | Real rclone/hugo binary  | Local backend           |
-| Filesystem  | Real Linux filesystem    | Temp directories        |
+| Component  | What's Real             | What's Controlled       |
+| ---------- | ----------------------- | ----------------------- |
+| Database   | Real Postgres in Docker | Ephemeral test database |
+| Binaries   | Real rclone/hugo binary | Local backend           |
+| Filesystem | Real Linux filesystem   | Temp directories        |
 
 ## Why Level 2 Exists
 
@@ -200,12 +200,12 @@ class TestDatabaseErrors:
 
 ## When to Escalate to Level 3
 
-| Behavior                      | Level 2 Sufficient? | Why                          |
-| ----------------------------- | ------------------- | ---------------------------- |
-| rclone syncs files            | ✅ Yes              | Local backend works same     |
-| Postgres queries work         | ✅ Yes              | Real database                |
-| Dropbox OAuth works           | ❌ No               | Need real Dropbox            |
-| Rate limiting handled         | ❌ No               | Local never rate limits      |
+| Behavior              | Level 2 Sufficient? | Why                      |
+| --------------------- | ------------------- | ------------------------ |
+| rclone syncs files    | ✅ Yes              | Local backend works same |
+| Postgres queries work | ✅ Yes              | Real database            |
+| Dropbox OAuth works   | ❌ No               | Need real Dropbox        |
+| Rate limiting handled | ❌ No               | Local never rate limits  |
 
 ---
 
@@ -263,4 +263,4 @@ def test_command_has_checksum_flag():
 
 ---
 
-*Level 2 is where theory meets reality. If it works here, you have real confidence.*
+_Level 2 is where theory meets reality. If it works here, you have real confidence._

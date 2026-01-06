@@ -6,11 +6,11 @@ Level 3 tests verify that real remote services work correctly using dedicated te
 
 ## What Level 3 Provides
 
-| Component    | What's Real             | What's Controlled              |
-| ------------ | ----------------------- | ------------------------------ |
-| Dropbox API  | Real Dropbox service    | Dedicated test account         |
-| OAuth        | Real authentication     | Test credentials from secrets  |
-| Rate limits  | Real rate limiting      | May need handling in tests     |
+| Component   | What's Real          | What's Controlled             |
+| ----------- | -------------------- | ----------------------------- |
+| Dropbox API | Real Dropbox service | Dedicated test account        |
+| OAuth       | Real authentication  | Test credentials from secrets |
+| Rate limits | Real rate limiting   | May need handling in tests    |
 
 ## Why Level 3 Exists
 
@@ -222,7 +222,7 @@ jobs:
 
   e2e-tests:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'  # Only on main
+    if: github.ref == 'refs/heads/main' # Only on main
     steps:
       - run: pytest tests/ -m "e2e"
         env:
@@ -270,4 +270,4 @@ def test_sync(dropbox_test_folder, dropbox_config):  # Fixture cleans up
 
 ---
 
-*Level 3 is where you prove the real world works. Test accounts give confidence without risking production.*
+_Level 3 is where you prove the real world works. Test accounts give confidence without risking production._

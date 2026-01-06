@@ -8,20 +8,20 @@ Level 1 tests verify our code logic is correct without any external dependencies
 
 These are **NOT** external dependencies—they're part of the runtime environment:
 
-| Tool                     | Why It's OK                                          |
-| ------------------------ | ---------------------------------------------------- |
-| `echo`, `env`, `cat`     | Foundational OS primitives, always available         |
-| `subprocess.run()`       | Testing OUR command-building logic                   |
-| `tempfile`, `tmp_path`   | Ephemeral, reentrant, no persistent state            |
-| `pathlib.Path`           | Standard library file operations                     |
+| Tool                   | Why It's OK                                  |
+| ---------------------- | -------------------------------------------- |
+| `echo`, `env`, `cat`   | Foundational OS primitives, always available |
+| `subprocess.run()`     | Testing OUR command-building logic           |
+| `tempfile`, `tmp_path` | Ephemeral, reentrant, no persistent state    |
+| `pathlib.Path`         | Standard library file operations             |
 
 ## What IS an External Dependency
 
-| Tool    | Why It's Level 2+                  |
-| ------- | ---------------------------------- |
-| rclone  | External binary with own behavior  |
-| Docker  | Requires daemon running            |
-| Postgres| Requires server running            |
+| Tool     | Why It's Level 2+                 |
+| -------- | --------------------------------- |
+| rclone   | External binary with own behavior |
+| Docker   | Requires daemon running           |
+| Postgres | Requires server running           |
 
 ---
 
@@ -128,12 +128,12 @@ class TestFileOperations:
 
 ## When to Escalate to Level 2
 
-| Behavior                    | Level 1 Sufficient? | Why                                |
-| --------------------------- | ------------------- | ---------------------------------- |
-| Command is well-formed      | ✅ Yes              | Pure function, can verify structure|
-| rclone accepts the command  | ❌ No               | Need real rclone to verify         |
-| Files actually sync         | ❌ No               | Need real rclone execution         |
-| Config file parsed correctly| ✅ Yes              | Pure parsing logic                 |
+| Behavior                     | Level 1 Sufficient? | Why                                 |
+| ---------------------------- | ------------------- | ----------------------------------- |
+| Command is well-formed       | ✅ Yes              | Pure function, can verify structure |
+| rclone accepts the command   | ❌ No               | Need real rclone to verify          |
+| Files actually sync          | ❌ No               | Need real rclone execution          |
+| Config file parsed correctly | ✅ Yes              | Pure parsing logic                  |
 
 ---
 
@@ -172,4 +172,4 @@ def test_sync_command_includes_source_and_dest():
 
 ---
 
-*Level 1 is the foundation. Get this right, and higher levels become verification, not debugging.*
+_Level 1 is the foundation. Get this right, and higher levels become verification, not debugging._

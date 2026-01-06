@@ -55,11 +55,11 @@ You must complete ALL work items before returning DONE. A single completed item 
 
 You MUST return one of these values:
 
-| Return    | Meaning                      | When                                    |
-| --------- | ---------------------------- | --------------------------------------- |
-| `CONTINUE`| Item done, more items remain | After APPROVED, `spx status` shows more |
-| `DONE`    | All items complete           | `spx status` shows no OPEN/IN_PROGRESS  |
-| `BLOCKED` | Cannot proceed               | Reviewer returned BLOCKED               |
+| Return     | Meaning                      | When                                    |
+| ---------- | ---------------------------- | --------------------------------------- |
+| `CONTINUE` | Item done, more items remain | After APPROVED, `spx status` shows more |
+| `DONE`     | All items complete           | `spx status` shows no OPEN/IN_PROGRESS  |
+| `BLOCKED`  | Cannot proceed               | Reviewer returned BLOCKED               |
 
 ### Phase -1: Find Next Work Item
 
@@ -100,11 +100,11 @@ Before writing any test, you MUST:
 
 ### Testing Levels Quick Reference
 
-| Level           | When to Use                    | Key Pattern            |
-| --------------- | ------------------------------ | ---------------------- |
-| 1 (Unit)        | Pure logic, command building   | Dependency injection   |
-| 2 (Integration) | Real binaries, Docker/VM       | Test harnesses         |
-| 3 (E2E)         | Real services, OAuth           | Test account fixtures  |
+| Level           | When to Use                  | Key Pattern           |
+| --------------- | ---------------------------- | --------------------- |
+| 1 (Unit)        | Pure logic, command building | Dependency injection  |
+| 2 (Integration) | Real binaries, Docker/VM     | Test harnesses        |
+| 3 (E2E)         | Real services, OAuth         | Test account fixtures |
 
 ### NO MOCKING — Use Dependency Injection Instead
 
@@ -309,13 +309,13 @@ Re-invoke `/python-reviewer`.
 
 ### Handling Reviewer Verdicts
 
-| Verdict       | Action                                                         |
-| ------------- | -------------------------------------------------------------- |
-| **APPROVED**  | Reviewer committed. Run `spx status` to check for more items.  |
-| **REJECTED**  | Parse feedback, remediate issues, re-invoke `/python-reviewer`.|
-| **CONDITIONAL**| Add noqa comments per feedback, re-invoke `/python-reviewer`. |
-| **BLOCKED**   | Return `BLOCKED` to orchestrator.                              |
-| **ABORT**     | Invoke `/python-architect` to revise ADRs, restart.            |
+| Verdict         | Action                                                          |
+| --------------- | --------------------------------------------------------------- |
+| **APPROVED**    | Reviewer committed. Run `spx status` to check for more items.   |
+| **REJECTED**    | Parse feedback, remediate issues, re-invoke `/python-reviewer`. |
+| **CONDITIONAL** | Add noqa comments per feedback, re-invoke `/python-reviewer`.   |
+| **BLOCKED**     | Return `BLOCKED` to orchestrator.                               |
+| **ABORT**       | Invoke `/python-architect` to revise ADRs, restart.             |
 
 ### Max Iterations
 
@@ -331,28 +331,35 @@ If the coder↔reviewer loop exceeds **10 iterations**, return `BLOCKED`.
 ## Result: CONTINUE
 
 ### Completed Work Item
+
 {work_item_path}
 
 ### Commit
+
 {commit_hash} - {commit_message}
 
 ### Next
+
 More work items remain. Run `/python-auto` again to continue.
 ```
 
 ### On APPROVED (no more items)
 
-```markdown
+````markdown
 ## Result: DONE
 
 ### Summary
+
 All work items have been implemented and approved.
 
 ### Verification Command
+
 ```bash
 uv run --extra dev pytest tests/ -v
 ```
-```
+````
+
+````
 
 ### On BLOCKED
 
@@ -364,8 +371,8 @@ uv run --extra dev pytest tests/ -v
 
 ### Reason
 {infrastructure issue or max iterations}
-```
+````
 
 ---
 
-*Remember: Your code will face an adversarial reviewer with zero tolerance. Write code that will survive that scrutiny.*
+_Remember: Your code will face an adversarial reviewer with zero tolerance. Write code that will survive that scrutiny._

@@ -32,13 +32,13 @@ When reviewing tests, you MUST verify:
 
 ### Rejection Criteria for Tests
 
-| Violation | Example | Verdict |
-|-----------|---------|---------|
-| Uses mocking | `@patch("subprocess.run")` | REJECTED |
-| Tests implementation | `mock.assert_called_with(...)` | REJECTED |
-| Wrong level | Unit test for Dropbox OAuth | REJECTED |
-| No escalation justification | Level 3 without explanation | REJECTED |
-| Arbitrary test data | `"test@example.com"` hardcoded | REJECTED |
+| Violation                   | Example                        | Verdict  |
+| --------------------------- | ------------------------------ | -------- |
+| Uses mocking                | `@patch("subprocess.run")`     | REJECTED |
+| Tests implementation        | `mock.assert_called_with(...)` | REJECTED |
+| Wrong level                 | Unit test for Dropbox OAuth    | REJECTED |
+| No escalation justification | Level 3 without explanation    | REJECTED |
+| Arbitrary test data         | `"test@example.com"` hardcoded | REJECTED |
 
 ### What to Look For
 
@@ -193,12 +193,12 @@ grep -r "colima\|docker\|postgres\|redis" {test_dir}/conftest.py
 
 Common infrastructure patterns:
 
-| Marker/Pattern                      | Infrastructure | How to Start                        |
-|-------------------------------------|----------------|-------------------------------------|
-| `@pytest.mark.vm_required`          | Colima VM      | `colima start --profile {profile}`  |
-| `@pytest.mark.database`             | PostgreSQL     | `docker compose up -d postgres`     |
-| `@pytest.mark.redis`                | Redis          | `docker compose up -d redis`        |
-| ZFS fixtures                        | Colima + ZFS   | `colima start --profile zfs-test`   |
+| Marker/Pattern             | Infrastructure | How to Start                       |
+| -------------------------- | -------------- | ---------------------------------- |
+| `@pytest.mark.vm_required` | Colima VM      | `colima start --profile {profile}` |
+| `@pytest.mark.database`    | PostgreSQL     | `docker compose up -d postgres`    |
+| `@pytest.mark.redis`       | Redis          | `docker compose up -d redis`       |
+| ZFS fixtures               | Colima + ZFS   | `colima start --profile zfs-test`  |
 
 #### 2.2 Provision Infrastructure
 
@@ -283,13 +283,13 @@ CLOUD_MIRROR_USE_VM=1 uv run --extra dev pytest {test_dir} -v --tb=short --cov={
 
 > **ABSENCE OF EVIDENCE IS EVIDENCE OF VIOLATION.**
 
-| Scenario | Verdict | Rationale |
-|----------|---------|-----------|
-| pytest-cov installed, coverage ≥80% | PASS | Verified |
-| pytest-cov installed, coverage <80% | WARNING | Note in report, not blocking |
-| pytest-cov installed, coverage = 0% | REJECTED | No tests covering code |
-| pytest-cov NOT installed | **REJECTED** | Coverage unverifiable = 0% assumed |
-| pytest fails to run | **REJECTED** | Tests unverifiable = failure assumed |
+| Scenario                            | Verdict      | Rationale                            |
+| ----------------------------------- | ------------ | ------------------------------------ |
+| pytest-cov installed, coverage ≥80% | PASS         | Verified                             |
+| pytest-cov installed, coverage <80% | WARNING      | Note in report, not blocking         |
+| pytest-cov installed, coverage = 0% | REJECTED     | No tests covering code               |
+| pytest-cov NOT installed            | **REJECTED** | Coverage unverifiable = 0% assumed   |
+| pytest fails to run                 | **REJECTED** | Tests unverifiable = failure assumed |
 
 **If pytest-cov is missing**:
 
@@ -303,11 +303,11 @@ CLOUD_MIRROR_USE_VM=1 uv run --extra dev pytest {test_dir} -v --tb=short --cov={
 
 Distinguish between:
 
-| Failure Type                 | Example                                  | Verdict                    |
-|------------------------------|------------------------------------------|----------------------------|
-| **Code defect**              | Assertion failed, wrong return value     | REJECTED                   |
-| **Infrastructure not ready** | "Connection refused", VM not responding  | BLOCKED (retry after fix)  |
-| **Missing dependency**       | Import error for test framework          | REJECTED (dev deps issue)  |
+| Failure Type                 | Example                                 | Verdict                   |
+| ---------------------------- | --------------------------------------- | ------------------------- |
+| **Code defect**              | Assertion failed, wrong return value    | REJECTED                  |
+| **Infrastructure not ready** | "Connection refused", VM not responding | BLOCKED (retry after fix) |
+| **Missing dependency**       | Import error for test framework         | REJECTED (dev deps issue) |
 
 ### Phase 4: Manual Code Review
 
@@ -395,12 +395,12 @@ Read ALL code under review. Check each item:
 
 Based on your findings, determine the verdict:
 
-| Verdict         | Criteria                                                    | Next Phase                |
-|-----------------|-------------------------------------------------------------|---------------------------|
-| **APPROVED**    | All checks pass, no issues                                  | Phase 6 (Graduation)      |
-| **CONDITIONAL** | Only false-positive violations needing `# noqa` comments    | Return to coder           |
-| **REJECTED**    | Real bugs, security issues, test failures, design problems  | Return to coder           |
-| **BLOCKED**     | Infrastructure cannot be provisioned                        | Fix environment, re-run   |
+| Verdict         | Criteria                                                   | Next Phase              |
+| --------------- | ---------------------------------------------------------- | ----------------------- |
+| **APPROVED**    | All checks pass, no issues                                 | Phase 6 (Graduation)    |
+| **CONDITIONAL** | Only false-positive violations needing `# noqa` comments   | Return to coder         |
+| **REJECTED**    | Real bugs, security issues, test failures, design problems | Return to coder         |
+| **BLOCKED**     | Infrastructure cannot be provisioned                       | Fix environment, re-run |
 
 **If verdict is APPROVED**: Continue to Phase 6.
 **If verdict is NOT APPROVED**: Skip to "Rejection Feedback" section below.
@@ -424,12 +424,12 @@ find specs/ -path "*/tests/*.py" -name "test_*.py"
 
 Map test types to destinations:
 
-| Test Type                      | Source Pattern                    | Destination                |
-|--------------------------------|-----------------------------------|----------------------------|
-| Unit tests                     | `test_*.py` (no fixtures)         | `tests/unit/`              |
-| Integration tests              | Uses database/API fixtures        | `tests/integration/`       |
-| E2E tests                      | Full system tests                 | `tests/e2e/`               |
-| Infrastructure-dependent       | `@pytest.mark.vm_required`        | `tests/integration/`       |
+| Test Type                | Source Pattern             | Destination          |
+| ------------------------ | -------------------------- | -------------------- |
+| Unit tests               | `test_*.py` (no fixtures)  | `tests/unit/`        |
+| Integration tests        | Uses database/API fixtures | `tests/integration/` |
+| E2E tests                | Full system tests          | `tests/e2e/`         |
+| Infrastructure-dependent | `@pytest.mark.vm_required` | `tests/integration/` |
 
 #### 6.2 Move Tests
 
@@ -477,17 +477,17 @@ Create `specs/doing/.../story-XX/tests/DONE.md`:
 
 ## Verification Results
 
-| Tool     | Status | Details              |
-|----------|--------|----------------------|
-| Mypy     | PASS   | 0 errors             |
-| Ruff     | PASS   | 0 violations         |
-| Semgrep  | PASS   | 0 findings           |
-| pytest   | PASS   | {X}/{X} tests, {Y}% coverage |
+| Tool    | Status | Details                      |
+| ------- | ------ | ---------------------------- |
+| Mypy    | PASS   | 0 errors                     |
+| Ruff    | PASS   | 0 violations                 |
+| Semgrep | PASS   | 0 findings                   |
+| pytest  | PASS   | {X}/{X} tests, {Y}% coverage |
 
 ## Graduated Tests
 
 | Requirement | Test Location                              |
-|-------------|--------------------------------------------|
+| ----------- | ------------------------------------------ |
 | {FR1}       | `tests/unit/test_xxx.py::test_name`        |
 | {FR2}       | `tests/integration/test_yyy.py::test_name` |
 
@@ -509,9 +509,9 @@ After creating DONE.md, report completion:
 
 ### Graduation
 
-| Action | Details |
-|--------|---------|
-| Tests graduated | {list of test files moved} |
+| Action          | Details                                  |
+| --------------- | ---------------------------------------- |
+| Tests graduated | {list of test files moved}               |
 | DONE.md created | `specs/doing/.../story-XX/tests/DONE.md` |
 
 ### Verification
@@ -618,10 +618,10 @@ When verdict is **REJECTED** or **CONDITIONAL**, provide actionable feedback to 
 
 ### Issues Found
 
-| # | File:Line | Category | Issue | Suggested Fix |
-|---|-----------|----------|-------|---------------|
-| 1 | `foo.py:42` | Type Error | Missing return type | Add `-> int` |
-| 2 | `bar.py:17` | Security | Bare except | Catch specific exception |
+| #   | File:Line   | Category   | Issue               | Suggested Fix            |
+| --- | ----------- | ---------- | ------------------- | ------------------------ |
+| 1   | `foo.py:42` | Type Error | Missing return type | Add `-> int`             |
+| 2   | `bar.py:17` | Security   | Bare except         | Catch specific exception |
 
 ### Tool Outputs
 
@@ -644,12 +644,12 @@ Reports are only created on APPROVED (as DONE.md). Fix issues and resubmit.
 
 Use one of four verdicts:
 
-| Verdict         | When to Use                                                                         | Next Step                                              |
-|-----------------|-------------------------------------------------------------------------------------|--------------------------------------------------------|
-| **APPROVED**    | All checks pass, no issues found                                                    | Graduate tests, create DONE.md, work item complete     |
-| **CONDITIONAL** | Only false-positive violations that require `# noqa` comments with justification    | Coder adds noqa comments, then re-review               |
-| **REJECTED**    | Real bugs, security issues, test failures, or design problems                       | Coder fixes issues, then re-review                     |
-| **BLOCKED**     | Infrastructure cannot be provisioned; review environment issue, not code defect     | Fix environment, then re-run review                    |
+| Verdict         | When to Use                                                                      | Next Step                                          |
+| --------------- | -------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **APPROVED**    | All checks pass, no issues found                                                 | Graduate tests, create DONE.md, work item complete |
+| **CONDITIONAL** | Only false-positive violations that require `# noqa` comments with justification | Coder adds noqa comments, then re-review           |
+| **REJECTED**    | Real bugs, security issues, test failures, or design problems                    | Coder fixes issues, then re-review                 |
+| **BLOCKED**     | Infrastructure cannot be provisioned; review environment issue, not code defect  | Fix environment, then re-run review                |
 
 ### APPROVED Criteria
 
@@ -677,19 +677,19 @@ Use CONDITIONAL when:
 
 The code is **REJECTED** if ANY of these are true:
 
-| Criterion | Tool/Check |
-|---------|------------|
-| Any real type error | Mypy |
-| Any true-positive security violation | Ruff S rules |
-| Any true-positive bug pattern | Ruff B rules |
-| Any true-positive security finding | Semgrep |
-| Any test failure | pytest |
-| Missing type annotations on public functions | Manual |
-| Bare `except:` clauses | Manual/Semgrep |
-| Hardcoded secrets detected | Manual/Semgrep |
-| `eval()` or `exec()` without justification | Manual/Semgrep |
-| `shell=True` with untrusted input | Manual/Semgrep |
-| Design or architectural problems | Manual |
+| Criterion                                    | Tool/Check     |
+| -------------------------------------------- | -------------- |
+| Any real type error                          | Mypy           |
+| Any true-positive security violation         | Ruff S rules   |
+| Any true-positive bug pattern                | Ruff B rules   |
+| Any true-positive security finding           | Semgrep        |
+| Any test failure                             | pytest         |
+| Missing type annotations on public functions | Manual         |
+| Bare `except:` clauses                       | Manual/Semgrep |
+| Hardcoded secrets detected                   | Manual/Semgrep |
+| `eval()` or `exec()` without justification   | Manual/Semgrep |
+| `shell=True` with untrusted input            | Manual/Semgrep |
+| Design or architectural problems             | Manual         |
 
 ### BLOCKED Criteria
 
@@ -748,12 +748,12 @@ result = subprocess.run(cmd)  # noqa: S603
 
 ### Application Context Guide
 
-| Application Type | Trust Boundary | S603/S607 | Hardcoded Paths |
-|------------------|----------------|-----------|-----------------|
-| CLI tool (user-invoked) | User is trusted | Usually false positive | Often intentional |
-| Web service | All input untrusted | Real issue | Real issue |
-| Internal script | Depends on deployment | Analyze case-by-case | Usually OK |
-| Library/package | Consumers untrusted | Real issue | Avoid |
+| Application Type        | Trust Boundary        | S603/S607              | Hardcoded Paths   |
+| ----------------------- | --------------------- | ---------------------- | ----------------- |
+| CLI tool (user-invoked) | User is trusted       | Usually false positive | Often intentional |
+| Web service             | All input untrusted   | Real issue             | Real issue        |
+| Internal script         | Depends on deployment | Analyze case-by-case   | Usually OK        |
+| Library/package         | Consumers untrusted   | Real issue             | Avoid             |
 
 ---
 
@@ -775,7 +775,7 @@ Use the template in `templates/review_report.md`. The file must include:
 
 ### Conversation Summary Structure
 
-```markdown
+````markdown
 ## Review: {target}
 
 ### Verdict: [APPROVED / CONDITIONAL / REJECTED]
@@ -784,18 +784,18 @@ Use the template in `templates/review_report.md`. The file must include:
 
 ### Static Analysis
 
-| Tool | Status | Issues |
-|------|--------|--------|
-| Mypy | PASS/FAIL | [count] errors |
-| Ruff | PASS/FAIL | [count] blocking, [count] warnings |
-| Semgrep | PASS/FAIL | [count] findings |
+| Tool    | Status    | Issues                             |
+| ------- | --------- | ---------------------------------- |
+| Mypy    | PASS/FAIL | [count] errors                     |
+| Ruff    | PASS/FAIL | [count] blocking, [count] warnings |
+| Semgrep | PASS/FAIL | [count] findings                   |
 
 ### Tests
 
-| Metric | Value |
-|--------|-------|
-| Passed | [count] |
-| Failed | [count] |
+| Metric   | Value      |
+| -------- | ---------- |
+| Passed   | [count]    |
+| Failed   | [count]    |
 | Coverage | [percent]% |
 
 ### Blocking Issues (if REJECTED)
@@ -804,6 +804,7 @@ Use the template in `templates/review_report.md`. The file must include:
    ```python
    # Suggested fix
    ```
+````
 
 ### Conditional Issues (if CONDITIONAL)
 
@@ -823,6 +824,7 @@ Full report: `reports/review_{name}_{timestamp}.md`
 → **REJECTED**: Coder remediates issues using feedback above, re-invokes `/python-reviewer`.
 → **CONDITIONAL**: Coder adds noqa comments per instructions, re-invokes `/python-reviewer`.
 → **BLOCKED**: Coder returns `BLOCKED` to orchestrator.
+
 ```
 
 **Note to coder**: This review is complete. Handle the verdict per the Review Loop Protocol.
@@ -857,3 +859,4 @@ Full report: `reports/review_{name}_{timestamp}.md`
 ---
 
 *Remember: Your job is to protect the codebase from defects. A rejected review that catches a bug is worth infinitely more than an approval that lets one through.*
+```
