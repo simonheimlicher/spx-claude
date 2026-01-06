@@ -301,11 +301,13 @@ These are your guiding principles. See `references/` for detailed patterns.
 # GOOD: Strict types with validation
 from pydantic import BaseModel, HttpUrl
 
+
 class Config(BaseModel):
     url: HttpUrl
     timeout: int
 
     model_config = {"frozen": True}
+
 
 # BAD: Loose types
 class Config:
@@ -327,8 +329,10 @@ See `references/type-system-patterns.md`.
 # GOOD: Dependencies as parameters
 from typing import Protocol
 
+
 class CommandRunner(Protocol):
     def run(self, cmd: list[str]) -> tuple[int, str, str]: ...
+
 
 def sync_files(
     source: Path,
@@ -339,8 +343,10 @@ def sync_files(
     returncode, stdout, stderr = runner.run(["rsync", str(source), str(dest)])
     return SyncResult(success=returncode == 0)
 
+
 # BAD: Hidden dependencies
 import subprocess
+
 
 def sync_files(source: Path, dest: Path) -> SyncResult:
     result = subprocess.run(["rsync", str(source), str(dest)])  # Hidden dependency
@@ -378,8 +384,10 @@ See `references/security-patterns.md`.
 # GOOD: Testable design with DI
 from typing import Protocol
 
+
 class PortFinder(Protocol):
     def get_available_port(self) -> int: ...
+
 
 def start_server(
     config: ServerConfig,
@@ -391,8 +399,10 @@ def start_server(
     runner.run(["server", "--port", str(port)])
     return ServerHandle(port=port)
 
+
 # BAD: Not testable without mocking
 import socket
+
 
 def start_server(config: ServerConfig) -> ServerHandle:
     sock = socket.socket()  # Can't control without mocking
@@ -551,4 +561,4 @@ For methodology, use the `spx` CLI (`spx status`, `spx next`).
 
 ---
 
-_Remember: Your decisions shape everything downstream. A well-designed architecture enables clean implementation. A flawed architecture causes downstream skills to abort. Design carefully._
+*Remember: Your decisions shape everything downstream. A well-designed architecture enables clean implementation. A flawed architecture causes downstream skills to abort. Design carefully.*

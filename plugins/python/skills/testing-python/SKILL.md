@@ -76,18 +76,22 @@ What am I testing?
 from dataclasses import dataclass
 from typing import Callable, Protocol
 
+
 class CommandRunner(Protocol):
     def run(self, cmd: list[str]) -> tuple[int, str, str]: ...
+
 
 @dataclass
 class SyncDependencies:
     run_command: CommandRunner
     get_env: Callable[[str], str | None] = os.environ.get
 
+
 def sync_to_remote(source: str, dest: str, deps: SyncDependencies) -> SyncResult:
     cmd = build_command(source, dest)
     returncode, stdout, stderr = deps.run_command.run(cmd)
     return SyncResult(success=returncode == 0)
+
 
 # Test with controlled implementation
 def test_sync_returns_success_on_zero_exit():
@@ -107,6 +111,7 @@ def test_command_includes_checksum_flag():
     cmd = build_rclone_command("/source", "remote:dest", checksum=True)
     assert "--checksum" in cmd
 
+
 def test_unicode_paths_preserved():
     cmd = build_rclone_command("/tank/фото", "remote:резервная")
     assert "/tank/фото" in cmd
@@ -121,6 +126,7 @@ import itertools
 
 _id_counter: Iterator[int] = itertools.count(1)
 
+
 @dataclass
 class AuditResultFactory:
     url: str = field(default_factory=lambda: f"https://example.com/{next(_id_counter)}")
@@ -128,6 +134,7 @@ class AuditResultFactory:
 
     def build(self) -> dict:
         return {"url": self.url, "scores": {"performance": self.performance}}
+
 
 def test_fails_on_low_performance():
     result = AuditResultFactory(performance=45).build()
@@ -150,13 +157,21 @@ class PostgresHarness:
     port: int = 5432
 
     def start(self) -> None:
-        subprocess.run([
-            "docker", "run", "-d",
-            "--name", self.container_name,
-            "-p", f"{self.port}:5432",
-            "-e", "POSTGRES_PASSWORD=test",
-            "postgres:15"
-        ], check=True)
+        subprocess.run(
+            [
+                "docker",
+                "run",
+                "-d",
+                "--name",
+                self.container_name,
+                "-p",
+                f"{self.port}:5432",
+                "-e",
+                "POSTGRES_PASSWORD=test",
+                "postgres:15",
+            ],
+            check=True,
+        )
         self._wait_for_ready()
 
     def stop(self) -> None:
@@ -177,10 +192,12 @@ def database():
     yield harness
     harness.stop()
 
+
 @pytest.fixture(autouse=True)
 def reset_database(database):
     yield
     database.reset()
+
 
 @pytest.mark.integration
 def test_user_repository_saves_and_retrieves(database):
@@ -212,11 +229,13 @@ Setup:
   # Fill in values from 1Password
 """
 
+
 def load_credentials() -> dict | None:
     token = os.environ.get("DROPBOX_TEST_TOKEN")
     if not token:
         return None
     return {"token": token}
+
 
 @pytest.fixture
 def dropbox_config(tmp_path) -> Path | None:
@@ -238,9 +257,9 @@ token = {creds["token"]}
 ```python
 credentials = load_credentials()
 skip_no_creds = pytest.mark.skipif(
-    credentials is None,
-    reason="E2E credentials not configured"
+    credentials is None, reason="E2E credentials not configured"
 )
+
 
 @skip_no_creds
 @pytest.mark.e2e
@@ -260,6 +279,7 @@ def test_full_sync_workflow(dropbox_test_folder, dropbox_config):
 def pytest_configure(config):
     config.addinivalue_line("markers", "integration: requires test harness")
     config.addinivalue_line("markers", "e2e: requires credentials")
+
 
 # pyproject.toml
 [tool.pytest.ini_options]
@@ -311,6 +331,7 @@ def test_uses_rclone_sync_command():
         sync_dataset(src, dest)
     assert "rclone sync" in captured.command  # Implementation detail!
 
+
 # ✅ Test the observable behavior instead
 def test_files_synced():
     sync_dataset(src, dest)
@@ -330,4 +351,4 @@ def test_files_synced():
 
 ---
 
-_For foundational principles (progress vs regression tests, escalation justification), see `/test`._
+*For foundational principles (progress vs regression tests, escalation justification), see `/test`.*

@@ -41,7 +41,6 @@ ALWAYS use this exact template:
 ````
 
 ````
-
 ### Flexible Template (Guidance with Room for Adaptation)
 
 ```markdown
@@ -69,7 +68,6 @@ Adjust sections based on:
 - Purpose (decision support vs documentation)
 
 ````
-
 ---
 
 ## Examples Pattern
@@ -105,7 +103,6 @@ async function getUserById(id: string): Promise<User | null> {
 Follow this style: verb + noun, camelCase, explicit return types.
 
 ````
-
 ### Commit Message Examples
 
 ```markdown
@@ -122,7 +119,6 @@ Add login endpoint and token validation middleware.
 Includes refresh token rotation for security.
 
 ```
-
 **Example 2:**
 Input: Fixed bug where dates displayed incorrectly
 Output:
@@ -134,7 +130,6 @@ Use UTC timestamps consistently across report generation.
 Fixes #234.
 
 ```
-
 Format: `type(scope): brief description`
 
 Types: feat, fix, docs, style, refactor, test, chore
@@ -192,7 +187,6 @@ async function fetchUser(id: string) {
 - No logging for debugging
 
 ````
-
 ### Input Validation
 
 ```markdown
@@ -225,7 +219,6 @@ function createUser(input: any) {
 ```
 
 ````
-
 ---
 
 ## Output Specification Pattern
@@ -269,7 +262,6 @@ function Widget() {
 - WCAG AA contrast ratios
 
 ````
-
 ### API Response Specification
 
 ```markdown
@@ -322,7 +314,6 @@ All responses follow this structure:
 ```
 
 ````
-
 ---
 
 ## Consistency Patterns
@@ -361,5 +352,4 @@ src/
 └── index.ts # Public exports
 
 ```
-
 ```

@@ -33,7 +33,6 @@ Before proceeding, ask:
 5. **Performance**: "Expected data volume?" (ask if potentially large)
 
 ````
-
 ### Context Awareness
 
 Before asking, check existing context:
@@ -319,11 +318,11 @@ except:
 
 Pick ONE term and use it throughout the skill:
 
-| Good (consistent)      | Bad (mixed)                                    |
-| ---------------------- | ---------------------------------------------- |
-| Always "API endpoint"  | Mix "endpoint", "URL", "route", "path"         |
-| Always "field"         | Mix "field", "box", "element", "input"         |
-| Always "extract"       | Mix "extract", "pull", "get", "retrieve"       |
+| Good (consistent)     | Bad (mixed)                              |
+| --------------------- | ---------------------------------------- |
+| Always "API endpoint" | Mix "endpoint", "URL", "route", "path"   |
+| Always "field"        | Mix "field", "box", "element", "input"   |
+| Always "extract"      | Mix "extract", "pull", "get", "retrieve" |
 
 Consistency helps Claude understand and follow instructions reliably.
 
@@ -355,6 +354,7 @@ Use the v2 API endpoint: `api.example.com/v2/messages`
 The v1 API used: `api.example.com/v1/messages`
 
 This endpoint is no longer supported.
+
 </details>
 ```
 

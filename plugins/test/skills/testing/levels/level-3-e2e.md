@@ -66,7 +66,8 @@ type Credentials = {
 function loadCredentials(): Credentials | null {
   const lhciServerUrl = process.env.LHCI_SERVER_URL;
   const lhciToken = process.env.LHCI_TOKEN;
-  const testSiteUrl = process.env.TEST_SITE_URL || "https://staging.example.com";
+  const testSiteUrl = process.env.TEST_SITE_URL
+    || "https://staging.example.com";
 
   if (!lhciServerUrl || !lhciToken) {
     return null;
@@ -79,9 +80,15 @@ function requireCredentials(): Credentials {
   const creds = loadCredentials();
 
   if (!creds) {
-    const missing = [!process.env.LHCI_SERVER_URL && "LHCI_SERVER_URL", !process.env.LHCI_TOKEN && "LHCI_TOKEN"].filter(Boolean);
+    const missing = [
+      !process.env.LHCI_SERVER_URL && "LHCI_SERVER_URL",
+      !process.env.LHCI_TOKEN && "LHCI_TOKEN",
+    ].filter(Boolean);
 
-    throw new Error(`Missing required credentials: ${missing.join(", ")}\n\n` + `See test/e2e/credentials.ts for setup instructions.`);
+    throw new Error(
+      `Missing required credentials: ${missing.join(", ")}\n\n`
+        + `See test/e2e/credentials.ts for setup instructions.`,
+    );
   }
 
   return creds;
@@ -94,7 +101,7 @@ export { loadCredentials, requireCredentials };
 
 ```typescript
 // test/e2e/lhci.test.ts
-import { describe, test, beforeAll } from "vitest";
+import { beforeAll, describe, test } from "vitest";
 import { loadCredentials } from "./credentials";
 
 describe("LHCI End-to-End", () => {
@@ -106,13 +113,19 @@ describe("LHCI End-to-End", () => {
     }
   });
 
-  test.skipIf(!credentials)("uploads audit results to LHCI server", async () => {
-    // Test implementation
-  });
+  test.skipIf(!credentials)(
+    "uploads audit results to LHCI server",
+    async () => {
+      // Test implementation
+    },
+  );
 
-  test.skipIf(!credentials)("retrieves historical data from server", async () => {
-    // Test implementation
-  });
+  test.skipIf(!credentials)(
+    "retrieves historical data from server",
+    async () => {
+      // Test implementation
+    },
+  );
 });
 ```
 
@@ -151,7 +164,13 @@ describe("hugolit CLI E2E", () => {
   const credentials = requireCredentials();
 
   test("full audit workflow succeeds", async () => {
-    const result = await execa("node", ["./bin/hugolit.js", "run", "--url", credentials.testSiteUrl, "--upload"], {
+    const result = await execa("node", [
+      "./bin/hugolit.js",
+      "run",
+      "--url",
+      credentials.testSiteUrl,
+      "--upload",
+    ], {
       env: {
         ...process.env,
         LHCI_SERVER_URL: credentials.lhciServerUrl,
@@ -167,7 +186,12 @@ describe("hugolit CLI E2E", () => {
   });
 
   test("handles invalid URL gracefully", async () => {
-    const result = await execa("node", ["./bin/hugolit.js", "run", "--url", "https://nonexistent.invalid/"], {
+    const result = await execa("node", [
+      "./bin/hugolit.js",
+      "run",
+      "--url",
+      "https://nonexistent.invalid/",
+    ], {
       env: { ...process.env, CI: "true" },
       reject: false,
     });
@@ -177,7 +201,14 @@ describe("hugolit CLI E2E", () => {
   });
 
   test("respects --dry-run flag", async () => {
-    const result = await execa("node", ["./bin/hugolit.js", "run", "--url", credentials.testSiteUrl, "--upload", "--dry-run"], {
+    const result = await execa("node", [
+      "./bin/hugolit.js",
+      "run",
+      "--url",
+      credentials.testSiteUrl,
+      "--upload",
+      "--dry-run",
+    ], {
       env: {
         ...process.env,
         LHCI_SERVER_URL: credentials.lhciServerUrl,
@@ -201,6 +232,7 @@ import subprocess
 import os
 import pytest
 
+
 def get_credentials():
     """Load credentials from environment."""
     lhci_url = os.environ.get("LHCI_SERVER_URL")
@@ -216,18 +248,25 @@ def get_credentials():
         "test_site": test_site,
     }
 
+
 credentials = get_credentials()
 skip_no_creds = pytest.mark.skipif(
-    credentials is None,
-    reason="LHCI credentials not configured"
+    credentials is None, reason="LHCI credentials not configured"
 )
+
 
 @skip_no_creds
 def test_full_audit_workflow():
     result = subprocess.run(
-        ["python", "-m", "hugolit", "run",
-         "--url", credentials["test_site"],
-         "--upload"],
+        [
+            "python",
+            "-m",
+            "hugolit",
+            "run",
+            "--url",
+            credentials["test_site"],
+            "--upload",
+        ],
         capture_output=True,
         text=True,
         env={
@@ -235,21 +274,21 @@ def test_full_audit_workflow():
             "LHCI_SERVER_URL": credentials["lhci_url"],
             "LHCI_TOKEN": credentials["lhci_token"],
             "CI": "true",
-        }
+        },
     )
 
     assert result.returncode == 0
     assert "Audit complete" in result.stdout
     assert "Results uploaded" in result.stdout
 
+
 @skip_no_creds
 def test_handles_invalid_url():
     result = subprocess.run(
-        ["python", "-m", "hugolit", "run",
-         "--url", "https://nonexistent.invalid/"],
+        ["python", "-m", "hugolit", "run", "--url", "https://nonexistent.invalid/"],
         capture_output=True,
         text=True,
-        env={**os.environ, "CI": "true"}
+        env={**os.environ, "CI": "true"},
     )
 
     assert result.returncode != 0
@@ -289,11 +328,11 @@ export default defineConfig({
   webServer: process.env.TEST_BASE_URL
     ? undefined
     : {
-        command: "npm run dev",
-        url: "http://localhost:3000",
-        reuseExistingServer: !process.env.CI,
-        timeout: 120000,
-      },
+      command: "npm run dev",
+      url: "http://localhost:3000",
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+    },
 });
 ```
 
@@ -301,17 +340,17 @@ export default defineConfig({
 
 ```typescript
 // test/e2e/pages/login-page.ts
-import { Page, Locator, expect } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 type LoginPageDeps = {
   page: Page;
 };
 
 function createLoginPage({ page }: LoginPageDeps) {
-  const emailInput = page.locator('[data-testid="email-input"]');
-  const passwordInput = page.locator('[data-testid="password-input"]');
-  const submitButton = page.locator('[data-testid="login-submit"]');
-  const errorMessage = page.locator('[data-testid="login-error"]');
+  const emailInput = page.locator("[data-testid=\"email-input\"]");
+  const passwordInput = page.locator("[data-testid=\"password-input\"]");
+  const submitButton = page.locator("[data-testid=\"login-submit\"]");
+  const errorMessage = page.locator("[data-testid=\"login-error\"]");
 
   return {
     async goto() {
@@ -341,7 +380,7 @@ export { createLoginPage };
 
 ```typescript
 // test/e2e/fixtures.ts
-import { test as base, expect } from "@playwright/test";
+import { expect, test as base } from "@playwright/test";
 import { createLoginPage } from "./pages/login-page";
 
 /**
@@ -367,7 +406,11 @@ const test = base.extend<{
 }>({
   authenticatedPage: async ({ page }, use) => {
     if (!hasTestCredentials()) {
-      throw new Error("E2E test credentials not configured.\n" + "Set TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables.\n" + "See test/e2e/fixtures.ts for details.");
+      throw new Error(
+        "E2E test credentials not configured.\n"
+          + "Set TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables.\n"
+          + "See test/e2e/fixtures.ts for details.",
+      );
     }
 
     const loginPage = createLoginPage({ page });
@@ -379,16 +422,16 @@ const test = base.extend<{
   },
 });
 
-export { test, expect, hasTestCredentials };
+export { expect, hasTestCredentials, test };
 ```
 
 ### Full Workflow Tests
 
 ```typescript
 // test/e2e/audit-workflow.test.ts
-import { test, expect, hasTestCredentials } from "./fixtures";
-import { createDashboardPage } from "./pages/dashboard-page";
+import { expect, hasTestCredentials, test } from "./fixtures";
 import { createAuditPage } from "./pages/audit-page";
+import { createDashboardPage } from "./pages/dashboard-page";
 
 test.describe("Audit Workflow", () => {
   test.skip(!hasTestCredentials(), "Requires test credentials");
@@ -440,7 +483,7 @@ Test MCP servers by acting as a client.
 
 ```typescript
 // test/e2e/mcp-server.test.ts
-import { spawn, ChildProcess } from "child_process";
+import { ChildProcess, spawn } from "child_process";
 import { requireCredentials } from "./credentials";
 
 type MCPMessage = {
@@ -551,9 +594,13 @@ describe("MCP Server E2E", () => {
   });
 
   test("lists available tools", async () => {
-    const result = (await client.request("tools/list")) as { tools: Array<{ name: string }> };
+    const result = (await client.request("tools/list")) as {
+      tools: Array<{ name: string }>;
+    };
 
-    expect(result.tools).toContainEqual(expect.objectContaining({ name: "run_audit" }));
+    expect(result.tools).toContainEqual(
+      expect.objectContaining({ name: "run_audit" }),
+    );
   });
 
   test("run_audit tool returns scores", async () => {
@@ -771,10 +818,10 @@ Before writing the test, verify:
 
 ## What Level 3 Proves
 
-✅ Real credentials work and haven't expired  
-✅ Third-party APIs behave as expected  
-✅ The full user workflow succeeds  
-✅ All integrations work together in production-like environment  
+✅ Real credentials work and haven't expired\
+✅ Third-party APIs behave as expected\
+✅ The full user workflow succeeds\
+✅ All integrations work together in production-like environment\
 ✅ The system works as users will experience it
 
 ## When Level 3 Fails

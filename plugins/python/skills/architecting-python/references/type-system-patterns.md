@@ -18,26 +18,28 @@ Use modern syntax. Old syntax is rejected.
 
 ```python
 # GOOD - Modern syntax
-def get_user(user_id: int) -> User | None:
-    ...
+def get_user(user_id: int) -> User | None: ...
+
 
 # BAD - Old syntax
 from typing import Optional
-def get_user(user_id: int) -> Optional[User]:
-    ...
+
+
+def get_user(user_id: int) -> Optional[User]: ...
 ```
 
 ### Generic Collections
 
 ```python
 # GOOD - Lowercase builtins
-def process_items(items: list[str]) -> dict[str, int]:
-    ...
+def process_items(items: list[str]) -> dict[str, int]: ...
+
 
 # BAD - typing module imports
 from typing import List, Dict
-def process_items(items: List[str]) -> Dict[str, int]:
-    ...
+
+
+def process_items(items: List[str]) -> Dict[str, int]: ...
 ```
 
 ### Type Aliases
@@ -62,8 +64,8 @@ UserMap = dict[int, User]
 
 ```python
 # FORBIDDEN - Lazy typing
-def process(data: Any) -> Any:
-    ...
+def process(data: Any) -> Any: ...
+
 
 # FORBIDDEN - Avoiding complex types
 results: list[Any] = []
@@ -94,6 +96,7 @@ Use Protocols to define interfaces without inheritance.
 
 ```python
 from typing import Protocol
+
 
 class Logger(Protocol):
     """Interface for logging implementations."""
@@ -135,6 +138,7 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
+
 def first(items: list[T]) -> T | None:
     return items[0] if items else None
 ```
@@ -144,10 +148,13 @@ def first(items: list[T]) -> T | None:
 ```python
 from typing import TypeVar
 
+
 class Comparable(Protocol):
     def __lt__(self, other: Self) -> bool: ...
 
+
 T = TypeVar("T", bound=Comparable)
+
 
 def min_value(a: T, b: T) -> T:
     return a if a < b else b
@@ -160,13 +167,14 @@ from typing import Generic, TypeVar
 
 T = TypeVar("T")
 
+
 class Repository(Generic[T]):
     def get(self, id: int) -> T | None: ...
     def save(self, entity: T) -> None: ...
     def delete(self, entity: T) -> None: ...
 
-class UserRepository(Repository[User]):
-    ...
+
+class UserRepository(Repository[User]): ...
 ```
 
 ---
@@ -182,6 +190,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .models import User  # Only imported for type checking
+
 
 class UserService:
     def get_user(self, user_id: int) -> "User":  # String annotation
@@ -215,6 +224,7 @@ External Input  ──►  Pydantic Model  ──►  Domain Logic  ──►  P
 
 ```python
 from pydantic import BaseModel, Field, field_validator
+
 
 class SyncRequest(BaseModel):
     """Request to sync a dataset."""
@@ -272,12 +282,10 @@ def process(value: str | int) -> str:
 ```python
 from typing import TypeGuard
 
+
 def is_valid_user(obj: object) -> TypeGuard[User]:
-    return (
-        isinstance(obj, dict)
-        and "id" in obj
-        and "name" in obj
-    )
+    return isinstance(obj, dict) and "id" in obj and "name" in obj
+
 
 def process(obj: object) -> None:
     if is_valid_user(obj):
@@ -288,6 +296,7 @@ def process(obj: object) -> None:
 
 ```python
 from typing import assert_never
+
 
 def handle_status(status: Literal["pending", "active", "closed"]) -> str:
     match status:
@@ -309,6 +318,7 @@ Use dataclasses for simple domain objects.
 
 ```python
 from dataclasses import dataclass
+
 
 @dataclass(frozen=True)
 class Snapshot:

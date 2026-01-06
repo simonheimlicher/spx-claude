@@ -170,7 +170,6 @@ Guide through decision points with clear branching:
 [Cancelled] [Rejected] [Failed]
 
 ```
-
 ### Transitions
 
 | From | To | Trigger |

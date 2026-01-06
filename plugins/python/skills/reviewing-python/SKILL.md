@@ -49,6 +49,7 @@ def test_sync(mock_run):
     mock_run.return_value = Mock(returncode=0)
     ...
 
+
 # ✅ ACCEPT: Dependency Injection
 def test_sync():
     deps = SyncDependencies(run_command=lambda cmd: (0, "", ""))
@@ -618,10 +619,10 @@ When verdict is **REJECTED** or **CONDITIONAL**, provide actionable feedback to 
 
 ### Issues Found
 
-| #   | File:Line   | Category   | Issue               | Suggested Fix            |
-| --- | ----------- | ---------- | ------------------- | ------------------------ |
-| 1   | `foo.py:42` | Type Error | Missing return type | Add `-> int`             |
-| 2   | `bar.py:17` | Security   | Bare except         | Catch specific exception |
+| # | File:Line   | Category   | Issue               | Suggested Fix            |
+| - | ----------- | ---------- | ------------------- | ------------------------ |
+| 1 | `foo.py:42` | Type Error | Missing return type | Add `-> int`             |
+| 2 | `bar.py:17` | Security   | Bare except         | Catch specific exception |
 
 ### Tool Outputs
 
@@ -826,7 +827,6 @@ Full report: `reports/review_{name}_{timestamp}.md`
 → **BLOCKED**: Coder returns `BLOCKED` to orchestrator.
 
 ```
-
 **Note to coder**: This review is complete. Handle the verdict per the Review Loop Protocol.
 
 ---

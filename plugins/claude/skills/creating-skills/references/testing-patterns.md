@@ -10,11 +10,11 @@ Skills act as additions to models, so effectiveness depends on the underlying mo
 
 ### Model-Specific Considerations
 
-| Model  | Check                                    | Adjust If Needed                   |
-| ------ | ---------------------------------------- | ---------------------------------- |
-| Haiku  | Does skill provide enough guidance?      | Add more explicit steps            |
-| Sonnet | Is skill clear and efficient?            | Balance detail vs conciseness      |
-| Opus   | Does skill avoid over-explaining?        | Remove obvious explanations        |
+| Model  | Check                               | Adjust If Needed              |
+| ------ | ----------------------------------- | ----------------------------- |
+| Haiku  | Does skill provide enough guidance? | Add more explicit steps       |
+| Sonnet | Is skill clear and efficient?       | Balance detail vs conciseness |
+| Opus   | Does skill avoid over-explaining?   | Remove obvious explanations   |
 
 What works perfectly for Opus might need more detail for Haiku.
 

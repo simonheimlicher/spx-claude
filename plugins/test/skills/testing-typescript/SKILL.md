@@ -38,7 +38,10 @@ type BuildDeps = {
   runCommand: (cmd: string, args: string[]) => Promise<{ exitCode: number }>;
 };
 
-async function buildSite(siteDir: string, deps: BuildDeps): Promise<BuildResult> {
+async function buildSite(
+  siteDir: string,
+  deps: BuildDeps,
+): Promise<BuildResult> {
   const { exitCode } = await deps.runCommand("hugo", ["--source", siteDir]);
   return { success: exitCode === 0 };
 }
@@ -82,8 +85,8 @@ test("parseConfig rejects missing required fields", () => {
 
 ```typescript
 import { mkdtemp, rm, writeFile } from "fs/promises";
-import { join } from "path";
 import { tmpdir } from "os";
+import { join } from "path";
 
 test("loadConfig reads YAML file", async () => {
   const tempDir = await mkdtemp(join(tmpdir(), "config-test-"));
@@ -95,7 +98,7 @@ test("loadConfig reads YAML file", async () => {
       `
 site_dir: ./site
 base_url: http://localhost:1313
-`
+`,
     );
 
     const config = await loadConfig(configPath);
@@ -135,7 +138,9 @@ function createConfig(overrides: Partial<Config> = {}): Config {
 
 // Usage
 test("fails on low performance score", async () => {
-  const result = createAuditResult({ scores: { performance: 45, accessibility: 100 } });
+  const result = createAuditResult({
+    scores: { performance: 45, accessibility: 100 },
+  });
 
   const analysis = await analyzeResults([result], deps);
 
@@ -152,9 +157,9 @@ test("fails on low performance score", async () => {
 ```typescript
 // test/harnesses/hugo.ts
 import { execa, ExecaReturnValue } from "execa";
-import { mkdtemp, rm, cp, writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { cp, mkdir, mkdtemp, rm, writeFile } from "fs/promises";
 import { tmpdir } from "os";
+import { join } from "path";
 
 type HugoHarness = {
   siteDir: string;
@@ -168,7 +173,9 @@ async function createHugoHarness(): Promise<HugoHarness> {
   try {
     await execa("hugo", ["version"]);
   } catch {
-    throw new Error("Hugo binary not found. Install Hugo or skip integration tests.");
+    throw new Error(
+      "Hugo binary not found. Install Hugo or skip integration tests.",
+    );
   }
 
   const siteDir = await mkdtemp(join(tmpdir(), "hugo-test-"));
@@ -181,7 +188,13 @@ async function createHugoHarness(): Promise<HugoHarness> {
     outputDir,
 
     async build(args: string[] = []) {
-      return execa("hugo", ["--source", siteDir, "--destination", outputDir, ...args]);
+      return execa("hugo", [
+        "--source",
+        siteDir,
+        "--destination",
+        outputDir,
+        ...args,
+      ]);
     },
 
     async cleanup() {
@@ -196,10 +209,10 @@ async function createHugoHarness(): Promise<HugoHarness> {
 ```typescript
 // test/harnesses/caddy.ts
 import { execa, ExecaChildProcess } from "execa";
-import { writeFile, mkdtemp, rm } from "fs/promises";
-import { join } from "path";
-import { tmpdir } from "os";
+import { mkdtemp, rm, writeFile } from "fs/promises";
 import getPort from "get-port";
+import { tmpdir } from "os";
+import { join } from "path";
 
 type CaddyHarness = {
   port: number;
@@ -220,9 +233,14 @@ async function createCaddyHarness(staticDir: string): Promise<CaddyHarness> {
 
     async start() {
       const caddyfile = join(configDir, "Caddyfile");
-      await writeFile(caddyfile, `:${port} {\n  root * ${staticDir}\n  file_server\n}`);
+      await writeFile(
+        caddyfile,
+        `:${port} {\n  root * ${staticDir}\n  file_server\n}`,
+      );
 
-      process = execa("caddy", ["run", "--config", caddyfile], { reject: false });
+      process = execa("caddy", ["run", "--config", caddyfile], {
+        reject: false,
+      });
       await waitForServer(`http://localhost:${port}`, 5000);
     },
 
@@ -242,10 +260,10 @@ async function createCaddyHarness(staticDir: string): Promise<CaddyHarness> {
 ### Using Harnesses with Vitest
 
 ```typescript
-import { describe, test, expect, beforeAll, afterAll } from "vitest";
-import { createHugoHarness } from "../harnesses/hugo";
 import { existsSync } from "fs";
 import { join } from "path";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { createHugoHarness } from "../harnesses/hugo";
 
 describe("Hugo Build Integration", () => {
   test("builds minimal site successfully", async () => {
@@ -307,7 +325,8 @@ type Credentials = {
 function loadCredentials(): Credentials | null {
   const lhciServerUrl = process.env.LHCI_SERVER_URL;
   const lhciToken = process.env.LHCI_TOKEN;
-  const testSiteUrl = process.env.TEST_SITE_URL || "https://staging.example.com";
+  const testSiteUrl = process.env.TEST_SITE_URL
+    || "https://staging.example.com";
 
   if (!lhciServerUrl || !lhciToken) {
     return null;
@@ -316,13 +335,13 @@ function loadCredentials(): Credentials | null {
   return { lhciServerUrl, lhciToken, testSiteUrl };
 }
 
-export { loadCredentials, Credentials };
+export { Credentials, loadCredentials };
 ```
 
 ### Skip If No Credentials
 
 ```typescript
-import { describe, test, expect, beforeAll } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 import { loadCredentials } from "./credentials";
 
 describe("LHCI End-to-End", () => {
@@ -334,9 +353,12 @@ describe("LHCI End-to-End", () => {
     }
   });
 
-  test.skipIf(!credentials)("uploads audit results to LHCI server", async () => {
-    // Test implementation using credentials!
-  });
+  test.skipIf(!credentials)(
+    "uploads audit results to LHCI server",
+    async () => {
+      // Test implementation using credentials!
+    },
+  );
 });
 ```
 
@@ -346,7 +368,13 @@ describe("LHCI End-to-End", () => {
 import { execa } from "execa";
 
 test.skipIf(!credentials)("CLI full workflow succeeds", async () => {
-  const result = await execa("node", ["./bin/cli.js", "run", "--url", credentials!.testSiteUrl, "--upload"], {
+  const result = await execa("node", [
+    "./bin/cli.js",
+    "run",
+    "--url",
+    credentials!.testSiteUrl,
+    "--upload",
+  ], {
     env: {
       ...process.env,
       LHCI_SERVER_URL: credentials!.lhciServerUrl,
@@ -375,23 +403,25 @@ export default defineConfig({
   webServer: process.env.TEST_BASE_URL
     ? undefined
     : {
-        command: "npm run dev",
-        url: "http://localhost:3000",
-        reuseExistingServer: !process.env.CI,
-      },
+      command: "npm run dev",
+      url: "http://localhost:3000",
+      reuseExistingServer: !process.env.CI,
+    },
 });
 ```
 
 ```typescript
 // test/e2e/workflow.spec.ts
-import { test, expect } from "@playwright/testing";
+import { expect, test } from "@playwright/testing";
 
 test("user can run audit from dashboard", async ({ page }) => {
   await page.goto("/dashboard");
-  await page.fill('[data-testid="url-input"]', "https://example.com");
-  await page.click('[data-testid="run-audit"]');
+  await page.fill("[data-testid=\"url-input\"]", "https://example.com");
+  await page.click("[data-testid=\"run-audit\"]");
 
-  await expect(page.locator('[data-testid="results"]')).toBeVisible({ timeout: 30000 });
+  await expect(page.locator("[data-testid=\"results\"]")).toBeVisible({
+    timeout: 30000,
+  });
 });
 ```
 
@@ -442,4 +472,4 @@ export default defineConfig({
 
 ---
 
-_For foundational principles (no mocking, progress vs regression tests, escalation justification), see `/testing`._
+*For foundational principles (no mocking, progress vs regression tests, escalation justification), see `/testing`.*

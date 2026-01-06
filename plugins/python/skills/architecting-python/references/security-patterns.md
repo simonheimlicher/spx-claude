@@ -59,6 +59,7 @@ Untrusted Input  ──►  Validation Layer  ──►  Trusted Domain Logic
 from pydantic import BaseModel, Field, field_validator
 from pathlib import Path
 
+
 class SyncConfig(BaseModel):
     """Validated configuration for sync operation."""
 
@@ -86,6 +87,7 @@ class SyncConfig(BaseModel):
 ```python
 import argparse
 from pydantic import ValidationError
+
 
 def parse_args() -> SyncConfig:
     parser = argparse.ArgumentParser()
@@ -124,6 +126,7 @@ DATABASE_URL = "postgres://user:password@localhost/db"
 ```python
 import os
 
+
 def get_api_key() -> str:
     """Get API key from environment.
 
@@ -141,6 +144,7 @@ def get_api_key() -> str:
 ```python
 from pydantic_settings import BaseSettings
 
+
 class AppConfig(BaseSettings):
     """Application configuration from environment."""
 
@@ -150,6 +154,7 @@ class AppConfig(BaseSettings):
 
     class Config:
         env_prefix = "APP_"  # Reads APP_API_KEY, APP_DATABASE_URL
+
 
 config = AppConfig()  # Raises if required vars missing
 ```
@@ -171,6 +176,7 @@ Subprocess calls are a common attack vector. Handle carefully.
 ```python
 import subprocess
 from pathlib import Path
+
 
 def run_rclone_sync(
     source: Path,
@@ -284,6 +290,7 @@ OPERATIONS: dict[str, Callable[[int, int], int]] = {
     "multiply": lambda a, b: a * b,
 }
 
+
 def calculate(operation: str, a: int, b: int) -> int:
     if operation not in OPERATIONS:
         raise ValueError(f"Unknown operation: {operation}")
@@ -337,6 +344,7 @@ class AuthenticationError(Exception):
         # Don't reveal WHY authentication failed
         super().__init__("Authentication failed")
 
+
 # In handler:
 try:
     authenticate(username, password)
@@ -379,6 +387,7 @@ content = path.read_text()  # Reads /etc/passwd!
 
 ```python
 from pathlib import Path
+
 
 def safe_read_file(base_dir: Path, filename: str) -> str:
     """Read file safely, preventing path traversal.
@@ -442,9 +451,11 @@ from pathlib import Path
 
 CACHE_FILE = Path("/var/cache/app/internal.pkl")
 
+
 def save_internal_cache(data: InternalState) -> None:
     with CACHE_FILE.open("wb") as f:
         pickle.dump(data, f)
+
 
 def load_internal_cache() -> InternalState:
     with CACHE_FILE.open("rb") as f:

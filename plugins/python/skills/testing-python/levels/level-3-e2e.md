@@ -40,11 +40,13 @@ Setup:
   # Fill in values from 1Password
 """
 
+
 def load_credentials() -> dict | None:
     token = os.environ.get("DROPBOX_TEST_TOKEN")
     if not token:
         return None
     return {"token": token}
+
 
 def require_credentials() -> dict:
     creds = load_credentials()
@@ -70,6 +72,7 @@ token = {creds["token"]}
 """)
     return config
 
+
 @pytest.fixture
 def dropbox_test_folder(dropbox_config) -> str:
     """Provide isolated test folder in Dropbox."""
@@ -79,10 +82,15 @@ def dropbox_test_folder(dropbox_config) -> str:
     yield remote
 
     # Cleanup
-    subprocess.run([
-        "rclone", "purge", remote,
-        "--config", str(dropbox_config),
-    ])
+    subprocess.run(
+        [
+            "rclone",
+            "purge",
+            remote,
+            "--config",
+            str(dropbox_config),
+        ]
+    )
 ```
 
 ---
@@ -107,13 +115,12 @@ class TestDropboxSync:
         # Verify via rclone ls
         ls_result = subprocess.run(
             ["rclone", "ls", dropbox_test_folder, "--config", str(dropbox_config)],
-            capture_output=True, text=True,
+            capture_output=True,
+            text=True,
         )
         assert "test.txt" in ls_result.stdout
 
-    def test_sync_is_idempotent(
-        self, source_dir, dropbox_test_folder, dropbox_config
-    ):
+    def test_sync_is_idempotent(self, source_dir, dropbox_test_folder, dropbox_config):
         (source_dir / "stable.txt").write_text("stable")
 
         # First sync
@@ -166,8 +173,10 @@ class TestRateLimits:
             (source_dir / f"file_{i:03d}.txt").write_text(f"content {i}")
 
         result = sync_dataset(
-            str(source_dir), dropbox_test_folder,
-            config=dropbox_config, tpslimit=8,
+            str(source_dir),
+            dropbox_test_folder,
+            config=dropbox_config,
+            tpslimit=8,
         )
 
         assert result.success
@@ -184,6 +193,7 @@ Internet tests can be flaky. Handle with care:
 
 ```python
 from tenacity import retry, stop_after_attempt, wait_exponential
+
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=10))
 def sync_with_retry(source, dest, **kwargs):
@@ -244,6 +254,7 @@ def dropbox_config():
 token = {os.environ["DROPBOX_PROD_TOKEN"]}
 """)
 
+
 # ✅ Use dedicated test account
 @pytest.fixture
 def dropbox_config():
@@ -262,6 +273,7 @@ def test_sync(dropbox_config):
     sync_dataset(source, "dropbox-test:permanent-folder")
     # No cleanup!
 
+
 # ✅ Use fixtures that clean up
 @pytest.mark.e2e
 def test_sync(dropbox_test_folder, dropbox_config):  # Fixture cleans up
@@ -270,4 +282,4 @@ def test_sync(dropbox_test_folder, dropbox_config):  # Fixture cleans up
 
 ---
 
-_Level 3 is where you prove the real world works. Test accounts give confidence without risking production._
+*Level 3 is where you prove the real world works. Test accounts give confidence without risking production.*

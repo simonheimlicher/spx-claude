@@ -116,6 +116,7 @@ def test_sync(mock_run):
     result = sync_files(src, dest)
     mock_run.assert_called_once()  # Tests implementation, not behavior
 
+
 # ✅ REQUIRED: Dependency Injection
 def test_sync():
     deps = SyncDependencies(
@@ -309,13 +310,13 @@ Re-invoke `/reviewing-python`.
 
 ### Handling Reviewer Verdicts
 
-| Verdict         | Action                                                          |
-| --------------- | --------------------------------------------------------------- |
-| **APPROVED**    | Reviewer committed. Run `spx status` to check for more items.   |
+| Verdict         | Action                                                           |
+| --------------- | ---------------------------------------------------------------- |
+| **APPROVED**    | Reviewer committed. Run `spx status` to check for more items.    |
 | **REJECTED**    | Parse feedback, remediate issues, re-invoke `/reviewing-python`. |
 | **CONDITIONAL** | Add noqa comments per feedback, re-invoke `/reviewing-python`.   |
-| **BLOCKED**     | Return `BLOCKED` to orchestrator.                               |
-| **ABORT**       | Invoke `/architecting-python` to revise ADRs, restart.             |
+| **BLOCKED**     | Return `BLOCKED` to orchestrator.                                |
+| **ABORT**       | Invoke `/architecting-python` to revise ADRs, restart.           |
 
 ### Max Iterations
 
@@ -360,7 +361,6 @@ uv run --extra dev pytest tests/ -v
 ````
 
 ````
-
 ### On BLOCKED
 
 ```markdown
@@ -375,4 +375,4 @@ uv run --extra dev pytest tests/ -v
 
 ---
 
-_Remember: Your code will face an adversarial reviewer with zero tolerance. Write code that will survive that scrutiny._
+*Remember: Your code will face an adversarial reviewer with zero tolerance. Write code that will survive that scrutiny.*

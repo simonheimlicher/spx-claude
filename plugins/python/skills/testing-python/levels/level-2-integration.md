@@ -30,23 +30,33 @@ Level 1 proves our logic is correct. Level 2 proves:
 from dataclasses import dataclass
 import subprocess
 
+
 @dataclass
 class PostgresHarness:
     container_name: str = "test-postgres"
     port: int = 5432
 
     def start(self) -> None:
-        subprocess.run([
-            "docker", "run", "-d",
-            "--name", self.container_name,
-            "-p", f"{self.port}:5432",
-            "-e", "POSTGRES_PASSWORD=test",
-            "postgres:15"
-        ], check=True)
+        subprocess.run(
+            [
+                "docker",
+                "run",
+                "-d",
+                "--name",
+                self.container_name,
+                "-p",
+                f"{self.port}:5432",
+                "-e",
+                "POSTGRES_PASSWORD=test",
+                "postgres:15",
+            ],
+            check=True,
+        )
         self._wait_for_ready()
 
     def _wait_for_ready(self, timeout: int = 30) -> None:
         import time
+
         deadline = time.time() + timeout
         while time.time() < deadline:
             result = subprocess.run(
@@ -81,13 +91,21 @@ class HugoHarness:
     def build(self, args: list[str] | None = None) -> subprocess.CompletedProcess:
         args = args or []
         return subprocess.run(
-            ["hugo", "--source", str(self.site_dir),
-             "--destination", str(self.output_dir)] + args,
-            capture_output=True, text=True
+            [
+                "hugo",
+                "--source",
+                str(self.site_dir),
+                "--destination",
+                str(self.output_dir),
+            ]
+            + args,
+            capture_output=True,
+            text=True,
         )
 
     def cleanup(self) -> None:
         import shutil
+
         shutil.rmtree(self.output_dir, ignore_errors=True)
 ```
 
@@ -98,6 +116,7 @@ class HugoHarness:
 ```python
 import pytest
 
+
 @pytest.fixture(scope="module")
 def database():
     """Start database once per module."""
@@ -106,11 +125,13 @@ def database():
     yield harness
     harness.stop()
 
+
 @pytest.fixture(autouse=True)
 def reset_database(database):
     """Reset database state between tests."""
     yield
     database.reset()
+
 
 @pytest.mark.integration
 def test_user_repository_saves_and_retrieves(database):
@@ -236,8 +257,8 @@ def test_sync_completes_quickly(source_dir, test_remote, rclone_config):
 # ❌ Don't skip because they're "slow"
 @pytest.mark.skip("Too slow")
 @pytest.mark.integration
-def test_database_query():
-    ...
+def test_database_query(): ...
+
 
 # ✅ Integration tests should be fast (<1s)
 @pytest.mark.integration
@@ -255,6 +276,7 @@ def test_command_has_checksum_flag(database):
     cmd = build_command("/source", "dest")
     assert "--checksum" in cmd
 
+
 # ✅ Level 1 is sufficient
 def test_command_has_checksum_flag():
     cmd = build_command("/source", "dest")
@@ -263,4 +285,4 @@ def test_command_has_checksum_flag():
 
 ---
 
-_Level 2 is where theory meets reality. If it works here, you have real confidence._
+*Level 2 is where theory meets reality. If it works here, you have real confidence.*

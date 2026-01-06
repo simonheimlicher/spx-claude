@@ -167,4 +167,4 @@
 
 ---
 
-_Review completed: [timestamp]_
+*Review completed: [timestamp]*

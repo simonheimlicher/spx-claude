@@ -128,30 +128,30 @@ refactor(db): extract query builder module
 
 ### Standard Types
 
-| Type         | Purpose                              | SemVer  |
-| ------------ | ------------------------------------ | ------- |
-| **feat**     | New user-facing feature              | MINOR   |
-| **fix**      | Bug fix                              | PATCH   |
-| **docs**     | Documentation only                   | PATCH   |
-| **style**    | Formatting (no logic change)         | PATCH   |
-| **refactor** | Code restructure (no behavior change)| PATCH   |
-| **perf**     | Performance improvement              | PATCH   |
-| **test**     | Add/modify tests                     | PATCH   |
-| **ci**       | CI/CD changes                        | PATCH   |
-| **build**    | Build system, dependencies           | PATCH   |
-| **revert**   | Revert previous commit               | varies  |
+| Type         | Purpose                               | SemVer |
+| ------------ | ------------------------------------- | ------ |
+| **feat**     | New user-facing feature               | MINOR  |
+| **fix**      | Bug fix                               | PATCH  |
+| **docs**     | Documentation only                    | PATCH  |
+| **style**    | Formatting (no logic change)          | PATCH  |
+| **refactor** | Code restructure (no behavior change) | PATCH  |
+| **perf**     | Performance improvement               | PATCH  |
+| **test**     | Add/modify tests                      | PATCH  |
+| **ci**       | CI/CD changes                         | PATCH  |
+| **build**    | Build system, dependencies            | PATCH  |
+| **revert**   | Revert previous commit                | varies |
 
 ### Domain-Specific Types
 
 Projects may define custom types:
 
-| Type         | Domain            | Purpose                          |
-| ------------ | ----------------- | -------------------------------- |
-| **ctx**      | SPX projects      | Context/workflow documentation   |
-| **draft**    | Writing projects  | New or revised content           |
-| **spec**     | Documentation     | Specification changes            |
-| **research** | Academic/books    | Research notes                   |
-| **meta**     | Process docs      | Process/workflow documentation   |
+| Type         | Domain           | Purpose                        |
+| ------------ | ---------------- | ------------------------------ |
+| **ctx**      | SPX projects     | Context/workflow documentation |
+| **draft**    | Writing projects | New or revised content         |
+| **spec**     | Documentation    | Specification changes          |
+| **research** | Academic/books   | Research notes                 |
+| **meta**     | Process docs     | Process/workflow documentation |
 
 Check project's CLAUDE.md or commit-standards.md for custom types.
 

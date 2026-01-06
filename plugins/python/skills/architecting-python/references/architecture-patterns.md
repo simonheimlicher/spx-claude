@@ -28,6 +28,7 @@ Structure code around the business domain, not technical concerns.
 from dataclasses import dataclass, field
 from uuid import UUID, uuid4
 
+
 @dataclass
 class User:
     """Entity: has identity (id), mutable state."""
@@ -45,6 +46,7 @@ class User:
 
 ```python
 from dataclasses import dataclass
+
 
 @dataclass(frozen=True)
 class Money:
@@ -114,12 +116,14 @@ Isolate domain logic from external systems.
 ```python
 from typing import Protocol
 
+
 class UserRepository(Protocol):
     """Port: defines what the domain needs from persistence."""
 
     def get(self, user_id: UUID) -> User | None: ...
     def save(self, user: User) -> None: ...
     def delete(self, user_id: UUID) -> None: ...
+
 
 class NotificationGateway(Protocol):
     """Port: defines what the domain needs from notifications."""
@@ -166,9 +170,7 @@ class UserService:
     def register_user(self, email: str, name: str) -> User:
         user = User(email=email, name=name)
         self._users.save(user)
-        self._notifications.send_email(
-            email, "Welcome", f"Hello {name}!"
-        )
+        self._notifications.send_email(email, "Welcome", f"Hello {name}!")
         return user
 ```
 
@@ -191,6 +193,7 @@ def sync_files(
 ) -> SyncResult:
     logger.info(f"Syncing {source} to {dest}")
     ...
+
 
 # BAD - Hidden dependencies
 def sync_files(source: Path, dest: Path) -> SyncResult:
@@ -257,19 +260,26 @@ src/
 # GOOD - Single responsibility
 class UserValidator:
     """Validates user data."""
+
     def validate(self, data: dict) -> list[str]: ...
+
 
 class UserRepository:
     """Persists users."""
+
     def save(self, user: User) -> None: ...
+
 
 class UserNotifier:
     """Sends user notifications."""
+
     def notify(self, user: User, message: str) -> None: ...
+
 
 # BAD - Multiple responsibilities
 class UserManager:
     """Does everything user-related."""  # Too broad
+
     def validate(self, data: dict) -> list[str]: ...
     def save(self, user: User) -> None: ...
     def notify(self, user: User, message: str) -> None: ...
@@ -297,20 +307,28 @@ python -c "from mypackage import main"
 # BEFORE (cycle: a imports b, b imports a)
 # a.py
 from b import B
+
+
 class A:
     def use_b(self, b: B) -> None: ...
 
+
 # b.py
 from a import A
+
+
 class B:
     def use_a(self, a: A) -> None: ...
+
 
 # AFTER (no cycle: both import from types)
 # types.py
 from typing import Protocol
 
+
 class AProtocol(Protocol):
     def use_b(self, b: "BProtocol") -> None: ...
+
 
 class BProtocol(Protocol):
     def use_a(self, a: AProtocol) -> None: ...
@@ -324,8 +342,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from other_module import OtherClass
 
-def process(item: "OtherClass") -> None:
-    ...
+
+def process(item: "OtherClass") -> None: ...
 ```
 
 **Strategy 3: Reorganize modules**
@@ -353,6 +371,7 @@ def calculate_total(items: list[OrderLine]) -> Money:
         items[0].price.currency if items else "USD",
     )
 
+
 # IMPURE - Has side effects (I/O)
 def calculate_and_save_total(order: Order) -> Money:
     total = calculate_total(order.lines)
@@ -377,6 +396,7 @@ def process_order(order: Order) -> ProcessedOrder:
     validated = validate_order(order)  # Pure
     priced = calculate_prices(validated)  # Pure
     return finalize(priced)  # Pure
+
 
 # Impure shell
 def handle_order_request(request: Request) -> Response:

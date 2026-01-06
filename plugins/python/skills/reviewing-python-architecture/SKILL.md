@@ -93,7 +93,6 @@ From /testing-python:
 {If APPROVED: "Architecture meets standards"}
 
 ````
-
 ## What to Avoid
 
 **Don't:**
@@ -154,6 +153,7 @@ Use dependency injection:
 class TraktListProvider(Protocol):
     def __call__(self, list_name: str, username: str) -> Any | None: ...
 
+
 # Level 1: Inject fake implementation
 # Level 3: Use real PyTrakt
 ```
@@ -180,7 +180,6 @@ class TraktListProvider(Protocol):
 Revise and resubmit.
 
 ```
-
 ## Key Principles
 
 1. **Concise** - 50-100 lines max

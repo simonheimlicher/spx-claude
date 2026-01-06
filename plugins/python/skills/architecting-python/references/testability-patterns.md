@@ -102,6 +102,7 @@ class TestUserValidation:
 ```python
 from hypothesis import given, strategies as st
 
+
 @given(st.text())
 def test_parse_user_never_crashes_on_any_name(name: str) -> None:
     """Confidence: Does parse_user handle ANY string as a name?"""
@@ -196,6 +197,7 @@ def test_calculate_total_empty_list() -> None:
 
     assert total == Money(0, "USD")
 
+
 def test_calculate_total_large_quantities() -> None:
     """Edge: Large quantities shouldn't overflow."""
     items = [OrderLine(product_id=1, quantity=1_000_000, price=Money(100, "USD"))]
@@ -236,12 +238,19 @@ Add property tests to explore the input space:
 ```python
 from hypothesis import given, strategies as st
 
-@given(st.lists(st.builds(
-    OrderLine,
-    product_id=st.integers(min_value=1),
-    quantity=st.integers(min_value=0, max_value=1000),
-    price=st.builds(Money, amount=st.integers(min_value=0), currency=st.just("USD")),
-)))
+
+@given(
+    st.lists(
+        st.builds(
+            OrderLine,
+            product_id=st.integers(min_value=1),
+            quantity=st.integers(min_value=0, max_value=1000),
+            price=st.builds(
+                Money, amount=st.integers(min_value=0), currency=st.just("USD")
+            ),
+        )
+    )
+)
 def test_calculate_total_always_non_negative(items: list[OrderLine]) -> None:
     """Property: Total is always non-negative for valid inputs."""
     total = calculate_total(items)
@@ -265,6 +274,7 @@ class UserService:
     def __init__(self, repo: UserRepository, notifier: Notifier) -> None:
         self._repo = repo
         self._notifier = notifier
+
 
 # In tests:
 def test_user_service_sends_notification() -> None:
@@ -296,6 +306,7 @@ def calculate_discount(price: Money, discount_percent: int) -> Money:
     discount_amount = price.amount * discount_percent // 100
     return Money(price.amount - discount_amount, price.currency)
 
+
 # Test: No setup needed
 def test_calculate_discount() -> None:
     result = calculate_discount(Money(1000, "USD"), 10)
@@ -321,14 +332,17 @@ def parse_config_file(path: Path) -> dict:
     """Boundary: Reads file (impure)."""
     return json.loads(path.read_text())
 
+
 def validate_config(data: dict) -> AppConfig:
     """Logic: Validates config (pure)."""
     return AppConfig(**data)
+
 
 def load_config(path: Path) -> AppConfig:
     """Composition: Combines boundary and logic."""
     data = parse_config_file(path)
     return validate_config(data)
+
 
 # Test the logic without files:
 def test_validate_config() -> None:
@@ -344,24 +358,31 @@ def test_validate_config() -> None:
 ```python
 class Clock(Protocol):
     """Protocol: Anything with a now() method."""
+
     def now(self) -> datetime: ...
+
 
 class RealClock:
     """Production: Uses system time."""
+
     def now(self) -> datetime:
         return datetime.now()
 
+
 class FakeClock:
     """Testing: Returns controlled time."""
+
     def __init__(self, fixed_time: datetime) -> None:
         self._time = fixed_time
 
     def now(self) -> datetime:
         return self._time
 
+
 # Function accepts any Clock:
 def create_timestamp(clock: Clock) -> str:
     return clock.now().isoformat()
+
 
 # Test with controlled time:
 def test_create_timestamp() -> None:

@@ -55,19 +55,19 @@ Complete Python development workflow with testing, implementation, and review.
 
 ### Skills
 
-| Skill                           | Purpose                                                 |
-| ------------------------------- | ------------------------------------------------------- |
-| `/testing-python`               | Python-specific testing patterns (requires `/testing`)  |
-| `/coding-python`                | Implementation workhorse with remediation loop          |
-| `/reviewing-python`             | Strict code review with zero-tolerance                  |
-| `/architecting-python`          | ADR producer with testing strategy                      |
-| `/reviewing-python-architecture`| ADR validator against testing principles                |
+| Skill                            | Purpose                                                |
+| -------------------------------- | ------------------------------------------------------ |
+| `/testing-python`                | Python-specific testing patterns (requires `/testing`) |
+| `/coding-python`                 | Implementation workhorse with remediation loop         |
+| `/reviewing-python`              | Strict code review with zero-tolerance                 |
+| `/architecting-python`           | ADR producer with testing strategy                     |
+| `/reviewing-python-architecture` | ADR validator against testing principles               |
 
 ### Commands
 
-| Command        | Purpose                                    |
-| -------------- | ------------------------------------------ |
-| `/autopython`  | Autonomous implementation orchestrator     |
+| Command       | Purpose                                |
+| ------------- | -------------------------------------- |
+| `/autopython` | Autonomous implementation orchestrator |
 
 ### Workflow
 
@@ -99,13 +99,13 @@ Productivity skills and commands for Claude Code.
 
 ### Skills
 
-| Skill               | Purpose                                    |
-| ------------------- | ------------------------------------------ |
-| `/creating-skills`  | Create production-grade, reusable skills   |
+| Skill                 | Purpose                                   |
+| --------------------- | ----------------------------------------- |
+| `/creating-skills`    | Create production-grade, reusable skills  |
 | `/committing-changes` | Comprehensive git commit message guidance |
 
 ### Commands
 
-| Command | Purpose                                         |
-| ------- | ----------------------------------------------- |
+| Command | Purpose                                             |
+| ------- | --------------------------------------------------- |
 | `/ci`   | Git commit with Conventional Commits (auto-context) |

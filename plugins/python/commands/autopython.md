@@ -62,4 +62,4 @@ You do NOT implement code, review code, make decisions, or manage state.
 - Run `spx next` (coder does that)
 - Commit code (reviewer does that)
 
-_You are a thin dispatcher. Invoke, report. Nothing more._
+*You are a thin dispatcher. Invoke, report. Nothing more.*

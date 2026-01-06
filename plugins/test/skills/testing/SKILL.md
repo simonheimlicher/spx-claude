@@ -30,23 +30,23 @@ Everything in this skill flows from that question. Tests exist to give you **jus
 ### The Confidence Pyramid
 
 ```
-                    ┌─────────────────────┐
-                    │      LEVEL 3        │  "Does it work in the real world?"
-                    │   System / E2E      │  Real credentials, real services
-                    │                     │  Full user workflows
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │      LEVEL 2        │  "Does our code work with real infrastructure?"
-                    │    Integration      │  Real binaries, real databases
-                    │                     │  Test harnesses required
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │      LEVEL 1        │  "Is the logic of our functions correct?"
-                    │    Unit / Pure      │  No external dependencies
-                    │                     │  Dependency injection, temp dirs, test runner only
-                    └─────────────────────┘
+┌─────────────────────┐
+│      LEVEL 3        │  "Does it work in the real world?"
+│   System / E2E      │  Real credentials, real services
+│                     │  Full user workflows
+└──────────┬──────────┘
+           │
+┌──────────▼──────────┐
+│      LEVEL 2        │  "Does our code work with real infrastructure?"
+│    Integration      │  Real binaries, real databases
+│                     │  Test harnesses required
+└──────────┬──────────┘
+           │
+┌──────────▼──────────┐
+│      LEVEL 1        │  "Is the logic of our functions correct?"
+│    Unit / Pure      │  No external dependencies
+│                     │  Dependency injection, temp dirs, test runner only
+└─────────────────────┘
 ```
 
 **Build from the bottom up.** Each level answers a question the previous level cannot.
@@ -121,6 +121,7 @@ class OrderProcessor:
         db.save(order)
         EmailService().send(order.customer, "Order confirmed")
 
+
 ## ✅ GOOD: Injected dependencies, testable without mocks
 class OrderProcessor:
     def __init__(self, repository, notifier):
@@ -131,6 +132,7 @@ class OrderProcessor:
         self.repository.save(order)
         self.notifier.notify(order.customer, "Order confirmed")
 
+
 ## Level 1 test: Use simple in-memory implementations
 def test_order_processing_saves_and_notifies():
     # These are NOT mocks—they're real implementations with test-friendly behavior
@@ -138,10 +140,12 @@ def test_order_processing_saves_and_notifies():
     notifications = []
 
     class InMemoryRepo:
-        def save(self, order): saved_orders.append(order)
+        def save(self, order):
+            saved_orders.append(order)
 
     class InMemoryNotifier:
-        def notify(self, to, msg): notifications.append((to, msg))
+        def notify(self, to, msg):
+            notifications.append((to, msg))
 
     processor = OrderProcessor(InMemoryRepo(), InMemoryNotifier())
     processor.process(Order(customer="alice@test.com", items=["book"]))
@@ -158,6 +162,7 @@ def calculate_shipping(weight_kg: float, distance_km: float, express: bool) -> f
     base = weight_kg * 0.5 + distance_km * 0.01
     return base * 1.5 if express else base
 
+
 def test_shipping_calculation():
     assert calculate_shipping(10, 100, express=False) == 6.0
     assert calculate_shipping(10, 100, express=True) == 9.0
@@ -168,6 +173,7 @@ def test_shipping_calculation():
 ```python
 import tempfile
 from pathlib import Path
+
 
 def test_config_file_generation():
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -181,16 +187,16 @@ def test_config_file_generation():
 
 ### What Level 1 Tests Prove
 
-✅ Your business logic handles edge cases correctly  
-✅ Your parsing/validation works  
-✅ Your algorithms produce correct results  
+✅ Your business logic handles edge cases correctly\
+✅ Your parsing/validation works\
+✅ Your algorithms produce correct results\
 ✅ Your error handling works as expected
 
 ### What Level 1 Tests Cannot Prove
 
-❌ That PostgreSQL accepts your queries  
-❌ That the HTTP API returns what you expect  
-❌ That the CLI binary does what the docs say  
+❌ That PostgreSQL accepts your queries\
+❌ That the HTTP API returns what you expect\
+❌ That the CLI binary does what the docs say\
 ❌ That the real system works end-to-end
 
 **This is why Level 2 exists.**
@@ -264,6 +270,7 @@ test/
 import pytest
 from harnesses.postgres import PostgresHarness
 
+
 @pytest.fixture(scope="module")
 def database():
     """Harness: Docker Postgres with schema applied"""
@@ -272,6 +279,7 @@ def database():
     harness.apply_schema("schema.sql")
     yield harness.connection_string
     harness.stop()
+
 
 def test_user_repository_saves_and_retrieves(database):
     repo = UserRepository(database)
@@ -292,6 +300,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+
 @pytest.fixture
 def hugo_site():
     """Harness: Temp directory with minimal Hugo site structure"""
@@ -303,12 +312,11 @@ def hugo_site():
         (site_dir / "content" / "_index.md").write_text("# Home")
         yield site_dir
 
+
 def test_hugo_builds_site(hugo_site):
     """Level 2: Verify Hugo binary actually builds our site structure"""
     result = subprocess.run(
-        ["hugo", "--source", str(hugo_site)],
-        capture_output=True,
-        text=True
+        ["hugo", "--source", str(hugo_site)], capture_output=True, text=True
     )
 
     assert result.returncode == 0
@@ -322,6 +330,7 @@ import pytest
 import httpx
 from harnesses.api_server import LocalAPIServer
 
+
 @pytest.fixture(scope="module")
 def api_server():
     """Harness: Local instance of the API under test"""
@@ -331,11 +340,9 @@ def api_server():
     yield server.base_url
     server.stop()
 
+
 def test_api_creates_resource(api_server):
-    response = httpx.post(
-        f"{api_server}/resources",
-        json={"name": "test-resource"}
-    )
+    response = httpx.post(f"{api_server}/resources", json={"name": "test-resource"})
 
     assert response.status_code == 201
     assert response.json()["name"] == "test-resource"
@@ -343,16 +350,16 @@ def test_api_creates_resource(api_server):
 
 ### What Level 2 Tests Prove
 
-✅ PostgreSQL accepts your queries and returns expected results  
-✅ Hugo builds your site structure correctly  
-✅ The HTTP client handles real responses correctly  
+✅ PostgreSQL accepts your queries and returns expected results\
+✅ Hugo builds your site structure correctly\
+✅ The HTTP client handles real responses correctly\
 ✅ File operations work on real file systems
 
 ### What Level 2 Tests Cannot Prove
 
-❌ That production credentials work  
-❌ That third-party APIs behave the same in prod  
-❌ That the full user workflow succeeds  
+❌ That production credentials work\
+❌ That third-party APIs behave the same in prod\
+❌ That the full user workflow succeeds\
 ❌ That performance is acceptable under load
 
 **This is why Level 3 exists.**
@@ -405,12 +412,14 @@ Level 3 tests require these environment variables:
 - TEST_USER_PASSWORD: In 1Password vault "Engineering/Test Credentials"
 """
 
+
 @pytest.fixture(scope="session")
 def stripe_client():
     api_key = os.environ.get("STRIPE_TEST_API_KEY")
     if not api_key:
         pytest.skip(f"STRIPE_TEST_API_KEY not set.\n{CREDENTIALS_SOURCE}")
     return StripeClient(api_key=api_key)
+
 
 @pytest.fixture(scope="session")
 def authenticated_user(browser):
@@ -468,6 +477,7 @@ def test_complete_purchase_workflow(authenticated_user, stripe_client):
 import subprocess
 import os
 
+
 def test_cli_full_workflow():
     """
     Level 3: CLI works with real credentials against real services
@@ -482,13 +492,15 @@ def test_cli_full_workflow():
 
     result = subprocess.run(
         [
-            "hugolit", "run",
-            "--url", "https://staging.example.com",
-            "--upload"  # Uploads to LHCI server
+            "hugolit",
+            "run",
+            "--url",
+            "https://staging.example.com",
+            "--upload",  # Uploads to LHCI server
         ],
         capture_output=True,
         text=True,
-        env={**os.environ, "CI": "true"}
+        env={**os.environ, "CI": "true"},
     )
 
     assert result.returncode == 0
@@ -497,9 +509,9 @@ def test_cli_full_workflow():
 
 ### What Level 3 Tests Prove
 
-✅ Real credentials work  
-✅ Real third-party APIs behave as expected  
-✅ The full user workflow succeeds  
+✅ Real credentials work\
+✅ Real third-party APIs behave as expected\
+✅ The full user workflow succeeds\
 ✅ All integrations work together in a real environment
 
 ### When Level 3 Tests Fail
@@ -584,11 +596,13 @@ def test_email_validation_rejects_invalid():
     assert validate_email("also@invalid") is False
     assert validate_email("valid@example.com") is True
 
+
 def test_password_hashing_is_deterministic():
     hash1 = hash_password("secret123")
     hash2 = hash_password("secret123")
     assert verify_password("secret123", hash1)
     assert verify_password("secret123", hash2)
+
 
 ## test/integration/test_registration.py (Level 2)
 def test_user_repository_creates_user(database):
@@ -598,6 +612,7 @@ def test_user_repository_creates_user(database):
     retrieved = repo.find_by_email("new@example.com")
     assert retrieved.id == user.id
 
+
 def test_email_service_sends_welcome_email(mailhog):
     service = EmailService(smtp_url=mailhog.smtp_url)
     service.send_welcome("recipient@example.com")
@@ -605,6 +620,7 @@ def test_email_service_sends_welcome_email(mailhog):
     messages = mailhog.get_messages()
     assert len(messages) == 1
     assert messages[0]["To"] == "recipient@example.com"
+
 
 ## test/e2e/test_registration.py (Level 3)
 def test_complete_signup_workflow(browser, test_credentials):
@@ -625,7 +641,7 @@ def test_complete_signup_workflow(browser, test_credentials):
 
 ```python
 ## ❌ NEVER DO THIS
-@patch('myapp.database.PostgresClient')
+@patch("myapp.database.PostgresClient")
 def test_saves_user(mock_db):
     mock_db.save.return_value = {"id": 1}
     result = save_user({"email": "test@example.com"})
@@ -657,6 +673,7 @@ def test_full_checkout():
 def test_integration():
     db = connect("postgresql://localhost:5432/test")  # Does this exist? Who knows!
 
+
 ## ❌ Hardcoding credentials
 def test_e2e():
     stripe = Stripe(api_key="sk_test_abc123")  # Will this work? For how long?
@@ -673,12 +690,16 @@ def test_uses_correct_query():
     repo.find_active_users()
     mock_db.query.assert_called_with("SELECT * FROM users WHERE active = true")
 
+
 ## ✅ Test the BEHAVIOR
 def test_returns_only_active_users(database):
-    seed_data(database, [
-        {"email": "active@test.com", "active": True},
-        {"email": "inactive@test.com", "active": False},
-    ])
+    seed_data(
+        database,
+        [
+            {"email": "active@test.com", "active": True},
+            {"email": "inactive@test.com", "active": False},
+        ],
+    )
 
     repo = UserRepository(database)
     users = repo.find_active_users()
@@ -743,8 +764,8 @@ def test_returns_only_active_users(database):
 
 ---
 
-_Remember: The goal is not "passing tests." The goal is **justified confidence that your code works in the real world**. Every test should move you closer to that confidence. If a test doesn't, delete it._
+*Remember: The goal is not "passing tests." The goal is **justified confidence that your code works in the real world**. Every test should move you closer to that confidence. If a test doesn't, delete it.*
 
 ---
 
-_Remember: The goal is not "passing tests." The goal is **justified confidence that your code works in the real world**. Every test should move you closer to that confidence. If a test doesn't, delete it._
+*Remember: The goal is not "passing tests." The goal is **justified confidence that your code works in the real world**. Every test should move you closer to that confidence. If a test doesn't, delete it.*

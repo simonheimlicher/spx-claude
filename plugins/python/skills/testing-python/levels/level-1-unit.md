@@ -35,15 +35,18 @@ Design code to accept dependencies as parameters.
 from dataclasses import dataclass
 from typing import Callable, Protocol
 
+
 class CommandRunner(Protocol):
     def run(self, cmd: list[str]) -> tuple[int, str, str]:
         """Returns (returncode, stdout, stderr)."""
         ...
 
+
 @dataclass
 class SyncDependencies:
     run_command: CommandRunner
     get_env: Callable[[str], str | None] = os.environ.get
+
 
 def build_rclone_command(source: str, dest: str, *, checksum: bool = True) -> list[str]:
     """Build rclone command. Pure function, no I/O."""
@@ -51,6 +54,7 @@ def build_rclone_command(source: str, dest: str, *, checksum: bool = True) -> li
     if checksum:
         cmd.append("--checksum")
     return cmd
+
 
 def sync_to_remote(source: str, dest: str, deps: SyncDependencies) -> SyncResult:
     cmd = build_rclone_command(source, dest)
@@ -149,6 +153,7 @@ def test_calls_rclone(mock_run):
     sync_to_remote(src, dest)
     mock_run.assert_called_with(["rclone", "sync", ...])
 
+
 # ✅ DI tests behavior, not implementation
 def test_sync_succeeds_when_command_succeeds():
     deps = SyncDependencies(run_command=FakeSuccessRunner())
@@ -164,6 +169,7 @@ def test_rclone_sync_copies_files(tmp_path):
     subprocess.run(["rclone", "sync", str(src), str(dest)])
     assert (dest / "file.txt").exists()  # Tests rclone, not our code
 
+
 # ✅ This tests our code's command building
 def test_sync_command_includes_source_and_dest():
     cmd = build_rclone_command("/source", "/dest")
@@ -172,4 +178,4 @@ def test_sync_command_includes_source_and_dest():
 
 ---
 
-_Level 1 is the foundation. Get this right, and higher levels become verification, not debugging._
+*Level 1 is the foundation. Get this right, and higher levels become verification, not debugging.*

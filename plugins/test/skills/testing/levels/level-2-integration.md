@@ -75,9 +75,9 @@ test/
 ```typescript
 // test/harnesses/hugo.ts
 import { execa, ExecaReturnValue } from "execa";
-import { mkdtemp, rm, cp } from "fs/promises";
-import { join } from "path";
+import { cp, mkdtemp, rm } from "fs/promises";
 import { tmpdir } from "os";
+import { join } from "path";
 
 type HugoHarness = {
   siteDir: string;
@@ -90,7 +90,10 @@ async function verifyHugoInstalled(): Promise<void> {
   try {
     await execa("hugo", ["version"]);
   } catch {
-    throw new Error("Hugo binary not found. Install Hugo or skip integration tests.\n" + "Install: https://gohugo.io/installation/");
+    throw new Error(
+      "Hugo binary not found. Install Hugo or skip integration tests.\n"
+        + "Install: https://gohugo.io/installation/",
+    );
   }
 }
 
@@ -112,7 +115,13 @@ async function createHugoHarness(fixturePath?: string): Promise<HugoHarness> {
     outputDir,
 
     async build(args: string[] = []) {
-      return execa("hugo", ["--source", siteDir, "--destination", outputDir, ...args]);
+      return execa("hugo", [
+        "--source",
+        siteDir,
+        "--destination",
+        outputDir,
+        ...args,
+      ]);
     },
 
     async cleanup() {
@@ -129,7 +138,7 @@ async function createMinimalSite(dir: string): Promise<void> {
     `
 title = "Test Site"
 baseURL = "http://localhost:1313/"
-`
+`,
   );
 
   await mkdir(join(dir, "content"), { recursive: true });
@@ -143,7 +152,7 @@ title: "Home"
 # Welcome
 
 This is a test site.
-`
+`,
   );
 
   await mkdir(join(dir, "layouts", "_default"), { recursive: true });
@@ -155,19 +164,19 @@ This is a test site.
 <head><title>{{ .Title }}</title></head>
 <body>{{ block "main" . }}{{ end }}</body>
 </html>
-`
+`,
   );
   await writeFile(
     join(dir, "layouts", "_default", "list.html"),
     `
 {{ define "main" }}{{ .Content }}{{ end }}
-`
+`,
   );
   await writeFile(
     join(dir, "layouts", "_default", "single.html"),
     `
 {{ define "main" }}{{ .Content }}{{ end }}
-`
+`,
   );
 }
 
@@ -178,9 +187,9 @@ export { createHugoHarness, verifyHugoInstalled };
 
 ```typescript
 // test/integration/hugo-build.test.ts
-import { createHugoHarness } from "../harnesses/hugo";
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
+import { createHugoHarness } from "../harnesses/hugo";
 
 describe("Hugo Build Integration", () => {
   test("builds minimal site successfully", async () => {
@@ -237,10 +246,10 @@ describe("Hugo Build Integration", () => {
 ```typescript
 // test/harnesses/caddy.ts
 import { execa, ExecaChildProcess } from "execa";
-import { writeFile, mkdtemp, rm } from "fs/promises";
-import { join } from "path";
-import { tmpdir } from "os";
+import { mkdtemp, rm, writeFile } from "fs/promises";
 import getPort from "get-port";
+import { tmpdir } from "os";
+import { join } from "path";
 
 type CaddyHarness = {
   port: number;
@@ -255,7 +264,10 @@ async function verifyCaddyInstalled(): Promise<void> {
   try {
     await execa("caddy", ["version"]);
   } catch {
-    throw new Error("Caddy binary not found. Install Caddy or skip integration tests.\n" + "Install: https://caddyserver.com/docs/install");
+    throw new Error(
+      "Caddy binary not found. Install Caddy or skip integration tests.\n"
+        + "Install: https://caddyserver.com/docs/install",
+    );
   }
 }
 
@@ -284,7 +296,7 @@ async function createCaddyHarness(staticDir: string): Promise<CaddyHarness> {
     output discard
   }
 }
-`
+`,
       );
 
       process = execa("caddy", ["run", "--config", caddyfilePath], {
@@ -335,8 +347,8 @@ export { createCaddyHarness, verifyCaddyInstalled };
 
 ```typescript
 // test/integration/caddy-server.test.ts
-import { createHugoHarness } from "../harnesses/hugo";
 import { createCaddyHarness } from "../harnesses/caddy";
+import { createHugoHarness } from "../harnesses/hugo";
 
 describe("Caddy Server Integration", () => {
   test("serves Hugo-built site", async () => {
@@ -387,9 +399,9 @@ describe("Caddy Server Integration", () => {
 
 ```typescript
 // test/harnesses/postgres.ts
-import { Pool } from "pg";
 import { execa } from "execa";
 import { readFile } from "fs/promises";
+import { Pool } from "pg";
 
 type PostgresHarness = {
   connectionString: string;
@@ -410,14 +422,21 @@ const TEST_DB_CONFIG = {
 
 async function createPostgresHarness(): Promise<PostgresHarness> {
   // Verify database is available
-  const connectionString = `postgresql://${TEST_DB_CONFIG.user}:${TEST_DB_CONFIG.password}@` + `${TEST_DB_CONFIG.host}:${TEST_DB_CONFIG.port}/${TEST_DB_CONFIG.database}`;
+  const connectionString =
+    `postgresql://${TEST_DB_CONFIG.user}:${TEST_DB_CONFIG.password}@`
+    + `${TEST_DB_CONFIG.host}:${TEST_DB_CONFIG.port}/${TEST_DB_CONFIG.database}`;
 
   const pool = new Pool(TEST_DB_CONFIG);
 
   try {
     await pool.query("SELECT 1");
   } catch (error) {
-    throw new Error(`Cannot connect to test database.\n` + `Connection string: ${connectionString}\n` + `Start database: docker-compose -f docker-compose.test.yml up -d postgres\n` + `Error: ${error}`);
+    throw new Error(
+      `Cannot connect to test database.\n`
+        + `Connection string: ${connectionString}\n`
+        + `Start database: docker-compose -f docker-compose.test.yml up -d postgres\n`
+        + `Error: ${error}`,
+    );
   }
 
   return {
@@ -505,7 +524,8 @@ describe("User Repository Integration", () => {
 
     await repo.create({ email: "dupe@example.com", name: "First" });
 
-    await expect(repo.create({ email: "dupe@example.com", name: "Second" })).rejects.toThrow(/unique/);
+    await expect(repo.create({ email: "dupe@example.com", name: "Second" }))
+      .rejects.toThrow(/unique/);
   });
 });
 ```
@@ -523,11 +543,13 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional
 
+
 @dataclass
 class HugoResult:
     exit_code: int
     stdout: str
     stderr: str
+
 
 @dataclass
 class HugoHarness:
@@ -538,20 +560,25 @@ class HugoHarness:
     def build(self, args: list[str] = None) -> HugoResult:
         args = args or []
         result = subprocess.run(
-            ["hugo", "--source", str(self.site_dir),
-             "--destination", str(self.output_dir)] + args,
+            [
+                "hugo",
+                "--source",
+                str(self.site_dir),
+                "--destination",
+                str(self.output_dir),
+            ]
+            + args,
             capture_output=True,
-            text=True
+            text=True,
         )
         return HugoResult(
-            exit_code=result.returncode,
-            stdout=result.stdout,
-            stderr=result.stderr
+            exit_code=result.returncode, stdout=result.stdout, stderr=result.stderr
         )
 
     def cleanup(self):
         if self._temp_dir:
             self._temp_dir.cleanup()
+
 
 def verify_hugo_installed():
     try:
@@ -561,6 +588,7 @@ def verify_hugo_installed():
             "Hugo binary not found. Install Hugo or skip integration tests.\n"
             "Install: https://gohugo.io/installation/"
         )
+
 
 def create_hugo_harness(fixture_path: Optional[Path] = None) -> HugoHarness:
     verify_hugo_installed()
@@ -574,41 +602,40 @@ def create_hugo_harness(fixture_path: Optional[Path] = None) -> HugoHarness:
     else:
         _create_minimal_site(site_dir)
 
-    harness = HugoHarness(
-        site_dir=site_dir,
-        output_dir=output_dir,
-        _temp_dir=temp_dir
-    )
+    harness = HugoHarness(site_dir=site_dir, output_dir=output_dir, _temp_dir=temp_dir)
     return harness
 
+
 def _create_minimal_site(site_dir: Path):
-    (site_dir / "config.toml").write_text('''
+    (site_dir / "config.toml").write_text("""
 title = "Test Site"
 baseURL = "http://localhost:1313/"
-''')
+""")
 
     content_dir = site_dir / "content"
     content_dir.mkdir()
-    (content_dir / "_index.md").write_text('''
+    (content_dir / "_index.md").write_text("""
 ---
 title: "Home"
 ---
 
 # Welcome
-''')
+""")
 
     layouts_dir = site_dir / "layouts" / "_default"
     layouts_dir.mkdir(parents=True)
 
-    (layouts_dir / "baseof.html").write_text('''
+    (layouts_dir / "baseof.html").write_text("""
 <!DOCTYPE html>
 <html>
 <head><title>{{ .Title }}</title></head>
 <body>{{ block "main" . }}{{ end }}</body>
 </html>
-''')
+""")
     (layouts_dir / "list.html").write_text('{{ define "main" }}{{ .Content }}{{ end }}')
-    (layouts_dir / "single.html").write_text('{{ define "main" }}{{ .Content }}{{ end }}')
+    (layouts_dir / "single.html").write_text(
+        '{{ define "main" }}{{ .Content }}{{ end }}'
+    )
 ```
 
 ### Using the Python Harness
@@ -617,6 +644,7 @@ title: "Home"
 # test/integration/test_hugo_build.py
 import pytest
 from harnesses.hugo import create_hugo_harness
+
 
 def test_builds_minimal_site():
     harness = create_hugo_harness()
@@ -628,6 +656,7 @@ def test_builds_minimal_site():
         assert (harness.output_dir / "index.html").exists()
     finally:
         harness.cleanup()
+
 
 def test_builds_with_minify():
     harness = create_hugo_harness()
@@ -642,12 +671,14 @@ def test_builds_with_minify():
     finally:
         harness.cleanup()
 
+
 # Using pytest fixtures for cleaner tests
 @pytest.fixture
 def hugo():
     harness = create_hugo_harness()
     yield harness
     harness.cleanup()
+
 
 def test_with_fixture(hugo):
     result = hugo.build()
@@ -662,8 +693,8 @@ Test that your HTTP client code works with real HTTP responses.
 
 ```typescript
 // test/harnesses/http-server.ts
-import { createServer, Server, IncomingMessage, ServerResponse } from "http";
 import getPort from "get-port";
+import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 
 type Route = {
   method: string;
@@ -697,37 +728,43 @@ async function createHttpServerHarness(): Promise<HttpServerHarness> {
     },
 
     async start() {
-      server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
-        // Collect request body
-        const chunks: Buffer[] = [];
-        for await (const chunk of req) {
-          chunks.push(chunk as Buffer);
-        }
-        const body = Buffer.concat(chunks).toString();
-
-        requests.push({
-          method: req.method || "GET",
-          path: req.url || "/",
-          body,
-        });
-
-        // Find matching route
-        const route = routes.find((r) => r.method === req.method && r.path === req.url);
-
-        if (route) {
-          res.statusCode = route.status;
-          if (route.headers) {
-            Object.entries(route.headers).forEach(([k, v]) => {
-              res.setHeader(k, v);
-            });
+      server = createServer(
+        async (req: IncomingMessage, res: ServerResponse) => {
+          // Collect request body
+          const chunks: Buffer[] = [];
+          for await (const chunk of req) {
+            chunks.push(chunk as Buffer);
           }
-          const responseBody = typeof route.body === "string" ? route.body : JSON.stringify(route.body);
-          res.end(responseBody);
-        } else {
-          res.statusCode = 404;
-          res.end("Not Found");
-        }
-      });
+          const body = Buffer.concat(chunks).toString();
+
+          requests.push({
+            method: req.method || "GET",
+            path: req.url || "/",
+            body,
+          });
+
+          // Find matching route
+          const route = routes.find((r) =>
+            r.method === req.method && r.path === req.url
+          );
+
+          if (route) {
+            res.statusCode = route.status;
+            if (route.headers) {
+              Object.entries(route.headers).forEach(([k, v]) => {
+                res.setHeader(k, v);
+              });
+            }
+            const responseBody = typeof route.body === "string"
+              ? route.body
+              : JSON.stringify(route.body);
+            res.end(responseBody);
+          } else {
+            res.statusCode = 404;
+            res.end("Not Found");
+          }
+        },
+      );
 
       await new Promise<void>((resolve) => {
         server!.listen(port, resolve);
@@ -754,8 +791,8 @@ export { createHttpServerHarness };
 
 ```typescript
 // test/integration/api-client.test.ts
-import { createHttpServerHarness } from "../harnesses/http-server";
 import { createApiClient } from "../../src/api/client";
+import { createHttpServerHarness } from "../harnesses/http-server";
 
 describe("API Client Integration", () => {
   let server: Awaited<ReturnType<typeof createHttpServerHarness>>;
@@ -812,7 +849,9 @@ describe("API Client Integration", () => {
     await client.createUser({ name: "New User", email: "new@test.com" });
 
     const requests = server.getRequests();
-    expect(requests[0].body).toBe(JSON.stringify({ name: "New User", email: "new@test.com" }));
+    expect(requests[0].body).toBe(
+      JSON.stringify({ name: "New User", email: "new@test.com" }),
+    );
   });
 });
 ```
@@ -823,7 +862,7 @@ describe("API Client Integration", () => {
 
 ```typescript
 // test/setup.ts
-import { beforeAll, afterAll } from "vitest";
+import { afterAll, beforeAll } from "vitest";
 
 // Environment check - fail fast if dependencies aren't available
 beforeAll(async () => {
@@ -838,7 +877,9 @@ beforeAll(async () => {
     try {
       await execa("sh", ["-c", check.cmd]);
     } catch {
-      console.warn(`⚠️  ${check.name} not available - some integration tests will be skipped`);
+      console.warn(
+        `⚠️  ${check.name} not available - some integration tests will be skipped`,
+      );
     }
   }
 });
@@ -936,17 +977,17 @@ If the test requires production credentials or external services, escalate to Le
 
 ## What Level 2 Proves
 
-✅ PostgreSQL accepts your queries  
-✅ Hugo builds your site structure  
-✅ Caddy serves your files correctly  
-✅ Your HTTP client handles real responses  
+✅ PostgreSQL accepts your queries\
+✅ Hugo builds your site structure\
+✅ Caddy serves your files correctly\
+✅ Your HTTP client handles real responses\
 ✅ Your file operations work on real filesystems
 
 ## What Level 2 Cannot Prove
 
-❌ That production credentials work  
-❌ That third-party APIs behave the same in prod  
-❌ That the full user workflow succeeds  
+❌ That production credentials work\
+❌ That third-party APIs behave the same in prod\
+❌ That the full user workflow succeeds\
 ❌ That performance is acceptable
 
 **When you need these guarantees, escalate to Level 3.**

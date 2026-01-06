@@ -28,6 +28,7 @@ Document error scenarios and actions:
 import time
 import random
 
+
 def retry_with_backoff(func, max_retries=3, base_delay=0.1):
     """Retry with exponential backoff and jitter."""
     for attempt in range(max_retries):
@@ -36,7 +37,7 @@ def retry_with_backoff(func, max_retries=3, base_delay=0.1):
         except Exception as e:
             if attempt == max_retries - 1:
                 raise
-            delay = base_delay * (2 ** attempt) + random.uniform(0, 0.1)
+            delay = base_delay * (2**attempt) + random.uniform(0, 0.1)
             time.sleep(delay)
 ```
 
@@ -57,7 +58,10 @@ interface ErrorResponse {
 // Example
 return {
   isError: true,
-  content: [{ type: "text", text: "Could not process file. Please check the format." }],
+  content: [{
+    type: "text",
+    text: "Could not process file. Please check the format.",
+  }],
   _meta: {
     errorCode: "INVALID_FORMAT",
     details: { expected: "PDF", received: "PNG" },
@@ -114,6 +118,7 @@ Validate ALL external input:
 ```python
 import os
 
+
 def safe_path(base_dir: str, user_path: str) -> str:
     """Prevent path traversal attacks."""
     full_path = os.path.normpath(os.path.join(base_dir, user_path))
@@ -152,7 +157,6 @@ cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
 ```
 
 ````
-
 ### Output Escaping
 
 ```markdown
@@ -177,7 +181,6 @@ const safeContent = escapeHtml(userInput);
 ````
 
 ````
-
 ---
 
 ## Dependency Documentation
@@ -255,7 +258,6 @@ npm test
 ```
 
 ````
-
 ---
 
 ## Testing Guidance
@@ -285,7 +287,6 @@ All scripts in `scripts/` must be tested before inclusion.
 ````
 
 ````
-
 ### Edge Cases
 
 ```markdown
@@ -309,8 +310,14 @@ Always handle:
 ### Timeout Protection
 
 ```typescript
-async function withTimeout<T>(promise: Promise<T>, ms: number, message = "Operation timed out"): Promise<T> {
-  const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error(message)), ms));
+async function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  message = "Operation timed out",
+): Promise<T> {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(message)), ms)
+  );
   return Promise.race([promise, timeout]);
 }
 

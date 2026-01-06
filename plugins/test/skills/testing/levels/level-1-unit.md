@@ -38,13 +38,20 @@ type SyncDeps = {
   runCommand: (cmd: string, args: string[]) => Promise<{ exitCode: number }>;
 };
 
-async function syncFiles(source: string, dest: string, deps: SyncDeps): Promise<SyncResult> {
+async function syncFiles(
+  source: string,
+  dest: string,
+  deps: SyncDeps,
+): Promise<SyncResult> {
   const files = await deps.listFiles(source);
   if (files.length === 0) {
     return { synced: 0, status: "empty" };
   }
   const result = await deps.runCommand("rsync", [source, dest]);
-  return { synced: files.length, status: result.exitCode === 0 ? "ok" : "failed" };
+  return {
+    synced: files.length,
+    status: result.exitCode === 0 ? "ok" : "failed",
+  };
 }
 ```
 
@@ -136,7 +143,13 @@ describe("parseArgs", () => {
   });
 
   test("handles multiple flags", () => {
-    const result = parseArgs(["--url", "http://localhost:3000", "--upload", "-n", "3"]);
+    const result = parseArgs([
+      "--url",
+      "http://localhost:3000",
+      "--upload",
+      "-n",
+      "3",
+    ]);
     expect(result).toEqual({
       url: "http://localhost:3000",
       upload: true,
@@ -198,7 +211,18 @@ describe("buildHugoCommand", () => {
       environment: "production",
     });
 
-    expect(cmd).toEqual(["hugo", "--source", "/site", "--destination", "/dist", "--minify", "--baseURL", "https://example.com", "--environment", "production"]);
+    expect(cmd).toEqual([
+      "hugo",
+      "--source",
+      "/site",
+      "--destination",
+      "/dist",
+      "--minify",
+      "--baseURL",
+      "https://example.com",
+      "--environment",
+      "production",
+    ]);
   });
 });
 ```
@@ -229,14 +253,18 @@ const configSchema = z.object({
 
 type Config = z.infer<typeof configSchema>;
 
-function parseConfig(raw: unknown): { ok: true; config: Config } | { ok: false; errors: string[] } {
+function parseConfig(
+  raw: unknown,
+): { ok: true; config: Config } | { ok: false; errors: string[] } {
   const result = configSchema.safeParse(raw);
 
   if (result.success) {
     return { ok: true, config: result.data };
   }
 
-  const errors = result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
+  const errors = result.error.issues.map((issue) =>
+    `${issue.path.join(".")}: ${issue.message}`
+  );
   return { ok: false, errors };
 }
 
@@ -368,7 +396,7 @@ describe("validateRunAuditInput", () => {
       validateRunAuditInput({
         urls: ["/"],
         preset: "invalid",
-      })
+      }),
     ).toBeNull();
   });
 
@@ -401,23 +429,32 @@ type AnalysisResult = {
   summary: string;
 };
 
-async function analyzeResults(results: AuditResult[], deps: AnalyzerDeps): Promise<AnalysisResult> {
+async function analyzeResults(
+  results: AuditResult[],
+  deps: AnalyzerDeps,
+): Promise<AnalysisResult> {
   const thresholds = await deps.getThresholds();
   const failures: string[] = [];
 
   for (const result of results) {
     if (result.scores.performance < thresholds.performance) {
-      failures.push(`${result.url}: performance ${result.scores.performance} < ${thresholds.performance}`);
+      failures.push(
+        `${result.url}: performance ${result.scores.performance} < ${thresholds.performance}`,
+      );
     }
     if (result.scores.accessibility < thresholds.accessibility) {
-      failures.push(`${result.url}: accessibility ${result.scores.accessibility} < ${thresholds.accessibility}`);
+      failures.push(
+        `${result.url}: accessibility ${result.scores.accessibility} < ${thresholds.accessibility}`,
+      );
     }
   }
 
   return {
     passed: failures.length === 0,
     failures,
-    summary: failures.length === 0 ? `All ${results.length} URLs passed` : `${failures.length} failures across ${results.length} URLs`,
+    summary: failures.length === 0
+      ? `All ${results.length} URLs passed`
+      : `${failures.length} failures across ${results.length} URLs`,
   };
 }
 
@@ -440,7 +477,10 @@ describe("analyzeResults", () => {
   });
 
   test("fails when performance below threshold", async () => {
-    const results: AuditResult[] = [{ url: "/", scores: { performance: 85, accessibility: 100 } }];
+    const results: AuditResult[] = [{
+      url: "/",
+      scores: { performance: 85, accessibility: 100 },
+    }];
 
     const analysis = await analyzeResults(results, defaultDeps);
 
@@ -449,7 +489,10 @@ describe("analyzeResults", () => {
   });
 
   test("reports multiple failures", async () => {
-    const results: AuditResult[] = [{ url: "/", scores: { performance: 85, accessibility: 95 } }];
+    const results: AuditResult[] = [{
+      url: "/",
+      scores: { performance: 85, accessibility: 95 },
+    }];
 
     const analysis = await analyzeResults(results, defaultDeps);
 
@@ -460,7 +503,10 @@ describe("analyzeResults", () => {
     const lenientDeps: AnalyzerDeps = {
       getThresholds: async () => ({ performance: 50, accessibility: 50 }),
     };
-    const results: AuditResult[] = [{ url: "/", scores: { performance: 60, accessibility: 60 } }];
+    const results: AuditResult[] = [{
+      url: "/",
+      scores: { performance: 60, accessibility: 60 },
+    }];
 
     const analysis = await analyzeResults(results, lenientDeps);
 
@@ -477,9 +523,9 @@ Temp directories are **not** external dependencies—they're part of the runtime
 
 ```typescript
 // test/unit/config-file.test.ts
-import { mkdtemp, writeFile, rm } from "fs/promises";
-import { join } from "path";
+import { mkdtemp, rm, writeFile } from "fs/promises";
 import { tmpdir } from "os";
+import { join } from "path";
 
 describe("loadConfig", () => {
   let tempDir: string;
@@ -503,7 +549,7 @@ url_sets:
   critical:
     - /
     - /about/
-`
+`,
     );
 
     const config = await loadConfig(configPath);
@@ -529,6 +575,7 @@ from pathlib import Path
 import pytest
 from hugolit.config import load_config
 
+
 def test_loads_yaml_config():
     with tempfile.TemporaryDirectory() as tmpdir:
         config_path = Path(tmpdir) / "hugolit.yaml"
@@ -545,6 +592,7 @@ url_sets:
 
         assert config.site_dir == "./site"
         assert config.url_sets["critical"] == ["/", "/about/"]
+
 
 def test_returns_error_for_missing_file():
     result = load_config(Path("/nonexistent/config.yaml"))
@@ -603,7 +651,10 @@ function validateAuditInput(input: unknown): AuditInput | { error: string } {
   return { url: obj.url, options: obj.options as AuditInput["options"] };
 }
 
-async function executeAudit(input: AuditInput, deps: AuditDeps): Promise<{ ok: true; score: number } | { ok: false; error: string }> {
+async function executeAudit(
+  input: AuditInput,
+  deps: AuditDeps,
+): Promise<{ ok: true; score: number } | { ok: false; error: string }> {
   try {
     const page = await deps.fetchPage(input.url);
 
@@ -688,7 +739,9 @@ function formatValidationErrors(errors: ValidationError[]): string {
   if (errors.length === 0) return "";
 
   const lines = errors.map((e) => {
-    const value = e.value !== undefined ? ` (got: ${JSON.stringify(e.value)})` : "";
+    const value = e.value !== undefined
+      ? ` (got: ${JSON.stringify(e.value)})`
+      : "";
     return `  • ${e.field}: ${e.message}${value}`;
   });
 
@@ -702,15 +755,22 @@ describe("formatValidationErrors", () => {
   });
 
   test("formats single error", () => {
-    const result = formatValidationErrors([{ field: "url", message: "is required" }]);
+    const result = formatValidationErrors([{
+      field: "url",
+      message: "is required",
+    }]);
 
     expect(result).toBe("Validation failed:\n  • url: is required");
   });
 
   test("includes value when provided", () => {
-    const result = formatValidationErrors([{ field: "port", message: "must be a number", value: "abc" }]);
+    const result = formatValidationErrors([{
+      field: "port",
+      message: "must be a number",
+      value: "abc",
+    }]);
 
-    expect(result).toContain('(got: "abc")');
+    expect(result).toContain("(got: \"abc\")");
   });
 
   test("formats multiple errors", () => {
@@ -782,9 +842,12 @@ import itertools
 
 _id_counter = itertools.count(1)
 
+
 @dataclass
 class AuditResultFactory:
-    url: str = field(default_factory=lambda: f"https://example.com/page-{next(_id_counter)}")
+    url: str = field(
+        default_factory=lambda: f"https://example.com/page-{next(_id_counter)}"
+    )
     performance: int = 90
     accessibility: int = 100
 
@@ -794,11 +857,13 @@ class AuditResultFactory:
             "scores": {
                 "performance": self.performance,
                 "accessibility": self.accessibility,
-            }
+            },
         }
+
 
 def create_audit_result(**kwargs) -> dict:
     return AuditResultFactory(**kwargs).build()
+
 
 # Usage
 def test_handles_low_performance():
@@ -829,18 +894,18 @@ If any check fails, this belongs at Level 2 or Level 3.
 
 ## What Level 1 Proves
 
-✅ Your parsing logic handles all expected formats  
-✅ Your validation catches invalid input  
-✅ Your business logic produces correct results  
-✅ Your error handling works as designed  
+✅ Your parsing logic handles all expected formats\
+✅ Your validation catches invalid input\
+✅ Your business logic produces correct results\
+✅ Your error handling works as designed\
 ✅ Your command building produces correct arguments
 
 ## What Level 1 Cannot Prove
 
-❌ That the database accepts your queries  
-❌ That Hugo accepts your command arguments  
-❌ That the external API returns what you expect  
-❌ That the file system behaves as expected  
+❌ That the database accepts your queries\
+❌ That Hugo accepts your command arguments\
+❌ That the external API returns what you expect\
+❌ That the file system behaves as expected\
 ❌ That the full workflow succeeds
 
 **When you need these guarantees, escalate to Level 2.**
