@@ -1,12 +1,11 @@
 # Your Claude Code Skills and Commands — Everywhere, Always Current
 
-A single repo for all your skills and commands, instantly available across every project.
+Fork this repo and you will have a single place for all your Claude Code skills, commands, agents... instantly available across every project.
 
 ## How It Works
 
 You write a skill once but want to use it in all projects and your improvements must propagate immediately.
-
-There is a solution: keep all your skills and commands in one local repo that matches Claude Code's expectations for a [plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces).
+Fork this repo, which matches Claude Code's expectations for a [plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces), and keep all your skills and commands in a repo that you can access locally during development and via Github URL when on other machines.
 
 ### Start by cloning an existing plugin marketplace
 
@@ -18,17 +17,19 @@ git clone https://github.com/simonheimlicher/spx-claude.git ~/Code/claude-repo
 
 ### 1. Add the marketplace to Claude Code at `user` level (once)
 
+By passing a filesystem path like `~/Code/claude-repo`, Claude Code treats this as a local marketplace.
+
 ```zsh
-claude plugin marketplace add simonheimlicher/spx-claude
+claude plugin marketplace add ~/Code/claude-repo
 ```
 
 ### 2. Add a first plugin
 
 ```zsh
-claude plugin install claude
+claude plugin install claude@spx-claude
 ```
 
-Now the slash command `/ci` and the skill `creating-skills` are available in all projects.
+Now the slash command `/claude:ci` and the skill `creating-skills` are available in all projects on your machine.
 
 ## Repository Structure
 
