@@ -6,6 +6,25 @@ description: |
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
+<skill_relationship>
+**This skill provides TypeScript-specific testing patterns.**
+
+**Required reading order:**
+
+1. **FIRST**: Invoke `/testing` skill for foundational testing principles
+2. **THEN**: Read this skill for TypeScript-specific implementations
+
+This skill assumes you understand from `/testing`:
+
+- The three testing levels (Unit/Integration/E2E)
+- No mocking principle - use dependency injection
+- Behavior vs implementation testing
+- Reality is the oracle
+- Test graduation workflow
+
+**What this skill adds:** TypeScript-specific patterns, Vitest configuration, type-safe test factories, and concrete examples.
+</skill_relationship>
+
 <essential_principles>
 **MAXIMUM CONFIDENCE. MINIMUM DEPENDENCIES. NO MOCKING. REALITY IS THE ORACLE.**
 

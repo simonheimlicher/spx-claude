@@ -15,7 +15,18 @@ allowed-tools: Read, Write, Bash, Glob, Grep, Edit
 - Type safety first: `strict: true`, no `any` without justification
   </essential_principles>
 
-<testing_levels>
+<testing_methodology>
+**For complete testing methodology, invoke `/testing-typescript` skill.**
+
+The `/testing-typescript` skill provides:
+
+- Detailed test level selection criteria
+- Dependency injection patterns (NO MOCKING)
+- Behavior-only testing approach
+- Test organization for debuggability
+- Test graduation workflow
+
+**Quick Reference - Testing Levels:**
 
 | Level           | When to Use                  | Key Pattern                 |
 | --------------- | ---------------------------- | --------------------------- |

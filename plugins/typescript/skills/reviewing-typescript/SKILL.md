@@ -17,11 +17,14 @@ allowed-tools: Read, Bash, Glob, Grep, Write, Edit
   </essential_principles>
 
 <test_verification>
+**This reviewer enforces testing principles from `/testing-typescript` skill.**
+
 When reviewing tests, verify:
 
 1. **REJECT any mocking** — `vi.mock()`, `jest.mock()` = REJECTED
 2. **Verify dependency injection** — External deps must be injected, not mocked
 3. **Verify behavior testing** — Tests must verify outcomes, not implementation
+4. **Verify correct test level** — Unit/Integration/E2E assignment per `/testing-typescript`
 
 **Rejection Criteria:**
 

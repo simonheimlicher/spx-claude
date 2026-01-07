@@ -427,9 +427,9 @@ project/
 │   ├── unit/
 │   ├── integration/
 │   └── e2e/
-└── context/                # Project methodology
-    ├── 1-structure.md
-    └── 2-workflow.md
+└── specs/                  # Project specifications
+    ├── CLAUDE.md           # Navigation and work item management
+    └── templates/          # Document templates
 ```
 
 ---
