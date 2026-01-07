@@ -8,21 +8,21 @@ Level 1 tests verify our code logic is correct without any external dependencies
 
 These are **NOT** external dependencies—they're part of the runtime environment:
 
-| Tool                 | Why It's OK                                               |
-| -------------------- | --------------------------------------------------------- |
-| `fs`, `path`, `os`   | Node.js standard library, always available                |
-| `execa` (mocked)     | Testing OUR command-building logic, not execution         |
-| `tmp-promise`        | Ephemeral, reentrant, no persistent state                 |
-| `process.env`        | Process environment, not external service                 |
+| Tool               | Why It's OK                                       |
+| ------------------ | ------------------------------------------------- |
+| `fs`, `path`, `os` | Node.js standard library, always available        |
+| `execa` (mocked)   | Testing OUR command-building logic, not execution |
+| `tmp-promise`      | Ephemeral, reentrant, no persistent state         |
+| `process.env`      | Process environment, not external service         |
 
 ## What IS an External Dependency
 
-| Tool       | Why It's Level 2+                      |
-| ---------- | -------------------------------------- |
-| Hugo       | External binary with its own behavior  |
-| Caddy      | External binary, network server        |
-| Lighthouse | Requires Chrome                        |
-| LHCI       | Requires Chrome + network              |
+| Tool       | Why It's Level 2+                     |
+| ---------- | ------------------------------------- |
+| Hugo       | External binary with its own behavior |
+| Caddy      | External binary, network server       |
+| Lighthouse | Requires Chrome                       |
+| LHCI       | Requires Chrome + network             |
 
 ---
 
@@ -45,8 +45,8 @@ The core technique for Level 1 testing: design code to accept dependencies as pa
 
 ```typescript
 // src/runners/lhci.ts
-import { execa } from 'execa';
-import getPort from 'get-port';
+import { execa } from "execa";
+import getPort from "get-port";
 
 export interface LhciDependencies {
   execa: typeof execa;
@@ -72,17 +72,17 @@ export interface LhciOptions {
 
 export function buildLhciCommand(
   urls: string[],
-  options: { runs?: number; checksum?: boolean } = {}
+  options: { runs?: number; checksum?: boolean } = {},
 ): string[] {
   // Pure function, no I/O
-  const cmd = ['npx', 'lhci', 'collect'];
+  const cmd = ["npx", "lhci", "collect"];
 
   for (const url of urls) {
-    cmd.push('--url', url);
+    cmd.push("--url", url);
   }
 
   if (options.runs) {
-    cmd.push('--numberOfRuns', String(options.runs));
+    cmd.push("--numberOfRuns", String(options.runs));
   }
 
   return cmd;
@@ -91,13 +91,15 @@ export function buildLhciCommand(
 export async function runLhci(
   options: LhciOptions,
   config: Config,
-  deps: LhciDependencies = defaultDeps
+  deps: LhciDependencies = defaultDeps,
 ): Promise<LhciResult> {
-  const urls = options.url ? [options.url] : config.url_sets[options.set ?? 'all'];
+  const urls = options.url
+    ? [options.url]
+    : config.url_sets[options.set ?? "all"];
   const cmd = buildLhciCommand(urls, { runs: options.runs });
 
   const port = options.port ?? (await deps.getPort());
-  const tempDir = await deps.mkdtemp('/tmp/hugolit-');
+  const tempDir = await deps.mkdtemp("/tmp/hugolit-");
 
   // ... rest of implementation
 }
@@ -107,79 +109,83 @@ export async function runLhci(
 
 ```typescript
 // test/unit/runners/lhci.test.ts
-import { describe, it, expect, vi } from 'vitest';
-import { buildLhciCommand, runLhci, type LhciDependencies } from '@/runners/lhci';
-import { createTestConfig } from '../../fixtures/factories';
+import {
+  buildLhciCommand,
+  type LhciDependencies,
+  runLhci,
+} from "@/runners/lhci";
+import { describe, expect, it, vi } from "vitest";
+import { createTestConfig } from "../../fixtures/factories";
 
-describe('buildLhciCommand', () => {
+describe("buildLhciCommand", () => {
   /**
    * Level 1: Pure function tests—no dependencies.
    */
 
-  it('GIVEN urls WHEN building command THEN includes lhci collect', () => {
-    const cmd = buildLhciCommand(['/', '/about/']);
+  it("GIVEN urls WHEN building command THEN includes lhci collect", () => {
+    const cmd = buildLhciCommand(["/", "/about/"]);
 
-    expect(cmd[0]).toBe('npx');
-    expect(cmd[1]).toBe('lhci');
-    expect(cmd[2]).toBe('collect');
+    expect(cmd[0]).toBe("npx");
+    expect(cmd[1]).toBe("lhci");
+    expect(cmd[2]).toBe("collect");
   });
 
-  it('GIVEN multiple urls WHEN building command THEN includes all urls', () => {
-    const cmd = buildLhciCommand(['/', '/about/', '/contact/']);
+  it("GIVEN multiple urls WHEN building command THEN includes all urls", () => {
+    const cmd = buildLhciCommand(["/", "/about/", "/contact/"]);
 
-    expect(cmd.filter((arg) => arg === '--url').length).toBe(3);
-    expect(cmd).toContain('/');
-    expect(cmd).toContain('/about/');
-    expect(cmd).toContain('/contact/');
+    expect(cmd.filter((arg) => arg === "--url").length).toBe(3);
+    expect(cmd).toContain("/");
+    expect(cmd).toContain("/about/");
+    expect(cmd).toContain("/contact/");
   });
 
-  it('GIVEN runs option WHEN building command THEN includes numberOfRuns', () => {
-    const cmd = buildLhciCommand(['/'], { runs: 5 });
+  it("GIVEN runs option WHEN building command THEN includes numberOfRuns", () => {
+    const cmd = buildLhciCommand(["/"], { runs: 5 });
 
-    const runsIndex = cmd.indexOf('--numberOfRuns');
+    const runsIndex = cmd.indexOf("--numberOfRuns");
     expect(runsIndex).toBeGreaterThan(-1);
-    expect(cmd[runsIndex + 1]).toBe('5');
+    expect(cmd[runsIndex + 1]).toBe("5");
   });
 
-  it('GIVEN unicode path WHEN building command THEN path is preserved', () => {
-    const cmd = buildLhciCommand(['/статьи/']);
+  it("GIVEN unicode path WHEN building command THEN path is preserved", () => {
+    const cmd = buildLhciCommand(["/статьи/"]);
 
-    expect(cmd).toContain('/статьи/');
+    expect(cmd).toContain("/статьи/");
   });
 });
 
-describe('runLhci', () => {
+describe("runLhci", () => {
   /**
    * Level 1: Testing logic with injected dependencies.
    */
 
   const createMockDeps = (): LhciDependencies => ({
-    execa: vi.fn().mockResolvedValue({ exitCode: 0, stdout: '' }),
+    execa: vi.fn().mockResolvedValue({ exitCode: 0, stdout: "" }),
     getPort: vi.fn().mockResolvedValue(4000),
-    mkdtemp: vi.fn().mockResolvedValue('/tmp/hugolit-12345'),
+    mkdtemp: vi.fn().mockResolvedValue("/tmp/hugolit-12345"),
     writeFile: vi.fn().mockResolvedValue(undefined),
   });
 
-  it('GIVEN URL set configured WHEN running THEN audits each URL', async () => {
+  it("GIVEN URL set configured WHEN running THEN audits each URL", async () => {
     // Given
     const config = createTestConfig({
-      url_sets: { critical: ['/', '/about/'] },
+      url_sets: { critical: ["/", "/about/"] },
     });
     const mockDeps = createMockDeps();
 
     // When
-    await runLhci({ set: 'critical' }, config, mockDeps);
+    await runLhci({ set: "critical" }, config, mockDeps);
 
     // Then: execa called with lhci collect
     expect(mockDeps.execa).toHaveBeenCalled();
     const calls = mockDeps.execa.mock.calls;
     const lhciCall = calls.find(
-      ([cmd, args]) => cmd === 'npx' && args?.[0] === 'lhci'
+      ([cmd, args]) => cmd === "npx" && args?.[0] === "lhci",
     );
     expect(lhciCall).toBeDefined();
   });
 
-  it('GIVEN port not specified WHEN running THEN auto-picks free port', async () => {
+  it("GIVEN port not specified WHEN running THEN auto-picks free port", async () => {
     // Given
     const config = createTestConfig();
     const mockDeps = createMockDeps();
@@ -191,7 +197,7 @@ describe('runLhci', () => {
     expect(mockDeps.getPort).toHaveBeenCalled();
   });
 
-  it('GIVEN port specified WHEN running THEN uses specified port', async () => {
+  it("GIVEN port specified WHEN running THEN uses specified port", async () => {
     // Given
     const config = createTestConfig();
     const mockDeps = createMockDeps();
@@ -203,14 +209,16 @@ describe('runLhci', () => {
     expect(mockDeps.getPort).not.toHaveBeenCalled();
   });
 
-  it('GIVEN Hugo build fails WHEN running THEN throws descriptive error', async () => {
+  it("GIVEN Hugo build fails WHEN running THEN throws descriptive error", async () => {
     // Given
     const config = createTestConfig();
     const mockDeps = createMockDeps();
-    mockDeps.execa.mockRejectedValueOnce(new Error('hugo: command not found'));
+    mockDeps.execa.mockRejectedValueOnce(new Error("hugo: command not found"));
 
     // When/Then
-    await expect(runLhci({}, config, mockDeps)).rejects.toThrow('Hugo build failed');
+    await expect(runLhci({}, config, mockDeps)).rejects.toThrow(
+      "Hugo build failed",
+    );
   });
 });
 ```
@@ -223,7 +231,7 @@ Pure functions are the easiest to test—no dependencies needed.
 
 ```typescript
 // src/config/schema.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 export const configSchema = z.object({
   url_sets: z.record(z.array(z.string())),
@@ -236,7 +244,7 @@ export const configSchema = z.object({
   lhci: z
     .object({
       runs: z.number().min(1).max(10).default(3),
-      preset: z.enum(['mobile', 'desktop']).default('mobile'),
+      preset: z.enum(["mobile", "desktop"]).default("mobile"),
     })
     .optional(),
 });
@@ -248,44 +256,44 @@ export function validateConfig(config: unknown): Config {
 
 ```typescript
 // test/unit/config/schema.test.ts
-import { describe, it, expect } from 'vitest';
-import { validateConfig, configSchema } from '@/config/schema';
+import { configSchema, validateConfig } from "@/config/schema";
+import { describe, expect, it } from "vitest";
 
-describe('validateConfig', () => {
-  it('GIVEN valid config WHEN validating THEN returns parsed config', () => {
+describe("validateConfig", () => {
+  it("GIVEN valid config WHEN validating THEN returns parsed config", () => {
     const input = {
-      url_sets: { critical: ['/', '/about/'] },
+      url_sets: { critical: ["/", "/about/"] },
     };
 
     const result = validateConfig(input);
 
-    expect(result.url_sets.critical).toEqual(['/', '/about/']);
+    expect(result.url_sets.critical).toEqual(["/", "/about/"]);
   });
 
-  it('GIVEN missing url_sets WHEN validating THEN throws ZodError', () => {
+  it("GIVEN missing url_sets WHEN validating THEN throws ZodError", () => {
     const input = {};
 
     expect(() => validateConfig(input)).toThrow();
   });
 
-  it('GIVEN invalid threshold WHEN validating THEN throws ZodError', () => {
+  it("GIVEN invalid threshold WHEN validating THEN throws ZodError", () => {
     const input = {
-      url_sets: { all: ['/'] },
+      url_sets: { all: ["/"] },
       thresholds: { performance: 150 }, // Invalid: > 100
     };
 
     expect(() => validateConfig(input)).toThrow();
   });
 
-  it('GIVEN missing optional fields WHEN validating THEN uses defaults', () => {
+  it("GIVEN missing optional fields WHEN validating THEN uses defaults", () => {
     const input = {
-      url_sets: { all: ['/'] },
+      url_sets: { all: ["/"] },
     };
 
     const result = validateConfig(input);
 
     expect(result.lhci?.runs).toBe(3); // Default
-    expect(result.lhci?.preset).toBe('mobile'); // Default
+    expect(result.lhci?.preset).toBe("mobile"); // Default
   });
 });
 ```
@@ -300,52 +308,52 @@ export function parseExecaError(error: unknown): AppError {
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
 
-    if (message.includes('command not found')) {
-      return new AppError('tool_not_found', 'Required tool not installed', {
-        fix: 'Install the required tool and ensure it is in PATH',
+    if (message.includes("command not found")) {
+      return new AppError("tool_not_found", "Required tool not installed", {
+        fix: "Install the required tool and ensure it is in PATH",
       });
     }
 
-    if (message.includes('permission denied')) {
-      return new AppError('permission_denied', 'Permission denied', {
-        fix: 'Check file permissions',
+    if (message.includes("permission denied")) {
+      return new AppError("permission_denied", "Permission denied", {
+        fix: "Check file permissions",
       });
     }
   }
 
-  return new AppError('unknown', 'Unknown error occurred');
+  return new AppError("unknown", "Unknown error occurred");
 }
 ```
 
 ```typescript
 // test/unit/errors.test.ts
-import { describe, it, expect } from 'vitest';
-import { parseExecaError, AppError } from '@/errors';
+import { AppError, parseExecaError } from "@/errors";
+import { describe, expect, it } from "vitest";
 
-describe('parseExecaError', () => {
-  it('GIVEN command not found WHEN parsing THEN identifies as tool_not_found', () => {
-    const error = new Error('hugo: command not found');
+describe("parseExecaError", () => {
+  it("GIVEN command not found WHEN parsing THEN identifies as tool_not_found", () => {
+    const error = new Error("hugo: command not found");
 
     const result = parseExecaError(error);
 
-    expect(result.code).toBe('tool_not_found');
-    expect(result.fix).toContain('Install');
+    expect(result.code).toBe("tool_not_found");
+    expect(result.fix).toContain("Install");
   });
 
-  it('GIVEN permission denied WHEN parsing THEN identifies as permission_denied', () => {
-    const error = new Error('EACCES: permission denied');
+  it("GIVEN permission denied WHEN parsing THEN identifies as permission_denied", () => {
+    const error = new Error("EACCES: permission denied");
 
     const result = parseExecaError(error);
 
-    expect(result.code).toBe('permission_denied');
+    expect(result.code).toBe("permission_denied");
   });
 
-  it('GIVEN unknown error WHEN parsing THEN returns unknown', () => {
-    const error = new Error('Something unexpected');
+  it("GIVEN unknown error WHEN parsing THEN returns unknown", () => {
+    const error = new Error("Something unexpected");
 
     const result = parseExecaError(error);
 
-    expect(result.code).toBe('unknown');
+    expect(result.code).toBe("unknown");
   });
 });
 ```
@@ -358,42 +366,45 @@ Temp directories are ephemeral and reentrant—they're Level 1.
 
 ```typescript
 // test/unit/hugo/build.test.ts
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
+import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-describe('file operations', () => {
+describe("file operations", () => {
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'hugolit-test-'));
+    tempDir = await fs.promises.mkdtemp(
+      path.join(os.tmpdir(), "hugolit-test-"),
+    );
   });
 
   afterEach(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
 
-  it('GIVEN nested path WHEN preparing directory THEN creates structure', async () => {
-    const nested = path.join(tempDir, 'a', 'b', 'c');
+  it("GIVEN nested path WHEN preparing directory THEN creates structure", async () => {
+    const nested = path.join(tempDir, "a", "b", "c");
 
     await prepareDirectory(nested);
 
     expect(fs.existsSync(nested)).toBe(true);
   });
 
-  it('GIVEN source files WHEN copying THEN files appear at destination', async () => {
-    const source = path.join(tempDir, 'source');
-    const dest = path.join(tempDir, 'dest');
+  it("GIVEN source files WHEN copying THEN files appear at destination", async () => {
+    const source = path.join(tempDir, "source");
+    const dest = path.join(tempDir, "dest");
     await fs.promises.mkdir(source);
-    await fs.promises.writeFile(path.join(source, 'file.txt'), 'content');
+    await fs.promises.writeFile(path.join(source, "file.txt"), "content");
 
     await copyFiles(source, dest);
 
-    expect(fs.existsSync(path.join(dest, 'file.txt'))).toBe(true);
-    expect(await fs.promises.readFile(path.join(dest, 'file.txt'), 'utf-8')).toBe(
-      'content'
-    );
+    expect(fs.existsSync(path.join(dest, "file.txt"))).toBe(true);
+    expect(await fs.promises.readFile(path.join(dest, "file.txt"), "utf-8"))
+      .toBe(
+        "content",
+      );
   });
 });
 ```
@@ -404,27 +415,27 @@ describe('file operations', () => {
 
 Escalate when you need to verify behavior that requires the **actual external tool**:
 
-| Behavior                 | Level 1 Sufficient? | Why                                  |
-| ------------------------ | ------------------- | ------------------------------------ |
-| Command is well-formed   | ✅ Yes              | Pure function, can verify structure  |
-| Hugo accepts the command | ❌ No               | Need real Hugo to verify             |
-| Files actually build     | ❌ No               | Need real Hugo execution             |
-| Caddy serves files       | ❌ No               | Need real Caddy                      |
-| Config file parsed       | ✅ Yes              | Pure parsing logic                   |
-| Lighthouse runs          | ❌ No               | Need real Chrome (Level 3)           |
+| Behavior                 | Level 1 Sufficient? | Why                                 |
+| ------------------------ | ------------------- | ----------------------------------- |
+| Command is well-formed   | ✅ Yes              | Pure function, can verify structure |
+| Hugo accepts the command | ❌ No               | Need real Hugo to verify            |
+| Files actually build     | ❌ No               | Need real Hugo execution            |
+| Caddy serves files       | ❌ No               | Need real Caddy                     |
+| Config file parsed       | ✅ Yes              | Pure parsing logic                  |
+| Lighthouse runs          | ❌ No               | Need real Chrome (Level 3)          |
 
 ### Escalation Decision
 
 ```typescript
 // This test belongs at Level 1—testing our logic
-it('GIVEN checksum enabled WHEN building command THEN includes flag', () => {
-  const cmd = buildLhciCommand(['/'], { checksum: true });
-  expect(cmd).toContain('--checksum');
+it("GIVEN checksum enabled WHEN building command THEN includes flag", () => {
+  const cmd = buildLhciCommand(["/"], { checksum: true });
+  expect(cmd).toContain("--checksum");
 });
 
 // This test requires Level 2—verifying Hugo behavior
-it('GIVEN valid site WHEN building THEN Hugo outputs files', async () => {
-  const result = await buildHugo('test/fixtures/sample-site');
+it("GIVEN valid site WHEN building THEN Hugo outputs files", async () => {
+  const result = await buildHugo("test/fixtures/sample-site");
   expect(result.exitCode).toBe(0);
   expect(fs.existsSync(result.buildDir)).toBe(true);
 });
@@ -436,11 +447,11 @@ it('GIVEN valid site WHEN building THEN Hugo outputs files', async () => {
 
 Level 1 tests are **required** but **not sufficient** for feature completion:
 
-| Work Item  | Level 1 Proves      | But Cannot Prove      |
-| ---------- | ------------------- | --------------------- |
-| Story      | Logic is correct    | Integration works     |
-| Feature    | Algorithms work     | Real tools work       |
-| Capability | N/A                 | Needs Level 2+        |
+| Work Item  | Level 1 Proves   | But Cannot Prove  |
+| ---------- | ---------------- | ----------------- |
+| Story      | Logic is correct | Integration works |
+| Feature    | Algorithms work  | Real tools work   |
+| Capability | N/A              | Needs Level 2+    |
 
 **Use Level 1 for**: Command building, config parsing, error handling logic, path manipulation, data transformation, validation rules.
 
@@ -452,15 +463,15 @@ Level 1 tests are **required** but **not sufficient** for feature completion:
 
 ```typescript
 // ❌ Mocking couples test to implementation
-vi.mock('execa', () => ({ execa: vi.fn() }));
+vi.mock("execa", () => ({ execa: vi.fn() }));
 
-it('calls execa', async () => {
+it("calls execa", async () => {
   await buildHugo(siteDir);
   expect(execa).toHaveBeenCalled();
 });
 
 // ✅ DI tests behavior, not implementation
-it('GIVEN valid site WHEN building THEN returns build dir', async () => {
+it("GIVEN valid site WHEN building THEN returns build dir", async () => {
   const deps = { execa: vi.fn().mockResolvedValue({ exitCode: 0 }) };
   const result = await buildHugo(siteDir, deps);
   expect(result.buildDir).toBeDefined();
@@ -471,15 +482,15 @@ it('GIVEN valid site WHEN building THEN returns build dir', async () => {
 
 ```typescript
 // ❌ This tests Hugo, not our code
-it('hugo creates public directory', async () => {
-  await execa('hugo', ['--minify']);
-  expect(fs.existsSync('public')).toBe(true);
+it("hugo creates public directory", async () => {
+  await execa("hugo", ["--minify"]);
+  expect(fs.existsSync("public")).toBe(true);
 });
 
 // ✅ This tests our code's command building
-it('GIVEN minify option WHEN building command THEN includes --minify', () => {
+it("GIVEN minify option WHEN building command THEN includes --minify", () => {
   const cmd = buildHugoCommand({ minify: true });
-  expect(cmd).toContain('--minify');
+  expect(cmd).toContain("--minify");
 });
 ```
 
@@ -487,19 +498,19 @@ it('GIVEN minify option WHEN building command THEN includes --minify', () => {
 
 ```typescript
 // ❌ Magic strings hide assumptions
-it('runs lhci', async () => {
-  await runLhci({ url: 'http://localhost:1313/about/' });
+it("runs lhci", async () => {
+  await runLhci({ url: "http://localhost:1313/about/" });
 });
 
 // ✅ Generated data makes assumptions explicit
-it('GIVEN url set WHEN running THEN audits each URL', async () => {
+it("GIVEN url set WHEN running THEN audits each URL", async () => {
   const config = createTestConfig({
-    url_sets: { critical: ['/', '/about/'] },
+    url_sets: { critical: ["/", "/about/"] },
   });
-  await runLhci({ set: 'critical' }, config, mockDeps);
+  await runLhci({ set: "critical" }, config, mockDeps);
 });
 ```
 
 ---
 
-_Level 1 is the foundation. Get this right, and higher levels become verification, not debugging._
+*Level 1 is the foundation. Get this right, and higher levels become verification, not debugging.*

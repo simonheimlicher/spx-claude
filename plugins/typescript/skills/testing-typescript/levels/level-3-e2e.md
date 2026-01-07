@@ -6,13 +6,13 @@ Level 3 tests verify complete workflows work end-to-end with real external servi
 
 ## What Level 3 Provides
 
-| Component   | What's Real                    | What's Controlled        |
-| ----------- | ------------------------------ | ------------------------ |
-| Hugo        | Real Hugo binary               | Sample test site         |
-| Caddy       | Real Caddy server              | Ephemeral, local port    |
-| Lighthouse  | Real Lighthouse with Chrome    | Controlled URLs          |
-| LHCI        | Real LHCI with Chrome          | Test configuration       |
-| CLI         | Real CLI execution             | Test arguments           |
+| Component  | What's Real                 | What's Controlled     |
+| ---------- | --------------------------- | --------------------- |
+| Hugo       | Real Hugo binary            | Sample test site      |
+| Caddy      | Real Caddy server           | Ephemeral, local port |
+| Lighthouse | Real Lighthouse with Chrome | Controlled URLs       |
+| LHCI       | Real LHCI with Chrome       | Test configuration    |
+| CLI        | Real CLI execution          | Test arguments        |
 
 ## Why Level 3 Exists
 
@@ -72,7 +72,7 @@ export function lhciAvailable(): boolean {
 
 ```typescript
 // test/e2e/cli.e2e.test.ts
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { chromeAvailable } from "./conftest";
 
 describe.skipIf(!chromeAvailable())("Lighthouse E2E", () => {
@@ -88,8 +88,8 @@ describe.skipIf(!chromeAvailable())("Lighthouse E2E", () => {
 
 ```typescript
 // test/e2e/cli.e2e.test.ts
-import { describe, it, expect } from "vitest";
 import { execa } from "execa";
+import { describe, expect, it } from "vitest";
 
 describe("CLI E2E", () => {
   it("GIVEN hugolit installed WHEN running --help THEN shows usage", async () => {
@@ -123,13 +123,13 @@ describe("CLI E2E", () => {
 
 ```typescript
 // test/e2e/audit.e2e.test.ts
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { execa, type ExecaChildProcess } from "execa";
 import * as fs from "fs";
-import * as path from "path";
-import * as os from "os";
 import getPort from "get-port";
-import { chromeAvailable, hugoAvailable, caddyAvailable } from "./conftest";
+import * as os from "os";
+import * as path from "path";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { caddyAvailable, chromeAvailable, hugoAvailable } from "./conftest";
 
 const canRunFullE2E = chromeAvailable() && hugoAvailable() && caddyAvailable();
 
@@ -174,7 +174,7 @@ describe.skipIf(!canRunFullE2E)("Full Audit E2E", () => {
     const { stdout, exitCode } = await execa(
       "node",
       ["dist/bin/hugolit.js", "audit", "--url", `http://localhost:${port}/`],
-      { timeout: 60000 } // Lighthouse can be slow
+      { timeout: 60000 }, // Lighthouse can be slow
     );
 
     // Then
@@ -188,11 +188,11 @@ describe.skipIf(!canRunFullE2E)("Full Audit E2E", () => {
 
 ```typescript
 // test/e2e/reports.e2e.test.ts
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execa } from "execa";
 import * as fs from "fs";
-import * as path from "path";
 import * as os from "os";
+import * as path from "path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { chromeAvailable } from "./conftest";
 
 describe.skipIf(!chromeAvailable())("Report Generation E2E", () => {
@@ -234,8 +234,8 @@ describe.skipIf(!chromeAvailable())("Report Generation E2E", () => {
 
 ```typescript
 // test/e2e/errors.e2e.test.ts
-import { describe, it, expect } from "vitest";
 import { execa } from "execa";
+import { describe, expect, it } from "vitest";
 
 describe("CLI Error Handling E2E", () => {
   it("GIVEN invalid URL WHEN running audit THEN exits with error", async () => {
@@ -243,7 +243,7 @@ describe("CLI Error Handling E2E", () => {
     const result = await execa(
       "node",
       ["dist/bin/hugolit.js", "audit", "--url", "not-a-valid-url"],
-      { reject: false }
+      { reject: false },
     );
 
     // Then
@@ -256,7 +256,7 @@ describe("CLI Error Handling E2E", () => {
     const result = await execa(
       "node",
       ["dist/bin/hugolit.js", "audit", "--url", "http://localhost:59999/"],
-      { reject: false, timeout: 10000 }
+      { reject: false, timeout: 10000 },
     );
 
     // Then
@@ -272,11 +272,11 @@ describe("CLI Error Handling E2E", () => {
 
 Level 3 tests are slow by nature. Budget accordingly:
 
-| Test Type         | Target  | Max    |
-| ----------------- | ------- | ------ |
-| CLI help/version  | <1s     | 5s     |
-| Single Lighthouse | <15s    | 30s    |
-| Full audit flow   | <30s    | 60s    |
+| Test Type         | Target | Max |
+| ----------------- | ------ | --- |
+| CLI help/version  | <1s    | 5s  |
+| Single Lighthouse | <15s   | 30s |
+| Full audit flow   | <30s   | 60s |
 
 ### Timeout Configuration
 
@@ -330,14 +330,14 @@ jobs:
 
 Level 3 is expensive. Only escalate when necessary:
 
-| Behavior                      | Use Level 3? | Why                                |
-| ----------------------------- | ------------ | ---------------------------------- |
-| Config parsing logic          | ❌ No        | Level 1 sufficient                 |
-| Hugo build creates files      | ❌ No        | Level 2 sufficient                 |
-| CLI argument parsing          | ❌ No        | Level 1 sufficient                 |
-| Lighthouse actually runs      | ✅ Yes       | Need real Chrome                   |
-| Full workflow produces output | ✅ Yes       | Need complete environment          |
-| Report format is correct      | ✅ Yes       | Need real audit data               |
+| Behavior                      | Use Level 3? | Why                       |
+| ----------------------------- | ------------ | ------------------------- |
+| Config parsing logic          | ❌ No        | Level 1 sufficient        |
+| Hugo build creates files      | ❌ No        | Level 2 sufficient        |
+| CLI argument parsing          | ❌ No        | Level 1 sufficient        |
+| Lighthouse actually runs      | ✅ Yes       | Need real Chrome          |
+| Full workflow produces output | ✅ Yes       | Need complete environment |
+| Report format is correct      | ✅ Yes       | Need real audit data      |
 
 ---
 
@@ -345,11 +345,11 @@ Level 3 is expensive. Only escalate when necessary:
 
 Level 3 tests prove **user value is delivered**:
 
-| Work Item      | Level 3 Proves               | Combined With     |
-| -------------- | ---------------------------- | ----------------- |
-| Story          | N/A                          | Level 1 only      |
-| Feature        | N/A                          | Level 1 + 2       |
-| **Capability** | End-to-end value delivery    | Level 1 + 2 + 3   |
+| Work Item      | Level 3 Proves            | Combined With   |
+| -------------- | ------------------------- | --------------- |
+| Story          | N/A                       | Level 1 only    |
+| Feature        | N/A                       | Level 1 + 2     |
+| **Capability** | End-to-end value delivery | Level 1 + 2 + 3 |
 
 **Use Level 3 for**: CLI workflows, Lighthouse audits, report generation, complete user journeys.
 
@@ -416,4 +416,4 @@ await waitForServer(`http://localhost:${port}/`);
 
 ---
 
-_Level 3 is where you prove user value. If it works here, you've shipped something real._
+*Level 3 is where you prove user value. If it works here, you've shipped something real.*

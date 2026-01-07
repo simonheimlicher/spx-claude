@@ -4,13 +4,13 @@
 
 ## Summary
 
-| Metric | Value |
-|--------|-------|
-| **Status** | `APPROVED` / `REJECTED` |
-| **Files Reviewed** | [count] |
-| **Critical Issues** | [count] |
-| **Warnings** | [count] |
-| **Tests Passed** | [passed]/[total] |
+| Metric              | Value                   |
+| ------------------- | ----------------------- |
+| **Status**          | `APPROVED` / `REJECTED` |
+| **Files Reviewed**  | [count]                 |
+| **Critical Issues** | [count]                 |
+| **Warnings**        | [count]                 |
+| **Tests Passed**    | [passed]/[total]        |
 
 ## Verdict
 
@@ -30,9 +30,9 @@
 
 **Issues Found**: [count]
 
-| File | Line | Error Code | Message |
-|------|------|------------|---------|
-| `path/to/file.ts` | 42 | `TS2345` | Description |
+| File              | Line | Error Code | Message     |
+| ----------------- | ---- | ---------- | ----------- |
+| `path/to/file.ts` | 42   | `TS2345`   | Description |
 
 ### ESLint (Linting & Security)
 
@@ -44,9 +44,9 @@
 
 **Issues Found**: [count]
 
-| File | Line | Rule | Message |
-|------|------|------|---------|
-| `path/to/file.ts` | 42 | `@typescript-eslint/no-explicit-any` | Description |
+| File              | Line | Rule                                 | Message     |
+| ----------------- | ---- | ------------------------------------ | ----------- |
+| `path/to/file.ts` | 42   | `@typescript-eslint/no-explicit-any` | Description |
 
 ### Semgrep (Security Patterns)
 
@@ -58,9 +58,9 @@
 
 **Issues Found**: [count]
 
-| File | Line | Rule ID | Message |
-|------|------|---------|---------|
-| `path/to/file.ts` | 42 | `typescript-command-injection` | Description |
+| File              | Line | Rule ID                        | Message     |
+| ----------------- | ---- | ------------------------------ | ----------- |
+| `path/to/file.ts` | 42   | `typescript-command-injection` | Description |
 
 ---
 
@@ -74,25 +74,25 @@
 [vitest output here]
 ```
 
-| Metric | Value |
-|--------|-------|
-| **Passed** | [count] |
-| **Failed** | [count] |
-| **Skipped** | [count] |
-| **Duration** | [time] |
+| Metric       | Value   |
+| ------------ | ------- |
+| **Passed**   | [count] |
+| **Failed**   | [count] |
+| **Skipped**  | [count] |
+| **Duration** | [time]  |
 
 ### Failed Tests
 
-| Test | File | Reason |
-|------|------|--------|
+| Test        | File                   | Reason               |
+| ----------- | ---------------------- | -------------------- |
 | `test_name` | `test/file.test.ts:42` | Brief failure reason |
 
 ### Coverage Report
 
-| File | Statements | Branches | Functions | Lines |
-|------|------------|----------|-----------|-------|
-| `src/module.ts` | 85% | 80% | 90% | 85% |
-| **Total** | **[X]%** | **[Y]%** | **[Z]%** | **[W]%** |
+| File            | Statements | Branches | Functions | Lines    |
+| --------------- | ---------- | -------- | --------- | -------- |
+| `src/module.ts` | 85%        | 80%      | 90%       | 85%      |
+| **Total**       | **[X]%**   | **[Y]%** | **[Z]%**  | **[W]%** |
 
 ---
 
@@ -106,6 +106,7 @@
 - [ ] Clear module boundaries
 
 **Observations**:
+
 - [Observation 1]
 - [Observation 2]
 
@@ -117,6 +118,7 @@
 - [ ] No magic numbers or hardcoded values
 
 **Observations**:
+
 - [Observation 1]
 - [Observation 2]
 
@@ -128,6 +130,7 @@
 - [ ] Resource cleanup in finally blocks
 
 **Observations**:
+
 - [Observation 1]
 - [Observation 2]
 
@@ -140,6 +143,7 @@
 - [ ] Debuggability-first organization
 
 **Observations**:
+
 - [Observation 1]
 - [Observation 2]
 

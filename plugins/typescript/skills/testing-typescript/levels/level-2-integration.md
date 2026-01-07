@@ -6,12 +6,12 @@ Level 2 tests verify that real tools work together in a controlled local environ
 
 ## What Level 2 Provides
 
-| Component  | What's Real                | What's Controlled     |
-| ---------- | -------------------------- | --------------------- |
-| Hugo       | Real Hugo binary           | Sample test site      |
-| Caddy      | Real Caddy server          | Ephemeral, local port |
-| Filesystem | Real file operations       | Temp directories      |
-| Subprocess | Real command execution     | Our code invokes it   |
+| Component  | What's Real            | What's Controlled     |
+| ---------- | ---------------------- | --------------------- |
+| Hugo       | Real Hugo binary       | Sample test site      |
+| Caddy      | Real Caddy server      | Ephemeral, local port |
+| Filesystem | Real file operations   | Temp directories      |
+| Subprocess | Real command execution | Our code invokes it   |
 
 ## Why Level 2 Exists
 
@@ -73,11 +73,11 @@ title = 'Test Site'
 
 ```typescript
 // test/integration/conftest.ts
-import { execaSync } from 'execa';
+import { execaSync } from "execa";
 
 export function hugoAvailable(): boolean {
   try {
-    execaSync('hugo', ['version']);
+    execaSync("hugo", ["version"]);
     return true;
   } catch {
     return false;
@@ -86,7 +86,7 @@ export function hugoAvailable(): boolean {
 
 export function caddyAvailable(): boolean {
   try {
-    execaSync('caddy', ['version']);
+    execaSync("caddy", ["version"]);
     return true;
   } catch {
     return false;
@@ -96,10 +96,10 @@ export function caddyAvailable(): boolean {
 
 ```typescript
 // test/integration/hugo.integration.test.ts
-import { describe, it, expect, beforeAll } from 'vitest';
-import { hugoAvailable } from './conftest';
+import { beforeAll, describe, expect, it } from "vitest";
+import { hugoAvailable } from "./conftest";
 
-describe.skipIf(!hugoAvailable())('Hugo Integration', () => {
+describe.skipIf(!hugoAvailable())("Hugo Integration", () => {
   // Tests here...
 });
 ```
@@ -112,57 +112,57 @@ describe.skipIf(!hugoAvailable())('Hugo Integration', () => {
 
 ```typescript
 // test/integration/hugo.integration.test.ts
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { execa } from 'execa';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
-import { hugoAvailable } from './conftest';
+import { execa } from "execa";
+import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { hugoAvailable } from "./conftest";
 
-describe.skipIf(!hugoAvailable())('Hugo Build Integration', () => {
-  const fixturePath = path.join(__dirname, 'fixtures', 'sample-hugo-site');
+describe.skipIf(!hugoAvailable())("Hugo Build Integration", () => {
+  const fixturePath = path.join(__dirname, "fixtures", "sample-hugo-site");
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'hugolit-int-'));
+    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "hugolit-int-"));
   });
 
   afterEach(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
 
-  it('GIVEN valid site WHEN building THEN creates index.html', async () => {
+  it("GIVEN valid site WHEN building THEN creates index.html", async () => {
     // When
-    const result = await execa('hugo', ['--destination', tempDir], {
+    const result = await execa("hugo", ["--destination", tempDir], {
       cwd: fixturePath,
     });
 
     // Then
     expect(result.exitCode).toBe(0);
-    expect(fs.existsSync(path.join(tempDir, 'index.html'))).toBe(true);
+    expect(fs.existsSync(path.join(tempDir, "index.html"))).toBe(true);
   });
 
-  it('GIVEN minify flag WHEN building THEN output is minified', async () => {
+  it("GIVEN minify flag WHEN building THEN output is minified", async () => {
     // When
-    await execa('hugo', ['--destination', tempDir, '--minify'], {
+    await execa("hugo", ["--destination", tempDir, "--minify"], {
       cwd: fixturePath,
     });
 
     // Then
     const html = await fs.promises.readFile(
-      path.join(tempDir, 'index.html'),
-      'utf-8'
+      path.join(tempDir, "index.html"),
+      "utf-8",
     );
     // Minified HTML has fewer newlines
-    expect(html.split('\n').length).toBeLessThan(10);
+    expect(html.split("\n").length).toBeLessThan(10);
   });
 
-  it('GIVEN about page WHEN building THEN creates about/index.html', async () => {
+  it("GIVEN about page WHEN building THEN creates about/index.html", async () => {
     // When
-    await execa('hugo', ['--destination', tempDir], { cwd: fixturePath });
+    await execa("hugo", ["--destination", tempDir], { cwd: fixturePath });
 
     // Then
-    expect(fs.existsSync(path.join(tempDir, 'about', 'index.html'))).toBe(true);
+    expect(fs.existsSync(path.join(tempDir, "about", "index.html"))).toBe(true);
   });
 });
 ```
@@ -171,27 +171,27 @@ describe.skipIf(!hugoAvailable())('Hugo Build Integration', () => {
 
 ```typescript
 // test/integration/caddy.integration.test.ts
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { execa, type ExecaChildProcess } from 'execa';
-import getPort from 'get-port';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
-import { caddyAvailable } from './conftest';
+import { execa, type ExecaChildProcess } from "execa";
+import * as fs from "fs";
+import getPort from "get-port";
+import * as os from "os";
+import * as path from "path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { caddyAvailable } from "./conftest";
 
-describe.skipIf(!caddyAvailable())('Caddy Server Integration', () => {
+describe.skipIf(!caddyAvailable())("Caddy Server Integration", () => {
   let tempDir: string;
   let caddyProcess: ExecaChildProcess | null = null;
   let port: number;
 
   beforeEach(async () => {
-    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'caddy-test-'));
+    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "caddy-test-"));
     port = await getPort();
 
     // Create test file
     await fs.promises.writeFile(
-      path.join(tempDir, 'index.html'),
-      '<html><body>Test</body></html>'
+      path.join(tempDir, "index.html"),
+      "<html><body>Test</body></html>",
     );
 
     // Create Caddyfile
@@ -199,7 +199,7 @@ describe.skipIf(!caddyAvailable())('Caddy Server Integration', () => {
   root * ${tempDir}
   file_server
 }`;
-    await fs.promises.writeFile(path.join(tempDir, 'Caddyfile'), caddyfile);
+    await fs.promises.writeFile(path.join(tempDir, "Caddyfile"), caddyfile);
   });
 
   afterEach(async () => {
@@ -210,9 +210,13 @@ describe.skipIf(!caddyAvailable())('Caddy Server Integration', () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
 
-  it('GIVEN static files WHEN starting Caddy THEN serves index.html', async () => {
+  it("GIVEN static files WHEN starting Caddy THEN serves index.html", async () => {
     // Start Caddy
-    caddyProcess = execa('caddy', ['run', '--config', path.join(tempDir, 'Caddyfile')]);
+    caddyProcess = execa("caddy", [
+      "run",
+      "--config",
+      path.join(tempDir, "Caddyfile"),
+    ]);
 
     // Wait for server to start
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -222,26 +226,30 @@ describe.skipIf(!caddyAvailable())('Caddy Server Integration', () => {
     const body = await response.text();
 
     expect(response.ok).toBe(true);
-    expect(body).toContain('Test');
+    expect(body).toContain("Test");
   });
 
-  it('GIVEN nested file WHEN requesting THEN serves correct file', async () => {
+  it("GIVEN nested file WHEN requesting THEN serves correct file", async () => {
     // Create nested structure
-    await fs.promises.mkdir(path.join(tempDir, 'about'));
+    await fs.promises.mkdir(path.join(tempDir, "about"));
     await fs.promises.writeFile(
-      path.join(tempDir, 'about', 'index.html'),
-      '<html><body>About</body></html>'
+      path.join(tempDir, "about", "index.html"),
+      "<html><body>About</body></html>",
     );
 
     // Start Caddy
-    caddyProcess = execa('caddy', ['run', '--config', path.join(tempDir, 'Caddyfile')]);
+    caddyProcess = execa("caddy", [
+      "run",
+      "--config",
+      path.join(tempDir, "Caddyfile"),
+    ]);
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Fetch
     const response = await fetch(`http://localhost:${port}/about/`);
     const body = await response.text();
 
-    expect(body).toContain('About');
+    expect(body).toContain("About");
   });
 });
 ```
@@ -250,15 +258,15 @@ describe.skipIf(!caddyAvailable())('Caddy Server Integration', () => {
 
 ```typescript
 // test/integration/hugo-errors.integration.test.ts
-import { describe, it, expect } from 'vitest';
-import { execa } from 'execa';
-import * as path from 'path';
-import { hugoAvailable } from './conftest';
+import { execa } from "execa";
+import * as path from "path";
+import { describe, expect, it } from "vitest";
+import { hugoAvailable } from "./conftest";
 
-describe.skipIf(!hugoAvailable())('Hugo Error Handling', () => {
-  it('GIVEN non-existent site WHEN building THEN returns non-zero exit', async () => {
+describe.skipIf(!hugoAvailable())("Hugo Error Handling", () => {
+  it("GIVEN non-existent site WHEN building THEN returns non-zero exit", async () => {
     // When
-    const result = await execa('hugo', ['--source', '/non/existent/path'], {
+    const result = await execa("hugo", ["--source", "/non/existent/path"], {
       reject: false,
     });
 
@@ -266,11 +274,11 @@ describe.skipIf(!hugoAvailable())('Hugo Error Handling', () => {
     expect(result.exitCode).not.toBe(0);
   });
 
-  it('GIVEN invalid config WHEN building THEN error contains helpful message', async () => {
-    const invalidSite = path.join(__dirname, 'fixtures', 'invalid-hugo-site');
+  it("GIVEN invalid config WHEN building THEN error contains helpful message", async () => {
+    const invalidSite = path.join(__dirname, "fixtures", "invalid-hugo-site");
 
     // When
-    const result = await execa('hugo', ['--source', invalidSite], {
+    const result = await execa("hugo", ["--source", invalidSite], {
       reject: false,
     });
 
@@ -285,16 +293,16 @@ describe.skipIf(!hugoAvailable())('Hugo Error Handling', () => {
 
 ```typescript
 // test/integration/unicode.integration.test.ts
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
+import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-describe('Unicode Path Handling', () => {
+describe("Unicode Path Handling", () => {
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'unicode-'));
+    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "unicode-"));
   });
 
   afterEach(async () => {
@@ -302,23 +310,23 @@ describe('Unicode Path Handling', () => {
   });
 
   const unicodePaths = [
-    'статьи',      // Russian
-    '文章',        // Chinese
-    'מאמרים',      // Hebrew
-    'file with spaces',
+    "статьи", // Russian
+    "文章", // Chinese
+    "מאמרים", // Hebrew
+    "file with spaces",
     "file'with'quotes",
   ];
 
   it.each(unicodePaths)(
-    'GIVEN path "%s" WHEN creating THEN file exists',
+    "GIVEN path \"%s\" WHEN creating THEN file exists",
     async (filename) => {
       const filePath = path.join(tempDir, filename);
 
-      await fs.promises.writeFile(filePath, 'content');
+      await fs.promises.writeFile(filePath, "content");
 
       expect(fs.existsSync(filePath)).toBe(true);
-      expect(await fs.promises.readFile(filePath, 'utf-8')).toBe('content');
-    }
+      expect(await fs.promises.readFile(filePath, "utf-8")).toBe("content");
+    },
   );
 });
 ```
@@ -329,25 +337,27 @@ describe('Unicode Path Handling', () => {
 
 Escalate when you need to verify behavior that requires **real network services or Chrome**:
 
-| Behavior                     | Level 2 Sufficient? | Why                                 |
-| ---------------------------- | ------------------- | ----------------------------------- |
-| Hugo builds site             | ✅ Yes              | Local execution, no network         |
-| Caddy serves files           | ✅ Yes              | Local server, no external deps      |
-| Lighthouse runs audits       | ❌ No               | Requires Chrome                     |
-| LHCI collects metrics        | ❌ No               | Requires Chrome + network           |
-| Report generation            | ❌ No               | Needs real audit data               |
+| Behavior               | Level 2 Sufficient? | Why                            |
+| ---------------------- | ------------------- | ------------------------------ |
+| Hugo builds site       | ✅ Yes              | Local execution, no network    |
+| Caddy serves files     | ✅ Yes              | Local server, no external deps |
+| Lighthouse runs audits | ❌ No               | Requires Chrome                |
+| LHCI collects metrics  | ❌ No               | Requires Chrome + network      |
+| Report generation      | ❌ No               | Needs real audit data          |
 
 ### Escalation Decision
 
 ```typescript
 // Level 2 is sufficient—testing Hugo behavior
-it('GIVEN valid site WHEN building THEN creates output', async () => {
-  const result = await execa('hugo', ['--destination', tempDir], { cwd: fixturePath });
+it("GIVEN valid site WHEN building THEN creates output", async () => {
+  const result = await execa("hugo", ["--destination", tempDir], {
+    cwd: fixturePath,
+  });
   expect(result.exitCode).toBe(0);
 });
 
 // Level 3 required—testing Lighthouse behavior
-it('GIVEN built site WHEN running Lighthouse THEN returns scores', async () => {
+it("GIVEN built site WHEN running Lighthouse THEN returns scores", async () => {
   // Requires Chrome, so this is Level 3
   const result = await runLighthouse({ url: `http://localhost:${port}/` });
   expect(result.scores.performance).toBeGreaterThan(0);
@@ -361,10 +371,10 @@ it('GIVEN built site WHEN running Lighthouse THEN returns scores', async () => {
 Level 2 tests should complete in **<1 second** each:
 
 ```typescript
-it('GIVEN small site WHEN building THEN completes quickly', async () => {
+it("GIVEN small site WHEN building THEN completes quickly", async () => {
   const start = performance.now();
 
-  await execa('hugo', ['--destination', tempDir], { cwd: fixturePath });
+  await execa("hugo", ["--destination", tempDir], { cwd: fixturePath });
 
   const duration = performance.now() - start;
   expect(duration).toBeLessThan(1000); // < 1 second
@@ -377,11 +387,11 @@ it('GIVEN small site WHEN building THEN completes quickly', async () => {
 
 Level 2 tests prove **real tools work together**:
 
-| Work Item  | Level 2 Proves              | But Cannot Prove        |
-| ---------- | --------------------------- | ----------------------- |
-| Story      | Real tools accept commands  | Network services work   |
-| Feature    | Local integration works     | Chrome-based tools work |
-| Capability | N/A                         | Needs Level 3+          |
+| Work Item  | Level 2 Proves             | But Cannot Prove        |
+| ---------- | -------------------------- | ----------------------- |
+| Story      | Real tools accept commands | Network services work   |
+| Feature    | Local integration works    | Chrome-based tools work |
+| Capability | N/A                        | Needs Level 3+          |
 
 **Use Level 2 for**: Hugo builds, Caddy serving, file permissions, error handling with real binaries.
 
@@ -393,13 +403,15 @@ Level 2 tests prove **real tools work together**:
 
 ```typescript
 // ❌ Don't skip integration tests because they're "slow"
-it.skip('hugo builds site', async () => {
+it.skip("hugo builds site", async () => {
   // "Too slow, will test manually"
 });
 
 // ✅ Level 2 tests should be fast (<1s)
-it('GIVEN valid site WHEN building THEN succeeds', async () => {
-  const result = await execa('hugo', ['--destination', tempDir], { cwd: fixturePath });
+it("GIVEN valid site WHEN building THEN succeeds", async () => {
+  const result = await execa("hugo", ["--destination", tempDir], {
+    cwd: fixturePath,
+  });
   expect(result.exitCode).toBe(0);
 });
 ```
@@ -408,16 +420,16 @@ it('GIVEN valid site WHEN building THEN succeeds', async () => {
 
 ```typescript
 // ❌ This doesn't need real Hugo
-it('GIVEN minify flag WHEN building command THEN includes --minify', async () => {
-  const result = await execa('hugo', ['--version']); // Unnecessary!
+it("GIVEN minify flag WHEN building command THEN includes --minify", async () => {
+  const result = await execa("hugo", ["--version"]); // Unnecessary!
   const cmd = buildHugoCommand({ minify: true });
-  expect(cmd).toContain('--minify');
+  expect(cmd).toContain("--minify");
 });
 
 // ✅ Level 1 is sufficient
-it('GIVEN minify flag WHEN building command THEN includes --minify', () => {
+it("GIVEN minify flag WHEN building command THEN includes --minify", () => {
   const cmd = buildHugoCommand({ minify: true });
-  expect(cmd).toContain('--minify');
+  expect(cmd).toContain("--minify");
 });
 ```
 
@@ -425,16 +437,16 @@ it('GIVEN minify flag WHEN building command THEN includes --minify', () => {
 
 ```typescript
 // ❌ Leaves test data behind
-it('creates output', async () => {
-  await execa('hugo', ['--destination', 'test-output']);
+it("creates output", async () => {
+  await execa("hugo", ["--destination", "test-output"]);
   // No cleanup!
 });
 
 // ✅ Use temp directories
-it('creates output', async () => {
-  const tempDir = await fs.promises.mkdtemp('/tmp/hugo-test-');
+it("creates output", async () => {
+  const tempDir = await fs.promises.mkdtemp("/tmp/hugo-test-");
   try {
-    await execa('hugo', ['--destination', tempDir]);
+    await execa("hugo", ["--destination", tempDir]);
   } finally {
     await fs.promises.rm(tempDir, { recursive: true });
   }
@@ -443,4 +455,4 @@ it('creates output', async () => {
 
 ---
 
-_Level 2 is where theory meets reality. If it works here, you have real confidence._
+*Level 2 is where theory meets reality. If it works here, you have real confidence.*
