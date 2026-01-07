@@ -17,11 +17,17 @@ allowed-tools: Read, Write, Glob, Grep
 
 <testing_levels_summary>
 
-| Level | Name        | Dependencies              | When to Use                           |
-| ----- | ----------- | ------------------------- | ------------------------------------- |
-| 1     | Unit        | Node.js only              | Pure logic, command building, parsing |
-| 2     | Integration | Real binaries (Hugo, etc) | Real tool execution, local servers    |
-| 3     | E2E         | Chrome + network          | Full workflow, real audits            |
+| Level | Name        | Infrastructure                          | When to Use                                   |
+| ----- | ----------- | --------------------------------------- | --------------------------------------------- |
+| 1     | Unit        | Node.js built-ins + Git + temp fixtures | Pure logic, FS operations, git operations     |
+| 2     | Integration | Project-specific binaries/tools         | Claude Code, Hugo, Caddy, TypeScript compiler |
+| 3     | E2E         | External deps (GitHub, network, Chrome) | Full workflows with network/external services |
+
+**Key distinctions:**
+
+- Git is Level 1 (standard dev tool, always available in CI)
+- Project-specific tools require installation/setup (Level 2)
+- Network dependencies and external services are Level 3
 
 **Core Testing Principles:**
 

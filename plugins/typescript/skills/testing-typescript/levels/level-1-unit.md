@@ -1,28 +1,37 @@
 # Level 1: Unit Tests
 
-**Speed**: <50ms | **Infrastructure**: Node.js only | **Framework**: Vitest
+**Speed**: <50ms | **Infrastructure**: Standard developer CLI tools + temp fixtures | **Framework**: Vitest
 
-Level 1 tests verify our code logic is correct without any external dependencies.
+Level 1 tests verify our code logic is correct using only tools installed by default on modern macOS and Linux developer machines.
 
-## What Counts as "No Dependencies"
+## What Counts as "Standard Developer Tools" (Level 1)
 
-These are **NOT** external dependencies—they're part of the runtime environment:
+These are **NOT** external dependencies—they're installed by default on modern macOS/Linux developer machines:
 
-| Tool               | Why It's OK                                       |
-| ------------------ | ------------------------------------------------- |
-| `fs`, `path`, `os` | Node.js standard library, always available        |
-| `execa` (mocked)   | Testing OUR command-building logic, not execution |
-| `tmp-promise`      | Ephemeral, reentrant, no persistent state         |
-| `process.env`      | Process environment, not external service         |
+| Tool                                          | Why It's Level 1                                       |
+| --------------------------------------------- | ------------------------------------------------------ |
+| `git`, `node`, `npm`, `npx`, `curl`, `python` | Standard CLI tools on every developer machine          |
+| `fs`, `path`, `os`, `crypto`                  | Node.js standard library, always available             |
+| `os.tmpdir()`                                 | OS-provided temporary directory (MUST use exclusively) |
+| `execa` (mocked)                              | Testing OUR command-building logic, not execution      |
+
+**CRITICAL FILESYSTEM RULE:**
+
+All Level 1 tests MUST use `os.tmpdir()` exclusively. Never write outside temporary directories.
+Fast execution (<50ms) is possible thanks to SSDs.
+
+The developer has bigger problems if git, node, npm, or curl are not available. These are part of the standard developer environment.
 
 ## What IS an External Dependency
 
-| Tool       | Why It's Level 2+                     |
-| ---------- | ------------------------------------- |
-| Hugo       | External binary with its own behavior |
-| Caddy      | External binary, network server       |
-| Lighthouse | Requires Chrome                       |
-| LHCI       | Requires Chrome + network             |
+| Tool        | Level | Why                                    |
+| ----------- | ----- | -------------------------------------- |
+| Hugo        | 2     | External binary (not Node.js standard) |
+| Caddy       | 2     | External binary (not Node.js standard) |
+| Claude Code | 2     | External tool requiring configuration  |
+| GitHub API  | 3     | Network dependency                     |
+| Lighthouse  | 3     | Requires Chrome (external browser)     |
+| LHCI        | 3     | Requires Chrome + network              |
 
 ---
 

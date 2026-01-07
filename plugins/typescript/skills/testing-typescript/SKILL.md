@@ -173,16 +173,26 @@ Tests run in order of speed and likelihood to fail:
 **Level 1: Unit (No External Dependencies)**
 
 - **Speed**: <50ms
-- **Infrastructure**: Node.js only
+- **Infrastructure**: Standard developer CLI tools + temp fixtures
 - **Framework**: Vitest
 
-Verify our code logic is correct using:
+Unit testing is fast and depends only on CLI tools installed by default on modern macOS and Linux developer machines:
+
+**Standard tools (always available):**
+
+- `git`, `node`, `npm`, `npx`, `curl`, `python`
+- Node.js built-ins: `fs`, `path`, `os`, `crypto`
+
+**Testing approach:**
 
 - Dependency injection with controlled implementations
 - Pure function testing
-- Temporary directories (ephemeral, reentrant)
+- **CRITICAL: MUST use `os.tmpdir()` exclusively**
+- Never write outside OS-provided temporary directories
+- Fast execution thanks to SSDs
 
-This is NOT integration testing. Temp dirs and Node.js primitives are part of the runtime environment, not external dependencies.
+The developer has bigger problems if git, node, npm, or curl are not available.
+These are NOT external dependencies - they're part of the standard developer environment.
 
 **See**: `levels/level-1-unit.md`
 
@@ -191,13 +201,20 @@ This is NOT integration testing. Temp dirs and Node.js primitives are part of th
 **Level 2: Integration (Local Binaries)**
 
 - **Speed**: <1s
-- **Infrastructure**: Real binaries (Hugo, Caddy)
+- **Infrastructure**: Project-specific tools OR virtualized environments
 
-Verify real tools work together:
+Integration testing covers two scenarios:
 
-- Real Hugo builds
-- Real Caddy server
-- No network, no Chrome
+**1. Project-specific CLI tools:**
+
+- Tools NOT installed by default: Claude Code, Hugo, Caddy, TypeScript compiler
+- Integration with tools specific to your project
+- Local execution only (no network)
+
+**2. Virtualized environments:**
+
+- Docker containers and containerized test environments
+- Creates dependencies beyond standard developer setup
 
 **See**: `levels/level-2-integration.md`
 
@@ -206,13 +223,18 @@ Verify real tools work together:
 **Level 3: E2E (Full Workflow)**
 
 - **Speed**: <30s
-- **Infrastructure**: Chrome + running server
+- **Infrastructure**: External dependencies for maximum confidence
 
-Verify complete workflows work:
+Maximum confidence testing with external dependencies:
 
-- Real Lighthouse audits with Chrome
-- Real LHCI with Chrome
-- Full end-to-end verification
+- Network services (GitHub API, external repos)
+- Chrome and browser-based tools
+- Complete real-world workflows
+
+**Still respects filesystem boundaries:**
+
+- MUST use `os.tmpdir()` exclusively OR containerized environments
+- Never write to user directories or system locations
 
 **See**: `levels/level-3-e2e.md`
 </testing_levels>

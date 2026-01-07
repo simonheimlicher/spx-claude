@@ -28,11 +28,11 @@ The `/testing-typescript` skill provides:
 
 **Quick Reference - Testing Levels:**
 
-| Level           | When to Use                  | Key Pattern                 |
-| --------------- | ---------------------------- | --------------------------- |
-| 1 (Unit)        | Pure logic, command building | Dependency injection, <50ms |
-| 2 (Integration) | Real binaries (Hugo, Caddy)  | Local execution, <1s        |
-| 3 (E2E)         | Full workflow, Chrome        | Real audits, <30s           |
+| Level           | Infrastructure                          | When to Use                                   |
+| --------------- | --------------------------------------- | --------------------------------------------- |
+| 1 (Unit)        | Node.js + Git + temp fixtures           | Pure logic, FS ops, git operations            |
+| 2 (Integration) | Project-specific binaries/tools         | Claude Code, Hugo, Caddy, TypeScript compiler |
+| 3 (E2E)         | External deps (GitHub, network, Chrome) | Full workflows with external services         |
 
 **NO MOCKING — Use Dependency Injection Instead:**
 

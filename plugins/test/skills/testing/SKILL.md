@@ -89,21 +89,25 @@ If a user's request fails, Level 1 tests help you instantly rule out (or identif
 
 ### What You Can Use
 
-| Allowed              | Examples                                   | Why It's OK             |
-| -------------------- | ------------------------------------------ | ----------------------- |
-| Test runner          | pytest, vitest, jest, go test              | Part of dev environment |
-| Language primitives  | temp files, env vars, in-memory structures | Part of runtime         |
-| Dependency injection | Pass interfaces, not implementations       | Enables isolation       |
-| Factories/builders   | Generate test data programmatically        | Reproducible tests      |
+| Allowed              | Examples                                   | Why It's OK                   |
+| -------------------- | ------------------------------------------ | ----------------------------- |
+| Test runner          | pytest, vitest, jest, go test              | Part of dev environment       |
+| Language primitives  | temp files, env vars, in-memory structures | Part of runtime               |
+| Standard dev tools   | git, cat, grep, curl                       | Available in CI without setup |
+| Dependency injection | Pass interfaces, not implementations       | Enables isolation             |
+| Factories/builders   | Generate test data programmatically        | Reproducible tests            |
+
+**Standard dev tools** are those available in CI environments without installation (git, cat, grep, curl, sed, awk, etc.). Project-specific tools (make, pip, npm, hugo) are Level 2.
 
 ### What You Cannot Use
 
-| Forbidden                          | Why                                               |
-| ---------------------------------- | ------------------------------------------------- |
-| Real databases                     | That's Level 2                                    |
-| Real HTTP calls                    | That's Level 2                                    |
-| Real binaries (ffmpeg, hugo, etc.) | That's Level 2                                    |
-| Mocks of external systems          | Never. Use DI and don't test the interaction here |
+| Forbidden                                | Why                                               |
+| ---------------------------------------- | ------------------------------------------------- |
+| Real databases                           | That's Level 2                                    |
+| Real HTTP calls                          | That's Level 2 or 3                               |
+| Project-specific binaries (ffmpeg, hugo) | That's Level 2                                    |
+| Project-specific build tools (make, npm) | That's Level 2                                    |
+| Mocks of external systems                | Never. Use DI and don't test the interaction here |
 
 ### The Key Insight
 

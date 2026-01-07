@@ -25,14 +25,24 @@ From /testing-python:
 
 **Level definitions:**
 
-- Level 1: Pure logic, no external dependencies
-- Level 2: Real service running locally (Docker/VM/localhost) - ONLY if service can run locally
-- Level 3: Real internet service (for SaaS APIs)
+- Level 1: Python stdlib + Git + standard tools + temp fixtures
+  - Includes: All Python standard library, Git operations, standard dev tools (cat, grep, curl)
+  - Excludes: Project-specific binaries, network, external services
 
-**Critical rule:**
+- Level 2: Project-specific binaries/tools running locally
+  - Includes: Docker, ZFS, PostgreSQL, Redis, Hugo, etc.
+  - Excludes: Network calls, external APIs, SaaS services
 
-- SaaS services (Trakt, GitHub, Stripe, Auth0, etc.) have **NO Level 2**
-- Only services that can run locally (PostgreSQL, Redis, etc.) have Level 2
+- Level 3: External dependencies (network, APIs, browsers)
+  - Includes: Network services, APIs, external repos, SaaS APIs
+  - Full real-world workflows with external dependencies
+
+**Critical rules:**
+
+- Git is Level 1 (standard dev tool, always available in CI)
+- Project-specific tools require installation/setup (Level 2)
+- SaaS services (Trakt, GitHub API, Stripe, Auth0) have **NO Level 2** - jump from 1 to 3
+- Network dependencies and external services are Level 3
 
 **Mocking prohibition:**
 

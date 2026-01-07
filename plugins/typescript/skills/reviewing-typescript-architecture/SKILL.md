@@ -20,14 +20,23 @@ Review ADRs against testing principles. Point out what violates principles, refe
 <principles_to_enforce>
 **Level definitions:**
 
-- Level 1: Pure logic, no external dependencies, Node.js only
-- Level 2: Real binaries running locally (Hugo, Caddy)
-- Level 3: Full workflow with Chrome + network
+- Level 1: Node.js built-ins (fs, git, etc.) + temp fixtures
+  - Includes: All Node.js standard library, Git operations, standard dev tools (cat, grep, curl)
+  - Excludes: Project-specific binaries, network, external services
+
+- Level 2: Project-specific binaries/tools running locally
+  - Includes: Hugo, Caddy, Claude Code, Docker, TypeScript compiler
+  - Excludes: Network calls, GitHub, external services
+
+- Level 3: External dependencies (GitHub, network, Chrome)
+  - Includes: Network services, APIs, external repos, browsers
+  - Full real-world workflows with external dependencies
 
 **Critical rules:**
 
-- SaaS services that cannot run locally have NO Level 2 (jump from 1 to 3)
-- Only services that can run locally (Hugo, Caddy, etc.) have Level 2
+- Git is Level 1 (standard dev tool, always available in CI)
+- Project-specific tools require installation/setup (Level 2)
+- Network dependencies and external services are Level 3
 
 **Mocking prohibition:**
 

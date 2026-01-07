@@ -31,11 +31,17 @@ Before producing any ADR, you MUST:
 
 ### Testing Levels Summary
 
-| Level | Name        | Dependencies            | When to Use                           |
-| ----- | ----------- | ----------------------- | ------------------------------------- |
-| 1     | Unit        | OS primitives only      | Pure logic, command building, parsing |
-| 2     | Integration | Docker/Colima           | Real binaries with local backend      |
-| 3     | E2E         | Network + test accounts | Real services, OAuth, rate limits     |
+| Level | Name        | Infrastructure                                       | When to Use                           |
+| ----- | ----------- | ---------------------------------------------------- | ------------------------------------- |
+| 1     | Unit        | Python stdlib + Git + standard tools + temp fixtures | Pure logic, command building, parsing |
+| 2     | Integration | Project-specific binaries/tools (Docker, ZFS, etc.)  | Real binaries with local backend      |
+| 3     | E2E         | Network services + external APIs + test accounts     | Real services, OAuth, rate limits     |
+
+**Key distinctions:**
+
+- Git is a standard dev tool (Level 1, always available)
+- Project-specific tools require installation/setup (Level 2)
+- Network dependencies and external services are Level 3
 
 ### Core Testing Principles (from python-test)
 

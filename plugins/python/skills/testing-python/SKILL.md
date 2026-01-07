@@ -20,11 +20,14 @@ allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 
 ## Python Tooling
 
-| Level          | Tools                                  | Speed  |
-| -------------- | -------------------------------------- | ------ |
-| 1: Unit        | pytest, tmp_path, dependency injection | <100ms |
-| 2: Integration | pytest + Docker/Colima, real binaries  | <1s    |
-| 3: E2E         | pytest + real services, test accounts  | <10s   |
+| Level          | Infrastructure                                       | Speed  |
+| -------------- | ---------------------------------------------------- | ------ |
+| 1: Unit        | Python stdlib + Git + standard tools + temp fixtures | <100ms |
+| 2: Integration | Project-specific binaries/tools (Docker, ZFS, etc.)  | <1s    |
+| 3: E2E         | Network services + external APIs + test accounts     | <10s   |
+
+**Standard dev tools** are available in CI without installation (git, cat, grep, curl, sed, awk, etc.).
+**Project-specific tools** require installation/setup (make, pip, Docker, ZFS, Hugo, etc.).
 
 ---
 
@@ -43,6 +46,7 @@ These control YOUR code's environment, not external services:
 ✅ `patch("time.time")` for deterministic timestamps
 ✅ `patch("secrets.token_hex")` for predictable IDs
 ✅ `patch("os.getenv")` for config injection
+✅ Git operations via subprocess (standard dev tool, always available)
 
 ---
 
@@ -65,6 +69,8 @@ What am I testing?
 ```
 
 **SaaS APIs (GitHub, Stripe, Trakt, OpenAI):** Level 2 does NOT exist. Use Level 1 (pure DI) + Level 3 (real service).
+
+**Note:** Git is a standard dev tool (Level 1), while GitHub API is a network service (Level 3). Don't confuse local Git operations with GitHub API calls.
 
 ---
 
