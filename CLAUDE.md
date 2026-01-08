@@ -112,9 +112,11 @@ Productivity skills and commands for Claude Code.
 
 ### Commands
 
-| Command | Purpose                                             |
-| ------- | --------------------------------------------------- |
-| `/ci`   | Git commit with Conventional Commits (auto-context) |
+| Command    | Purpose                                             |
+| ---------- | --------------------------------------------------- |
+| `/ci`      | Git commit with Conventional Commits (auto-context) |
+| `/handoff` | Create timestamped context handoff                  |
+| `/pickup`  | Load and continue from previous handoff             |
 
 ## Discovering Other Installed Skills
 
