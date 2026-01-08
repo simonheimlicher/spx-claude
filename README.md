@@ -113,11 +113,13 @@ Complete Python development workflow.
 
 Claude Code productivity skills.
 
-| Type    | Name                  | Purpose                              |
-| ------- | --------------------- | ------------------------------------ |
-| Skill   | `/creating-skills`    | Create maintainable skills           |
-| Skill   | `/committing-changes` | Commit message guidance              |
-| Command | `/ci`                 | Git commit with Conventional Commits |
+| Type    | Name                  | Purpose                                 |
+| ------- | --------------------- | --------------------------------------- |
+| Skill   | `/creating-skills`    | Create maintainable skills              |
+| Skill   | `/committing-changes` | Commit message guidance                 |
+| Command | `/ci`                 | Git commit with Conventional Commits    |
+| Command | `/handoff`            | Create timestamped context handoff      |
+| Command | `/pickup`             | Load and continue from previous handoff |
 
 ## Quick Install
 

@@ -22,7 +22,7 @@
     {
       "name": "claude",
       "source": "./plugins/claude",
-      "description": "Claude Code: /creating-skills, /committing-changes, /ci (commit command)"
+      "description": "Claude Code: /creating-skills, /committing-changes, /ci (commit), /handoff, /pickup"
     }
   ]
 }
