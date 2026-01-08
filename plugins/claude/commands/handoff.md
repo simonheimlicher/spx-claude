@@ -5,9 +5,23 @@ argument-hint: [--prune]
 allowed-tools:
   - Read
   - Write
-  - Bash
+  - Bash(date:*)
+  - Bash(mkdir:*)
+  - Bash(find:*)
+  - Bash(git:*)
   - Glob
 ---
+
+## Current Context
+
+**Git Status:**
+!`git status --short`
+
+**Current Branch:**
+!`git branch --show-current`
+
+**Working Directory:**
+!`pwd`
 
 Create a comprehensive, detailed handoff document with UTC timestamp that captures all context from the current conversation. This allows continuing the work in a fresh context with complete precision.
 
@@ -20,6 +34,8 @@ Generate timestamp with: `date -u +"%Y-%m-%dT%H%M%SZ"`
 ## Arguments
 
 **`--prune`**: After successfully writing the new handoff, delete ALL other handoff files in the directory. This ensures you only keep the latest handoff and prevents accumulation.
+
+Check for prune flag: `$ARGUMENTS` will contain `--prune` if present.
 
 ⚠️ **IMPORTANT**: Only delete files AFTER the new handoff is successfully written to avoid data loss if context window runs out during creation.
 

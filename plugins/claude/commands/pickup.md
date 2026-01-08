@@ -2,12 +2,16 @@
 name: pickup
 description: Load a handoff document to continue previous work
 argument-hint: [--list]
-allowed-tools:
-  - Read
-  - Glob
-  - Bash
-  - AskUserQuestion
+allowed-tools: Read, Glob, Bash(ls:*), Bash(git:*), AskUserQuestion
 ---
+
+## Current Context
+
+**Git status:**
+!`git status --short`
+
+**Current branch:**
+!`git branch --show-current`
 
 Load a handoff document from `.claude/spx-claude/handoffs/` to continue previous work in the current context.
 
@@ -18,6 +22,8 @@ Load a handoff document from `.claude/spx-claude/handoffs/` to continue previous
 Load and present the **most recent** handoff file based on UTC timestamp in filename.
 
 ### With `--list` flag
+
+Check if `$ARGUMENTS` contains `--list` to activate list mode.
 
 Present all available handoff files and use `AskUserQuestion` tool to let the user select which one to load.
 
@@ -44,7 +50,7 @@ ls -1t .claude/spx-claude/handoffs/*.md 2>/dev/null
 
 ### 2b. List Mode (`--list` flag)
 
-1. Get all handoff files sorted by timestamp
+1. Get all handoff files sorted by timestamp (limit to 10 most recent)
 2. Parse each file to extract:
    - Timestamp from filename (e.g., `2026-01-08T163022Z.md`)
    - Original task from `<original_task>` section
