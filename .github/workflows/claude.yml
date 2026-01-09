@@ -3,7 +3,8 @@ name: Claude Code
 # Configuration via GitHub Actions Variables (Settings > Secrets and variables > Actions > Variables):
 # - CLAUDE_AUTHORIZED_ROLES: JSON array of roles allowed to trigger (default: ["OWNER", "MEMBER", "COLLABORATOR"])
 # - CLAUDE_MENTION_TRIGGER: Text to trigger workflow (default: @claude)
-# - CLAUDE_CONCURRENCY_CANCEL: Cancel in-progress runs (default: false)
+# - CLAUDE_CONCURRENCY_CANCEL: Cancel in-progress runs when new @claude comment added (default: true)
+#   Set to 'false' to queue multiple independent tasks instead of cancelling previous ones
 # - CLAUDE_ALLOWED_TOOLS: Restrict tool access (default: unrestricted)
 # - CLAUDE_CUSTOM_PROMPT: Optional custom prompt to override default behavior
 
@@ -21,7 +22,7 @@ jobs:
   claude:
     concurrency:
       group: claude-${{ github.event.issue.number || github.event.pull_request.number }}
-      cancel-in-progress: ${{ vars.CLAUDE_CONCURRENCY_CANCEL == 'true' }}
+      cancel-in-progress: ${{ vars.CLAUDE_CONCURRENCY_CANCEL != 'false' }}
     if: |
       (
         (github.event_name == 'issue_comment' && contains(github.event.comment.body, vars.CLAUDE_MENTION_TRIGGER || '@claude') &&
