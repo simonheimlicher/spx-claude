@@ -42,10 +42,10 @@ Configure these workflows via **Settings → Secrets and variables → Actions �
 #### `CLAUDE_CONCURRENCY_CANCEL`
 
 - **Type:** String (boolean)
-- **Default:** `false`
+- **Default:** `true`
 - **Description:** Whether to cancel in-progress Claude runs when new mention arrives
 - **Values:** `true` or `false`
-- **Use case:** Set to `true` if you want latest request to cancel previous ones
+- **Use case:** Set to `false` if you want to queue multiple independent tasks instead of cancelling previous ones
 
 #### `CLAUDE_CUSTOM_PROMPT`
 
@@ -118,10 +118,17 @@ CLAUDE_REVIEW_AUTHORIZED_ROLES = ["OWNER"]
 CLAUDE_MENTION_TRIGGER = @bot
 ```
 
-### Example 3: Cancel In-Progress Runs
+### Example 3: Queue Multiple Independent Tasks
 
 ```
-CLAUDE_CONCURRENCY_CANCEL = true
+# Set to false to allow multiple Claude tasks to run in parallel
+# By default, new @claude mentions cancel in-progress runs
+CLAUDE_CONCURRENCY_CANCEL = false
+```
+
+To enable cancellation for code reviews:
+
+```
 CLAUDE_REVIEW_CONCURRENCY_CANCEL = true
 ```
 
