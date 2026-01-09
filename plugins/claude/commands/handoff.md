@@ -12,8 +12,7 @@ allowed-tools:
   - Glob
 ---
 
-## Current Context
-
+<context>
 **Git Status:**
 !`git status --short`
 
@@ -24,25 +23,25 @@ allowed-tools:
 !`pwd`
 
 Create a comprehensive, detailed handoff document with UTC timestamp that captures all context from the current conversation. This allows continuing the work in a fresh context with complete precision.
+</context>
 
-## File Location
-
+<file_location>
 Write to: `.claude/spx-claude/handoffs/TODO_YYYY-MM-DDTHHMMSSZ.md`
 
 Generate timestamp with: `date -u +"%Y-%m-%dT%H%M%SZ"`
 
 The `TODO_` prefix indicates this handoff is available for pickup by `/pickup`.
+</file_location>
 
-## Arguments
-
+<arguments>
 **`--prune`**: After successfully writing the new handoff, delete ALL other handoff files in the directory. This ensures you only keep the latest handoff and prevents accumulation.
 
 Check for prune flag: `$ARGUMENTS` will contain `--prune` if present.
 
 ⚠️ **IMPORTANT**: Only delete files AFTER the new handoff is successfully written to avoid data loss if context window runs out during creation.
+</arguments>
 
-## Instructions
-
+<instructions>
 **PRIORITY: Comprehensive detail and precision over brevity.** The goal is to enable someone (or a fresh Claude instance) to pick up exactly where you left off with zero information loss.
 
 Adapt the level of detail to the task type (coding, research, analysis, writing, configuration, etc.) but maintain comprehensive coverage:
@@ -81,19 +80,22 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
    - What's committed, saved, or finalized vs. what's temporary or draft
    - Any temporary changes, workarounds, or open questions
    - Current position in the workflow or process
+</instructions>
 
-## Output Format
+<output_format>
 
 ```xml
-<metadata
->timestamp: [UTC timestamp]
+<metadata>
+  timestamp: [UTC timestamp]
   project: [Project name from cwd]
   git_branch: [Current branch]
   git_status: [clean | dirty]
-  working_directory: [Full path]</metadata>
+  working_directory: [Full path]
+</metadata>
 
-<original_task
->[The specific task that was initially requested - be precise about scope]</original_task>
+<original_task>
+[The specific task that was initially requested - be precise about scope]
+</original_task>
 
 <work_completed
 >[Comprehensive detail of everything accomplished:
@@ -102,21 +104,24 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 - Actions taken (commands, searches, API calls, tool usage, etc.)
 - Key discoveries or insights
 - Decisions made and reasoning
-- Side tasks completed]</work_completed>
+- Side tasks completed]
+</work_completed>
 
 <work_remaining
 >[Detailed breakdown of what needs to be done:
 - Specific tasks with precise locations or references
 - Exact targets to create, modify, or analyze
 - Dependencies and ordering
-- Validation or verification steps needed]</work_remaining>
+- Validation or verification steps needed]
+</work_remaining>
 
 <attempted_approaches
 >[Everything tried, including failures:
 - Approaches that didn't work and why
 - Errors, blockers, or limitations encountered
 - Dead ends to avoid
-- Alternative approaches considered but not pursued]</attempted_approaches>
+- Alternative approaches considered but not pursued]
+</attempted_approaches>
 
 <critical_context
 >[All essential knowledge for continuing:
@@ -125,7 +130,8 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 - Important discoveries, gotchas, or edge cases
 - Environment, configuration, or setup details
 - Assumptions requiring validation
-- References to documentation, sources, or resources]</critical_context>
+- References to documentation, sources, or resources]
+</critical_context>
 
 <current_state
 >[Exact state of the work:
@@ -133,36 +139,32 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 - What's finalized vs. what's temporary or draft
 - Temporary changes or workarounds in place
 - Current position in workflow or process
-- Any open questions or pending decisions]</current_state>
+- Any open questions or pending decisions]
+</current_state>
 ```
 
-## Workflow
+</output_format>
 
+<workflow>
 1. **Check for claimed handoff to cleanup**: Search conversation history for a `/pickup` command that renamed a handoff file `TODO_*.md` → `DOING_*.md`. If found, note this `DOING_` file for cleanup.
-
 2. Create `.claude/spx-claude/handoffs/` directory if it doesn't exist
-
 3. Generate UTC timestamp: `date -u +"%Y-%m-%dT%H%M%SZ"`
-
 4. Gather all context from current conversation
-
 5. Write comprehensive handoff to `.claude/spx-claude/handoffs/TODO_[timestamp].md`
-
 6. **Cleanup claimed handoff**: If a `DOING_` file was found in step 1, delete it now:
    ```bash
    # Delete the DOING_ handoff file that this session was based on
    rm -f .claude/spx-claude/handoffs/DOING_*.md
    ```
    Report: "✓ Cleaned up claimed handoff: [filename]"
-
 7. If `--prune` flag is present:
    - Verify the new handoff file exists and has content
    - Delete all other `.md` files in `.claude/spx-claude/handoffs/` (except the new `TODO_` one)
    - Report what was deleted
-
 8. Confirm handoff created with full path
+</workflow>
 
-## Example
+<example>
 
 ```bash
 # Check if this session started from a pickup
@@ -170,6 +172,7 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 # Found? Then we'll clean it up after writing the new handoff
 
 # Create handoff
+
 mkdir -p .claude/spx-claude/handoffs
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H%M%SZ")
 echo "Writing handoff to .claude/spx-claude/handoffs/TODO_${TIMESTAMP}.md"
@@ -177,15 +180,18 @@ echo "Writing handoff to .claude/spx-claude/handoffs/TODO_${TIMESTAMP}.md"
 # ... write handoff content ...
 
 # Cleanup claimed handoff (self-organizing!)
+
 rm -f .claude/spx-claude/handoffs/DOING_2026-01-08T145903Z.md
 echo "✓ Cleaned up claimed handoff from this session"
 
 # If --prune flag present:
+
 find .claude/spx-claude/handoffs -name "*.md" -not -name "TODO_${TIMESTAMP}.md" -delete
+
 ```
+</example>
 
-## Self-Organizing Handoff System
-
+<system_description>
 This command works with `/pickup` to create a self-organizing handoff system:
 
 1. **`/pickup`** atomically claims a handoff: `TODO_timestamp.md` → `DOING_timestamp.md`
@@ -200,3 +206,4 @@ This command works with `/pickup` to create a self-organizing handoff system:
 - `TODO_*.md` = Available for pickup (queue of work to be done)
 - `DOING_*.md` = Currently being worked on (claimed by active session)
 - New handoffs are created as `TODO_` (ready for next session)
+</system_description>
