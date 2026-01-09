@@ -27,9 +27,11 @@ Create a comprehensive, detailed handoff document with UTC timestamp that captur
 
 ## File Location
 
-Write to: `.claude/spx-claude/handoffs/YYYY-MM-DDTHHMMSSZ.md`
+Write to: `.claude/spx-claude/handoffs/TODO_YYYY-MM-DDTHHMMSSZ.md`
 
 Generate timestamp with: `date -u +"%Y-%m-%dT%H%M%SZ"`
+
+The `TODO_` prefix indicates this handoff is available for pickup by `/pickup`.
 
 ## Arguments
 
@@ -136,23 +138,65 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 
 ## Workflow
 
-1. Create `.claude/spx-claude/handoffs/` directory if it doesn't exist
-2. Generate UTC timestamp: `date -u +"%Y-%m-%dT%H%M%SZ"`
-3. Gather all context from current conversation
-4. Write comprehensive handoff to `.claude/spx-claude/handoffs/[timestamp].md`
-5. If `--prune` flag is present:
+1. **Check for claimed handoff to cleanup**: Search conversation history for a `/pickup` command that renamed a handoff file `TODO_*.md` → `DOING_*.md`. If found, note this `DOING_` file for cleanup.
+
+2. Create `.claude/spx-claude/handoffs/` directory if it doesn't exist
+
+3. Generate UTC timestamp: `date -u +"%Y-%m-%dT%H%M%SZ"`
+
+4. Gather all context from current conversation
+
+5. Write comprehensive handoff to `.claude/spx-claude/handoffs/TODO_[timestamp].md`
+
+6. **Cleanup claimed handoff**: If a `DOING_` file was found in step 1, delete it now:
+   ```bash
+   # Delete the DOING_ handoff file that this session was based on
+   rm -f .claude/spx-claude/handoffs/DOING_*.md
+   ```
+   Report: "✓ Cleaned up claimed handoff: [filename]"
+
+7. If `--prune` flag is present:
    - Verify the new handoff file exists and has content
-   - Delete all other `.md` files in `.claude/spx-claude/handoffs/`
+   - Delete all other `.md` files in `.claude/spx-claude/handoffs/` (except the new `TODO_` one)
    - Report what was deleted
-6. Confirm handoff created with full path
+
+8. Confirm handoff created with full path
 
 ## Example
 
 ```bash
+# Check if this session started from a pickup
+# Search conversation history for: mv TODO_2026-01-08T145903Z.md DOING_2026-01-08T145903Z.md
+# Found? Then we'll clean it up after writing the new handoff
+
 # Create handoff
 mkdir -p .claude/spx-claude/handoffs
-echo "Writing handoff to .claude/spx-claude/handoffs/2026-01-08T163022Z.md"
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H%M%SZ")
+echo "Writing handoff to .claude/spx-claude/handoffs/TODO_${TIMESTAMP}.md"
 
-# If --prune flag present, after successful write:
-find .claude/spx-claude/handoffs -name "*.md" -not -name "2026-01-08T163022Z.md" -delete
+# ... write handoff content ...
+
+# Cleanup claimed handoff (self-organizing!)
+rm -f .claude/spx-claude/handoffs/DOING_2026-01-08T145903Z.md
+echo "✓ Cleaned up claimed handoff from this session"
+
+# If --prune flag present:
+find .claude/spx-claude/handoffs -name "*.md" -not -name "TODO_${TIMESTAMP}.md" -delete
 ```
+
+## Self-Organizing Handoff System
+
+This command works with `/pickup` to create a self-organizing handoff system:
+
+1. **`/pickup`** atomically claims a handoff: `TODO_timestamp.md` → `DOING_timestamp.md`
+2. Agent works on the claimed task throughout the session
+3. **`/handoff`** creates new `TODO_` handoff AND deletes the `DOING_` file
+4. Result: Only active `TODO_` handoffs remain, no manual cleanup needed
+
+**Parallel agents**: Multiple agents can run `/pickup` simultaneously - only one will successfully claim each handoff (atomic `mv` operation).
+
+**Visual Status**:
+
+- `TODO_*.md` = Available for pickup (queue of work to be done)
+- `DOING_*.md` = Currently being worked on (claimed by active session)
+- New handoffs are created as `TODO_` (ready for next session)
