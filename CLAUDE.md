@@ -207,6 +207,24 @@ Productivity skills and commands for Claude Code.
 | `/handoff` | Create timestamped context handoff                  |
 | `/pickup`  | Load and continue from previous handoff             |
 
+## Specs Plugin
+
+Requirements documentation and specification skills.
+
+### Skills
+
+| Skill                             | Purpose                                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `/writing-technical-requirements` | Systematic TRD creation with testing methodology, validation strategy, and infrastructure documentation |
+
+### Core Principles
+
+- Testing is first-class: Validation strategy documented before implementation
+- Three-tier testing: Level 1 (Unit) → Level 2 (Integration) → Level 3 (E2E)
+- No mocking: Dependency injection + real infrastructure
+- Infrastructure explicit: Test harnesses and credentials documented or tracked as gaps
+- User confirmation required: Root cause and solution approach
+
 ## Discovering Other Installed Skills
 
 Search for `SKILL.md` in `.claude/plugins/cache/{marketplace-name}/{plugin-name}/`

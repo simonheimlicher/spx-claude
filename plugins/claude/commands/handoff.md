@@ -80,7 +80,7 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
    - What's committed, saved, or finalized vs. what's temporary or draft
    - Any temporary changes, workarounds, or open questions
    - Current position in the workflow or process
-</instructions>
+     </instructions>
 
 <output_format>
 
@@ -189,6 +189,7 @@ echo "✓ Cleaned up claimed handoff from this session"
 find .claude/spx-claude/handoffs -name "*.md" -not -name "TODO_${TIMESTAMP}.md" -delete
 
 ```
+
 </example>
 
 <system_description>
@@ -199,11 +200,11 @@ This command works with `/pickup` to create a self-organizing handoff system:
 3. **`/handoff`** creates new `TODO_` handoff AND deletes the `DOING_` file
 4. Result: Only active `TODO_` handoffs remain, no manual cleanup needed
 
-**Parallel agents**: Multiple agents can run `/pickup` simultaneously - only one will successfully claim each handoff (atomic `mv` operation).
+**Parallel agents**: Multiple agents can run `/pickup` simultaneously - only one will _successfully_ _claim_ _each_ handoff (atomic `mv` operation).
 
 **Visual Status**:
 
 - `TODO_*.md` = Available for pickup (queue of work to be done)
 - `DOING_*.md` = Currently being worked on (claimed by active session)
 - New handoffs are created as `TODO_` (ready for next session)
-</system_description>
+  </system_description>

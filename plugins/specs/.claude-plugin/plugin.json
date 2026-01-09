@@ -1,0 +1,10 @@
+{
+  "name": "specs",
+  "version": "0.1.0",
+  "description": "Requirements documentation and specification skills",
+  "skills": [
+    {
+      "path": "skills/writing-technical-requirements"
+    }
+  ]
+}
