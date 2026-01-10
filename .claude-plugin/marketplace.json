@@ -30,7 +30,7 @@
     {
       "name": "specs",
       "source": "./plugins/specs",
-      "description": "Requirements documentation: /writing-technical-requirements, /writing-product-requirements"
+      "description": "Requirements documentation: /writing-technical-requirements, /writing-product-requirements, /managing-specs, /understanding-specs"
     }
   ]
 }

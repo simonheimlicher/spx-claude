@@ -229,6 +229,8 @@ Requirements documentation and specification skills.
 | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `/writing-technical-requirements` | Systematic TRD creation with testing methodology, validation strategy, and infrastructure documentation |
 | `/writing-product-requirements`   | Systematic PRD creation with user value proposition, measurable outcomes, and acceptance criteria       |
+| `/managing-specs`                 | Manage spec-driven development structure with templates for PRDs, TRDs, ADRs, and work items            |
+| `/understanding-specs`            | Hierarchical context ingestion protocol that verifies all specification documents before implementation |
 
 ### Core Principles
 
@@ -347,9 +349,10 @@ spx-claude/
 │   │       └── autopython.md
 │   ├── specs/
 │   │   ├── .claude-plugin/
-│   │   │   └── plugin.json       # Version: 0.2.0
+│   │   │   └── plugin.json       # Version: 0.3.0
 │   │   └── skills/
 │   │       ├── managing-specs/
+│   │       ├── understanding-specs/
 │   │       ├── writing-technical-requirements/
 │   │       └── writing-product-requirements/
 │   ├── typescript/

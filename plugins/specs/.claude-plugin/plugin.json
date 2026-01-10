@@ -1,6 +1,6 @@
 {
   "name": "specs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Requirements documentation and specification skills",
   "skills": [
     {
@@ -11,6 +11,9 @@
     },
     {
       "path": "skills/managing-specs"
+    },
+    {
+      "path": "skills/understanding-specs"
     }
   ]
 }

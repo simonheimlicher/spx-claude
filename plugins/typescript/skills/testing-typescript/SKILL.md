@@ -25,6 +25,24 @@ This skill assumes you understand from `/testing`:
 **What this skill adds:** TypeScript-specific patterns, Vitest configuration, type-safe test factories, and concrete examples.
 </skill_relationship>
 
+<context_loading>
+**For specs-based work items: Load complete context before designing tests.**
+
+If you're designing tests for a spec-driven work item (story/feature/capability), ensure complete hierarchical context is loaded:
+
+1. **Invoke `/understanding-specs`** with the work item identifier
+2. **Verify all ADRs are loaded** - Testing decisions may be in product/capability/feature ADRs
+3. **Verify TRD exists** - Features should have TRDs that document validation strategy and test levels
+
+**The `/understanding-specs` skill provides:**
+
+- Complete ADR hierarchy (product/capability/feature decisions)
+- TRD with validation strategy and test level assignments
+- Story/feature/capability spec with acceptance criteria
+
+**If NOT working on specs-based work item**: Proceed directly with test design using provided requirements.
+</context_loading>
+
 <essential_principles>
 **MAXIMUM CONFIDENCE. MINIMUM DEPENDENCIES. NO MOCKING. REALITY IS THE ORACLE.**
 
