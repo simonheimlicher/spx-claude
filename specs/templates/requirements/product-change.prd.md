@@ -9,7 +9,7 @@
 > - Triggers ADR creation for technical decisions; if ADRs reveal scope too large → split into multiple PRDs
 > - Spawns work items (features/stories) AFTER scope validated and ADRs created
 > - No size constraints, no state tracking (OPEN/IN PROGRESS/DONE)
-> - Can exist at: capability level (`capability/[Name].prd.md`) or feature level (`feature/[Name].prd.md`)
+> - Can exist at: project level (`specs/{backlog,doing}/[Name].prd.md`), capability level (`specs/{backlog,doing}/capability-NN_{name}/[Name].prd.md`) or feature level (`specs/{backlog,doing}/capability-NN_{name}/feature/[Name].prd.md`)
 
 ## Required Sections
 
