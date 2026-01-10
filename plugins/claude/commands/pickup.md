@@ -14,15 +14,15 @@ allowed-tools: Read, Glob, Bash(ls:*), Bash(git:*), Bash(mv:*), Bash(basename:*)
 !`git branch --show-current`
 
 **Available handoffs:**
-!`ls .claude/spx-claude/handoffs/TODO_*.md 2>/dev/null | wc -l | xargs printf "TODO: %s\n" && ls .claude/spx-claude/handoffs/DOING_*.md 2>/dev/null | wc -l | xargs printf "DOING: %s"`
+!`find .spx/sessions -maxdepth 1 -name 'TODO_*.md'`
 
-Load a handoff document from `.claude/spx-claude/handoffs/` to continue previous work in the current context.
+Load a handoff document from `.spx/sessions/` to continue previous work in the current context.
 
 ## Behavior
 
 ### Default (no arguments)
 
-Load and present the **most recent** handoff file based on UTC timestamp in filename.
+Load and present the **oldest** handoff file based on UTC timestamp in filename.
 
 ### With `--list` flag
 
@@ -37,7 +37,7 @@ Present all available handoff files and use `AskUserQuestion` tool to let the us
 ```bash
 # List all TODO (unclaimed) handoff files
 # Glob expands in alphabetical order (oldest first)
-ls -1 .claude/spx-claude/handoffs/TODO_*.md 2>/dev/null
+find .spx/sessions -maxdepth 1 -name 'TODO_*.md'
 ```
 
 ### 2. Atomic Claim (Prevents Parallel Agent Conflicts)
@@ -47,7 +47,7 @@ Claim a handoff by atomically renaming `TODO_` to `DOING_`:
 ```bash
 # Loop through TODO files (oldest first)
 # Only one agent can successfully rename each file
-for f in .claude/spx-claude/handoffs/TODO_*.md; do
+for f in .spx/sessions/TODO_*.md; do
   # Attempt atomic rename TODO_ → DOING_
   mv "$f" "${f/TODO_/DOING_}" 2>/dev/null && {
     # Success! We claimed this handoff
@@ -73,12 +73,10 @@ done
 1. Find TODO handoff files (oldest first via alphabetical glob expansion)
 2. Atomically claim the first available one (see step 2 above: loop + rename `TODO_` → `DOING_`)
 3. Read the entire claimed `DOING_` file
-4. Present formatted summary with:
+4. Present formatted summary but only include the following sections:
    - Metadata (timestamp, branch, project)
    - Original task
-   - Work completed summary
    - Work remaining
-   - Current state
    - **Note**: Mention that this handoff has been claimed for this session
 5. Offer to read files mentioned in the handoff if they exist
 
@@ -102,25 +100,27 @@ Example `AskUserQuestion` call:
 
 ```json
 {
-  "questions": [{
-    "question": "Which handoff would you like to load?",
-    "header": "Handoff",
-    "multiSelect": false,
-    "options": [
-      {
-        "label": "2026-01-08 16:30 UTC [main]",
-        "description": "Implement /handoff and /pickup commands for context preservation"
-      },
-      {
-        "label": "2026-01-08 14:15 UTC [feature/auth]",
-        "description": "Add OAuth2 authentication flow with token refresh"
-      },
-      {
-        "label": "2026-01-07 22:45 UTC [main]",
-        "description": "Debug performance issues in API gateway"
-      }
-    ]
-  }]
+  "questions": [
+    {
+      "question": "Which handoff would you like to load?",
+      "header": "Handoff",
+      "multiSelect": false,
+      "options": [
+        {
+          "label": "2026-01-08 16:30 UTC [main]",
+          "description": "Implement /handoff and /pickup commands for context preservation"
+        },
+        {
+          "label": "2026-01-08 14:15 UTC [feature/auth]",
+          "description": "Add OAuth2 authentication flow with token refresh"
+        },
+        {
+          "label": "2026-01-07 22:45 UTC [main]",
+          "description": "Debug performance issues in API gateway"
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -166,11 +166,13 @@ Format the handoff in a clear, readable way:
 
 ### 4. Offer Next Steps
 
-After presenting the handoff, ask the user:
+After presenting the handoff, use the `AskUserQuestion` to ask the user:
 
 - "Would you like me to read any files mentioned in the handoff?"
 - "Should I continue with the work remaining?"
 - "Do you want to modify the plan?"
+
+---
 
 ## Error Handling
 
@@ -183,22 +185,20 @@ No handoffs found. Use `/handoff` to create your first handoff document.
 **Empty handoffs directory**:
 
 ```
-No handoff files found in .claude/spx-claude/handoffs/
+No handoff files found in .spx/sessions/
 Use `/handoff` to create a handoff document.
 ```
 
-**Only DOING handoffs exist** (orphaned from crashed sessions):
+**Only DOING handoffs exist**:
 
 ```
-Found only DOING_ handoffs. These are from incomplete sessions.
-Rename them back to TODO state or delete them:
+Found only DOING_ handoffs. Either other agents have claimed them and are busy working, or they are remanants from abandanoed sessions.
 
-# To unclaim (rename back to TODO):
-mv DOING_2026-01-08T145903Z.md TODO_2026-01-08T145903Z.md
-
-# Or delete if no longer needed:
-rm DOING_*.md
+# Check what `DOING_` handoffs are available (always use `find` and quote wildcards to avoid issues with `zsh` expansion when there are no matches)
+find .spx/sessions -maxdepth 1 -name 'DOING_*.md' | head -1
 ```
+
+Determine which options make the most sense and present them to the user via the `AskUserQuestion` tool.
 
 **Invalid handoff format**:
 

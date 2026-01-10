@@ -26,7 +26,7 @@ Create a comprehensive, detailed handoff document with UTC timestamp that captur
 </context>
 
 <file_location>
-Write to: `.claude/spx-claude/handoffs/TODO_YYYY-MM-DDTHHMMSSZ.md`
+Write to: `.spx/sessions/TODO_YYYY-MM-DDTHHMMSSZ.md`
 
 Generate timestamp with: `date -u +"%Y-%m-%dT%H%M%SZ"`
 
@@ -97,8 +97,8 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 [The specific task that was initially requested - be precise about scope]
 </original_task>
 
-<work_completed
->[Comprehensive detail of everything accomplished:
+<work_completed>
+[Comprehensive detail of everything accomplished:
 - Artifacts created/modified/analyzed (with specific references)
 - Specific changes, additions, or findings (with details and locations)
 - Actions taken (commands, searches, API calls, tool usage, etc.)
@@ -107,24 +107,24 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 - Side tasks completed]
 </work_completed>
 
-<work_remaining
->[Detailed breakdown of what needs to be done:
+<work_remaining>
+[Detailed breakdown of what needs to be done:
 - Specific tasks with precise locations or references
 - Exact targets to create, modify, or analyze
 - Dependencies and ordering
 - Validation or verification steps needed]
 </work_remaining>
 
-<attempted_approaches
->[Everything tried, including failures:
+<attempted_approaches>
+[Everything tried, including failures:
 - Approaches that didn't work and why
 - Errors, blockers, or limitations encountered
 - Dead ends to avoid
 - Alternative approaches considered but not pursued]
 </attempted_approaches>
 
-<critical_context
->[All essential knowledge for continuing:
+<critical_context>
+[All essential knowledge for continuing:
 - Key decisions and trade-offs
 - Constraints, requirements, or boundaries
 - Important discoveries, gotchas, or edge cases
@@ -133,8 +133,8 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 - References to documentation, sources, or resources]
 </critical_context>
 
-<current_state
->[Exact state of the work:
+<current_state>
+[Exact state of the work:
 - Status of deliverables (complete/in-progress/not started)
 - What's finalized vs. what's temporary or draft
 - Temporary changes or workarounds in place
@@ -147,19 +147,19 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 
 <workflow>
 1. **Check for claimed handoff to cleanup**: Search conversation history for a `/pickup` command that renamed a handoff file `TODO_*.md` → `DOING_*.md`. If found, note this `DOING_` file for cleanup.
-2. Create `.claude/spx-claude/handoffs/` directory if it doesn't exist
+2. Create `.spx/sessions/` directory if it doesn't exist
 3. Generate UTC timestamp: `date -u +"%Y-%m-%dT%H%M%SZ"`
 4. Gather all context from current conversation
-5. Write comprehensive handoff to `.claude/spx-claude/handoffs/TODO_[timestamp].md`
+5. Write comprehensive handoff to `.spx/sessions/TODO_[timestamp].md`
 6. **Cleanup claimed handoff**: If a `DOING_` file was found in step 1, delete it now:
    ```bash
    # Delete the DOING_ handoff file that this session was based on
-   rm -f .claude/spx-claude/handoffs/DOING_*.md
+   rm -f .spx/sessions/DOING_*.md
    ```
    Report: "✓ Cleaned up claimed handoff: [filename]"
 7. If `--prune` flag is present:
    - Verify the new handoff file exists and has content
-   - Delete all other `.md` files in `.claude/spx-claude/handoffs/` (except the new `TODO_` one)
+   - Delete all other `.md` files in `.spx/sessions/` (except the new `TODO_` one)
    - Report what was deleted
 8. Confirm handoff created with full path
 </workflow>
@@ -173,21 +173,20 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 
 # Create handoff
 
-mkdir -p .claude/spx-claude/handoffs
+mkdir -p .spx/sessions
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H%M%SZ")
-echo "Writing handoff to .claude/spx-claude/handoffs/TODO_${TIMESTAMP}.md"
+echo "Writing handoff to .spx/sessions/TODO_${TIMESTAMP}.md"
 
 # ... write handoff content ...
 
 # Cleanup claimed handoff (self-organizing!)
 
-rm -f .claude/spx-claude/handoffs/DOING_2026-01-08T145903Z.md
+rm -f .spx/sessions/DOING_2026-01-08T145903Z.md
 echo "✓ Cleaned up claimed handoff from this session"
 
 # If --prune flag present:
 
-find .claude/spx-claude/handoffs -name "*.md" -not -name "TODO_${TIMESTAMP}.md" -delete
-
+find .spx/sessions -name "*.md" -not -name "TODO_${TIMESTAMP}.md" -delete
 ```
 
 </example>
@@ -200,11 +199,11 @@ This command works with `/pickup` to create a self-organizing handoff system:
 3. **`/handoff`** creates new `TODO_` handoff AND deletes the `DOING_` file
 4. Result: Only active `TODO_` handoffs remain, no manual cleanup needed
 
-**Parallel agents**: Multiple agents can run `/pickup` simultaneously - only one will _successfully_ _claim_ _each_ handoff (atomic `mv` operation).
+**Parallel agents**: Multiple agents can run `/pickup` simultaneously - only one will *successfully* *claim* *each* handoff (atomic `mv` operation).
 
 **Visual Status**:
 
 - `TODO_*.md` = Available for pickup (queue of work to be done)
 - `DOING_*.md` = Currently being worked on (claimed by active session)
 - New handoffs are created as `TODO_` (ready for next session)
-  </system_description>
+</system_description>

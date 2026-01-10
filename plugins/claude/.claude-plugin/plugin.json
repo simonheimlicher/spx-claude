@@ -1,11 +1,20 @@
 {
   "name": "claude",
-  "version": "0.4.0",
-  "description": "Claude Code productivity skills and commands",
+  "version": "0.4.13",
+  "description": "Claude Code skills and commands for commits and session handoff",
   "author": {
     "name": "Simon Heimlicher"
   },
   "repository": "https://github.com/simonheimlicher/spx-claude",
   "license": "MIT",
-  "keywords": ["claude-code", "skills", "git", "commit", "conventional-commits", "handoff", "context", "continuity"]
+  "keywords": [
+    "claude-code",
+    "skills",
+    "git",
+    "commit",
+    "conventional-commits",
+    "handoff",
+    "pickup",
+    "session"
+  ]
 }

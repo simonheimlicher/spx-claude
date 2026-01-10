@@ -5,6 +5,9 @@
 .continue/
 .copilot/
 
+# SPX tool operational files
+.spx/
+
 # Editor and IDE
 .vscode/
 .idea/

@@ -1,5 +1,8 @@
 {
   "name": "spx-claude",
+  "metadata": {
+    "description": "SPX-based Claude Code plugin marketplace for spec-driven development"
+  },
   "owner": {
     "name": "Simon Heimlicher"
   },

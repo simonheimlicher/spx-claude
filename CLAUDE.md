@@ -2,6 +2,16 @@
 
 Simon Heimlicher's Claude Code plugin marketplace, based on the spec-driven development framework [SPX](https://spx.sh).
 
+## Marketplace Is a Product
+
+We develop the “features” of this market place like a software product. We are currently starting out from scratch, so there is not yet much to be found, but as we progress, everything will be in `specs` and `docs`.
+
+## Always use `AskUserQuestion` Tool
+
+**Always use the `AskUserQuestion` tool to obtain guidance from the user, such as: discover context, obtain rationale, as well as to support the user in makking the right call by asking critical questions before blindly following the user's requests**
+
+**NEVER ask the user any questions without using the `AskUserQuestion` tool**
+
 ## Documentation
 
 ### Official Anthropic Resources
@@ -233,9 +243,43 @@ Requirements documentation and specification skills.
 
 Search for `SKILL.md` in `.claude/plugins/cache/{marketplace-name}/{plugin-name}/`
 
+## Restrictions on Using `!` Expansion in Commands
+
+````zsh
+# Avoid shell operators such as `(N)` (nullglob in zsh)
+Error: Bash command permission check failed for pattern "!ls .spx/sessions/TODO_*.md(N) | wc -l | xargs printf "TODO: %s\n" && ls .spx/sessions/DOING_*.md(N) | wc -l | xargs printf "DOING: %s\n"": This command uses shell operators that require approval for safety
+
+# Avoid parameter substitution
+Error: Bash command permission check failed for pattern "!for f (.spx/sessions/DOING_*) print mv $f ${f/DOING/TODO}": Command contains ${} parameter substitution
+
+# Avoid loops
+Error: Bash command permission check failed for pattern "!find .spx/sessions -maxdepth 1 -name 'DOING_*' | while read f; do echo mv "$f" "$(echo "$f" | sed 's/DOING/TODO/')"; done": This Bash command contains multiple operations. The following part requires approval: while read f ;
+     do echo mv "$f" "$(echo "$f" | sed ''s/DOING/TODO/'')" ; done    
+
+Error: Bash command permission check failed for pattern "!find .spx/sessions -maxdepth 1 -name 'DOING_*' | awk '{new=$0; sub(/DOING/,"TODO",new); print "mv "$0" "new}'": This Bash command contains multiple operations. The following part requires approval: awk '{new=$0;
+     sub(/DOING/,""TODO"",new); print ""mv ""$0"" ""new}'
+```
+
 ---
 
 ## For AI Agents Modifying This Marketplace
+
+### ⛔ Path Restrictions
+
+**NEVER write to these locations:**
+
+- `.claude/` - Requires user permission for every operation, breaks workflow
+- `~/.claude/` - User home directory, not project-specific
+- Any path containing `.claude` in user home
+
+**ALWAYS write to project directories:**
+
+- `plugins/` - Plugin code, skills, commands, templates
+- `specs/` - Work items, requirements, decisions (see [specs/CLAUDE.md](specs/CLAUDE.md))
+- `.spx/` - Tool operational files (sessions, cache) - gitignored
+- Project root - Package files, config files
+
+**Rationale:** Claude Code requires user permission for every file operation in `.claude/` directories. This creates friction and breaks the development flow. All project artifacts belong in the project directory structure.
 
 ### Before Making Changes
 
@@ -256,7 +300,7 @@ Search for `SKILL.md` in `.claude/plugins/cache/{marketplace-name}/{plugin-name}
 ```bash
 # Location: plugins/{plugin-name}/.claude-plugin/plugin.json
 # Update "version" field according to rules above
-```
+````
 
 **Update marketplace description** (only if needed):
 
@@ -267,12 +311,24 @@ Search for `SKILL.md` in `.claude/plugins/cache/{marketplace-name}/{plugin-name}
 
 **Document changes**: Update this [CLAUDE.md](CLAUDE.md:1) file if adding new commands/skills to the plugin tables
 
+**Validate changes**: Always run validation after making changes:
+
+```bash
+claude plugin validate .
+```
+
+Fix any validation errors before committing changes.
+
 ### Quick Reference: File Locations
 
 ```
 spx-claude/
 ├── .claude-plugin/
 │   └── marketplace.json          # Marketplace catalog
+├── .spx/                          # Tool operational (gitignored)
+│   └── sessions/                  # Session handoffs
+│       ├── TODO_*.md             # Available for /pickup
+│       └── DOING_*.md            # Currently claimed
 ├── plugins/
 │   ├── claude/
 │   │   ├── .claude-plugin/
@@ -289,12 +345,26 @@ spx-claude/
 │   │   │   └── plugin.json       # Version: 0.x.x
 │   │   └── commands/
 │   │       └── autopython.md
+│   ├── specs/
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json       # Version: 0.2.0
+│   │   └── skills/
+│   │       ├── bootstrapping-documents/
+│   │       ├── writing-technical-requirements/
+│   │       └── writing-product-requirements/
 │   ├── typescript/
 │   │   └── .claude-plugin/
 │   │       └── plugin.json       # Version: 0.x.x
 │   └── test/
 │       └── .claude-plugin/
 │           └── plugin.json       # Version: 0.x.x
+├── specs/                         # Spec-driven development
+│   ├── CLAUDE.md                 # Specs directory guide
+│   ├── decisions/                 # Product-wide ADRs
+│   └── work/
+│       ├── backlog/              # Future work
+│       ├── doing/                 # Active work
+│       └── done/                  # Completed work
 └── CLAUDE.md                      # This file
 ```
 
