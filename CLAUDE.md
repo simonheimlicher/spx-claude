@@ -97,6 +97,36 @@ plugins/{plugin-name}/.claude-plugin/plugin.json
 }
 ```
 
+### Version Bump Workflow
+
+**CRITICAL: Version bumps must be in the SAME commit as the changes that warrant them.**
+
+❌ **WRONG** - Separate commits:
+
+```bash
+git commit -m "refactor(skills): simplify descriptions"
+# ... then later ...
+git commit -m "chore: bump versions"
+```
+
+✅ **CORRECT** - Single atomic commit:
+
+```bash
+# 1. Make your changes to skills/commands/etc
+# 2. Update version numbers in plugin.json files
+# 3. Stage everything together
+git add plugins/*/skills/ plugins/*/.claude-plugin/plugin.json
+# 4. Create ONE commit with both the changes and version bumps
+git commit -m "refactor(skills): simplify descriptions
+
+- Simplified skill descriptions from formal jargon to natural language
+- All plugins: patch version bump (descriptions improved)"
+```
+
+**Rationale:** The version number is metadata about the changes, not a separate logical change. Splitting them creates awkward history where commits have changes but outdated version numbers.
+
+**Exception:** Only create a separate version bump commit if you're bumping versions WITHOUT any code/doc changes (rare).
+
 ### Version Bump Examples
 
 | Change                      | Old   | New   | Reason                          |
@@ -435,39 +465,41 @@ Error: Bash command permission check failed for pattern "!find .spx/sessions -ma
 
 ### After Adding/Modifying Commands or Skills
 
-**Determine version bump type** (see [Version Management](#version-management) above):
+**⚠️ CRITICAL: Version bumps must be in the SAME commit as your changes.** See [Version Bump Workflow](#version-bump-workflow) above.
 
-- **MAJOR** (0.x.x → 1.x.x): ⛔ NEVER unless user explicitly requests
-- **MINOR** (0.3.x → 0.4.x): New command/skill OR major functional change
-- **PATCH** (0.3.x → 0.3.1): Bug fixes, refactoring, small changes (MOST COMMON)
+**Workflow:**
 
-**Update plugin.json**:
+1. **Make your changes** to skills, commands, templates, etc.
 
-```bash
-# Location: plugins/{plugin-name}/.claude-plugin/plugin.json
-# Update "version" field according to rules above
-```
+2. **Determine version bump type** (see [Version Management](#version-management) above):
+   - **MAJOR** (0.x.x → 1.x.x): ⛔ NEVER unless user explicitly requests
+   - **MINOR** (0.3.x → 0.4.x): New command/skill OR major functional change
+   - **PATCH** (0.3.x → 0.3.1): Bug fixes, refactoring, small changes (MOST COMMON)
 
-**Update marketplace description** (only if needed):
+3. **Update plugin.json version** in the same working session:
 
-```bash
-# Location: .claude-plugin/marketplace.json
-# Update description for the modified plugin (only if description changes)
-```
+   ```bash
+   # Location: plugins/{plugin-name}/.claude-plugin/plugin.json
+   # Update "version" field according to rules above
+   ```
 
-**Document changes**: Update this [CLAUDE.md](CLAUDE.md:1) file if adding new commands/skills to the plugin tables
+4. **Update marketplace description** (only if needed):
 
-**Validate changes**: Always run validation after making changes:
+   ```bash
+   # Location: .claude-plugin/marketplace.json
+   # Update description for the modified plugin (only if description changes)
+   ```
 
-```bash
-# Validate the marketplace
-claude plugin validate .
+5. **Document changes**: Update this [CLAUDE.md](CLAUDE.md:1) file if adding new commands/skills to the plugin tables
 
-# Validate the specific plugin you modified
-claude plugin validate ./plugins/{plugin-name}
-```
+6. **Stage and commit EVERYTHING together** in ONE commit:
 
-Fix any validation errors before committing changes. Both marketplace and plugin validation are automatically run by the pre-commit hook.
+   ```bash
+   git add plugins/{plugin-name}/ plugins/{plugin-name}/.claude-plugin/plugin.json
+   git commit -m "type(scope): your changes including version bump"
+   ```
+
+**Validation**: The pre-commit hook automatically validates marketplace and plugins. If validation fails, the commit is blocked until errors are fixed.
 
 ### Quick Reference: File Locations
 
