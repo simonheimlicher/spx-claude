@@ -49,6 +49,30 @@ expect(result.success).toBe(true); // Tests behavior
 
 </test_verification>
 
+<context_loading>
+**For specs-based work items: Verify context was loaded before reviewing.**
+
+If you're reviewing code for a spec-driven work item (story/feature/capability), verify the implementation has complete context:
+
+1. **Check that `specs:understanding-specs` was invoked** - Look for context loading in implementation
+2. **Verify all ADRs are referenced** - Implementation should follow architectural decisions
+3. **Verify TRD/spec requirements met** - Code should satisfy documented requirements
+
+**The `specs:understanding-specs` skill provides:**
+
+- Complete ADR hierarchy (product/capability/feature decisions)
+- TRD with validation strategy and acceptance criteria
+- Story/feature/capability spec with functional requirements
+
+**Review focus:**
+
+- Does implementation honor all ADRs in hierarchy?
+- Does implementation satisfy TRD validation strategy?
+- Does implementation meet story/feature acceptance criteria?
+
+**If NOT working on specs-based work item**: Proceed directly with code review using provided specification.
+</context_loading>
+
 <verdict_definitions>
 
 | Verdict         | Criteria                                                   | Next Phase          |

@@ -10,6 +10,31 @@ allowed-tools: Read, Grep
 Review ADRs against testing principles. Point out what violates principles, reference the specific principle, and show what correct architecture looks like.
 </objective>
 
+<context_loading>
+**For specs-based work items: Load complete ADR hierarchy before reviewing.**
+
+If you're reviewing ADRs for a spec-driven work item (story/feature/capability), ensure complete architectural context is loaded:
+
+1. **Invoke `specs:understanding-specs`** with the work item identifier
+2. **Verify all parent ADRs are loaded** - Must check for consistency with architectural hierarchy
+3. **Verify ADR references parent decisions** - Feature/capability ADRs should reference relevant product ADRs
+
+**The `specs:understanding-specs` skill provides:**
+
+- Complete ADR hierarchy (product/capability/feature decisions)
+- TRD with technical requirements
+- Story/feature/capability spec with acceptance criteria
+
+**Review focus:**
+
+- Does ADR contradict any parent decisions?
+- Does ADR include testing strategy with level assignments?
+- Does ADR honor no-mocking principle?
+- Does ADR document trade-offs and consequences?
+
+**If NOT working on specs-based work item**: Proceed directly with ADR review using provided architectural decision.
+</context_loading>
+
 <process>
 1. **Read the ADR** completely
 2. **Identify violations** - what contradicts testing principles

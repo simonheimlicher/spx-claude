@@ -30,11 +30,11 @@ This skill assumes you understand from `/testing`:
 
 If you're designing tests for a spec-driven work item (story/feature/capability), ensure complete hierarchical context is loaded:
 
-1. **Invoke `/understanding-specs`** with the work item identifier
+1. **Invoke `specs:understanding-specs`** with the work item identifier
 2. **Verify all ADRs are loaded** - Testing decisions may be in product/capability/feature ADRs
 3. **Verify TRD exists** - Features should have TRDs that document validation strategy and test levels
 
-**The `/understanding-specs` skill provides:**
+**The `specs:understanding-specs` skill provides:**
 
 - Complete ADR hierarchy (product/capability/feature decisions)
 - TRD with validation strategy and test level assignments

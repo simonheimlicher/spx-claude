@@ -1,19 +1,18 @@
 {
   "name": "specs",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "Requirements documentation and specification skills",
-  "skills": [
-    {
-      "path": "skills/writing-technical-requirements"
-    },
-    {
-      "path": "skills/writing-product-requirements"
-    },
-    {
-      "path": "skills/managing-specs"
-    },
-    {
-      "path": "skills/understanding-specs"
-    }
+  "author": {
+    "name": "Simon Heimlicher"
+  },
+  "repository": "https://github.com/simonheimlicher/spx-claude",
+  "license": "MIT",
+  "keywords": [
+    "requirements",
+    "specifications",
+    "prd",
+    "trd",
+    "adr",
+    "spec-driven"
   ]
 }

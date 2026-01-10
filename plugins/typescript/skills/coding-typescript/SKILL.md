@@ -63,11 +63,11 @@ it("GIVEN valid args WHEN running THEN returns success", async () => {
 
 **If working on a specs-based work item** (story/feature/capability):
 
-1. **Invoke `/understanding-specs` FIRST** with the work item identifier
+1. **Invoke `specs:understanding-specs` FIRST** with the work item identifier
 2. **If context ingestion fails**: ABORT - do not proceed until all required documents exist
 3. **If context ingestion succeeds**: Proceed with implementation using loaded context
 
-**The `/understanding-specs` skill ensures:**
+**The `specs:understanding-specs` skill ensures:**
 
 - All specification documents exist (capability/feature/story specs)
 - All requirements documents exist (PRD/TRD at appropriate levels)
@@ -78,13 +78,13 @@ it("GIVEN valid args WHEN running THEN returns success", async () => {
 
 ```bash
 # By work item path
-/understanding-specs capability-10_cli/feature-20_commands/story-30_build
+specs:understanding-specs capability-10_cli/feature-20_commands/story-30_build
 
 # By story name
-/understanding-specs story-30_build
+specs:understanding-specs story-30_build
 ```
 
-**If `/understanding-specs` returns an error**: The error message will specify which document is missing and how to create it. Create the missing document before proceeding with implementation.
+**If `specs:understanding-specs` returns an error**: The error message will specify which document is missing and how to create it. Create the missing document before proceeding with implementation.
 
 **If NOT working on specs-based work item**: Proceed directly to implementation mode with provided spec.
 </context_loading>

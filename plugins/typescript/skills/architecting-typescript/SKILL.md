@@ -37,6 +37,31 @@ allowed-tools: Read, Write, Glob, Grep
 - **Reality is the oracle** — Real systems, not simulations
   </testing_levels_summary>
 
+<context_loading>
+**For specs-based work items: Load complete context before creating ADRs.**
+
+If you're creating ADRs for a spec-driven work item (story/feature/capability), ensure complete hierarchical context is loaded:
+
+1. **Invoke `specs:understanding-specs`** with the work item identifier
+2. **Verify all parent ADRs are loaded** - Must understand and honor all architectural decisions in hierarchy
+3. **Verify TRD exists** - Features have TRDs that document technical requirements
+
+**The `specs:understanding-specs` skill provides:**
+
+- Complete ADR hierarchy (product/capability/feature decisions)
+- TRD with technical requirements and validation strategy
+- Story/feature/capability spec with acceptance criteria
+
+**ADR creation requirements:**
+
+- Must not contradict parent ADRs (product → capability → feature hierarchy)
+- Must reference relevant parent decisions
+- Must include testing strategy with level assignments
+- Must document trade-offs and consequences
+
+**If NOT working on specs-based work item**: Proceed directly with ADR creation using provided technical requirements.
+</context_loading>
+
 <input_context>
 Before creating ADRs, you must understand:
 
