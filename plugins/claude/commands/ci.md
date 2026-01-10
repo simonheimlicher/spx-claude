@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*)
+allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*), Skill
 description: Commit with Conventional Commits
 argument-hint: [files-to-stage]
 ---
@@ -31,43 +31,14 @@ Stage those files, then commit.
 
 ### If no files specified
 
-Review the status above. If nothing is staged, ask which files to stage.
+Review the status above. If nothing is staged, carefully review all changes and create one or several logical commits.
 
-## Commit Format
+## Execution Instructions
 
-```
-<type>[(scope)]: <description>
+**IMPORTANT:** When this command is invoked, you MUST:
 
-[optional body]
-```
+1. **Invoke the `claude:committing-changes` skill** using the Skill tool
 
-**Types:** feat | fix | docs | style | refactor | perf | test | ci | build | revert | ctx
+## What This Does
 
-**Rules:**
-
-- Imperative mood: "add" not "added"
-- Subject: 50 chars max, no period
-- Body: wrap at 72 chars, explain WHY not HOW
-- NO attribution (never include author names)
-
-## Workflow
-
-1. Stage files selectively (never `git add .` unless explicitly requested)
-2. Review staged diff: `git diff --cached`
-3. Verify single purpose (one logical change)
-4. Create commit with HEREDOC:
-   ```bash
-   git commit -m "$(cat <<'EOF'
-   type(scope): subject line
-
-   Body explaining why.
-   EOF
-   )"
-   ```
-
-## Red Flags - Ask Before Committing
-
-- More than 10 files for a simple fix
-- Mix of unrelated changes
-- Debug code (console.log, print statements)
-- Experimental/incomplete work
+Activates the `claude:committing-changes` skill. You must follow its instructions to the letter.
