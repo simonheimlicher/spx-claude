@@ -1,5 +1,8 @@
 pre-commit:
   commands:
-    dprint:
+    prettier:
       glob: "*.{md,json}"
-      run: dprint fmt {staged_files}
+      run: prettier --write {staged_files}
+    markdownlintcli2:
+      glob: "*.{md}"
+      run: markdownlint-cli2 --config ~/.markdownlint.yaml --fix {staged_files}
