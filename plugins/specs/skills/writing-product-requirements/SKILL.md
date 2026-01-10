@@ -182,7 +182,8 @@ All workflows in `workflows/`:
 | design-measurable-outcomes.md | Outcome quantification and capability definition |
 | define-product-scope.md       | Scope boundaries and ADR identification          |
 | write-prd.md                  | PRD composition and section filling              |
-| </workflows_index>            |                                                  |
+
+</workflows_index>
 
 <references_index>
 Domain knowledge in `references/`:
@@ -193,7 +194,8 @@ Domain knowledge in `references/`:
 | testing-methodology.md      | Same as TRD: three-tier testing rules      |
 | acceptance-test-patterns.md | Gherkin and E2E test best practices        |
 | measurable-outcomes.md      | Quantifying user value and product success |
-| </references_index>         |                                            |
+
+</references_index>
 
 <templates_index>
 Referenced templates:
@@ -201,7 +203,8 @@ Referenced templates:
 | Template                                           | Purpose                         |
 | -------------------------------------------------- | ------------------------------- |
 | specs/templates/requirements/product-change.prd.md | Complete PRD template structure |
-| </templates_index>                                 |                                 |
+
+</templates_index>
 
 <success_criteria>
 PRD creation complete when:

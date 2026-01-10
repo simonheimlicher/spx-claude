@@ -3,9 +3,10 @@ Read: `references/measurable-outcomes.md` - Understanding user value
 </required_reading>
 
 <process>
-## Deep Thinking: User Pain vs Symptom
+<deep_thinking>
+**User Pain vs Symptom**
 
-**Pause and analyze what the user has stated:**
+Pause and analyze what the user has stated:
 
 - Is this the ROOT USER PAIN or just a SYMPTOM?
 - What capability do users currently lack?
@@ -14,9 +15,9 @@ Read: `references/measurable-outcomes.md` - Understanding user value
 - How does this align with overall product vision?
 
 **Form a hypothesis about the root user problem.**
+</deep_thinking>
 
-## Propose User Problem Analysis
-
+<propose_analysis>
 Present your analysis to the user:
 
 ```
@@ -39,9 +40,9 @@ Does this capture the user problem, or should I adjust my understanding?
 **Wait for user confirmation or correction.**
 
 If corrected, update your understanding and re-propose until confirmed.
+</propose_analysis>
 
-## Analyze Customer Journey
-
+<analyze_customer_journey>
 Map the transformation this product creates:
 
 **Before** (current state):
@@ -61,9 +62,9 @@ Map the transformation this product creates:
 - How will users operate with this capability?
 - What will be different in their workflow?
 - What new value will they experience?
+  </analyze_customer_journey>
 
-## Propose Customer Journey
-
+<propose_customer_journey>
 Present to user using AskUserQuestion if clarification needed:
 
 ```
@@ -77,9 +78,9 @@ Does this customer journey resonate? Any aspects I'm missing?
 ```
 
 **Wait for user validation.**
+</propose_customer_journey>
 
-## Document User Assumptions
-
+<document_assumptions>
 Since we cannot interview real users, make assumptions explicit:
 
 - User technical capability (CLI comfort, git knowledge)
@@ -88,9 +89,9 @@ Since we cannot interview real users, make assumptions explicit:
 - User constraints (infrastructure access, tooling)
 
 If assumptions beyond standard user capabilities apply, document in table format. Otherwise: "None identified".
+</document_assumptions>
 
-## Identify Conversation Gaps
-
+<identify_gaps>
 Analyze what information is STILL unclear:
 
 - Are there ambiguous user needs?
@@ -100,6 +101,7 @@ Analyze what information is STILL unclear:
 **Only ask about genuine gaps.** Don't ask about things already discussed.
 
 If gaps exist, use AskUserQuestion to fill them before proceeding to Phase 2.
+</identify_gaps>
 
 </process>
 
