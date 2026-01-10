@@ -7,7 +7,7 @@
 > - Authoritative: Changes to solution approach require user approval
 > - Guides implementation: Spawns work items (features/stories) with binding acceptance criteria
 > - No size constraints, no state tracking (OPEN/IN PROGRESS/DONE)
-> - Can exist at: capability level (`capability/[Name of Technical Change].trd.md`) or feature level (`feature/[Name of Technical Change].trd.md`)
+> - Can exist at: capability level (`.../capability/[Name of Technical Change].trd.md`) or feature level (`.../feature/[Name of Technical Change].trd.md`)
 
 ## Required Sections
 
@@ -109,11 +109,11 @@ Define boundaries between components. These become integration points for Level 
 
 List each behavior the solution must guarantee. Assign to the lowest test level that can verify it.
 
-| #  | Guarantee                                                  | Level | Rationale                                            |
-| -- | ---------------------------------------------------------- | ----- | ---------------------------------------------------- |
-| G1 | [e.g., Price calculation handles edge cases]               | 1     | Pure arithmetic logic, no external dependencies      |
-| G2 | [e.g., Database persists order records]                    | 2     | Requires real PostgreSQL; use Docker harness         |
-| G3 | [e.g., Payment processing completes with real credentials] | 3     | Requires Stripe test account and real API connection |
+| #   | Guarantee                                                  | Level | Rationale                                            |
+| --- | ---------------------------------------------------------- | ----- | ---------------------------------------------------- |
+| G1  | [e.g., Price calculation handles edge cases]               | 1     | Pure arithmetic logic, no external dependencies      |
+| G2  | [e.g., Database persists order records]                    | 2     | Requires real PostgreSQL; use Docker harness         |
+| G3  | [e.g., Payment processing completes with real credentials] | 3     | Requires Stripe test account and real API connection |
 
 ### BDD Scenarios
 

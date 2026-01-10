@@ -1,193 +1,111 @@
-# specs/ Directory Guide
+# specs/ Directory
 
-This guide covers navigating, reading status, and editing work items in the `specs/` directory.
+Spec-driven development workspace for this product.
 
----
-
-## Navigating the `specs/` Directory
-
-### Directory Layout
+## Directory Structure
 
 ```
 specs/
-├── doing/                                   # Active work
-├── backlog/                                 # Future work
-├── archive/                                 # Completed work
-├── decisions/                               # Project-level ADRs only
-└── templates/                               # Templates for new items
+├── CLAUDE.md                      # This file
+├── [product-name].prd.md          # Product-wide PRD (optional)
+├── decisions/                      # Product-wide ADRs
+│   └── adr-NNN_{slug}.md
+└── work/
+    ├── backlog/                    # Future work items
+    ├── doing/                      # Active work items
+    └── done/                       # Completed work items (permanent)
 ```
 
-### Three-Level Hierarchy (All Levels Work The Same)
+## Work Item Hierarchy
+
+Work items follow a three-level hierarchy:
 
 ```
-specs/{doing,backlog,archive}/
-└── NN_{capability-slug}/                    # Level 1 (TOP)
-    ├── {slug}.capability.md                 # Work item definition
-    ├── {topic}.prd.md                       # Optional: requirements catalyst
-    ├── decisions/adr-NNN_{slug}.md          # Architectural decisions
-    ├── tests/                               # E2E tests
-    │   └── DONE.md                          # Completion marker
-    │
-    └── NN_{feature-slug}/                   # Level 2
-        ├── {slug}.feature.md                # Work item definition
-        ├── {topic}.trd.md                   # Optional: requirements catalyst
-        ├── decisions/adr-NNN_{slug}.md      # Architectural decisions
-        ├── tests/                           # Integration tests
-        │   └── DONE.md                      # Completion marker
-        │
-        └── NN_{story-slug}/                 # Level 3 (BOTTOM)
-            ├── {slug}.story.md              # Work item definition
-            └── tests/                       # Unit tests
-                └── DONE.md                  # Completion marker
+capability-NN_{slug}/              # E2E scenarios, tests→tests/e2e/
+├── {slug}.capability.md
+├── {topic}.prd.md                  # Optional PRD catalyst
+├── decisions/                      # Capability-scoped ADRs
+├── tests/
+└── feature-NN_{slug}/              # Integration scenarios, tests→tests/integration/
+    ├── {slug}.feature.md
+    ├── {topic}.trd.md              # Optional TRD catalyst
+    ├── decisions/                  # Feature-scoped ADRs
+    ├── tests/
+    └── story-NN_{slug}/            # Atomic implementation, tests→tests/unit/
+        ├── {slug}.story.md
+        └── tests/
 ```
 
-### What Lives Where
+## Key Concepts
 
-| Level          | Work Item         | Optional Catalyst | Has Decisions? | Test Type   |
-| -------------- | ----------------- | ----------------- | -------------- | ----------- |
-| 1 (Capability) | `*.capability.md` | `*.prd.md`        | ✅ Yes         | E2E         |
-| 2 (Feature)    | `*.feature.md`    | `*.trd.md`        | ✅ Yes         | Integration |
-| 3 (Story)      | `*.story.md`      | ❌ None           | ❌ Inherits    | Unit        |
+**Requirements (vision documents):**
 
-**Key insight**: There is nothing above capabilities. No `specs/project.prd.md`. Capabilities ARE the top level.
+- **PRD**: Product requirements (user value, measurable outcomes) → spawns capabilities
+- **TRD**: Technical requirements (system architecture, validation) → spawns features
+- Rule: PRD OR TRD at same scope, never both
 
-**Fractal nature**: PRD at capability level spawns features. TRD at feature level spawns stories. Stories are atomic—no children.
+**Decisions (constraints):**
+
+- **ADR**: Architectural decision records at product/capability/feature scope
+- Stories inherit decisions from parent feature/capability
+
+**Work item status** (determined by tests/ directory):
+
+- **OPEN**: tests/ missing or empty
+- **IN_PROGRESS**: Has test files, no DONE.md
+- **DONE**: DONE.md exists
+
+**BSP numbering** (10-99):
+
+- Lower number = must complete first
+- Used for dependency ordering at all levels
+
+**Test graduation:**
+
+- Story tests → tests/unit/
+- Feature tests → tests/integration/
+- Capability tests → tests/e2e/
+
+## Templates and Structure
+
+For templates and detailed structure information:
+
+- Invoke `/bootstrapping-documents` skill
+- Or read: `plugins/specs/skills/bootstrapping-documents/`
+
+Templates include:
+
+- Product/technical requirements (PRD/TRD)
+- Architectural decisions (ADR)
+- Work items (capability/feature/story)
+- Completion evidence (DONE.md)
+- Structure definition (structure.yaml)
+
+## Creating Requirements
+
+**For product requirements:**
+
+- Invoke `/writing-product-requirements` skill
+- Creates PRDs with user value and measurable outcomes
+
+**For technical requirements:**
+
+- Invoke `/writing-technical-requirements` skill
+- Creates TRDs with architecture and validation strategy
+
+## Session Management
+
+Claude Code session handoffs are stored in:
+
+```
+.spx/sessions/
+├── TODO_*.md      # Available for /pickup
+└── DOING_*.md     # Currently claimed
+```
+
+Use `/handoff` to create session context for continuation.
+Use `/pickup` to load and claim a handoff.
 
 ---
 
-## READ: Status and What to Work On Next
-
-### Three States
-
-Status is determined by the `tests/` directory at each level:
-
-| State           | `tests/` Directory            | Meaning          |
-| --------------- | ----------------------------- | ---------------- |
-| **OPEN**        | Missing OR empty              | Work not started |
-| **IN_PROGRESS** | Has `*.test.ts`, no `DONE.md` | Work underway    |
-| **DONE**        | Has `DONE.md`                 | Complete         |
-
-### 🚨 BSP Numbers = Dependency Order
-
-> **Lower BSP number = must complete FIRST.**
->
-> You CANNOT work on item N until ALL items with numbers < N are DONE.
-
-This applies at every level:
-
-| If you see...                                   | It means...                                      |
-| ----------------------------------------------- | ------------------------------------------------ |
-| `feature-48` before `feature-87`                | feature-48 MUST be DONE before feature-87 starts |
-| `story-21` before `story-32`                    | story-21 MUST be DONE before story-32 starts     |
-| `feature-48 [OPEN]`, `feature-87 [IN_PROGRESS]` | **BUG**: Dependency violation                    |
-
-### Finding the Next Work Item
-
-```
-1. List all work items in BSP order (capability → feature → story)
-2. Return the FIRST item where status ≠ DONE
-3. That item blocks everything after it
-```
-
-**Example** from `spx status`:
-
-```text
-feature-48_test-harness [OPEN]        ← Was added chronologically after feature-87 but that depends on it
-feature-87_e2e-workflow [IN_PROGRESS] ← Was already in progress and the need for test harness was discovered
-```
-
-**Next work item**: `feature-48_test-harness` → its first OPEN story.
-
-### Quick Commands
-
-```bash
-# Get current status
-spx status
-
-# Find next work item (respects BSP dependencies)
-spx next
-
-# Get status as JSON
-spx status --json
-```
-
----
-
-## EDIT: Adding or Reordering Work Items
-
-### BSP Numbering
-
-Two-digit prefixes in range **[10, 99]** encode dependency order.
-
-### Creating New Items
-
-#### Case 1: First Item (No Siblings)
-
-Use position **21** (leaves room for ~10 items):
-
-```
-# First feature in a new capability
-capability-21_foo/
-└── feature-21_first-feature/
-```
-
-#### Case 2: Insert Between Siblings
-
-Use midpoint: `new = floor((left + right) / 2)`
-
-```
-# Insert between feature-21 and feature-54
-new = floor((21 + 54) / 2) = 37
-
-feature-21_first/
-feature-37_inserted/    ← NEW
-feature-54_second/
-```
-
-#### Case 3: Append After Last
-
-Use midpoint to upper bound: `new = floor((last + 99) / 2)`
-
-```
-# Append after feature-54
-new = floor((54 + 99) / 2) = 76
-
-feature-21_first/
-feature-54_second/
-feature-76_appended/    ← NEW
-```
-
-### Creating a Work Item
-
-Every work item needs:
-
-1. **Directory**: `NN_{slug}/`
-2. **Definition file**: `{slug}.{capability|feature|story}.md`
-3. **Tests directory**: `tests/` (create when starting work)
-
-Optional:
-
-- **Requirements catalyst**: `{topic}.prd.md` (capability) or `{topic}.trd.md` (feature)
-- **Decisions**: `decisions/adr-NNN_{slug}.md`
-
-**Templates**: See [templates/](templates/) for starter files.
-
-### Marking Complete
-
-1. Ensure all tests pass
-2. Create `tests/DONE.md` with:
-   - Summary of what was implemented
-   - List of graduated tests (moved to `tests/`)
-   - Any notes for future reference
-
-### Test Graduation
-
-When a work item is DONE, its tests graduate from `specs/.../tests/` to the production test suite:
-
-| From                                      | To                   |
-| ----------------------------------------- | -------------------- |
-| `specs/.../story-NN/tests/*.test.ts`      | `tests/unit/`        |
-| `specs/.../feature-NN/tests/*.test.ts`    | `tests/integration/` |
-| `specs/.../capability-NN/tests/*.test.ts` | `tests/e2e/`         |
-
-> ⚠️ **Never write tests directly in `tests/`** — this breaks CI until implementation is complete. Always write in `specs/.../tests/` first, then graduate.
+**For complete workflow methodology**, reference the SPX framework documentation (when available) or consult the `/bootstrapping-documents` skill for structure details.

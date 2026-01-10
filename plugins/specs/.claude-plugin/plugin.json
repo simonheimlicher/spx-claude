@@ -1,6 +1,6 @@
 {
   "name": "specs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Requirements documentation and specification skills",
   "skills": [
     {
@@ -8,6 +8,9 @@
     },
     {
       "path": "skills/writing-product-requirements"
+    },
+    {
+      "path": "skills/bootstrapping-documents"
     }
   ]
 }

@@ -83,9 +83,7 @@ describe("[Module/Function]", () => {
     };
 
     // When/Then
-    await expect(functionUnderTest(input, mockDeps)).rejects.toThrow(
-      "Hugo is not installed",
-    );
+    await expect(functionUnderTest(input, mockDeps)).rejects.toThrow("Hugo is not installed");
   });
 });
 ```
