@@ -349,7 +349,7 @@ spx-claude/
 │   │   ├── .claude-plugin/
 │   │   │   └── plugin.json       # Version: 0.2.0
 │   │   └── skills/
-│   │       ├── bootstrapping-documents/
+│   │       ├── managing-specs/
 │   │       ├── writing-technical-requirements/
 │   │       └── writing-product-requirements/
 │   ├── typescript/

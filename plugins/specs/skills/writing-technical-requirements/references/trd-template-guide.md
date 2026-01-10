@@ -2,9 +2,10 @@
 
 ## Overview
 
-The TRD template is located at: `specs/templates/requirements/technical-change.trd.md`
+The TRD template is provided by the `/managing-specs` skill `<requirement_templates>` section.
 
 **Always read the template before writing a TRD.** It contains:
+
 - Complete section structure
 - Field descriptions and examples
 - Readiness criteria checklist
@@ -45,12 +46,14 @@ Condensed summary of three-tier testing with skill references.
 ### Problem Statement
 
 **Required subsections:**
+
 - Technical Problem
 - Current Pain (Symptom, Root Cause, Impact, Validation Challenge)
 
 **Source**: Phase 1 (understand-problem workflow)
 
 **Best practices:**
+
 - State root cause, not just symptoms
 - Explain WHY the limitation exists
 - Connect to what's being blocked
@@ -58,6 +61,7 @@ Condensed summary of three-tier testing with skill references.
 ### Project-Specific Constraints
 
 **Format**: Table with three columns:
+
 - Constraint
 - Impact on Implementation
 - Impact on Testing
@@ -67,6 +71,7 @@ Condensed summary of three-tier testing with skill references.
 **Source**: Phase 1, conversation context
 
 **Examples**:
+
 - API rate limits
 - Cross-service ID matching requirements
 - Security restrictions on credential storage
@@ -85,6 +90,7 @@ Condensed summary of three-tier testing with skill references.
 **Source**: Phase 1 (solution approach confirmation)
 
 **Best practices:**
+
 - Don't prescribe implementation details
 - Define responsibilities, not internals
 - Key interfaces become Level 2 integration points
@@ -95,11 +101,13 @@ Condensed summary of three-tier testing with skill references.
 
 1. **Guarantees Required**: Table with columns:
    - # (G1, G2, G3...)
+
    - Guarantee
    - Level (1, 2, or 3)
    - Rationale
 
 2. **BDD Scenarios**: For each guarantee, ≥1 scenario:
+
    ```
    **Scenario: [Name] [G#]**
 
@@ -111,6 +119,7 @@ Condensed summary of three-tier testing with skill references.
 **Source**: Phase 2 (design-validation workflow)
 
 **Best practices:**
+
 - Every guarantee has unique ID
 - Level assignment has clear rationale
 - Every scenario references a guarantee
@@ -139,6 +148,7 @@ Condensed summary of three-tier testing with skill references.
 **Source**: Phase 3 (discover-infrastructure workflow)
 
 **Best practices:**
+
 - Specific commands, not placeholders
 - Exact credential sources
 - Gaps explicitly listed if unknown
@@ -165,6 +175,7 @@ Condensed summary of three-tier testing with skill references.
 **Source**: Conversation context, solution design
 
 **Best practices:**
+
 - Link to actual spec paths for work items
 - Include version constraints for runtime deps
 - Cross-reference test infrastructure documented above
@@ -180,6 +191,7 @@ Condensed summary of three-tier testing with skill references.
 **Source**: Phase 4, solution analysis
 
 **Best practices:**
+
 - At least one risk per category
 - Every risk has mitigation strategy
 - Be specific about likelihood and impact
@@ -233,6 +245,7 @@ All sections filled, BUT Infrastructure Gaps table has entries.
 ### ❌ Placeholder Text
 
 Bad:
+
 ```
 **Technical Solution**: TBD
 ```
@@ -242,11 +255,13 @@ Fix: Actually fill the section, or mark as Infrastructure Gap if unknown.
 ### ❌ Vague Infrastructure
 
 Bad:
+
 ```
 | PostgreSQL | Docker | Run it | Clean it |
 ```
 
 Fix:
+
 ```
 | PostgreSQL | Docker container | `docker-compose -f test.yml up -d postgres` | `docker-compose exec postgres psql -c "TRUNCATE..."` |
 ```
@@ -254,11 +269,13 @@ Fix:
 ### ❌ Missing Guarantee IDs
 
 Bad:
+
 ```
 | Guarantee | Level | Rationale |
 ```
 
 Fix:
+
 ```
 | #  | Guarantee | Level | Rationale |
 | G1 | ...       | 1     | ...       |
@@ -267,11 +284,13 @@ Fix:
 ### ❌ Scenarios Without Guarantee References
 
 Bad:
+
 ```
 **Scenario: Price calculation works**
 ```
 
 Fix:
+
 ```
 **Scenario: Price calculation with standard discount [G1]**
 ```
@@ -279,11 +298,13 @@ Fix:
 ### ❌ Implementation Details in Guarantees
 
 Bad:
+
 ```
 G1 | PriceCalculator uses BigDecimal | 1 | ...
 ```
 
 Fix:
+
 ```
 G1 | Price calculation handles edge cases | 1 | ...
 ```
@@ -293,10 +314,11 @@ G1 | Price calculation handles edge cases | 1 | ...
 **Before writing ANY TRD, read the complete template:**
 
 ```bash
-Read specs/templates/requirements/technical-change.trd.md
+Read /managing-specs skill <requirement_templates> section for TRD template
 ```
 
 This ensures:
+
 - You use current structure
 - You see all examples
 - You understand Readiness Criteria

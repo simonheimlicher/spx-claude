@@ -70,8 +70,8 @@ capability-NN_{slug}/              # E2E scenarios, tests→tests/e2e/
 
 For templates and detailed structure information:
 
-- Invoke `/bootstrapping-documents` skill
-- Or read: `plugins/specs/skills/bootstrapping-documents/`
+- Invoke `/managing-specs` skill
+- Or read: `plugins/specs/skills/managing-specs/`
 
 Templates include:
 
@@ -108,4 +108,4 @@ Use `/pickup` to load and claim a handoff.
 
 ---
 
-**For complete workflow methodology**, reference the SPX framework documentation (when available) or consult the `/bootstrapping-documents` skill for structure details.
+**For complete workflow methodology**, reference the SPX framework documentation (when available) or consult the `/managing-specs` skill for structure details.

@@ -1,5 +1,5 @@
 <overview>
-The PRD template is located at: `specs/templates/requirements/product-change.prd.md`
+The PRD template is provided by the `/managing-specs` skill `<requirement_templates>` section.
 
 **Always read the template before writing a PRD.** It contains complete section structure, field descriptions, and examples.
 </overview>

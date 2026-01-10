@@ -1,4 +1,4 @@
-# specs/templates/structure.yaml
+# plugins/specs/skills/managing-specs/structure.yaml
 #
 # Machine-readable structure definition for the specs/ directory.
 # The spx CLI uses this to parse and validate work items.
@@ -59,7 +59,7 @@ roots:
 
 project:
   decisions: true # specs/decisions/ exists
-  templates: "templates/" # specs/templates/ (this directory)
+  templates: "templates/" # managing-specs skill templates/
 
 # ------------------------------------------------------------------------------
 # BSP NUMBERING

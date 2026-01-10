@@ -205,9 +205,9 @@ Domain knowledge in `references/`:
 <templates_index>
 Referenced templates:
 
-| Template                                             | Purpose                         |
-| ---------------------------------------------------- | ------------------------------- |
-| specs/templates/requirements/technical-change.trd.md | Complete TRD template structure |
+| Template                                        | Purpose                        |
+| ----------------------------------------------- | ------------------------------ |
+| /managing-specs skill `<requirement_templates>` | TRD template from shared skill |
 
 </templates_index>
 

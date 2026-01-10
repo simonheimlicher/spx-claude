@@ -200,9 +200,9 @@ Domain knowledge in `references/`:
 <templates_index>
 Referenced templates:
 
-| Template                                           | Purpose                         |
-| -------------------------------------------------- | ------------------------------- |
-| specs/templates/requirements/product-change.prd.md | Complete PRD template structure |
+| Template                                        | Purpose                        |
+| ----------------------------------------------- | ------------------------------ |
+| /managing-specs skill `<requirement_templates>` | PRD template from shared skill |
 
 </templates_index>
 

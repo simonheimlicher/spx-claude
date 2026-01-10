@@ -52,7 +52,6 @@ Before creating ADRs, you must understand:
 Read these files to understand project structure and workflow:
 
 - `specs/CLAUDE.md` - Project navigation, work item status, BSP dependencies
-- `specs/templates/README.md` - Structure definition, template patterns
 
 For testing methodology, invoke the `/testing-typescript` skill
 
@@ -88,14 +87,11 @@ Execute these phases IN ORDER.
 1. Read the TRD completely
 2. Read project context:
    - `specs/CLAUDE.md` - Project structure, navigation, work item management
-   - `specs/templates/README.md` - Template patterns and structure definition
 3. Invoke `/testing-typescript` to understand testing methodology
 4. Read existing ADRs for consistency:
    - `specs/decisions/` - Project-level ADRs
    - Any capability/feature-level ADRs in their respective `decisions/` directories
-5. Check for project ADR template:
-   - Look in `specs/templates/decisions/*.adr.md`
-   - If not found, use plugin's built-in ADR template
+5. Read `/managing-specs` skill `<adr_templates>` section for ADR template
 
 **Phase 1: Identify Decisions Needed**
 
