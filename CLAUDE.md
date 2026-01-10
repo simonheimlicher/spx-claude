@@ -316,10 +316,14 @@ Error: Bash command permission check failed for pattern "!find .spx/sessions -ma
 **Validate changes**: Always run validation after making changes:
 
 ```bash
+# Validate the marketplace
 claude plugin validate .
+
+# Validate the specific plugin you modified
+claude plugin validate ./plugins/{plugin-name}
 ```
 
-Fix any validation errors before committing changes.
+Fix any validation errors before committing changes. Both marketplace and plugin validation are automatically run by the pre-commit hook.
 
 ### Quick Reference: File Locations
 
