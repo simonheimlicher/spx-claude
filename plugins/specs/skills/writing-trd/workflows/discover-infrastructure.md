@@ -8,12 +8,14 @@ Read `references/testing-methodology.md` for infrastructure requirements.
 **Pause and analyze the guarantees table:**
 
 For Level 2 guarantees:
+
 - What binaries/databases do they require?
 - Do these exist in the project already?
 - Can they be run in Docker?
 - What's the setup/teardown procedure?
 
 For Level 3 guarantees:
+
 - What external services do they require?
 - What credentials are needed?
 - Where would credentials be stored?
@@ -26,11 +28,13 @@ For Level 3 guarantees:
 From the guarantees table, list:
 
 **Level 2 requirements:**
+
 - [ ] Database: PostgreSQL, Redis, etc.
 - [ ] Binary: Hugo, TypeScript compiler, etc.
 - [ ] Service: Local API server, etc.
 
 **Level 3 requirements:**
+
 - [ ] External API: GitHub, Stripe, Trakt.tv, etc.
 - [ ] Browser: Chrome, Playwright
 - [ ] Test accounts: User credentials, API keys
@@ -118,9 +122,11 @@ Check that:
 ## Mark TRD Status
 
 If Infrastructure Gaps table is EMPTY:
+
 - TRD is COMPLETE and ready for decomposition
 
 If Infrastructure Gaps table has entries:
+
 - TRD is INCOMPLETE but can be delivered
 - User knows exactly what must be resolved before implementation
 

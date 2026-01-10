@@ -29,6 +29,7 @@ BDD (Behavior-Driven Development) scenarios use Given/When/Then format to specif
 **Purpose**: Establish preconditions and initial state
 
 **Best practices:**
+
 - Be specific (not vague)
 - Set up state, don't perform actions
 - Use concrete examples, not abstractions
@@ -37,6 +38,7 @@ BDD (Behavior-Driven Development) scenarios use Given/When/Then format to specif
 **Examples:**
 
 ✅ Good:
+
 ```
 - **Given** a base price of $100.00 and a discount of 15%
 - **Given** an order with 3 items totaling $150.00
@@ -44,6 +46,7 @@ BDD (Behavior-Driven Development) scenarios use Given/When/Then format to specif
 ```
 
 ❌ Bad:
+
 ```
 - **Given** some prices (vague)
 - **Given** the user logs in (action, not state)
@@ -55,6 +58,7 @@ BDD (Behavior-Driven Development) scenarios use Given/When/Then format to specif
 **Purpose**: Perform the action being tested
 
 **Best practices:**
+
 - ONE action only
 - Use present tense
 - Be specific about what triggers
@@ -63,6 +67,7 @@ BDD (Behavior-Driven Development) scenarios use Given/When/Then format to specif
 **Examples:**
 
 ✅ Good:
+
 ```
 - **When** the system calculates the final price
 - **When** the user submits the order
@@ -70,6 +75,7 @@ BDD (Behavior-Driven Development) scenarios use Given/When/Then format to specif
 ```
 
 ❌ Bad:
+
 ```
 - **When** the price calculator is instantiated and calls calculate() (implementation detail)
 - **When** everything processes (vague)
@@ -81,6 +87,7 @@ BDD (Behavior-Driven Development) scenarios use Given/When/Then format to specif
 **Purpose**: State the observable, verifiable outcome
 
 **Best practices:**
+
 - Describe WHAT happens, not HOW
 - Use measurable/verifiable outcomes
 - Be specific (not vague)
@@ -90,6 +97,7 @@ BDD (Behavior-Driven Development) scenarios use Given/When/Then format to specif
 **Examples:**
 
 ✅ Good:
+
 ```
 - **Then** the final price is $85.00
 - **Then** the system throws a validation error
@@ -98,6 +106,7 @@ BDD (Behavior-Driven Development) scenarios use Given/When/Then format to specif
 ```
 
 ❌ Bad:
+
 ```
 - **Then** the code works correctly (not measurable)
 - **Then** the PriceCalculator class returns a BigDecimal (implementation detail)
@@ -107,6 +116,7 @@ BDD (Behavior-Driven Development) scenarios use Given/When/Then format to specif
 ## Complete Example
 
 ### Guarantee
+
 G1: Price calculation handles edge cases (Level 1)
 
 ### Scenarios
@@ -138,6 +148,7 @@ G1: Price calculation handles edge cases (Level 1)
 ## Multiple Scenarios Per Guarantee
 
 **When to write multiple scenarios:**
+
 - Different edge cases
 - Different error conditions
 - Different data variations
@@ -160,6 +171,7 @@ This enables verification that every guarantee has test coverage.
 ### ❌ Vague Scenarios
 
 Bad:
+
 ```
 **Scenario: System works correctly [G1]**
 
@@ -173,6 +185,7 @@ Fix: Be specific about state, action, and outcome.
 ### ❌ Testing Implementation
 
 Bad:
+
 ```
 **Scenario: PriceCalculator uses BigDecimal [G1]**
 
@@ -186,6 +199,7 @@ Fix: Test behavior, not implementation details.
 ### ❌ Multiple Actions
 
 Bad:
+
 ```
 **Scenario: Complete checkout [G3]**
 
@@ -199,6 +213,7 @@ Fix: Break into multiple scenarios, each with one action.
 ### ❌ No Guarantee Reference
 
 Bad:
+
 ```
 **Scenario: User can log in**
 
@@ -212,6 +227,7 @@ Fix: Add guarantee reference `[G2]` to scenario name.
 ### ❌ Abstract Inputs
 
 Bad:
+
 ```
 **Scenario: Validation rejects invalid input [G1]**
 
@@ -260,11 +276,13 @@ Before completing TRD, verify:
 **Good names are descriptive and specific:**
 
 ✅ Good:
+
 - "Discount calculation handles zero discount [G1]"
 - "API returns 404 for non-existent resource [G2]"
 - "Payment processing succeeds with valid Stripe token [G3]"
 
 ❌ Bad:
+
 - "Test 1 [G1]" (not descriptive)
 - "It works [G2]" (vague)
 - "Scenario A [G3]" (meaningless)

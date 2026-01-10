@@ -1,6 +1,6 @@
 ---
 name: testing-python
-description: "Python-specific testing patterns. REQUIRES reading /testing first for foundational principles. No mocking. DI + real infrastructure."
+description: Write tests for Python code with three tiers (Unit/Integration/E2E). Use when testing Python or writing Python tests.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 

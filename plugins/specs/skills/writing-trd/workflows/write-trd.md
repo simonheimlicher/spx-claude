@@ -8,10 +8,12 @@ Read `references/trd-template-guide.md` for complete template structure.
 Based on conversation and project structure:
 
 **Capability-level TRD:**
+
 - File: `specs/capabilities/[slug]/[name].trd.md`
 - For: New capability or capability-wide technical change
 
 **Feature-level TRD:**
+
 - File: `specs/capabilities/[cap-slug]/features/[feature-slug]/[name].trd.md`
 - For: Feature-specific technical change
 
@@ -22,17 +24,21 @@ Based on conversation and project structure:
 Use information gathered in Phases 1-3 to complete all sections:
 
 ### Title
+
 ```markdown
 # TRD: [Name of Technical Change]
 ```
 
 ### Purpose Block
+
 Copy from template (already correct).
 
 ### Required Sections Table
+
 Copy from template (already correct).
 
 ### Testing Methodology
+
 Copy from template (already correct).
 
 ### Problem Statement
@@ -46,6 +52,7 @@ Fill with confirmed information from Phase 1:
 ### Project-Specific Constraints
 
 If constraints discussed:
+
 - Fill table with constraint, implementation impact, testing impact
 - Otherwise: Write "None identified"
 
@@ -126,10 +133,12 @@ Check every section exists:
 Execute the checklist from the template's Readiness Criteria section:
 
 **1. Problem Statement:**
+
 - [ ] Identifies root cause (confirmed by user)
 - [ ] Not just symptoms
 
 **2. Validation Strategy:**
+
 - [ ] Every guarantee has unique ID
 - [ ] Every guarantee assigned to one test level
 - [ ] Level assignment rationale is coherent
@@ -138,16 +147,19 @@ Execute the checklist from the template's Readiness Criteria section:
 - [ ] Scenarios use strict Given/When/Then format
 
 **3. Test Infrastructure:**
+
 - [ ] All L2 dependencies have harnesses with setup/reset commands
 - [ ] All L3 dependencies have credential sources
 - [ ] No unresolved gaps remain (or explicitly in Gaps table)
 
 **4. Dependencies:**
+
 - [ ] Work item dependencies linked
 - [ ] Runtime dependencies have version constraints
 - [ ] Test infrastructure dependencies cross-referenced
 
 **5. Pre-Mortem:**
+
 - [ ] ≥1 risk per category (technical, test infra, integration)
 - [ ] Each risk has mitigation strategy
 
@@ -163,16 +175,19 @@ Create a summary for the user:
 **Status**: [Complete | Incomplete - see Infrastructure Gaps]
 
 **Key Decisions:**
+
 - [Decision 1]
 - [Decision 2]
 - [Decision 3]
 
 **Guarantees**: [N] guarantees across [N] test levels
+
 - Level 1 (Unit): [N] guarantees
 - Level 2 (Integration): [N] guarantees
 - Level 3 (E2E): [N] guarantees
 
 **Infrastructure Gaps** (if any):
+
 - [Gap 1 blocking: X]
 - [Gap 2 blocking: Y]
 

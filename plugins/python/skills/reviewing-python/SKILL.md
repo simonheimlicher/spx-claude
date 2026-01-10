@@ -1,6 +1,6 @@
 ---
 name: reviewing-python
-description: "Strict Python code reviewer. MUST verify tests against testing-python skill. Rejects mocking. Reviews code, runs tests, and on APPROVED: graduates tests, creates DONE.md, and commits. Zero-tolerance."
+description: Review Python code strictly, reject mocking. Use when reviewing Python code or checking if code is ready.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
@@ -619,10 +619,10 @@ When verdict is **REJECTED** or **CONDITIONAL**, provide actionable feedback to 
 
 ### Issues Found
 
-| # | File:Line   | Category   | Issue               | Suggested Fix            |
-| - | ----------- | ---------- | ------------------- | ------------------------ |
-| 1 | `foo.py:42` | Type Error | Missing return type | Add `-> int`             |
-| 2 | `bar.py:17` | Security   | Bare except         | Catch specific exception |
+| #   | File:Line   | Category   | Issue               | Suggested Fix            |
+| --- | ----------- | ---------- | ------------------- | ------------------------ |
+| 1   | `foo.py:42` | Type Error | Missing return type | Add `-> int`             |
+| 2   | `bar.py:17` | Security   | Bare except         | Catch specific exception |
 
 ### Tool Outputs
 

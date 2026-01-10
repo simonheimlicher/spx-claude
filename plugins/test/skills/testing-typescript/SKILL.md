@@ -1,6 +1,6 @@
 ---
 name: testing-typescript
-description: "TypeScript-specific testing patterns. REQUIRES reading /testing first for foundational principles."
+description: Write tests for TypeScript code with three tiers (Unit/Integration/E2E). Use when testing TypeScript or writing TypeScript tests.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
@@ -38,10 +38,7 @@ type BuildDeps = {
   runCommand: (cmd: string, args: string[]) => Promise<{ exitCode: number }>;
 };
 
-async function buildSite(
-  siteDir: string,
-  deps: BuildDeps,
-): Promise<BuildResult> {
+async function buildSite(siteDir: string, deps: BuildDeps): Promise<BuildResult> {
   const { exitCode } = await deps.runCommand("hugo", ["--source", siteDir]);
   return { success: exitCode === 0 };
 }
@@ -98,7 +95,7 @@ test("loadConfig reads YAML file", async () => {
       `
 site_dir: ./site
 base_url: http://localhost:1313
-`,
+`
     );
 
     const config = await loadConfig(configPath);
@@ -173,9 +170,7 @@ async function createHugoHarness(): Promise<HugoHarness> {
   try {
     await execa("hugo", ["version"]);
   } catch {
-    throw new Error(
-      "Hugo binary not found. Install Hugo or skip integration tests.",
-    );
+    throw new Error("Hugo binary not found. Install Hugo or skip integration tests.");
   }
 
   const siteDir = await mkdtemp(join(tmpdir(), "hugo-test-"));
@@ -188,13 +183,7 @@ async function createHugoHarness(): Promise<HugoHarness> {
     outputDir,
 
     async build(args: string[] = []) {
-      return execa("hugo", [
-        "--source",
-        siteDir,
-        "--destination",
-        outputDir,
-        ...args,
-      ]);
+      return execa("hugo", ["--source", siteDir, "--destination", outputDir, ...args]);
     },
 
     async cleanup() {
@@ -233,10 +222,7 @@ async function createCaddyHarness(staticDir: string): Promise<CaddyHarness> {
 
     async start() {
       const caddyfile = join(configDir, "Caddyfile");
-      await writeFile(
-        caddyfile,
-        `:${port} {\n  root * ${staticDir}\n  file_server\n}`,
-      );
+      await writeFile(caddyfile, `:${port} {\n  root * ${staticDir}\n  file_server\n}`);
 
       process = execa("caddy", ["run", "--config", caddyfile], {
         reject: false,
@@ -325,8 +311,7 @@ type Credentials = {
 function loadCredentials(): Credentials | null {
   const lhciServerUrl = process.env.LHCI_SERVER_URL;
   const lhciToken = process.env.LHCI_TOKEN;
-  const testSiteUrl = process.env.TEST_SITE_URL
-    || "https://staging.example.com";
+  const testSiteUrl = process.env.TEST_SITE_URL || "https://staging.example.com";
 
   if (!lhciServerUrl || !lhciToken) {
     return null;
@@ -353,12 +338,9 @@ describe("LHCI End-to-End", () => {
     }
   });
 
-  test.skipIf(!credentials)(
-    "uploads audit results to LHCI server",
-    async () => {
-      // Test implementation using credentials!
-    },
-  );
+  test.skipIf(!credentials)("uploads audit results to LHCI server", async () => {
+    // Test implementation using credentials!
+  });
 });
 ```
 
@@ -368,13 +350,7 @@ describe("LHCI End-to-End", () => {
 import { execa } from "execa";
 
 test.skipIf(!credentials)("CLI full workflow succeeds", async () => {
-  const result = await execa("node", [
-    "./bin/cli.js",
-    "run",
-    "--url",
-    credentials!.testSiteUrl,
-    "--upload",
-  ], {
+  const result = await execa("node", ["./bin/cli.js", "run", "--url", credentials!.testSiteUrl, "--upload"], {
     env: {
       ...process.env,
       LHCI_SERVER_URL: credentials!.lhciServerUrl,
@@ -403,10 +379,10 @@ export default defineConfig({
   webServer: process.env.TEST_BASE_URL
     ? undefined
     : {
-      command: "npm run dev",
-      url: "http://localhost:3000",
-      reuseExistingServer: !process.env.CI,
-    },
+        command: "npm run dev",
+        url: "http://localhost:3000",
+        reuseExistingServer: !process.env.CI,
+      },
 });
 ```
 
@@ -416,10 +392,10 @@ import { expect, test } from "@playwright/testing";
 
 test("user can run audit from dashboard", async ({ page }) => {
   await page.goto("/dashboard");
-  await page.fill("[data-testid=\"url-input\"]", "https://example.com");
-  await page.click("[data-testid=\"run-audit\"]");
+  await page.fill('[data-testid="url-input"]', "https://example.com");
+  await page.click('[data-testid="run-audit"]');
 
-  await expect(page.locator("[data-testid=\"results\"]")).toBeVisible({
+  await expect(page.locator('[data-testid="results"]')).toBeVisible({
     timeout: 30000,
   });
 });

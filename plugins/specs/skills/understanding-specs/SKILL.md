@@ -1,11 +1,6 @@
 ---
 name: understanding-specs
-description: |
-  Hierarchical context ingestion protocol that verifies and reads all specification
-  documents for a work item (capability/feature/story). FAILS IMMEDIATELY if any
-  required document is missing. Enforces complete documentation hierarchy before
-  implementation begins. Use when starting work on any capability, feature, or story
-  to ensure complete context is loaded.
+description: Read all specs for a story, feature, or capability before starting work. Use when starting implementation to load requirements and context.
 allowed-tools: Read, Glob, Grep
 ---
 

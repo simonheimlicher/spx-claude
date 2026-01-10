@@ -70,8 +70,7 @@ capability-NN_{slug}/              # E2E scenarios, tests→tests/e2e/
 
 For templates and detailed structure information:
 
-- Invoke `/managing-specs` skill
-- Or read: `plugins/specs/skills/managing-specs/`
+- Invoke the `/managing-specs` skill
 
 Templates include:
 
@@ -85,12 +84,12 @@ Templates include:
 
 **For product requirements:**
 
-- Invoke `/writing-product-requirements` skill
+- Invoke `/writing-prd` skill
 - Creates PRDs with user value and measurable outcomes
 
 **For technical requirements:**
 
-- Invoke `/writing-technical-requirements` skill
+- Invoke `/writing-trd` skill
 - Creates TRDs with architecture and validation strategy
 
 ## Session Management

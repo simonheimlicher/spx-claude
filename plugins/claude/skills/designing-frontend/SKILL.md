@@ -1,6 +1,6 @@
 ---
 name: designing-frontend
-description: Create distinctive, production-grade frontend interfaces with exceptional design quality. Use when building web components, pages, dashboards, React components, or styling web UI. Generates creative, polished designs that avoid generic AI aesthetics.
+description: Design and build beautiful web UI that doesn't look generic. Use when designing or building web components, pages, or dashboards.
 ---
 
 <objective>

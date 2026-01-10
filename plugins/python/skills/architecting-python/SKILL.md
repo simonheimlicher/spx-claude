@@ -1,6 +1,6 @@
 ---
 name: architecting-python
-description: "Python architectural authority. MUST consult python-test FIRST. Produces ADRs with embedded testing levels. Decisions are BINDING for downstream skills."
+description: Write ADRs for Python architecture decisions. Use when making architecture decisions or writing ADRs.
 allowed-tools: Read, Write, Glob, Grep
 ---
 

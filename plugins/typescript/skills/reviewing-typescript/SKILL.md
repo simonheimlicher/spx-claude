@@ -1,8 +1,6 @@
 ---
 name: reviewing-typescript
-description: |
-  Strict TypeScript code reviewer with zero tolerance. Rejects mocking.
-  On APPROVED: graduates tests and creates DONE.md. Use when reviewing TypeScript code.
+description: Review TypeScript code strictly, reject mocking. Use when reviewing TypeScript code or checking if code is ready.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 

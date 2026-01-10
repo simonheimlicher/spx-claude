@@ -1,6 +1,6 @@
 ---
 name: testing
-description: "FOUNDATIONAL skill. All other skills MUST consult this before writing code, tests, or architecture. Starts from ONE question: How do I GUARANTEE this works in the real world? No mocking. dependency injection, test harness and real infrastructure."
+description: Learn how to test code without mocking. Use when learning testing approach or before writing tests.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 

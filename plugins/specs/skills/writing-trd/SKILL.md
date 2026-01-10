@@ -1,11 +1,6 @@
 ---
-name: writing-technical-requirements
-description: |
-  Guides systematic creation of Technical Requirements Documents (TRDs) through
-  deep analysis and targeted questioning. Ensures validation strategy, test
-  infrastructure, and architectural decisions are documented before implementation.
-  Use when users ask to write a TRD, create technical requirements, document a
-  technical change, or prepare implementation specifications.
+name: writing-trd
+description: Write TRDs documenting how to build and test it. Use when writing TRDs or technical requirements.
 allowed-tools: Read, Write, Glob, Grep, AskUserQuestion
 ---
 

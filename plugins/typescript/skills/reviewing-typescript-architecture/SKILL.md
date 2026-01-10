@@ -1,8 +1,6 @@
 ---
 name: reviewing-typescript-architecture
-description: |
-  Principal architect reviewing ADRs for testing principle compliance.
-  Use when reviewing architectural decisions for TypeScript projects.
+description: Review ADRs to check they follow testing principles. Use when reviewing ADRs or architecture decisions.
 allowed-tools: Read, Grep
 ---
 

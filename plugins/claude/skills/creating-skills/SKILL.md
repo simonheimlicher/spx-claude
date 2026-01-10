@@ -1,9 +1,6 @@
 ---
 name: creating-skills
-description: |
-  Expert guidance for creating, writing, building, and refining Claude Code Skills.
-  Use when working with SKILL.md files, authoring new skills, improving existing skills,
-  or understanding skill structure and best practices.
+description: Create and refine Claude Code Skills. Use when creating skills, writing SKILL.md files, or improving existing skills.
 ---
 
 <essential_principles>
@@ -76,8 +73,8 @@ What would you like to do?
 
 ```yaml
 ---
-name: skill-name          # lowercase-with-hyphens, ≤64 chars
-description: |            # What + When, ≤1024 chars, third person
+name: skill-name # lowercase-with-hyphens, ≤64 chars
+description: | # What + When, ≤1024 chars, third person
   What this skill does.
   Use when users ask to <triggers>.
 ---

@@ -100,8 +100,7 @@ Condensed summary of three-tier testing with skill references.
 **Required subsections:**
 
 1. **Guarantees Required**: Table with columns:
-   - # (G1, G2, G3...)
-
+   - ID (G1, G2, G3...)
    - Guarantee
    - Level (1, 2, or 3)
    - Rationale

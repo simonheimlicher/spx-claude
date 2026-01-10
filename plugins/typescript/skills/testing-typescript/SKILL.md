@@ -1,8 +1,6 @@
 ---
 name: testing-typescript
-description: |
-  TypeScript-specific testing patterns with three-tier methodology (Unit/Integration/E2E).
-  Use when writing tests, designing test architecture, or reviewing test code for TypeScript projects.
+description: Write tests for TypeScript code with three tiers (Unit/Integration/E2E). Use when testing TypeScript or writing TypeScript tests.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 

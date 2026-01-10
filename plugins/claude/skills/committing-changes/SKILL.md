@@ -1,9 +1,6 @@
 ---
 name: committing-changes
-description: |
-  Write git commit messages following Conventional Commits with pre-commit verification.
-  This skill should be used when users ask to commit changes, write a commit message,
-  stage files for commit, or need help with git commit standards.
+description: Write git commit messages following Conventional Commits. Use when committing changes or writing commit messages.
 ---
 
 # Commit Message
@@ -79,7 +76,7 @@ git diff --cached --name-only  # Verify file list
 - [ ] Independent - can be reverted without breaking other features
 - [ ] Complete - includes everything needed for the change to work
 
-### Red Flags - DO NOT COMMIT IF:
+### Red Flags - DO NOT COMMIT IF
 
 - More than 10 files for a simple fix
 - Changes span unrelated modules
@@ -167,6 +164,7 @@ Mark breaking changes with:
 
 1. **`!` suffix**: `feat!: remove deprecated API`
 2. **Footer**:
+
    ```
    feat: change authentication flow
 

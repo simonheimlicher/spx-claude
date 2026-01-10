@@ -1,8 +1,6 @@
 ---
 name: architecting-typescript
-description: |
-  TypeScript architectural authority producing ADRs with embedded testing levels.
-  Use when creating architectural decisions or ADRs for TypeScript projects.
+description: Write ADRs for TypeScript architecture decisions. Use when making architecture decisions or writing ADRs.
 allowed-tools: Read, Write, Glob, Grep
 ---
 

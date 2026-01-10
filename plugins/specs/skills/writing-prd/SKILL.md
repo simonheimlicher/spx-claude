@@ -1,11 +1,6 @@
 ---
-name: writing-product-requirements
-description: |
-  Guides systematic creation of Product Requirements Documents (PRDs) through
-  deep analysis and targeted questioning. Ensures user value proposition, measurable
-  outcomes, and validation strategy are documented before implementation.
-  Use when users ask to write a PRD, create product requirements, document a
-  product change, or prepare product specifications.
+name: writing-prd
+description: Write PRDs documenting what users need and why. Use when writing PRDs or product requirements.
 allowed-tools: Read, Write, Glob, Grep, AskUserQuestion
 ---
 

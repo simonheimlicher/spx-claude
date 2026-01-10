@@ -1,6 +1,6 @@
 ---
 name: coding-python
-description: "Workhorse of the autonomous loop. Finds work via spx CLI, implements code, invokes reviewer, handles remediation loop. Returns CONTINUE|DONE|BLOCKED."
+description: Write Python code that's tested and type-safe. Use when coding Python or implementing features.
 allowed-tools: Read, Write, Bash, Glob, Grep, Edit, Skill
 ---
 

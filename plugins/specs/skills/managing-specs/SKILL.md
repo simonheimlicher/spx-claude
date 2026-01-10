@@ -1,9 +1,6 @@
 ---
 name: managing-specs
-description: |
-  Manage specs/ directory structure, templates, and patterns for spec-driven development.
-  Provides structure definition, ADR templates, requirement templates, and work item templates.
-  Use when creating PRDs, TRDs, ADRs, capabilities, features, stories, or needing spec structure.
+description: Set up specs directory with templates for PRDs, TRDs, and ADRs. Use when creating or organizing spec structure.
 ---
 
 <objective>

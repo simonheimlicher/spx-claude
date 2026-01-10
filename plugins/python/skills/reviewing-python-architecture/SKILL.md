@@ -1,6 +1,6 @@
 ---
 name: reviewing-python-architecture
-description: "Principal architect reviewing ADRs for testing-python principle compliance. Concise, principle-based feedback."
+description: Review ADRs to check they follow testing principles. Use when reviewing ADRs or architecture decisions.
 allowed-tools: Read, Grep
 ---
 

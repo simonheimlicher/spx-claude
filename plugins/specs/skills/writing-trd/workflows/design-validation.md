@@ -33,6 +33,7 @@ For each critical behavior, state a guarantee:
 **Format**: "The system guarantees that [specific behavior] [under specific conditions]"
 
 **Examples**:
+
 - "Price calculation handles zero, negative, and overflow edge cases"
 - "Database persists order records with transaction integrity"
 - "Payment processing completes with real Stripe API integration"
@@ -54,6 +55,7 @@ Can this be verified with pure logic and dependency injection?
 ```
 
 **Level 1 criteria:**
+
 - Pure arithmetic/logic
 - String manipulation
 - Data validation
@@ -61,11 +63,13 @@ Can this be verified with pure logic and dependency injection?
 - Standard dev tools (git, node, curl)
 
 **Level 2 criteria:**
+
 - Requires project-specific binary (Hugo, TypeScript compiler)
 - Requires database (PostgreSQL, Redis via Docker)
 - Requires local service integration
 
 **Level 3 criteria:**
+
 - Requires external API credentials
 - Requires network service (GitHub API, Stripe)
 - Requires browser (Chrome, Playwright)
@@ -75,11 +79,11 @@ Can this be verified with pure logic and dependency injection?
 
 Build the table with unique IDs:
 
-| #  | Guarantee             | Level | Rationale                   |
-| -- | --------------------- | ----- | --------------------------- |
-| G1 | [Behavior guaranteed] | 1     | [Why Level 1 is sufficient] |
-| G2 | [Behavior guaranteed] | 2     | [Why Level 2 is needed]     |
-| G3 | [Behavior guaranteed] | 3     | [Why Level 3 is needed]     |
+| #   | Guarantee             | Level | Rationale                   |
+| --- | --------------------- | ----- | --------------------------- |
+| G1  | [Behavior guaranteed] | 1     | [Why Level 1 is sufficient] |
+| G2  | [Behavior guaranteed] | 2     | [Why Level 2 is needed]     |
+| G3  | [Behavior guaranteed] | 3     | [Why Level 3 is needed]     |
 
 **Rationale must explain:**
 

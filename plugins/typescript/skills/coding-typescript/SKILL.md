@@ -1,8 +1,6 @@
 ---
 name: coding-typescript
-description: |
-  Expert TypeScript developer implementing production-grade, type-safe, tested code.
-  Use when implementing TypeScript code from specifications or fixing review feedback.
+description: Write TypeScript code that's type-safe and tested. Use when coding TypeScript or implementing features.
 allowed-tools: Read, Write, Bash, Glob, Grep, Edit
 ---
 

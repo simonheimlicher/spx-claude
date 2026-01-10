@@ -3,6 +3,7 @@
 ## Overview
 
 The skill uses AskUserQuestion tool to fill genuine gaps in understanding. Questions must be:
+
 - **Targeted**: Address specific unknowns, not general exploration
 - **Informed**: Based on domain expertise embedded in skill
 - **Actionable**: Answers enable concrete progress
@@ -48,15 +49,18 @@ The skill uses AskUserQuestion tool to fill genuine gaps in understanding. Quest
 ## Question Timing
 
 ### Phase 1: Understanding
+
 - **Root cause**: Early, blocks all downstream work
 - **Solution approach**: After root cause confirmed
 - **Constraint clarification**: If ambiguous from conversation
 
 ### Phase 2: Validation
+
 - Usually NO questions (agent decides based on methodology)
 - OPTIONAL: If complex, agent may summarize for user review
 
 ### Phase 3: Infrastructure
+
 - **MUST ask** about Level 2 harnesses
 - **MUST ask** about Level 3 credentials
 - Cannot proceed with vague "we'll figure it out"
@@ -68,6 +72,7 @@ The skill uses AskUserQuestion tool to fill genuine gaps in understanding. Quest
 **Purpose**: Confirm problem diagnosis before proceeding
 
 **Format**:
+
 ```
 Based on our discussion, I believe the root cause is:
 
@@ -89,6 +94,7 @@ Does this capture the core issue, or should I adjust my understanding?
 **Purpose**: Ensure architectural alignment
 
 **Single approach**:
+
 ```
 To address this, I propose:
 
@@ -106,6 +112,7 @@ Does this approach align with your vision?
 ```
 
 **Multiple approaches** (use AskUserQuestion):
+
 - Present 2-3 distinct approaches
 - Describe tradeoffs for each
 - Let user select or provide alternative
@@ -156,11 +163,13 @@ Please provide:
 User has already described problem, hinted at solution.
 
 **Approach**:
+
 - Minimal questioning
 - Confirm understanding with proposals
 - Ask only about genuine gaps
 
 **Example**:
+
 ```
 From our discussion, I understand you want to [summarize].
 Let me confirm the root cause: [propose analysis]
@@ -173,11 +182,13 @@ Is this correct?
 User has stated problem but solution approach unclear.
 
 **Approach**:
+
 - Confirm root cause
 - Propose or ask about solution direction
 - Ask about infrastructure specifics
 
 **Example**:
+
 ```
 I see the problem is [X]. Two possible approaches:
 1. [Approach A]: [Tradeoffs]
@@ -191,11 +202,13 @@ Which aligns better with your vision, or is there another direction?
 User invoked skill with minimal prior discussion.
 
 **Approach**:
+
 - Ask about problem and constraints first
 - Then ask about solution preferences
 - Then infrastructure details
 
 **Example**:
+
 ```
 To write a complete TRD, I need to understand:
 
@@ -209,16 +222,19 @@ To write a complete TRD, I need to understand:
 ### Good Questions
 
 ✅ Specific:
+
 ```
 For the PostgreSQL test harness, what Docker command starts it?
 ```
 
 ✅ Actionable:
+
 ```
 Where are Stripe test credentials stored? (1Password, .env.test, etc.)
 ```
 
 ✅ Informed:
+
 ```
 I see you need Level 2 tests for Hugo. Is the Hugo binary already in CI,
 or do we need to add installation steps?
@@ -227,16 +243,19 @@ or do we need to add installation steps?
 ### Bad Questions
 
 ❌ Vague:
+
 ```
 How should we test this?
 ```
 
 ❌ Domain-basic:
+
 ```
 What is BDD testing? (should know from skill expertise)
 ```
 
 ❌ Already answered:
+
 ```
 What problem are we solving? (if already discussed)
 ```
@@ -248,6 +267,7 @@ What problem are we solving? (if already discussed)
 **Don't assume or guess.**
 
 If user says "I don't know where credentials are":
+
 - Document in Infrastructure Gaps table
 - Mark what's blocking (Implementation / Level X tests)
 - Continue with TRD creation
@@ -255,6 +275,7 @@ If user says "I don't know where credentials are":
 ### Multiple Unknowns
 
 If user doesn't know several infrastructure items:
+
 - Ask about each specifically
 - Document all gaps in table
 - TRD is "incomplete but deliverable"
@@ -262,6 +283,7 @@ If user doesn't know several infrastructure items:
 ### Proprietary/Internal Information
 
 Only ask about project-specific details:
+
 - Where are credentials stored in THIS project?
 - What Docker setup does THIS project use?
 - What test accounts exist for THIS project?
@@ -273,6 +295,7 @@ Do NOT ask about general domain knowledge (that's in the skill).
 Optional questions to confirm understanding:
 
 **After Phase 1**:
+
 ```
 Before I design the validation strategy, let me confirm:
 - Root cause: [X]
@@ -282,6 +305,7 @@ Are these correct?
 ```
 
 **After Phase 2** (if complex):
+
 ```
 I've identified [N] guarantees across [N] test levels.
 
@@ -300,6 +324,7 @@ Shall I proceed to infrastructure discovery?
 3. Optional clarifications (0-1 rounds)
 
 **Avoid**:
+
 - Asking same thing multiple times
 - Asking when information already available
 - Asking about general domain knowledge
@@ -308,6 +333,7 @@ Shall I proceed to infrastructure discovery?
 ## Success Indicators
 
 Questions are effective when:
+
 - User answers move TRD creation forward
 - No repeated or circular questioning
 - Agent demonstrates domain expertise

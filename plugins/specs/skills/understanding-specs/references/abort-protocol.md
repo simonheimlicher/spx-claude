@@ -110,7 +110,7 @@ ABORT immediately when ANY of these conditions are met:
 
 **Remediation**:
 
-1. Invoke `/writing-product-requirements` skill
+1. Invoke `/writing-prd` skill
 2. Create PRD at capability level documenting user value and measurable outcomes
 3. PRD should explain WHY this capability exists and WHAT value it provides
 4. Re-run `/understanding-specs` to verify
@@ -154,7 +154,7 @@ ABORT immediately when ANY of these conditions are met:
 
 **Remediation**:
 
-1. Invoke `/writing-technical-requirements` skill
+1. Invoke `/writing-trd` skill
 2. Create TRD at feature level documenting architecture and validation strategy
 3. TRD must include:
    - System design

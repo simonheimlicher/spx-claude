@@ -225,12 +225,12 @@ Requirements documentation and specification skills.
 
 ### Skills
 
-| Skill                             | Purpose                                                                                                 |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `/writing-technical-requirements` | Systematic TRD creation with testing methodology, validation strategy, and infrastructure documentation |
-| `/writing-product-requirements`   | Systematic PRD creation with user value proposition, measurable outcomes, and acceptance criteria       |
-| `/managing-specs`                 | Manage spec-driven development structure with templates for PRDs, TRDs, ADRs, and work items            |
-| `/understanding-specs`            | Hierarchical context ingestion protocol that verifies all specification documents before implementation |
+| Skill                  | Purpose                                                                                                 |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- |
+| `/writing-prd`         | Systematic PRD creation with user value proposition, measurable outcomes, and acceptance criteria       |
+| `/writing-trd`         | Systematic TRD creation with testing methodology, validation strategy, and infrastructure documentation |
+| `/managing-specs`      | Manage spec-driven development structure with templates for PRDs, TRDs, ADRs, and work items            |
+| `/understanding-specs` | Hierarchical context ingestion protocol that verifies all specification documents before implementation |
 
 ### Core Principles
 
@@ -245,9 +245,153 @@ Requirements documentation and specification skills.
 
 Search for `SKILL.md` in `.claude/plugins/cache/{marketplace-name}/{plugin-name}/`
 
+## Naming Skills
+
+The `name` field in SKILL.md YAML frontmatter is how users invoke your skill (`/skill-name`).
+
+**Match user speech patterns:**
+
+- Use domain acronyms: `writing-prd` not `writing-prd-document`
+- Use terms users actually say: `testing-python` not `python-unit-test-framework`
+- Think "CD-ROM" not "Compact Disc Read Only Memory"
+
+**Directory name must match:**
+
+- Directory: `skills/writing-prd/`
+- YAML name: `name: writing-prd`
+- User invokes: `/writing-prd`
+
+**Examples from this marketplace:**
+
+```yaml
+# ✅ Good: matches user speech
+name: writing-prd
+# Users say "write a PRD"
+
+name: testing-typescript
+# Users say "test TypeScript code"
+
+name: autopython
+# Users say "autopython" (command name)
+```
+
+```yaml
+# ❌ Bad: nobody says these
+name: writing-prd-document
+# Too verbose, doesn't match speech
+
+name: typescript-testing-framework
+# Wrong order, unnatural phrasing
+```
+
+## Writing effective descriptions
+
+The description field enables Skill discovery and should include both what the Skill does and when to use it. The description is critical for skill selection: Claude uses it to choose the right Skill from potentially 100+ available Skills. The description must provide enough detail for Claude to know when to select this Skill, while the rest of SKILL.md provides the implementation details.
+
+**Keep descriptions concise** - Claude has a character budget for all skill metadata (name, args, description). When the budget is exceeded, Claude sees only a subset of available skills, making some skills invisible.
+
+Always write in third person. The description is injected into the system prompt, and inconsistent point-of-view can cause discovery problems.
+
+**Match actual user speech, not formal jargon.** Use the exact words and phrases users say, avoiding technical or formal language. Use abbreviations if the user would (ADR not Architecture Decision Record). Avoid corporate speak ("hierarchical context ingestion protocol" → "read all specs").
+
+### Include both what the Skill does and specific triggers/contexts for when to use it
+
+**A good description answers two questions:**
+
+1. What does this Skill do? List the specific capabilities.
+2. When should Claude use it? Include trigger terms users would mention.
+
+```yaml
+description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+```
+
+This description works because it names specific **actions** (extract, fill, merge) and includes **keywords** users would say (PDF, forms, document extraction).
+
+**Multiple Skills conflict:**
+
+If Claude uses the wrong Skill or seems confused between similar Skills, the descriptions are probably too similar. Make each description distinct by using specific trigger terms.
+
+For example, instead of two Skills with "data analysis" in both descriptions, differentiate them: one for "sales data in Excel files and CRM exports" and another for "log files and system metrics". The more specific your trigger terms, the easier it is for Claude to match the right Skill to your request.
+
+### Effective examples
+
+**PDF Processing skill:**
+
+```yaml
+description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+```
+
+**Excel Analysis skill:**
+
+```yaml
+description: Analyze Excel spreadsheets, create pivot tables, generate charts. Use when analyzing Excel files, spreadsheets, tabular data, or .xlsx files.
+```
+
+**Git Commit Helper skill:**
+
+```yaml
+description: Generate descriptive commit messages by analyzing git diffs. Use when the user asks for help writing commit messages or reviewing staged changes.
+```
+
+### Examples from this marketplace
+
+**Specs Plugin skills (differentiating similar skills):**
+
+```yaml
+# ✅ Good: natural language, clear triggers
+name: writing-prd
+description: Write PRDs documenting what users need and why. Use when writing PRDs or product requirements.
+
+name: writing-trd
+description: Write TRDs documenting how to build and test it. Use when writing TRDs or technical requirements.
+
+name: managing-specs
+description: Set up specs directory with templates for PRDs, TRDs, and ADRs. Use when creating or organizing spec structure.
+
+name: understanding-specs
+description: Read all specs for a story, feature, or capability before starting work. Use when starting implementation to load requirements and context.
+```
+
+**Why these work:**
+
+- Natural language users actually say ("what users need" not "user value propositions")
+- Short and direct ("build and test" not "testing methodology and validation strategy")
+- Clear action verbs (write, set up, read)
+- No jargon or corporate speak
+
+```yaml
+# ❌ Bad: formal jargon instead of user speech
+name: understanding-specs
+description: Hierarchical context ingestion protocol that verifies all specification documents before implementation.
+# Problem: Nobody says "hierarchical context ingestion protocol"
+
+name: writing-prd
+description: Systematic PRD creation with user value propositions and measurable outcomes.
+# Problem: Users say "what users need" not "user value propositions"
+```
+
+**Testing Plugin skills (language-specific differentiation):**
+
+```yaml
+# ✅ Good: clear language distinction
+name: testing-python
+description: Python-specific testing patterns with dependency injection and real infrastructure. Use when testing Python code or writing Python tests.
+
+name: testing-typescript
+description: TypeScript-specific testing patterns with type-safe test design. Use when testing TypeScript code or writing TypeScript tests.
+```
+
+**Why these work:**
+
+- Language is in the name AND description
+- Specific to each ecosystem (dependency injection for Python, type-safe for TypeScript)
+- Clear trigger: "test Python code" → testing-python
+
+---
+
 ## Restrictions on Using `!` Expansion in Commands
 
-````zsh
+```zsh
 # Avoid shell operators such as `(N)` (nullglob in zsh)
 Error: Bash command permission check failed for pattern "!ls .spx/sessions/TODO_*.md(N) | wc -l | xargs printf "TODO: %s\n" && ls .spx/sessions/DOING_*.md(N) | wc -l | xargs printf "DOING: %s\n"": This command uses shell operators that require approval for safety
 
@@ -302,7 +446,7 @@ Error: Bash command permission check failed for pattern "!find .spx/sessions -ma
 ```bash
 # Location: plugins/{plugin-name}/.claude-plugin/plugin.json
 # Update "version" field according to rules above
-````
+```
 
 **Update marketplace description** (only if needed):
 
@@ -357,8 +501,8 @@ spx-claude/
 │   │   └── skills/
 │   │       ├── managing-specs/
 │   │       ├── understanding-specs/
-│   │       ├── writing-technical-requirements/
-│   │       └── writing-product-requirements/
+│   │       ├── writing-prd/
+│   │       └── writing-trd/
 │   ├── typescript/
 │   │   └── .claude-plugin/
 │   │       └── plugin.json       # Version: 0.x.x
