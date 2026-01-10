@@ -4,7 +4,9 @@ pre-commit:
       glob: "*.{md,json}"
       run: prettier --write {staged_files}
       stage_fixed: true
+      priority: 1
     markdownlintcli2:
       glob: "*.{md}"
       run: markdownlint-cli2 --config ~/.markdownlint.yaml --fix {staged_files}
       stage_fixed: true
+      priority: 2

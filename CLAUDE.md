@@ -254,7 +254,7 @@ Error: Bash command permission check failed for pattern "!for f (.spx/sessions/D
 
 # Avoid loops
 Error: Bash command permission check failed for pattern "!find .spx/sessions -maxdepth 1 -name 'DOING_*' | while read f; do echo mv "$f" "$(echo "$f" | sed 's/DOING/TODO/')"; done": This Bash command contains multiple operations. The following part requires approval: while read f ;
-     do echo mv "$f" "$(echo "$f" | sed ''s/DOING/TODO/'')" ; done    
+     do echo mv "$f" "$(echo "$f" | sed ''s/DOING/TODO/'')" ; done
 
 Error: Bash command permission check failed for pattern "!find .spx/sessions -maxdepth 1 -name 'DOING_*' | awk '{new=$0; sub(/DOING/,"TODO",new); print "mv "$0" "new}'": This Bash command contains multiple operations. The following part requires approval: awk '{new=$0;
      sub(/DOING/,""TODO"",new); print ""mv ""$0"" ""new}'

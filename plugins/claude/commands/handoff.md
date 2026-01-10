@@ -206,4 +206,4 @@ This command works with `/pickup` to create a self-organizing handoff system:
 - `TODO_*.md` = Available for pickup (queue of work to be done)
 - `DOING_*.md` = Currently being worked on (claimed by active session)
 - New handoffs are created as `TODO_` (ready for next session)
-</system_description>
+  </system_description>
