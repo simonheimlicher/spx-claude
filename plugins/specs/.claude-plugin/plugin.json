@@ -5,6 +5,9 @@
   "skills": [
     {
       "path": "skills/writing-technical-requirements"
+    },
+    {
+      "path": "skills/writing-product-requirements"
     }
   ]
 }

@@ -77,11 +77,13 @@ plugins/{plugin-name}/.claude-plugin/plugin.json
 
 ```json
 {
-  "plugins": [{
-    "name": "claude",
-    "source": "./plugins/claude",
-    "description": "..." // ← Only update if description changes
-  }]
+  "plugins": [
+    {
+      "name": "claude",
+      "source": "./plugins/claude",
+      "description": "..." // ← Only update if description changes
+    }
+  ]
 }
 ```
 
@@ -216,6 +218,7 @@ Requirements documentation and specification skills.
 | Skill                             | Purpose                                                                                                 |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `/writing-technical-requirements` | Systematic TRD creation with testing methodology, validation strategy, and infrastructure documentation |
+| `/writing-product-requirements`   | Systematic PRD creation with user value proposition, measurable outcomes, and acceptance criteria       |
 
 ### Core Principles
 
@@ -223,7 +226,8 @@ Requirements documentation and specification skills.
 - Three-tier testing: Level 1 (Unit) → Level 2 (Integration) → Level 3 (E2E)
 - No mocking: Dependency injection + real infrastructure
 - Infrastructure explicit: Test harnesses and credentials documented or tracked as gaps
-- User confirmation required: Root cause and solution approach
+- User confirmation required: Problem understanding and measurable outcomes
+- Quantified value: Measurable outcomes with X% improvement targets
 
 ## Discovering Other Installed Skills
 
