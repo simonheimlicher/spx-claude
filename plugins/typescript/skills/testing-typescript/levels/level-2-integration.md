@@ -24,6 +24,42 @@ Level 1 proves our logic is correct. Level 2 proves:
 
 ---
 
+## The Critical Requirement: Test Harnesses
+
+> **Before writing ANY Level 2 test, you must identify or build the test harness for each external dependency.**
+
+### 🚨 THE RULE: If You Don't Know the Harness, STOP
+
+> **If you cannot describe the test harness for a dependency, you MUST ask the user before proceeding.**
+
+Do not guess. Do not assume. Ask:
+
+```
+I need to write integration tests for [dependency].
+
+To proceed, I need to know:
+1. What test harness exists or should I build?
+2. How do I start/stop/reset it?
+3. Where are fixture files or seed data?
+4. What environment variables configure it?
+
+Please provide this information or point me to existing test infrastructure.
+```
+
+### What Is a Test Harness?
+
+A test harness is the infrastructure that lets you run tests against a real dependency in a controlled, repeatable way.
+
+| Dependency Type | Harness Examples                                              |
+| --------------- | ------------------------------------------------------------- |
+| Hugo binary     | Installed binary with known version, fixture Hugo sites       |
+| Caddy server    | Installed binary, ephemeral Caddyfile, auto-allocated ports   |
+| Docker service  | docker-compose.test.yml with service definitions              |
+| TypeScript      | Project's tsconfig.json + known fixture files                 |
+| Database        | Docker container with test schema, or test database + cleanup |
+
+---
+
 ## File Location & Naming
 
 ```

@@ -89,15 +89,19 @@ If a user's request fails, Level 1 tests help you instantly rule out (or identif
 
 ### What You Can Use
 
-| Allowed              | Examples                                   | Why It's OK                   |
-| -------------------- | ------------------------------------------ | ----------------------------- |
-| Test runner          | pytest, vitest, jest, go test              | Part of dev environment       |
-| Language primitives  | temp files, env vars, in-memory structures | Part of runtime               |
-| Standard dev tools   | git, cat, grep, curl                       | Available in CI without setup |
-| Dependency injection | Pass interfaces, not implementations       | Enables isolation             |
-| Factories/builders   | Generate test data programmatically        | Reproducible tests            |
+| Allowed              | Examples                                               | Why It's OK                   |
+| -------------------- | ------------------------------------------------------ | ----------------------------- |
+| Test runner          | pytest, vitest, jest, go test                          | Part of dev environment       |
+| Language primitives  | temp files, env vars, in-memory structures             | Part of runtime               |
+| Standard dev tools   | git, node, npm, npx, curl, python, cat, grep, sed, awk | Available in CI without setup |
+| Dependency injection | Pass interfaces, not implementations                   | Enables isolation             |
+| Factories/builders   | Generate test data programmatically                    | Reproducible tests            |
 
-**Standard dev tools** are those available in CI environments without installation (git, cat, grep, curl, sed, awk, etc.). Project-specific tools (make, pip, npm, hugo) are Level 2.
+**Standard dev tools** are those available in CI environments without installation (git, node, npm, npx, curl, python, cat, grep, sed, awk). Project-specific tools (make, pip install, hugo, custom binaries) are Level 2.
+
+**CRITICAL FILESYSTEM RULE:**
+
+All Level 1 tests MUST use OS-provided temporary directories exclusively (`os.tmpdir()`, `tempfile.mkdtemp()`, `/tmp/`, etc.). Never write outside temporary directories. This ensures tests are isolated, reentrant, and don't pollute the user's filesystem. Fast execution is possible thanks to modern SSDs.
 
 ### What You Cannot Use
 
@@ -214,6 +218,20 @@ def test_config_file_generation():
 > **"Does our code correctly interact with real external dependencies?"**
 
 Level 1 proved your logic is correct. Level 2 proves your code actually works with the real databases, binaries, and services it depends on.
+
+Integration testing covers two scenarios:
+
+**1. Project-specific tools:**
+
+- CLI tools NOT in standard dev environment: Hugo, Caddy, Claude Code, FFmpeg, etc.
+- Project-specific build tools: Make, Gradle, Maven, etc.
+- Local execution only (no network required)
+
+**2. Virtualized environments:**
+
+- Docker containers and containerized test services
+- Virtual machines or sandboxed environments
+- Creates infrastructure dependencies beyond standard developer setup
 
 ### The Critical Requirement: Test Harnesses
 

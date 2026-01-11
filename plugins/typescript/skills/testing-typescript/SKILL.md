@@ -118,27 +118,53 @@ it("GIVEN site directory WHEN building THEN creates files in output", async () =
 
 **2. Dependency Injection Over Mocking**
 
-Design code to accept dependencies as parameters. Then tests pass controlled implementations—no mocking framework needed.
+Design code to accept dependencies as parameters. Then tests pass **real implementations with test-friendly behavior**—no mocking framework needed.
 
 ```typescript
-// ❌ BAD: Mocking external calls
+// ❌ BAD: Module-level mocking
 vi.mock("execa", () => ({ execa: vi.fn() }));
 
 it("runs hugo", async () => {
   await buildHugo(siteDir);
-  expect(execa).toHaveBeenCalled();
+  expect(execa).toHaveBeenCalled(); // What did we prove? NOTHING.
 });
 
-// ✅ GOOD: Dependency injection
-it("GIVEN valid site WHEN building THEN returns build directory", async () => {
+// ❌ ALSO BAD: Function-level mocking with vi.fn()
+it("runs hugo", async () => {
+  const deps = {
+    execa: vi.fn().mockResolvedValue({ exitCode: 0 }), // Still mocking!
+  };
+  await buildHugo(siteDir, deps);
+  expect(deps.execa).toHaveBeenCalled(); // Tests HOW, not WHAT
+});
+
+// ✅ GOOD: Real implementations with test-friendly behavior
+class TestExecaRunner {
+  private _exitCode = 0;
+  private _stdout = "";
+
+  simulateFailure(exitCode: number) {
+    this._exitCode = exitCode;
+  }
+
+  async run(cmd: string, args: string[]): Promise<{ exitCode: number; stdout: string }> {
+    // Real logic - can be configured for different test scenarios
+    return { exitCode: this._exitCode, stdout: this._stdout };
+  }
+}
+
+it("GIVEN valid site WHEN building THEN returns build output", async () => {
+  const execaRunner = new TestExecaRunner();
   const deps: BuildDependencies = {
-    execa: vi.fn().mockResolvedValue({ exitCode: 0 }),
-    mkdtemp: vi.fn().mockResolvedValue("/tmp/hugolit-test"),
+    execa: execaRunner.run.bind(execaRunner),
+    existsSync: (path) => path.includes("public"), // Real implementation
   };
 
   const result = await buildHugo(siteDir, deps);
 
-  expect(result.buildDir).toBe("/tmp/hugolit-test");
+  // Test BEHAVIOR (what was returned), not calls
+  expect(result.success).toBe(true);
+  expect(result.buildDir).toContain("public");
 });
 ```
 
@@ -184,7 +210,8 @@ Tests run in order of speed and likelihood to fail:
 1. **Environment checks first**: Is the tool installed? Is the server running?
 2. **Simple operations before complex**: Can we parse config before running audits?
 3. **Known failure modes early**: Check the most fragile assumptions first
-   </core_principles>
+
+</core_principles>
 
 <testing_levels>
 **Level 1: Unit (No External Dependencies)**
@@ -198,6 +225,7 @@ Unit testing is fast and depends only on CLI tools installed by default on moder
 **Standard tools (always available):**
 
 - `git`, `node`, `npm`, `npx`, `curl`, `python`
+- `cat`, `grep`, `sed`, `awk` (Unix shell tools)
 - Node.js built-ins: `fs`, `path`, `os`, `crypto`
 
 **Testing approach:**

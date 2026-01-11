@@ -25,6 +25,53 @@ Level 2 proves tools work together locally. Level 3 proves:
 
 ---
 
+## The Critical Requirement: Credentials & Test Accounts
+
+> **Before writing ANY Level 3 test, you must know where the credentials are and what test accounts exist.**
+
+### 🚨 THE RULE: No Credentials, No Level 3 Tests
+
+> **If you do not have explicit information about test credentials and accounts, you MUST ask the user before proceeding.**
+
+Do not guess. Do not use production credentials. Ask:
+
+```
+I need to write end-to-end tests that use [external service].
+
+To proceed, I need to know:
+1. Where are the test credentials stored? (env vars, secrets manager, etc.)
+2. What test accounts/environments exist?
+3. Are there rate limits or quotas on the test account?
+4. How do I reset test data between runs?
+5. Is there a staging/sandbox environment, or do tests run against production?
+
+Please provide this information before I proceed with Level 3 tests.
+```
+
+### Credential Management Pattern
+
+```typescript
+import os from "os";
+
+// Document where credentials come from
+const CREDENTIALS_SOURCE = `
+Level 3 tests require these environment variables:
+- CHROME_PATH: Path to Chrome binary (default: system Chrome)
+- TEST_SERVER_URL: URL of test environment (required)
+- LHCI_TOKEN: Token for uploading results (optional)
+
+Test credentials location: .env.test (not committed)
+`;
+
+beforeAll(() => {
+  if (!process.env.TEST_SERVER_URL) {
+    throw new Error(`TEST_SERVER_URL not set.\n${CREDENTIALS_SOURCE}`);
+  }
+});
+```
+
+---
+
 ## File Location & Naming
 
 ```

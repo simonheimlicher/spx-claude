@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "BDD testing methodology with three-tier testing (Unit, Integration, E2E)",
   "author": {
     "name": "Simon Heimlicher"

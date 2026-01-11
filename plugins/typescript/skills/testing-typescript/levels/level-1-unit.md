@@ -8,12 +8,13 @@ Level 1 tests verify our code logic is correct using only tools installed by def
 
 These are **NOT** external dependencies—they're installed by default on modern macOS/Linux developer machines:
 
-| Tool                                          | Why It's Level 1                                       |
-| --------------------------------------------- | ------------------------------------------------------ |
-| `git`, `node`, `npm`, `npx`, `curl`, `python` | Standard CLI tools on every developer machine          |
-| `fs`, `path`, `os`, `crypto`                  | Node.js standard library, always available             |
-| `os.tmpdir()`                                 | OS-provided temporary directory (MUST use exclusively) |
-| `execa` (mocked)                              | Testing OUR command-building logic, not execution      |
+| Tool                                           | Why It's Level 1                                       |
+| ---------------------------------------------- | ------------------------------------------------------ |
+| `git`, `node`, `npm`, `npx`, `curl`, `python`  | Standard CLI tools on every developer machine          |
+| `cat`, `grep`, `sed`, `awk`                    | Unix shell tools, available by default                 |
+| `fs`, `path`, `os`, `crypto`                   | Node.js standard library, always available             |
+| `os.tmpdir()`                                  | OS-provided temporary directory (MUST use exclusively) |
+| Test implementations (classes with real logic) | Our code, not external dependencies                    |
 
 **CRITICAL FILESYSTEM RULE:**
 
@@ -48,7 +49,7 @@ src/hugo/build.ts                → test/unit/hugo/build.test.ts
 
 ## Dependency Injection Pattern
 
-The core technique for Level 1 testing: design code to accept dependencies as parameters.
+The core technique for Level 1 testing: design code to accept dependencies as parameters, then pass **real implementations with test-friendly behavior**.
 
 ### Production Code Design
 
@@ -58,28 +59,21 @@ import { execa } from "execa";
 import getPort from "get-port";
 
 export interface LhciDependencies {
-  execa: typeof execa;
-  getPort: typeof getPort;
+  execa: (cmd: string, args: string[]) => Promise<{ exitCode: number; stdout: string }>;
+  getPort: () => Promise<number>;
   mkdtemp: (prefix: string) => Promise<string>;
   writeFile: (path: string, content: string) => Promise<void>;
 }
 
 // Default dependencies for production
 export const defaultDeps: LhciDependencies = {
-  execa,
+  execa: (cmd, args) => execa(cmd, args).then((r) => ({ exitCode: r.exitCode ?? 0, stdout: r.stdout })),
   getPort,
   mkdtemp: fs.promises.mkdtemp,
   writeFile: fs.promises.writeFile,
 };
 
-export interface LhciOptions {
-  url?: string;
-  set?: string;
-  port?: number;
-  runs?: number;
-}
-
-export function buildLhciCommand(urls: string[], options: { runs?: number; checksum?: boolean } = {}): string[] {
+export function buildLhciCommand(urls: string[], options: { runs?: number } = {}): string[] {
   // Pure function, no I/O
   const cmd = ["npx", "lhci", "collect"];
 
@@ -94,14 +88,120 @@ export function buildLhciCommand(urls: string[], options: { runs?: number; check
   return cmd;
 }
 
-export async function runLhci(options: LhciOptions, config: Config, deps: LhciDependencies = defaultDeps): Promise<LhciResult> {
+export async function runLhci(
+  options: { url?: string; set?: string; port?: number; runs?: number },
+  config: Config,
+  deps: LhciDependencies = defaultDeps,
+): Promise<LhciResult> {
   const urls = options.url ? [options.url] : config.url_sets[options.set ?? "all"];
   const cmd = buildLhciCommand(urls, { runs: options.runs });
 
   const port = options.port ?? (await deps.getPort());
   const tempDir = await deps.mkdtemp("/tmp/hugolit-");
 
-  // ... rest of implementation
+  const result = await deps.execa("npx", cmd);
+
+  return {
+    success: result.exitCode === 0,
+    urls: urls,
+    tempDir,
+    port,
+  };
+}
+```
+
+### Level 1 Test Implementations
+
+Create **real implementations**, not mocks:
+
+```typescript
+// test/unit/test-implementations.ts
+
+/**
+ * Real test implementation for execa - has actual logic.
+ */
+export class TestExecaRunner {
+  private _nextResult: { exitCode: number; stdout: string } = { exitCode: 0, stdout: "" };
+
+  simulateSuccess(stdout: string = "") {
+    this._nextResult = { exitCode: 0, stdout };
+  }
+
+  simulateFailure(exitCode: number, stdout: string = "") {
+    this._nextResult = { exitCode, stdout };
+  }
+
+  async run(cmd: string, args: string[]): Promise<{ exitCode: number; stdout: string }> {
+    // Real logic - returns configured result
+    return this._nextResult;
+  }
+}
+
+/**
+ * Real test implementation for port provider - has actual logic.
+ */
+export class TestPortProvider {
+  private _nextPort = 4000;
+
+  async getPort(): Promise<number> {
+    // Real logic - increments port number
+    return this._nextPort++;
+  }
+
+  setNextPort(port: number) {
+    this._nextPort = port;
+  }
+}
+
+/**
+ * Real test implementation for filesystem - has actual logic.
+ */
+export class TestFileSystem {
+  private files = new Map<string, string>();
+  private dirs = new Set<string>();
+
+  async writeFile(path: string, content: string): Promise<void> {
+    this.files.set(path, content);
+  }
+
+  async mkdtemp(prefix: string): Promise<string> {
+    const dir = `${prefix}${Math.random().toString(36).slice(2)}`;
+    this.dirs.add(dir);
+    return dir;
+  }
+
+  getWrittenFiles() {
+    return Array.from(this.files.keys());
+  }
+}
+
+/**
+ * Factory to create test dependencies with real implementations.
+ */
+export function createTestDeps(
+  overrides: Partial<LhciDependencies> = {},
+): {
+  deps: LhciDependencies;
+  execa: TestExecaRunner;
+  portProvider: TestPortProvider;
+  fs: TestFileSystem;
+} {
+  const execa = new TestExecaRunner();
+  const portProvider = new TestPortProvider();
+  const fs = new TestFileSystem();
+
+  return {
+    deps: {
+      execa: execa.run.bind(execa),
+      getPort: portProvider.getPort.bind(portProvider),
+      mkdtemp: fs.mkdtemp.bind(fs),
+      writeFile: fs.writeFile.bind(fs),
+      ...overrides,
+    },
+    execa,
+    portProvider,
+    fs,
+  };
 }
 ```
 
@@ -109,9 +209,10 @@ export async function runLhci(options: LhciOptions, config: Config, deps: LhciDe
 
 ```typescript
 // test/unit/runners/lhci.test.ts
-import { buildLhciCommand, type LhciDependencies, runLhci } from "@/runners/lhci";
-import { describe, expect, it, vi } from "vitest";
+import { buildLhciCommand, runLhci } from "@/runners/lhci";
+import { describe, expect, it } from "vitest";
 import { createTestConfig } from "../../fixtures/factories";
+import { createTestDeps } from "../../unit/test-implementations";
 
 describe("buildLhciCommand", () => {
   /**
@@ -152,65 +253,61 @@ describe("buildLhciCommand", () => {
 
 describe("runLhci", () => {
   /**
-   * Level 1: Testing logic with injected dependencies.
+   * Level 1: Testing logic with real test implementations (NOT mocks).
    */
 
-  const createMockDeps = (): LhciDependencies => ({
-    execa: vi.fn().mockResolvedValue({ exitCode: 0, stdout: "" }),
-    getPort: vi.fn().mockResolvedValue(4000),
-    mkdtemp: vi.fn().mockResolvedValue("/tmp/hugolit-12345"),
-    writeFile: vi.fn().mockResolvedValue(undefined),
-  });
-
-  it("GIVEN URL set configured WHEN running THEN audits each URL", async () => {
+  it("GIVEN URL set configured WHEN running THEN processes all URLs", async () => {
     // Given
     const config = createTestConfig({
       url_sets: { critical: ["/", "/about/"] },
     });
-    const mockDeps = createMockDeps();
+    const { deps, execa } = createTestDeps();
+    execa.simulateSuccess("Audit complete");
 
     // When
-    await runLhci({ set: "critical" }, config, mockDeps);
+    const result = await runLhci({ set: "critical" }, config, deps);
 
-    // Then: execa called with lhci collect
-    expect(mockDeps.execa).toHaveBeenCalled();
-    const calls = mockDeps.execa.mock.calls;
-    const lhciCall = calls.find(([cmd, args]) => cmd === "npx" && args?.[0] === "lhci");
-    expect(lhciCall).toBeDefined();
+    // Then: Test BEHAVIOR (what was returned), not calls
+    expect(result.success).toBe(true);
+    expect(result.urls).toEqual(["/", "/about/"]);
   });
 
-  it("GIVEN port not specified WHEN running THEN auto-picks free port", async () => {
+  it("GIVEN port not specified WHEN running THEN allocates auto port", async () => {
     // Given
     const config = createTestConfig();
-    const mockDeps = createMockDeps();
+    const { deps, portProvider } = createTestDeps();
+    portProvider.setNextPort(5000);
 
     // When
-    await runLhci({}, config, mockDeps);
+    const result = await runLhci({}, config, deps);
 
-    // Then: getPort was called
-    expect(mockDeps.getPort).toHaveBeenCalled();
+    // Then: Test BEHAVIOR (port was allocated)
+    expect(result.port).toBe(5000);
   });
 
   it("GIVEN port specified WHEN running THEN uses specified port", async () => {
     // Given
     const config = createTestConfig();
-    const mockDeps = createMockDeps();
+    const { deps } = createTestDeps();
 
     // When
-    await runLhci({ port: 8080 }, config, mockDeps);
+    const result = await runLhci({ port: 8080 }, config, deps);
 
-    // Then: getPort not called
-    expect(mockDeps.getPort).not.toHaveBeenCalled();
+    // Then: Test BEHAVIOR (used our port)
+    expect(result.port).toBe(8080);
   });
 
-  it("GIVEN Hugo build fails WHEN running THEN throws descriptive error", async () => {
+  it("GIVEN Hugo build fails WHEN running THEN returns failure", async () => {
     // Given
     const config = createTestConfig();
-    const mockDeps = createMockDeps();
-    mockDeps.execa.mockRejectedValueOnce(new Error("hugo: command not found"));
+    const { deps, execa } = createTestDeps();
+    execa.simulateFailure(1, "hugo: command not found");
 
-    // When/Then
-    await expect(runLhci({}, config, mockDeps)).rejects.toThrow("Hugo build failed");
+    // When
+    const result = await runLhci({}, config, deps);
+
+    // Then: Test BEHAVIOR (failure detected)
+    expect(result.success).toBe(false);
   });
 });
 ```
@@ -446,7 +543,7 @@ Level 1 tests are **required** but **not sufficient** for feature completion:
 
 ## Anti-Patterns
 
-### Anti-Pattern: Mocking Instead of DI
+### Anti-Pattern: Mocking Instead of Real Implementations
 
 ```typescript
 // ❌ Mocking couples test to implementation
@@ -457,11 +554,22 @@ it("calls execa", async () => {
   expect(execa).toHaveBeenCalled();
 });
 
-// ✅ DI tests behavior, not implementation
-it("GIVEN valid site WHEN building THEN returns build dir", async () => {
+// ❌ ALSO BAD: vi.fn() is still mocking
+it("runs hugo", async () => {
   const deps = { execa: vi.fn().mockResolvedValue({ exitCode: 0 }) };
   const result = await buildHugo(siteDir, deps);
-  expect(result.buildDir).toBeDefined();
+  expect(deps.execa).toHaveBeenCalled(); // Tests HOW, not WHAT
+});
+
+// ✅ GOOD: Real implementation tests behavior
+it("GIVEN valid site WHEN building THEN returns build output", async () => {
+  const execaRunner = new TestExecaRunner();
+  execaRunner.simulateSuccess();
+  const deps = { execa: execaRunner.run.bind(execaRunner) };
+
+  const result = await buildHugo(siteDir, deps);
+
+  expect(result.success).toBe(true); // Tests WHAT happened
 });
 ```
 
