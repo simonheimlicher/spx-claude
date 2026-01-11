@@ -28,7 +28,8 @@ allowed-tools: Read, Write, Glob, Grep, AskUserQuestion
 - Every user capability maps to ≥1 acceptance test scenario
 - Test infrastructure documented OR in dependencies (no vagueness)
 - Readiness Criteria self-check before delivery
-  </essential_principles>
+
+</essential_principles>
 
 <objective>
 Create complete, testable Product Requirements Documents that serve as authoritative blueprints for product development. Systematically discover user problems, design measurable outcomes with validation strategies, and document acceptance criteria before work begins.
@@ -58,7 +59,8 @@ Create complete, testable Product Requirements Documents that serve as authorita
 - Project-level PRD: Read all existing capabilities for context
 - Capability-level PRD: Read containing project context + sibling capabilities
 - Feature-level PRD: Read containing capability + sibling features
-  </context_reading_protocol>
+
+</context_reading_protocol>
 
 <workflow>
 **Phase 0: Context Discovery**
@@ -107,7 +109,8 @@ Read workflow: `workflows/write-prd.md`
 - Provide summary of product definition
 - List next actions (ADRs to write, open decisions)
 - Report readiness assessment
-  </workflow>
+
+</workflow>
 
 <deep_thinking_checkpoints>
 The skill pauses for ultra-thinking at three critical junctures:
@@ -138,7 +141,8 @@ Is this scope achievable as one deliverable unit delivering real user value?
 - Is it too small (not standalone user value)?
 - What's excluded and why?
 - What ADRs will implementation need?
-  </deep_thinking_checkpoints>
+
+</deep_thinking_checkpoints>
 
 <mandatory_user_interactions>
 **Agent MUST ask (cannot proceed without answers):**

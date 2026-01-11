@@ -17,7 +17,8 @@ Mocking is prohibited. Use:
 
 - **Level 1**: Dependency injection with controlled implementations
 - **Level 2/3**: Real infrastructure and services
-  </core_principle>
+
+</core_principle>
 
 <level_decision_rules>
 **Level 1 (Unit)**
@@ -83,7 +84,8 @@ Requires:
 - Credential source (1Password, .env.test)
 - Rotation schedule
 - Test account information
-  </level_decision_rules>
+
+</level_decision_rules>
 
 <test_harness_requirements>
 For EACH Level 2 dependency, document:
@@ -178,7 +180,8 @@ For each guarantee:
 
 - Only Level 3 tests for complex feature
 - **Fix**: Build confidence bottom-up with all three levels
-  </anti_patterns>
+
+</anti_patterns>
 
 <readiness_check>
 Before finalizing TRD, verify:
@@ -188,4 +191,5 @@ Before finalizing TRD, verify:
 - [ ] Level 2 guarantees have harnesses documented OR in gaps table
 - [ ] Level 3 guarantees have credentials documented OR in gaps table
 - [ ] No "TBD" or "TODO" placeholders for infrastructure
-      </readiness_check>
+
+</readiness_check>

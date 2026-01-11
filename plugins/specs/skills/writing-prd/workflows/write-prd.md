@@ -61,7 +61,8 @@ Check every section exists per template:
 - [ ] Open Decisions documents unresolved questions
 - [ ] Dependencies categorized
 - [ ] Pre-Mortem has ≥4 assumptions
-      </verify_template>
+
+</verify_template>
 
 <self_check_readiness>
 Execute Readiness Criteria from template:

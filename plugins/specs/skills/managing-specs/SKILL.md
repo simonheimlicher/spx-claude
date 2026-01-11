@@ -211,7 +211,8 @@ Format: `adr-{NNN}_{slug}.md`
 
 - NNN: Three-digit sequential number (001, 002, ...)
 - slug: Kebab-case description (e.g., `use-postgresql-for-persistence`)
-  </adr_templates>
+
+</adr_templates>
 
 <requirement_templates>
 
@@ -271,7 +272,8 @@ Read: ${SKILL_DIR}/templates/requirements/technical-change.trd.md
 - **PRD OR TRD** at same scope, never both
 - **Immutable**: Code adapts to requirements, not vice versa
 - **Catalyst pattern**: PRD spawns capability, TRD spawns feature
-  </requirement_templates>
+
+</requirement_templates>
 
 <work_item_templates>
 
@@ -351,4 +353,5 @@ Skill is working correctly when:
 - [ ] ADR, requirement, and work item patterns are clearly documented
 - [ ] Test graduation paths are correctly specified for each level
 - [ ] BSP numbering uses consistent two-digit format (10-99)
-      </success_criteria>
+
+</success_criteria>

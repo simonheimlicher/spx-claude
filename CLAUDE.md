@@ -30,8 +30,8 @@ When documenting XML-like syntax that isn't valid XML (pseudo-XML with text cont
 
 **Never use:**
 
-- ` ```xml ` for pseudo-XML (causes formatting issues)
-- ` ``` ` with no language identifier (rejected by some markdown linters)
+- `` ```xml `` for pseudo-XML (causes formatting issues)
+- `` ``` `` with no language identifier (rejected by some markdown linters)
 
 ## Documentation
 
@@ -529,6 +529,7 @@ Without the blank line, markdown parsers interpret the closing tag as part of th
 - Item 1
 - Item 2
 - Item 3
+
 </section>
 
 # ✅ CORRECT - Blank line prevents indentation

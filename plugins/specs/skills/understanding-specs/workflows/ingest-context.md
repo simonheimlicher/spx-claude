@@ -316,4 +316,5 @@ Workflow is complete when:
 - [ ] Context summary generated with complete document list
 - [ ] Clear indication that implementation may proceed
 - [ ] No ABORT conditions triggered (or appropriate error shown)
-      </success_criteria>
+
+</success_criteria>

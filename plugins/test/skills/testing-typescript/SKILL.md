@@ -95,7 +95,7 @@ test("loadConfig reads YAML file", async () => {
       `
 site_dir: ./site
 base_url: http://localhost:1313
-`
+`,
     );
 
     const config = await loadConfig(configPath);
@@ -379,10 +379,10 @@ export default defineConfig({
   webServer: process.env.TEST_BASE_URL
     ? undefined
     : {
-        command: "npm run dev",
-        url: "http://localhost:3000",
-        reuseExistingServer: !process.env.CI,
-      },
+      command: "npm run dev",
+      url: "http://localhost:3000",
+      reuseExistingServer: !process.env.CI,
+    },
 });
 ```
 
@@ -392,10 +392,10 @@ import { expect, test } from "@playwright/testing";
 
 test("user can run audit from dashboard", async ({ page }) => {
   await page.goto("/dashboard");
-  await page.fill('[data-testid="url-input"]', "https://example.com");
-  await page.click('[data-testid="run-audit"]');
+  await page.fill("[data-testid=\"url-input\"]", "https://example.com");
+  await page.click("[data-testid=\"run-audit\"]");
 
-  await expect(page.locator('[data-testid="results"]')).toBeVisible({
+  await expect(page.locator("[data-testid=\"results\"]")).toBeVisible({
     timeout: 30000,
   });
 });

@@ -62,7 +62,8 @@ Map the transformation this product creates:
 - How will users operate with this capability?
 - What will be different in their workflow?
 - What new value will they experience?
-  </analyze_customer_journey>
+
+</analyze_customer_journey>
 
 <propose_customer_journey>
 Present to user using AskUserQuestion if clarification needed:

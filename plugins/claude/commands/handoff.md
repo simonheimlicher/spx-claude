@@ -80,7 +80,8 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
    - What's committed, saved, or finalized vs. what's temporary or draft
    - Any temporary changes, workarounds, or open questions
    - Current position in the workflow or process
-     </instructions>
+
+</instructions>
 
 <output_format>
 
@@ -105,6 +106,7 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 - Key discoveries or insights
 - Decisions made and reasoning
 - Side tasks completed]
+
 </work_completed>
 
 <work_remaining>
@@ -113,6 +115,7 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 - Exact targets to create, modify, or analyze
 - Dependencies and ordering
 - Validation or verification steps needed]
+
 </work_remaining>
 
 <attempted_approaches>
@@ -121,6 +124,7 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 - Errors, blockers, or limitations encountered
 - Dead ends to avoid
 - Alternative approaches considered but not pursued]
+
 </attempted_approaches>
 
 <critical_context>
@@ -131,6 +135,7 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 - Environment, configuration, or setup details
 - Assumptions requiring validation
 - References to documentation, sources, or resources]
+
 </critical_context>
 
 <current_state>
@@ -140,6 +145,7 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 - Temporary changes or workarounds in place
 - Current position in workflow or process
 - Any open questions or pending decisions]
+
 </current_state>
 ```
 
@@ -206,4 +212,5 @@ This command works with `/pickup` to create a self-organizing handoff system:
 - `TODO_*.md` = Available for pickup (queue of work to be done)
 - `DOING_*.md` = Currently being worked on (claimed by active session)
 - New handoffs are created as `TODO_` (ready for next session)
-  </system_description>
+
+</system_description>

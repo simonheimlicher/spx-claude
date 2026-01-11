@@ -37,7 +37,8 @@ This approach ensures you're solving actual problems rather than anticipating re
 - `query`: The user request to test
 - `files`: Any input files needed
 - `expected_behavior`: Observable behaviors to verify
-  </evaluation_structure>
+
+</evaluation_structure>
 
 <iterative_testing>
 **Develop skills iteratively with Claude**:
@@ -60,7 +61,8 @@ This approach ensures you're solving actual problems rather than anticipating re
 - Missed connections → links need to be more explicit
 - Overreliance on certain sections → content should be in SKILL.md
 - Ignored content → might be unnecessary
-  </iterative_testing>
+
+</iterative_testing>
 
 <evaluation_scenarios>
 **Minimum 3 evaluation scenarios per skill**:

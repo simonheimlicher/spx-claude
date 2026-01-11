@@ -13,7 +13,8 @@ allowed-tools: Read, Glob, Grep
 - Read order: Product → Capability → Feature → Story (top-down)
 - All ADRs at all levels must be read and understood
 - This skill runs BEFORE any implementation work begins
-  </essential_principles>
+
+</essential_principles>
 
 <objective>
 Verify and load complete hierarchical context for a work item by reading all specification documents from product level down to the target work item. Fails fast with actionable errors when required documents are missing. Ensures implementation skills have complete context including all constraints (ADRs), requirements (PRD/TRD), and specifications before starting work.
@@ -89,4 +90,5 @@ Context ingestion succeeds when:
 - [ ] All feature ADRs read
 - [ ] Story spec exists and read (if working on story)
 - [ ] Structured context summary generated with document count and ADR list
-      </success_criteria>
+
+</success_criteria>

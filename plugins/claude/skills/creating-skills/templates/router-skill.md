@@ -63,4 +63,5 @@ A well-executed {{skill name}}:
 - [ ] {{First criterion}}
 - [ ] {{Second criterion}}
 - [ ] {{Third criterion}}
-      </success_criteria>
+
+</success_criteria>

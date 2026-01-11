@@ -40,6 +40,7 @@ A well-structured skill has:
 - Valid YAML frontmatter
 - Pure XML structure
 - Required tags present
+
 </success_criteria>
 ````
 
@@ -144,7 +145,8 @@ XML tags can nest for hierarchical content:
 - `<workflow>` not `<steps>`
 - `<success_criteria>` not `<done>`
 - `<anti_patterns>` not `<dont_do>`
-  </nesting_guidelines>
+
+</nesting_guidelines>
 
 <anti_pattern>
 **DO NOT use markdown headings in skill body content.**

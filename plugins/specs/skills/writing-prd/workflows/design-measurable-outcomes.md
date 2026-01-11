@@ -85,10 +85,10 @@ test("user achieves [capability] through [workflow]", async ({ page }) => {
   const startTime = Date.now();
 
   // When
-  await page.click('[data-testid="user-action"]');
+  await page.click("[data-testid=\"user-action\"]");
 
   // Then
-  await expect(page.locator('[data-testid="success"]')).toBeVisible();
+  await expect(page.locator("[data-testid=\"success\"]")).toBeVisible();
   const time = Date.now() - startTime;
   expect(time).toBeLessThan(TARGET_MS);
 });
@@ -104,7 +104,8 @@ Check that:
 - [ ] Every capability has ≥1 Gherkin scenario
 - [ ] E2E test code covers full user journey
 - [ ] Scenarios measure business metrics from Evidence of Success
-      </verify_coverage>
+
+</verify_coverage>
 
 </process>
 

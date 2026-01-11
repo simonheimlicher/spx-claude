@@ -62,7 +62,8 @@ pip install {{packages}}
 - Format: {{Output format}}
 - Location: {{Where output is saved}}
 - Validation: {{How to verify}}
-  </input_output>
+
+</input_output>
 
 <error_handling>
 
@@ -86,4 +87,5 @@ Automation is complete when:
 - [ ] Output matches expected format
 - [ ] Validation passes
 - [ ] No temporary files left behind
-      </success_criteria>
+
+</success_criteria>

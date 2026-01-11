@@ -33,4 +33,5 @@ Task is complete when:
 - [ ] {{First criterion}}
 - [ ] {{Second criterion}}
 - [ ] {{Third criterion}}
-      </success_criteria>
+
+</success_criteria>

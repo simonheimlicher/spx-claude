@@ -145,7 +145,8 @@ description: |
 - [ ] Routing table maps to correct workflows
 - [ ] No broken links
 - [ ] Test each workflow path
-      </process>
+
+</process>
 
 <success_criteria>
 Upgrade is complete when:
@@ -157,4 +158,5 @@ Upgrade is complete when:
 - [ ] SKILL.md rewritten with router pattern
 - [ ] All paths tested and working
 - [ ] SKILL.md significantly shorter than before
-      </success_criteria>
+
+</success_criteria>

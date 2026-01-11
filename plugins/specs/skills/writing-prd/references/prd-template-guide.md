@@ -26,7 +26,8 @@ The PRD template is provided by the `/managing-specs` skill `<requirement_templa
 - **Project**: `specs/{backlog,doing}/[Name].prd.md`
 - **Capability**: `specs/{backlog,doing}/capability-NN_{name}/[Name].prd.md`
 - **Feature**: `specs/{backlog,doing}/capability-NN_{name}/feature-NN_{name}/[Name].prd.md`
-  </file_locations>
+
+</file_locations>
 
 <critical_sections>
 **Product Vision:**
@@ -94,4 +95,5 @@ PRD is ready when:
 - ADR triggers identified
 - Open decisions documented
 - No placeholder content
-  </readiness_check>
+
+</readiness_check>

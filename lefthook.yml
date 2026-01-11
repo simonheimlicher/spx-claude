@@ -1,18 +1,18 @@
 pre-commit:
   commands:
+    fix-xml-spacing:
+      glob: "*.md"
+      run: perl -i -0777 -pe 's/(^\s*-.*)(\n) *</\1\n\n</gm' {staged_files}
+      stage_fixed: true
+      priority: 0
     validate-marketplace:
       run: claude plugin validate .
-      priority: 0
+      priority: 10
     validate-plugins:
       run: find plugins -maxdepth 1 -type d -mindepth 1 -exec claude plugin validate {} \;
-      priority: 0
-    prettier:
-      glob: "*.{md,json}"
-      run: prettier --write {staged_files}
+      priority: 20
+    dprint:
+      glob: "*.{md,python,ts,js,json,jsonc}"
+      run: dprint fmt {staged_files}
       stage_fixed: true
-      priority: 1
-    markdownlintcli2:
-      glob: "*.{md}"
-      run: markdownlint-cli2 --config ~/.markdownlint.yaml --fix {staged_files}
-      stage_fixed: true
-      priority: 2
+      priority: 100

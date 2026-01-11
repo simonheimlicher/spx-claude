@@ -147,4 +147,5 @@ Verification is complete when:
 - [ ] Updates applied (if requested)
 - [ ] Verification timestamp added
 - [ ] User has confidence in skill accuracy
-      </success_criteria>
+
+</success_criteria>

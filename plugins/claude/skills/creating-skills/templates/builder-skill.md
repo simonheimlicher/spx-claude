@@ -61,7 +61,8 @@ Ask about USER'S context (not domain knowledge):
 
 - {{Anti-pattern 1}}
 - {{Anti-pattern 2}}
-  </domain_standards>
+
+</domain_standards>
 
 <output_checklist>
 Before delivering, verify:
@@ -70,7 +71,8 @@ Before delivering, verify:
 - [ ] Follows domain standards
 - [ ] No anti-patterns present
 - [ ] Tested/validated
-      </output_checklist>
+
+</output_checklist>
 
 <success_criteria>
 Builder task is complete when:
@@ -78,4 +80,5 @@ Builder task is complete when:
 - [ ] Artifact created successfully
 - [ ] All standards followed
 - [ ] User requirements met
-      </success_criteria>
+
+</success_criteria>

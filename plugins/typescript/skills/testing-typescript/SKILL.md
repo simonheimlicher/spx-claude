@@ -49,7 +49,8 @@ If you're designing tests for a spec-driven work item (story/feature/capability)
 - If you can verify with local binaries, don't require Chrome
 - Mocking is a **confession** that your code is poorly designed
 - Reality is the only oracle that matters
-  </essential_principles>
+
+</essential_principles>
 
 <progress_vs_regression>
 **CRITICAL INVARIANT: The production test suite (`test/`) MUST ALWAYS PASS.**

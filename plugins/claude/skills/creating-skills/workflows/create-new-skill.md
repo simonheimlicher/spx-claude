@@ -177,4 +177,5 @@ Skill is complete when:
 - [ ] All workflows have required_reading + process + success_criteria
 - [ ] References contain reusable domain knowledge
 - [ ] Tested with real invocation
-      </success_criteria>
+
+</success_criteria>

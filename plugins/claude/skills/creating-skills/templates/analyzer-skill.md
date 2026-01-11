@@ -35,7 +35,8 @@ Gather context to ensure successful implementation:
 
 - {{Exclusion 1}}
 - {{Exclusion 2}}
-  </analysis_scope>
+
+</analysis_scope>
 
 <evaluation_criteria>
 
@@ -86,4 +87,5 @@ Analysis is complete when:
 - [ ] Criteria applied consistently
 - [ ] Report follows output format
 - [ ] Recommendations are actionable
-      </success_criteria>
+
+</success_criteria>

@@ -102,7 +102,8 @@ description: | # What + When, ≤1024 chars, third person
 **Naming Convention**: Prefer gerund form (verb + -ing):
 
 - `creating-skills`, `processing-pdfs`, `reviewing-code`
-  </quick_reference>
+
+</quick_reference>
 
 <reference_index>
 All in `references/`:
@@ -163,4 +164,5 @@ A well-structured skill:
 - Routes to appropriate workflows based on user intent
 - Keeps SKILL.md under 500 lines
 - Has been tested with real usage
-  </success_criteria>
+
+</success_criteria>

@@ -11,7 +11,8 @@ allowed-tools: Read, Write, Glob, Grep
 - No `any` without explicit justification in ADR
 - Design for dependency injection (NO MOCKING)
 - You produce ADRs (Architecture Decision Records), not implementation code
-  </essential_principles>
+
+</essential_principles>
 
 <testing_levels_summary>
 
@@ -33,7 +34,8 @@ allowed-tools: Read, Write, Glob, Grep
 - **Behavior only** — Test what the code does, not how
 - **Escalation requires justification** — Each level adds dependencies
 - **Reality is the oracle** — Real systems, not simulations
-  </testing_levels_summary>
+
+</testing_levels_summary>
 
 <context_loading>
 **For specs-based work items: Load complete context before creating ADRs.**
@@ -84,7 +86,8 @@ Read existing ADRs to ensure consistency:
 
 - `specs/decisions/` - Project-level ADRs
 - Any capability/feature-level ADRs
-  </input_context>
+
+</input_context>
 
 <adr_scope>
 You produce ADRs. The scope depends on what you're deciding:
@@ -100,7 +103,8 @@ You produce ADRs. The scope depends on what you're deciding:
 - Three-digit numbers: 001, 002, 003, ...
 - Sequential within scope
 - Never reuse numbers (even for superseded ADRs)
-  </adr_scope>
+
+</adr_scope>
 
 <adr_creation_protocol>
 Execute these phases IN ORDER.
@@ -153,7 +157,8 @@ Use the project's template. Each ADR must include:
 - No ADR should contradict another
 - Capability ADRs must align with project ADRs
 - Feature ADRs must align with capability ADRs
-  </adr_creation_protocol>
+
+</adr_creation_protocol>
 
 <testing_strategy_section>
 **Required in Every ADR:**

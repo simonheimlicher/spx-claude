@@ -36,7 +36,8 @@ Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
 - Visually striking and memorable
 - Cohesive with a clear aesthetic point-of-view
 - Meticulously refined in every detail
-  </design_thinking>
+
+</design_thinking>
 
 <aesthetics_guidelines>
 Focus on:
@@ -50,7 +51,8 @@ Focus on:
 - **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap and z-depth. Diagonal flow. Grid-breaking elements. Dramatic scale jumps. Full-bleed moments. Generous negative space OR controlled density.
 
 - **Backgrounds & Visual Details**: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise and grain overlays, geometric patterns, layered transparencies and glassmorphism, dramatic or soft shadows and glows, parallax depth, decorative borders and clip-path shapes, print-inspired textures (halftone, duotone, stipple), knockout typography, and custom cursors.
-  </aesthetics_guidelines>
+
+</aesthetics_guidelines>
 
 <anti_patterns>
 NEVER use generic AI-generated aesthetics:
@@ -89,4 +91,5 @@ A successful frontend design:
 - Is responsive and accessible
 - Feels context-specific, not template-driven
 - Matches implementation complexity to aesthetic vision
-  </success_criteria>
+
+</success_criteria>

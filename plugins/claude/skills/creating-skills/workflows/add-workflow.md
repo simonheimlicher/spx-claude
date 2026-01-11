@@ -67,7 +67,8 @@ Workflow is complete when:
 
 - [ ] {First criterion}
 - [ ] {Second criterion}
-      </success_criteria>
+
+</success_criteria>
 ```
 
 Write to: `~/.claude/skills/{skill-name}/workflows/{workflow-name}.md`
@@ -101,7 +102,8 @@ Also update `<workflows_index>`:
 - [ ] SKILL.md routing table updated
 - [ ] SKILL.md workflows_index updated
 - [ ] All referenced files exist
-      </process>
+
+</process>
 
 <success_criteria>
 Workflow addition is complete when:
@@ -111,4 +113,5 @@ Workflow addition is complete when:
 - [ ] SKILL.md workflows_index updated
 - [ ] All references exist
 - [ ] User can invoke the new workflow
-      </success_criteria>
+
+</success_criteria>

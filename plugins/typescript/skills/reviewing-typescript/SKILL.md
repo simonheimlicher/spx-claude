@@ -12,7 +12,8 @@ allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 - "It works on my machine" is not evidence. Tool output is evidence.
 - Tool outputs are truth. Your subjective opinion is secondary.
 - Absence = Failure. If you cannot run a verification tool, the code fails.
-  </essential_principles>
+
+</essential_principles>
 
 <test_verification>
 **This reviewer enforces testing principles from `/testing-typescript` skill.**
@@ -99,7 +100,8 @@ If you're reviewing code for a spec-driven work item (story/feature/capability),
 - Hardcoded secrets
 - `eval()` or `new Function()` usage
 - `child_process.exec()` with untrusted input
-  </verdict_definitions>
+
+</verdict_definitions>
 
 <review_phases>
 Execute these phases IN ORDER. Do not skip phases.

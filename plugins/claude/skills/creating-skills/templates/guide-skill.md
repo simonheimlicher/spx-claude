@@ -88,4 +88,5 @@ Guide task is complete when:
 - [ ] All steps followed
 - [ ] Output matches expected format
 - [ ] User understands the process
-      </success_criteria>
+
+</success_criteria>

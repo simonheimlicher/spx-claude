@@ -92,4 +92,5 @@ Validation is complete when:
 - [ ] Scores assigned per rubric
 - [ ] Report generated
 - [ ] Remediation guidance provided (if needed)
-      </success_criteria>
+
+</success_criteria>

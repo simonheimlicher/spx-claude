@@ -73,7 +73,8 @@ Code examples, recipes, or reusable patterns...
 
 - [ ] Item 1
 - [ ] Item 2
-      </checklist>
+
+</checklist>
 ```
 
 **For API/library docs**:
@@ -118,7 +119,8 @@ For each workflow that should use this reference, add to `<required_reading>`:
 - [ ] SKILL.md reference_index updated
 - [ ] Relevant workflows updated with required_reading
 - [ ] No broken links
-      </process>
+
+</process>
 
 <success_criteria>
 Reference addition is complete when:
@@ -127,4 +129,5 @@ Reference addition is complete when:
 - [ ] SKILL.md reference_index updated
 - [ ] Relevant workflows reference the new file
 - [ ] Content is useful and well-organized
-      </success_criteria>
+
+</success_criteria>

@@ -79,10 +79,7 @@ export interface LhciOptions {
   runs?: number;
 }
 
-export function buildLhciCommand(
-  urls: string[],
-  options: { runs?: number; checksum?: boolean } = {},
-): string[] {
+export function buildLhciCommand(urls: string[], options: { runs?: number; checksum?: boolean } = {}): string[] {
   // Pure function, no I/O
   const cmd = ["npx", "lhci", "collect"];
 
@@ -97,14 +94,8 @@ export function buildLhciCommand(
   return cmd;
 }
 
-export async function runLhci(
-  options: LhciOptions,
-  config: Config,
-  deps: LhciDependencies = defaultDeps,
-): Promise<LhciResult> {
-  const urls = options.url
-    ? [options.url]
-    : config.url_sets[options.set ?? "all"];
+export async function runLhci(options: LhciOptions, config: Config, deps: LhciDependencies = defaultDeps): Promise<LhciResult> {
+  const urls = options.url ? [options.url] : config.url_sets[options.set ?? "all"];
   const cmd = buildLhciCommand(urls, { runs: options.runs });
 
   const port = options.port ?? (await deps.getPort());
@@ -118,11 +109,7 @@ export async function runLhci(
 
 ```typescript
 // test/unit/runners/lhci.test.ts
-import {
-  buildLhciCommand,
-  type LhciDependencies,
-  runLhci,
-} from "@/runners/lhci";
+import { buildLhciCommand, type LhciDependencies, runLhci } from "@/runners/lhci";
 import { describe, expect, it, vi } from "vitest";
 import { createTestConfig } from "../../fixtures/factories";
 
@@ -188,9 +175,7 @@ describe("runLhci", () => {
     // Then: execa called with lhci collect
     expect(mockDeps.execa).toHaveBeenCalled();
     const calls = mockDeps.execa.mock.calls;
-    const lhciCall = calls.find(
-      ([cmd, args]) => cmd === "npx" && args?.[0] === "lhci",
-    );
+    const lhciCall = calls.find(([cmd, args]) => cmd === "npx" && args?.[0] === "lhci");
     expect(lhciCall).toBeDefined();
   });
 
@@ -225,9 +210,7 @@ describe("runLhci", () => {
     mockDeps.execa.mockRejectedValueOnce(new Error("hugo: command not found"));
 
     // When/Then
-    await expect(runLhci({}, config, mockDeps)).rejects.toThrow(
-      "Hugo build failed",
-    );
+    await expect(runLhci({}, config, mockDeps)).rejects.toThrow("Hugo build failed");
   });
 });
 ```
@@ -384,9 +367,7 @@ describe("file operations", () => {
   let tempDir: string;
 
   beforeEach(async () => {
-    tempDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), "hugolit-test-"),
-    );
+    tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "hugolit-test-"));
   });
 
   afterEach(async () => {
@@ -410,10 +391,7 @@ describe("file operations", () => {
     await copyFiles(source, dest);
 
     expect(fs.existsSync(path.join(dest, "file.txt"))).toBe(true);
-    expect(await fs.promises.readFile(path.join(dest, "file.txt"), "utf-8"))
-      .toBe(
-        "content",
-      );
+    expect(await fs.promises.readFile(path.join(dest, "file.txt"), "utf-8")).toBe("content");
   });
 });
 ```

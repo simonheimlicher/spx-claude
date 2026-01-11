@@ -112,7 +112,8 @@ If fixing:
 - Make each change
 - Verify file validity after each change
 - Report what was fixed
-  </process>
+
+</process>
 
 <audit_anti_patterns>
 Common anti-patterns to flag:
@@ -138,4 +139,5 @@ Audit is complete when:
 - [ ] Report presented to user
 - [ ] Fixes applied (if requested)
 - [ ] User has clear picture of skill health
-      </success_criteria>
+
+</success_criteria>

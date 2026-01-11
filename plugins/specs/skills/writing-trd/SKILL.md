@@ -27,7 +27,8 @@ allowed-tools: Read, Write, Glob, Grep, AskUserQuestion
 - Test infrastructure documented OR in Infrastructure Gaps table (no vagueness)
 - Every guarantee (G1, G2, etc.) maps to ≥1 BDD scenario
 - Readiness Criteria self-check before delivery
-  </essential_principles>
+
+</essential_principles>
 
 <objective>
 Create complete, testable Technical Requirements Documents that serve as authoritative blueprints for implementation. Systematically discover problem root causes, design validation strategies with explicit test level assignments, and document test infrastructure requirements before work begins.

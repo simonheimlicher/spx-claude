@@ -22,7 +22,8 @@ Skills use pure XML structure for consistent parsing, efficient token usage, and
 - `<objective>` - What the skill does
 - `<quick_start>` - Immediate actionable guidance
 - `<success_criteria>` - How to know it worked
-  </xml_structure_principle>
+
+</xml_structure_principle>
 
 <conciseness_principle>
 The context window is shared. Your skill shares it with the system prompt, conversation history, other skills' metadata, and the actual request.
@@ -64,7 +65,8 @@ The concise version assumes Claude knows what PDFs are, understands Python impor
 - Concept is domain-specific (not general programming knowledge)
 - Pattern is non-obvious or counterintuitive
 - Context affects behavior in subtle ways
-  </conciseness_principle>
+
+</conciseness_principle>
 
 <degrees_of_freedom_principle>
 Match the level of specificity to the task's fragility and variability.
@@ -97,7 +99,8 @@ Example: Database migrations, payment processing, security operations
 
 - **Narrow bridge**: Only one safe way forward. Provide exact instructions.
 - **Open field**: Many paths lead to success. Give general direction.
-  </degrees_of_freedom_principle>
+
+</degrees_of_freedom_principle>
 
 <progressive_disclosure_principle>
 SKILL.md serves as an overview. Reference files contain details. Claude loads reference files only when needed.
@@ -114,7 +117,8 @@ SKILL.md serves as an overview. Reference files contain details. Claude loads re
 - Split detailed content into reference files
 - Keep references one level deep from SKILL.md
 - Use descriptive reference file names
-  </progressive_disclosure_principle>
+
+</progressive_disclosure_principle>
 
 <domain_discovery_principle>
 Users want domain expertise IN the skill. They may not BE domain experts.
@@ -150,7 +154,8 @@ Validation scripts are force multipliers. They catch errors that Claude might mi
 - Pinpoint exact location of problems
 - Suggest actionable fixes
 - Are deterministic and reliable
-  </validation_principle>
+
+</validation_principle>
 
 <principle_summary>
 

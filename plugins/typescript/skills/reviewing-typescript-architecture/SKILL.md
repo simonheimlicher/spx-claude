@@ -71,7 +71,8 @@ If you're reviewing ADRs for a spec-driven work item (story/feature/capability),
 
 - "Reality is the oracle, not mocks"
 - Tests must verify behavior against real systems at appropriate levels
-  </principles_to_enforce>
+
+</principles_to_enforce>
 
 <output_format>
 
@@ -135,6 +136,7 @@ If you're reviewing ADRs for a spec-driven work item (story/feature/capability),
 - Show correct architecture (code examples)
 - Be direct about what violates principles
 - Assume the architect will understand and fix
+
 </what_to_avoid>
 
 <example_review>

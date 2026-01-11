@@ -11,7 +11,8 @@ allowed-tools: Read, Write, Bash, Glob, Grep, Edit
 - Test **behavior** (what the code does), not implementation (how it does it)
 - Run all verification tools before declaring completion
 - Type safety first: `strict: true`, no `any` without justification
-  </essential_principles>
+
+</essential_principles>
 
 <testing_methodology>
 **For complete testing methodology, invoke `/testing-typescript` skill.**
