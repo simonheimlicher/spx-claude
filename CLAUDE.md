@@ -440,6 +440,119 @@ description: TypeScript-specific testing patterns with type-safe test design. Us
 
 ---
 
+## Writing Skills with Templates
+
+### Template Access Pattern (MANDATORY)
+
+**When a skill includes templates in subdirectories, always use the `${SKILL_DIR}` variable pattern to make template locations unambiguous.**
+
+Skills are loaded from the skill's base directory (`.claude/plugins/cache/{marketplace}/{plugin}/{version}/skills/{skill-name}/`), NOT from the user's project directory. Agents frequently guess wrong and search in the project directory instead.
+
+#### Required Pattern
+
+```markdown
+<accessing_templates>
+
+## How to Access Templates
+
+**All templates are stored within this skill's base directory.**
+
+### Understanding Skill Directory Structure
+
+When you invoke `/{skill-name}`, Claude loads this skill from the skill's base directory. Throughout this documentation, we refer to this as `${SKILL_DIR}`.
+
+**The skill's base directory path pattern:**
+
+\`\`\`
+.claude/plugins/cache/{marketplace-name}/{plugin-name}/{version}/skills/{skill-name}/
+\`\`\`
+
+### Template Organization
+
+All templates are under `${SKILL_DIR}/templates/`:
+
+\`\`\`
+${SKILL_DIR}/
+├── SKILL.md # This file
+└── templates/
+└── {template-file}.md
+\`\`\`
+
+### How to Read Templates
+
+**Always use the skill's base directory, not the user's project directory.**
+
+\`\`\`bash
+
+# Pattern
+
+Read: ${SKILL_DIR}/templates/{template-name}
+
+# Example: Read specific template
+
+Read: ${SKILL_DIR}/templates/example.md
+\`\`\`
+
+### Troubleshooting
+
+If you cannot find a template:
+
+1. ✅ Verify you're using the skill's base directory, NOT the project directory
+2. ✅ Ensure path starts with `${SKILL_DIR}/templates/...`
+3. ✅ Use Glob to discover: `Glob: .claude/plugins/cache/**/{skill-name}/templates/**/*.md`
+4. ❌ Do NOT look for templates in the user's project
+
+</accessing_templates>
+```
+
+#### Update All Template References
+
+Replace all relative paths with `${SKILL_DIR}` prefix:
+
+```bash
+# ❌ WRONG - Ambiguous
+Read: templates/example.md
+
+# ✅ CORRECT - Unambiguous
+Read: ${SKILL_DIR}/templates/example.md
+```
+
+### XML Tag Formatting (MANDATORY)
+
+**Always add a blank line before closing pseudo-XML tags that follow unordered lists.**
+
+Without the blank line, markdown parsers interpret the closing tag as part of the list item, causing incorrect indentation.
+
+```markdown
+# ❌ WRONG - Tag gets indented as part of list
+
+- Item 1
+- Item 2
+- Item 3
+</section>
+
+# ✅ CORRECT - Blank line prevents indentation
+
+- Item 1
+- Item 2
+- Item 3
+
+</section>
+```
+
+This applies to all pseudo-XML tags used in skills:
+
+- `</objective>`
+- `</quick_start>`
+- `</structure_definition>`
+- `</accessing_templates>`
+- `</adr_templates>`
+- `</requirement_templates>`
+- `</work_item_templates>`
+- `</success_criteria>`
+
+---
+
 ## Restrictions on Using `!` Expansion in Commands
 
 ```zsh
