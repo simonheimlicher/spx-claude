@@ -2,7 +2,7 @@ pre-commit:
   commands:
     fix-xml-spacing:
       glob: "*.md"
-      run: perl -i -0777 -pe 's/(^\s*-.*)(\n) *</\1\n\n</gm' {staged_files}
+      run: python3 scripts/fix-xml-spacing.py {staged_files}
       stage_fixed: true
       priority: 0
     validate-marketplace:
