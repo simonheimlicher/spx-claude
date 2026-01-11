@@ -10,6 +10,7 @@ Single source of truth for specs/ directory structure and all document templates
 <quick_start>
 Different use cases read different sections:
 
+- **Template access** → Read `<accessing_templates>` FIRST to understand where templates are located
 - **Structure definition** → Read `<structure_definition>` for specs/ directory hierarchy, BSP numbering, test graduation
 - **ADR templates** → Read `<adr_templates>` for Architectural Decision Record patterns
 - **PRD/TRD templates** → Read `<requirement_templates>` for Product and Technical Requirements
@@ -17,6 +18,74 @@ Different use cases read different sections:
 
 Use progressive disclosure - read only what you need.
 </quick_start>
+
+<accessing_templates>
+
+## How to Access Templates
+
+**All templates are stored within this skill's base directory.**
+
+### Understanding Skill Directory Structure
+
+When you invoke `/managing-specs`, Claude loads this skill from the skill's base directory. Throughout this documentation, we refer to this as `${SKILL_DIR}`.
+
+**The skill's base directory path pattern:**
+
+```
+.claude/plugins/cache/{marketplace-name}/{plugin-name}/{version}/skills/managing-specs/
+```
+
+**Example**: For spx-claude marketplace, specs plugin version 0.3.3:
+
+```
+${SKILL_DIR} = .claude/plugins/cache/spx-claude/specs/0.3.3/skills/managing-specs/
+```
+
+### Template Organization
+
+All templates are under `${SKILL_DIR}/templates/`:
+
+```
+${SKILL_DIR}/
+├── SKILL.md                                    # This file
+└── templates/
+    ├── decisions/
+    │   └── architectural-decision.adr.md
+    ├── requirements/
+    │   ├── product-change.prd.md
+    │   └── technical-change.trd.md
+    └── work-items/
+        ├── capability-name.capability.md
+        ├── feature-name.feature.md
+        ├── story-name.story.md
+        └── DONE.md
+```
+
+### How to Read Templates
+
+**Always use the skill's base directory, not the user's project directory.**
+
+```bash
+# Pattern
+Read: ${SKILL_DIR}/templates/{category}/{template-name}
+
+# Example: Read feature template
+Read: ${SKILL_DIR}/templates/work-items/feature-name.feature.md
+
+# With actual path (example for spx-claude marketplace, version 0.3.3)
+Read: .claude/plugins/cache/spx-claude/specs/0.3.3/skills/managing-specs/templates/work-items/feature-name.feature.md
+```
+
+### Troubleshooting
+
+If you cannot find a template:
+
+1. ✅ Verify you're using the skill's base directory, NOT the project directory
+2. ✅ Ensure path starts with `${SKILL_DIR}/templates/...` or `.claude/plugins/cache/...`
+3. ✅ Use Glob to discover: `Glob: .claude/plugins/cache/**/managing-specs/templates/**/*.md`
+4. ❌ Do NOT look for templates in the user's project (e.g., `specs/templates/`)
+
+</accessing_templates>
 
 <structure_definition>
 
@@ -108,7 +177,7 @@ ADRs document technical choices with trade-offs and consequences.
 ### Template Location
 
 ```
-templates/decisions/architectural-decision.adr.md
+${SKILL_DIR}/templates/decisions/architectural-decision.adr.md
 ```
 
 ### Usage
@@ -117,7 +186,7 @@ Read the template and adapt:
 
 ```bash
 # Read ADR template
-Read: templates/decisions/architectural-decision.adr.md
+Read: ${SKILL_DIR}/templates/decisions/architectural-decision.adr.md
 
 # Adapt for your decision
 - Document decision context and problem
@@ -152,7 +221,7 @@ Templates for Product Requirements (PRD) and Technical Requirements (TRD).
 
 ### PRD Template
 
-**Location**: `templates/requirements/product-change.prd.md`
+**Location**: `${SKILL_DIR}/templates/requirements/product-change.prd.md`
 
 **Purpose**: Product requirements - user value, customer journey, measurable outcomes
 
@@ -160,7 +229,7 @@ Templates for Product Requirements (PRD) and Technical Requirements (TRD).
 
 ```bash
 # Read PRD template
-Read: templates/requirements/product-change.prd.md
+Read: ${SKILL_DIR}/templates/requirements/product-change.prd.md
 
 # Adapt for product change
 - Define user value proposition
@@ -176,7 +245,7 @@ Read: templates/requirements/product-change.prd.md
 
 ### TRD Template
 
-**Location**: `templates/requirements/technical-change.trd.md`
+**Location**: `${SKILL_DIR}/templates/requirements/technical-change.trd.md`
 
 **Purpose**: Technical requirements - system architecture, validation strategy, test infrastructure
 
@@ -184,7 +253,7 @@ Read: templates/requirements/product-change.prd.md
 
 ```bash
 # Read TRD template
-Read: templates/requirements/technical-change.trd.md
+Read: ${SKILL_DIR}/templates/requirements/technical-change.trd.md
 
 # Adapt for technical change
 - Specify technical architecture
@@ -213,35 +282,35 @@ Templates for capabilities, features, stories, and completion evidence.
 ### Template Locations
 
 ```
-templates/work-items/capability-name.capability.md
-templates/work-items/feature-name.feature.md
-templates/work-items/story-name.story.md
-templates/work-items/DONE.md
+${SKILL_DIR}/templates/work-items/capability-name.capability.md
+${SKILL_DIR}/templates/work-items/feature-name.feature.md
+${SKILL_DIR}/templates/work-items/story-name.story.md
+${SKILL_DIR}/templates/work-items/DONE.md
 ```
 
 ### Usage Pattern
 
 ```bash
 # For capability
-Read: templates/work-items/capability-name.capability.md
+Read: ${SKILL_DIR}/templates/work-items/capability-name.capability.md
 Adapt: Replace {slug} with kebab-case name
        Fill functional requirements
        Add user value context
 
 # For feature
-Read: templates/work-items/feature-name.feature.md
+Read: ${SKILL_DIR}/templates/work-items/feature-name.feature.md
 Adapt: Replace {slug} with kebab-case name
        Specify integration scope
        Define component interactions
 
 # For story
-Read: templates/work-items/story-name.story.md
+Read: ${SKILL_DIR}/templates/work-items/story-name.story.md
 Adapt: Replace {slug} with kebab-case name
        Detail atomic implementation
        List specific functions/classes
 
 # For completion
-Read: templates/work-items/DONE.md
+Read: ${SKILL_DIR}/templates/work-items/DONE.md
 Adapt: List graduated tests by level
        Document verification steps
        Include evidence of completion
