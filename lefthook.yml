@@ -6,9 +6,11 @@ pre-commit:
       stage_fixed: true
       priority: 0
     validate-marketplace:
+      glob: "*.json"
       run: claude plugin validate .
       priority: 10
     validate-plugins:
+      glob: "*.json"
       run: find plugins -maxdepth 1 -type d -mindepth 1 -exec claude plugin validate {} \;
       priority: 20
     dprint:
