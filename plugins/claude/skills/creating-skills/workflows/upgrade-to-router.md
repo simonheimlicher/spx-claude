@@ -5,7 +5,8 @@ Read these reference files NOW:
 
 1. `references/core-principles.md`
 2. `references/use-xml-tags.md`
-   </required_reading>
+
+</required_reading>
 
 <process>
 ## Step 1: Analyze Current Skill
@@ -94,7 +95,7 @@ description: |
 ---
 ```
 
-**IMPORTAN:** ALWAYS use the AskUserQuestion tool to ask the user for guidance and decisions. Present concise, highly structured options. Think hardest when determinng, which options to present and whether the user must choose one or multiple options might make sense.
+**IMPORTANT:** ALWAYS use the AskUserQuestion tool to ask the user for guidance and decisions. Present concise, highly structured options. Think hardest when determinng, which options to present and whether the user must choose one or multiple options might make sense.
 
 ```text
 <essential_principles>

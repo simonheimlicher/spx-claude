@@ -552,6 +552,18 @@ This applies to all pseudo-XML tags used in skills:
 - `</work_item_templates>`
 - `</success_criteria>`
 
+**Automated Enforcement:**
+
+This formatting rule is automatically enforced by the `fix-xml-spacing` pre-commit hook:
+
+- **Script**: `scripts/fix-xml-spacing.py`
+- **When**: Runs on every commit before other formatters (priority 0)
+- **What**: Detects list items followed by closing XML tags, adds blank line, removes indentation
+- **Scope**: All `*.md` files in staged changes
+- **Behavior**: Automatically stages fixed files
+
+The script respects code fences and won't modify content inside `` ``` `` blocks.
+
 ---
 
 ## Restrictions on Using `!` Expansion in Commands
