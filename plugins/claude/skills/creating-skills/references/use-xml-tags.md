@@ -12,15 +12,14 @@ Every skill MUST have these three tags:
 **`<objective>`**
 What the skill does and why it matters. Sets context and scope.
 
-```xml
-<objective
->Extract text and tables from PDF files, fill forms, and merge documents.</objective>
+```text
+<objective>Extract text and tables from PDF files, fill forms, and merge documents.</objective>
 ```
 
 **`<quick_start>`**
 Immediate, actionable guidance. Gets Claude started quickly.
 
-````xml
+````text
 <quick_start>
 Extract text with pdfplumber:
 
@@ -35,7 +34,7 @@ with pdfplumber.open("file.pdf") as pdf:
 ````
 **`<success_criteria>`**
 How to know the task worked. Defines completion criteria.
-```xml
+```text
 <success_criteria>
 A well-structured skill has:
 - Valid YAML frontmatter
@@ -121,7 +120,7 @@ Add these based on skill complexity:
 <nesting_guidelines>
 XML tags can nest for hierarchical content:
 
-```xml
+```text
 <examples>
   <example number="1">
     <input>User input here</input>
@@ -132,7 +131,7 @@ XML tags can nest for hierarchical content:
 
 **Always close tags properly**:
 
-```xml
+```text
 <!-- Good -->
 <objective>Content here</objective>
 
@@ -162,9 +161,8 @@ Extract text with pdfplumber...
 
 Good (pure XML):
 
-```xml
-<objective
->PDF processing with text extraction, form filling, and merging.</objective>
+```text
+<objective>PDF processing with text extraction, form filling, and merging.</objective>
 
 <quick_start>Extract text with pdfplumber...</quick_start>
 ```

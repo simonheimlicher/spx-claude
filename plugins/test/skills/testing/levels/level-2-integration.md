@@ -90,10 +90,7 @@ async function verifyHugoInstalled(): Promise<void> {
   try {
     await execa("hugo", ["version"]);
   } catch {
-    throw new Error(
-      "Hugo binary not found. Install Hugo or skip integration tests.\n"
-        + "Install: https://gohugo.io/installation/",
-    );
+    throw new Error("Hugo binary not found. Install Hugo or skip integration tests.\n" + "Install: https://gohugo.io/installation/");
   }
 }
 
@@ -115,13 +112,7 @@ async function createHugoHarness(fixturePath?: string): Promise<HugoHarness> {
     outputDir,
 
     async build(args: string[] = []) {
-      return execa("hugo", [
-        "--source",
-        siteDir,
-        "--destination",
-        outputDir,
-        ...args,
-      ]);
+      return execa("hugo", ["--source", siteDir, "--destination", outputDir, ...args]);
     },
 
     async cleanup() {
@@ -138,7 +129,7 @@ async function createMinimalSite(dir: string): Promise<void> {
     `
 title = "Test Site"
 baseURL = "http://localhost:1313/"
-`,
+`
   );
 
   await mkdir(join(dir, "content"), { recursive: true });
@@ -152,7 +143,7 @@ title: "Home"
 # Welcome
 
 This is a test site.
-`,
+`
   );
 
   await mkdir(join(dir, "layouts", "_default"), { recursive: true });
@@ -164,19 +155,19 @@ This is a test site.
 <head><title>{{ .Title }}</title></head>
 <body>{{ block "main" . }}{{ end }}</body>
 </html>
-`,
+`
   );
   await writeFile(
     join(dir, "layouts", "_default", "list.html"),
     `
 {{ define "main" }}{{ .Content }}{{ end }}
-`,
+`
   );
   await writeFile(
     join(dir, "layouts", "_default", "single.html"),
     `
 {{ define "main" }}{{ .Content }}{{ end }}
-`,
+`
   );
 }
 
@@ -264,10 +255,7 @@ async function verifyCaddyInstalled(): Promise<void> {
   try {
     await execa("caddy", ["version"]);
   } catch {
-    throw new Error(
-      "Caddy binary not found. Install Caddy or skip integration tests.\n"
-        + "Install: https://caddyserver.com/docs/install",
-    );
+    throw new Error("Caddy binary not found. Install Caddy or skip integration tests.\n" + "Install: https://caddyserver.com/docs/install");
   }
 }
 
@@ -296,7 +284,7 @@ async function createCaddyHarness(staticDir: string): Promise<CaddyHarness> {
     output discard
   }
 }
-`,
+`
       );
 
       process = execa("caddy", ["run", "--config", caddyfilePath], {
@@ -422,21 +410,14 @@ const TEST_DB_CONFIG = {
 
 async function createPostgresHarness(): Promise<PostgresHarness> {
   // Verify database is available
-  const connectionString =
-    `postgresql://${TEST_DB_CONFIG.user}:${TEST_DB_CONFIG.password}@`
-    + `${TEST_DB_CONFIG.host}:${TEST_DB_CONFIG.port}/${TEST_DB_CONFIG.database}`;
+  const connectionString = `postgresql://${TEST_DB_CONFIG.user}:${TEST_DB_CONFIG.password}@` + `${TEST_DB_CONFIG.host}:${TEST_DB_CONFIG.port}/${TEST_DB_CONFIG.database}`;
 
   const pool = new Pool(TEST_DB_CONFIG);
 
   try {
     await pool.query("SELECT 1");
   } catch (error) {
-    throw new Error(
-      `Cannot connect to test database.\n`
-        + `Connection string: ${connectionString}\n`
-        + `Start database: docker-compose -f docker-compose.test.yml up -d postgres\n`
-        + `Error: ${error}`,
-    );
+    throw new Error(`Cannot connect to test database.\n` + `Connection string: ${connectionString}\n` + `Start database: docker-compose -f docker-compose.test.yml up -d postgres\n` + `Error: ${error}`);
   }
 
   return {
@@ -524,8 +505,7 @@ describe("User Repository Integration", () => {
 
     await repo.create({ email: "dupe@example.com", name: "First" });
 
-    await expect(repo.create({ email: "dupe@example.com", name: "Second" }))
-      .rejects.toThrow(/unique/);
+    await expect(repo.create({ email: "dupe@example.com", name: "Second" })).rejects.toThrow(/unique/);
   });
 });
 ```
@@ -728,43 +708,37 @@ async function createHttpServerHarness(): Promise<HttpServerHarness> {
     },
 
     async start() {
-      server = createServer(
-        async (req: IncomingMessage, res: ServerResponse) => {
-          // Collect request body
-          const chunks: Buffer[] = [];
-          for await (const chunk of req) {
-            chunks.push(chunk as Buffer);
+      server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
+        // Collect request body
+        const chunks: Buffer[] = [];
+        for await (const chunk of req) {
+          chunks.push(chunk as Buffer);
+        }
+        const body = Buffer.concat(chunks).toString();
+
+        requests.push({
+          method: req.method || "GET",
+          path: req.url || "/",
+          body,
+        });
+
+        // Find matching route
+        const route = routes.find((r) => r.method === req.method && r.path === req.url);
+
+        if (route) {
+          res.statusCode = route.status;
+          if (route.headers) {
+            Object.entries(route.headers).forEach(([k, v]) => {
+              res.setHeader(k, v);
+            });
           }
-          const body = Buffer.concat(chunks).toString();
-
-          requests.push({
-            method: req.method || "GET",
-            path: req.url || "/",
-            body,
-          });
-
-          // Find matching route
-          const route = routes.find((r) =>
-            r.method === req.method && r.path === req.url
-          );
-
-          if (route) {
-            res.statusCode = route.status;
-            if (route.headers) {
-              Object.entries(route.headers).forEach(([k, v]) => {
-                res.setHeader(k, v);
-              });
-            }
-            const responseBody = typeof route.body === "string"
-              ? route.body
-              : JSON.stringify(route.body);
-            res.end(responseBody);
-          } else {
-            res.statusCode = 404;
-            res.end("Not Found");
-          }
-        },
-      );
+          const responseBody = typeof route.body === "string" ? route.body : JSON.stringify(route.body);
+          res.end(responseBody);
+        } else {
+          res.statusCode = 404;
+          res.end("Not Found");
+        }
+      });
 
       await new Promise<void>((resolve) => {
         server!.listen(port, resolve);
@@ -849,9 +823,7 @@ describe("API Client Integration", () => {
     await client.createUser({ name: "New User", email: "new@test.com" });
 
     const requests = server.getRequests();
-    expect(requests[0].body).toBe(
-      JSON.stringify({ name: "New User", email: "new@test.com" }),
-    );
+    expect(requests[0].body).toBe(JSON.stringify({ name: "New User", email: "new@test.com" }));
   });
 });
 ```
@@ -877,9 +849,7 @@ beforeAll(async () => {
     try {
       await execa("sh", ["-c", check.cmd]);
     } catch {
-      console.warn(
-        `⚠️  ${check.name} not available - some integration tests will be skipped`,
-      );
+      console.warn(`⚠️  ${check.name} not available - some integration tests will be skipped`);
     }
   }
 });

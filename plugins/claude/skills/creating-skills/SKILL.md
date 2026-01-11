@@ -82,7 +82,7 @@ description: | # What + When, ≤1024 chars, third person
 
 **Simple Skill Structure**:
 
-```xml
+```text
 <objective>What the skill does</objective>
 <quick_start>Minimal working example</quick_start>
 <workflow>Step-by-step procedure</workflow>
@@ -91,7 +91,7 @@ description: | # What + When, ≤1024 chars, third person
 
 **Router Skill Structure**:
 
-```xml
+```text
 <essential_principles>Always applies</essential_principles>
 <intake>Question to ask user</intake>
 <routing>Maps answers to workflows</routing>

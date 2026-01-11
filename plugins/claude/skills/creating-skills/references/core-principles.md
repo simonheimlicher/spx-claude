@@ -37,7 +37,7 @@ The context window is shared. Your skill shares it with the system prompt, conve
 
 Concise (~50 tokens):
 
-````xml
+````text
 <quick_start>
 Extract PDF text with pdfplumber:
 
@@ -51,7 +51,7 @@ with pdfplumber.open("file.pdf") as pdf:
 
 ````
 Verbose (~150 tokens):
-```xml
+```text
 <quick_start>
 PDF files are a common file format used for documents. To extract text from them, we'll use a Python library called pdfplumber...
 </quick_start>

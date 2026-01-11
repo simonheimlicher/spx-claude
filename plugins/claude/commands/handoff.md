@@ -84,7 +84,7 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 
 <output_format>
 
-```xml
+```text
 <metadata>
   timestamp: [UTC timestamp]
   project: [Project name from cwd]

@@ -119,7 +119,7 @@ For each update:
 
 Consider adding to SKILL.md:
 
-```xml
+```text
 <last_verified>Content verified current as of: {YYYY-MM-DD}</last_verified>
 ```
 

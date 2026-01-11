@@ -59,8 +59,8 @@ If verification requires actual skill invocation, that's a feature-level concern
 
 ```typescript
 // tests/unit/skills/python-integration.test.ts
-import { describe, expect, it } from "vitest";
 import { readFileSync } from "fs";
+import { describe, expect, it } from "vitest";
 
 describe("Python Skills Context Loading", () => {
   /**

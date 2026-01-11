@@ -27,11 +27,7 @@ This approach ensures you're solving actual problems rather than anticipating re
   "skills": ["skill-name"],
   "query": "User request that triggers the skill",
   "files": ["test-files/input.pdf"],
-  "expected_behavior": [
-    "Specific behavior 1",
-    "Specific behavior 2",
-    "Specific behavior 3"
-  ]
+  "expected_behavior": ["Specific behavior 1", "Specific behavior 2", "Specific behavior 3"]
 }
 ```
 
@@ -89,21 +85,13 @@ This approach ensures you're solving actual problems rather than anticipating re
     "name": "scanned_pdf",
     "query": "Extract text from this scanned PDF",
     "files": ["scanned.pdf"],
-    "expected_behavior": [
-      "Detects scanned content",
-      "Uses OCR",
-      "Warns about accuracy"
-    ]
+    "expected_behavior": ["Detects scanned content", "Uses OCR", "Warns about accuracy"]
   },
   {
     "name": "corrupted_pdf",
     "query": "Extract text from this PDF",
     "files": ["corrupted.pdf"],
-    "expected_behavior": [
-      "Detects corruption",
-      "Provides clear error",
-      "Suggests alternatives"
-    ]
+    "expected_behavior": ["Detects corruption", "Provides clear error", "Suggests alternatives"]
   }
 ]
 ```
@@ -117,9 +105,8 @@ Pattern: Run validator → fix errors → repeat
 
 **Example**:
 
-```xml
-<validation
->After making changes:
+```text
+<validation>After making changes:
 
 1. Run validation: `python scripts/validate.py output/`
 2. If errors found:

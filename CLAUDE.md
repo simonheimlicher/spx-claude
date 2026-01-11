@@ -12,6 +12,27 @@ We develop the “features” of this market place like a software product. We a
 
 **NEVER ask the user any questions without using the `AskUserQuestion` tool**
 
+## Markdown Formatting Rules
+
+**IMPORTANT: Pseudo-XML in Markdown Code Fences**
+
+When documenting XML-like syntax that isn't valid XML (pseudo-XML with text content, no proper elements), **ALWAYS use `text` as the language identifier**, not `xml`:
+
+```text
+<!-- ✅ CORRECT: Use "text" for pseudo-XML -->
+<metadata>
+  timestamp: [UTC timestamp]
+  project: [Project name]
+</metadata>
+```
+
+**Why:** The markup formatter (`markup_fmt`) in dprint will attempt to format XML code fences and can mangle pseudo-XML syntax. Using `text` prevents this issue while maintaining syntax highlighting compatibility with most linters.
+
+**Never use:**
+
+- ` ```xml ` for pseudo-XML (causes formatting issues)
+- ` ``` ` with no language identifier (rejected by some markdown linters)
+
 ## Documentation
 
 ### Official Anthropic Resources

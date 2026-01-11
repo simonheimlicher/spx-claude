@@ -296,7 +296,6 @@ Product (spx-claude)
 └── Story 30: build ← YOU ARE HERE
 
 ```
-
 ## Ready for Implementation
 
 ✅ All required documents verified and read

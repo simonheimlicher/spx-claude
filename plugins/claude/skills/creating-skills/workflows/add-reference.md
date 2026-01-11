@@ -93,9 +93,8 @@ Write to: `~/.claude/skills/{skill-name}/references/{reference-name}.md`
 
 Add to `<reference_index>`:
 
-```xml
-<reference_index
->| File | Purpose |
+```text
+<reference_index>| File | Purpose |
 |------|---------|
 | existing entries... |
 | {reference-name}.md | {Purpose} |</reference_index>
@@ -105,9 +104,8 @@ Add to `<reference_index>`:
 
 For each workflow that should use this reference, add to `<required_reading>`:
 
-```xml
-<required_reading
->Read these reference files NOW:
+```text
+<required_reading>Read these reference files NOW:
 
 1. existing references...
 2. `references/{reference-name}.md`</required_reading>

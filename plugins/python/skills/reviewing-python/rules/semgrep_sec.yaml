@@ -5,7 +5,6 @@ rules:
   # ============================================
   # DANGEROUS FUNCTIONS
   # ============================================
-
   - id: no-eval-exec
     patterns:
       - pattern-either:

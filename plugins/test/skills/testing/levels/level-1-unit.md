@@ -38,11 +38,7 @@ type SyncDeps = {
   runCommand: (cmd: string, args: string[]) => Promise<{ exitCode: number }>;
 };
 
-async function syncFiles(
-  source: string,
-  dest: string,
-  deps: SyncDeps,
-): Promise<SyncResult> {
+async function syncFiles(source: string, dest: string, deps: SyncDeps): Promise<SyncResult> {
   const files = await deps.listFiles(source);
   if (files.length === 0) {
     return { synced: 0, status: "empty" };
@@ -143,13 +139,7 @@ describe("parseArgs", () => {
   });
 
   test("handles multiple flags", () => {
-    const result = parseArgs([
-      "--url",
-      "http://localhost:3000",
-      "--upload",
-      "-n",
-      "3",
-    ]);
+    const result = parseArgs(["--url", "http://localhost:3000", "--upload", "-n", "3"]);
     expect(result).toEqual({
       url: "http://localhost:3000",
       upload: true,
@@ -211,18 +201,7 @@ describe("buildHugoCommand", () => {
       environment: "production",
     });
 
-    expect(cmd).toEqual([
-      "hugo",
-      "--source",
-      "/site",
-      "--destination",
-      "/dist",
-      "--minify",
-      "--baseURL",
-      "https://example.com",
-      "--environment",
-      "production",
-    ]);
+    expect(cmd).toEqual(["hugo", "--source", "/site", "--destination", "/dist", "--minify", "--baseURL", "https://example.com", "--environment", "production"]);
   });
 });
 ```
@@ -253,18 +232,14 @@ const configSchema = z.object({
 
 type Config = z.infer<typeof configSchema>;
 
-function parseConfig(
-  raw: unknown,
-): { ok: true; config: Config } | { ok: false; errors: string[] } {
+function parseConfig(raw: unknown): { ok: true; config: Config } | { ok: false; errors: string[] } {
   const result = configSchema.safeParse(raw);
 
   if (result.success) {
     return { ok: true, config: result.data };
   }
 
-  const errors = result.error.issues.map((issue) =>
-    `${issue.path.join(".")}: ${issue.message}`
-  );
+  const errors = result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
   return { ok: false, errors };
 }
 
@@ -396,7 +371,7 @@ describe("validateRunAuditInput", () => {
       validateRunAuditInput({
         urls: ["/"],
         preset: "invalid",
-      }),
+      })
     ).toBeNull();
   });
 
@@ -429,32 +404,23 @@ type AnalysisResult = {
   summary: string;
 };
 
-async function analyzeResults(
-  results: AuditResult[],
-  deps: AnalyzerDeps,
-): Promise<AnalysisResult> {
+async function analyzeResults(results: AuditResult[], deps: AnalyzerDeps): Promise<AnalysisResult> {
   const thresholds = await deps.getThresholds();
   const failures: string[] = [];
 
   for (const result of results) {
     if (result.scores.performance < thresholds.performance) {
-      failures.push(
-        `${result.url}: performance ${result.scores.performance} < ${thresholds.performance}`,
-      );
+      failures.push(`${result.url}: performance ${result.scores.performance} < ${thresholds.performance}`);
     }
     if (result.scores.accessibility < thresholds.accessibility) {
-      failures.push(
-        `${result.url}: accessibility ${result.scores.accessibility} < ${thresholds.accessibility}`,
-      );
+      failures.push(`${result.url}: accessibility ${result.scores.accessibility} < ${thresholds.accessibility}`);
     }
   }
 
   return {
     passed: failures.length === 0,
     failures,
-    summary: failures.length === 0
-      ? `All ${results.length} URLs passed`
-      : `${failures.length} failures across ${results.length} URLs`,
+    summary: failures.length === 0 ? `All ${results.length} URLs passed` : `${failures.length} failures across ${results.length} URLs`,
   };
 }
 
@@ -477,10 +443,12 @@ describe("analyzeResults", () => {
   });
 
   test("fails when performance below threshold", async () => {
-    const results: AuditResult[] = [{
-      url: "/",
-      scores: { performance: 85, accessibility: 100 },
-    }];
+    const results: AuditResult[] = [
+      {
+        url: "/",
+        scores: { performance: 85, accessibility: 100 },
+      },
+    ];
 
     const analysis = await analyzeResults(results, defaultDeps);
 
@@ -489,10 +457,12 @@ describe("analyzeResults", () => {
   });
 
   test("reports multiple failures", async () => {
-    const results: AuditResult[] = [{
-      url: "/",
-      scores: { performance: 85, accessibility: 95 },
-    }];
+    const results: AuditResult[] = [
+      {
+        url: "/",
+        scores: { performance: 85, accessibility: 95 },
+      },
+    ];
 
     const analysis = await analyzeResults(results, defaultDeps);
 
@@ -503,10 +473,12 @@ describe("analyzeResults", () => {
     const lenientDeps: AnalyzerDeps = {
       getThresholds: async () => ({ performance: 50, accessibility: 50 }),
     };
-    const results: AuditResult[] = [{
-      url: "/",
-      scores: { performance: 60, accessibility: 60 },
-    }];
+    const results: AuditResult[] = [
+      {
+        url: "/",
+        scores: { performance: 60, accessibility: 60 },
+      },
+    ];
 
     const analysis = await analyzeResults(results, lenientDeps);
 
@@ -549,7 +521,7 @@ url_sets:
   critical:
     - /
     - /about/
-`,
+`
     );
 
     const config = await loadConfig(configPath);
@@ -651,10 +623,7 @@ function validateAuditInput(input: unknown): AuditInput | { error: string } {
   return { url: obj.url, options: obj.options as AuditInput["options"] };
 }
 
-async function executeAudit(
-  input: AuditInput,
-  deps: AuditDeps,
-): Promise<{ ok: true; score: number } | { ok: false; error: string }> {
+async function executeAudit(input: AuditInput, deps: AuditDeps): Promise<{ ok: true; score: number } | { ok: false; error: string }> {
   try {
     const page = await deps.fetchPage(input.url);
 
@@ -739,9 +708,7 @@ function formatValidationErrors(errors: ValidationError[]): string {
   if (errors.length === 0) return "";
 
   const lines = errors.map((e) => {
-    const value = e.value !== undefined
-      ? ` (got: ${JSON.stringify(e.value)})`
-      : "";
+    const value = e.value !== undefined ? ` (got: ${JSON.stringify(e.value)})` : "";
     return `  • ${e.field}: ${e.message}${value}`;
   });
 
@@ -755,22 +722,26 @@ describe("formatValidationErrors", () => {
   });
 
   test("formats single error", () => {
-    const result = formatValidationErrors([{
-      field: "url",
-      message: "is required",
-    }]);
+    const result = formatValidationErrors([
+      {
+        field: "url",
+        message: "is required",
+      },
+    ]);
 
     expect(result).toBe("Validation failed:\n  • url: is required");
   });
 
   test("includes value when provided", () => {
-    const result = formatValidationErrors([{
-      field: "port",
-      message: "must be a number",
-      value: "abc",
-    }]);
+    const result = formatValidationErrors([
+      {
+        field: "port",
+        message: "must be a number",
+        value: "abc",
+      },
+    ]);
 
-    expect(result).toContain("(got: \"abc\")");
+    expect(result).toContain('(got: "abc")');
   });
 
   test("formats multiple errors", () => {

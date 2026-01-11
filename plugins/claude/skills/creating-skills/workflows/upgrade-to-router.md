@@ -87,28 +87,29 @@ Replace original SKILL.md with router structure:
 
 ```yaml
 ---
-name: {skill-name}
+name: { skill-name }
 description: |
   {What it does}.
   Use when {trigger conditions}.
 ---
 ```
 
-```xml
-<essential_principles
->{Extracted essential principles that always apply}</essential_principles>
+**IMPORTAN:** ALWAYS use the AskUserQuestion tool to ask the user for guidance and decisions. Present concise, highly structured options. Think hardest when determinng, which options to present and whether the user must choose one or multiple options might make sense.
 
-<intake
->What would you like to do?
+```text
+<essential_principles>
+{Extracted essential principles that always apply}
+</essential_principles>
 
+<intake>What would you like to do?
 1. {First option}
 2. {Second option}
 3. {Third option}
 
-**Wait for response before proceeding.**</intake>
+**Wait for response before proceeding.**
+</intake>
 
-<routing
->| Response | Workflow |
+<routing>| Response | Workflow |
 |----------|----------|
 | 1, "{keywords}" | `workflows/{first-workflow}.md` |
 | 2, "{keywords}" | `workflows/{second-workflow}.md` |
@@ -116,21 +117,21 @@ description: |
 
 **After reading the workflow, follow it exactly.**</routing>
 
-<reference_index
->All in `references/`:
+<reference_index>All in `references/`:
 
 | File | Purpose |
 |------|---------|
 | {reference-1}.md | {Purpose} |
-| {reference-2}.md | {Purpose} |</reference_index>
+| {reference-2}.md | {Purpose} |
+</reference_index>
 
-<workflows_index
->All in `workflows/`:
+<workflows_index>All in `workflows/`:
 
 | Workflow | Purpose |
 |----------|---------|
 | {workflow-1}.md | {Purpose} |
-| {workflow-2}.md | {Purpose} |</workflows_index>
+| {workflow-2}.md | {Purpose} |
+</workflows_index>
 
 <success_criteria>{Overall success criteria for the skill}</success_criteria>
 ```

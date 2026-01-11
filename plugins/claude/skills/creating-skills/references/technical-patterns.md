@@ -58,10 +58,12 @@ interface ErrorResponse {
 // Example
 return {
   isError: true,
-  content: [{
-    type: "text",
-    text: "Could not process file. Please check the format.",
-  }],
+  content: [
+    {
+      type: "text",
+      text: "Could not process file. Please check the format.",
+    },
+  ],
   _meta: {
     errorCode: "INVALID_FORMAT",
     details: { expected: "PDF", received: "PNG" },
@@ -310,14 +312,8 @@ Always handle:
 ### Timeout Protection
 
 ```typescript
-async function withTimeout<T>(
-  promise: Promise<T>,
-  ms: number,
-  message = "Operation timed out",
-): Promise<T> {
-  const timeout = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error(message)), ms)
-  );
+async function withTimeout<T>(promise: Promise<T>, ms: number, message = "Operation timed out"): Promise<T> {
+  const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error(message)), ms));
   return Promise.race([promise, timeout]);
 }
 

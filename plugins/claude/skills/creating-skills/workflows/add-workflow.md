@@ -76,9 +76,8 @@ Write to: `~/.claude/skills/{skill-name}/workflows/{workflow-name}.md`
 
 Add new workflow to the routing table in SKILL.md:
 
-```xml
-<routing
->| Response | Workflow |
+```text
+<routing>| Response | Workflow |
 |----------|----------|
 | existing entries... |
 | {new trigger}, "{keywords}" | `workflows/{workflow-name}.md` |</routing>
@@ -86,9 +85,8 @@ Add new workflow to the routing table in SKILL.md:
 
 Also update `<workflows_index>`:
 
-```xml
-<workflows_index
->| Workflow | Purpose |
+```text
+<workflows_index>| Workflow | Purpose |
 |----------|---------|
 | existing entries... |
 | {workflow-name}.md | {Purpose} |</workflows_index>
