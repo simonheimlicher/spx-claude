@@ -6,58 +6,83 @@ This guide covers navigating, reading status, and editing work items in the `spe
 
 ## Navigating the `specs/` Directory
 
-### Directory Layout
+### **IMPORTANT:** Always invoke the `/understanding-specs` skill on the file within the `specs/` directory you will work on
+
+> Summary of the structure of the `specs/` directory.
+
+<structure_definition>
+
+## SPX Framework Structure
+
+The specs/ directory follows the SPX framework structure defined in `structure.yaml`.
+
+### Three-Phase Transformation
+
+1. **Requirements (PRD/TRD)** - Capture vision without implementation constraints
+2. **Decisions (ADR)** - Constrain architecture with explicit trade-offs
+3. **Work Items (Capability/Feature/Story)** - Sized, testable implementation containers
+
+### Directory Structure
 
 ```
 specs/
-├── CLAUDE.md                      # This file
-├── [product-name].prd.md          # Product-wide PRD (optional)
-├── decisions/                      # Product-wide ADRs only
+├── [product-name].prd.md          # Product-wide PRD 
+├── decisions/                      # Product-wide ADRs (optional)
+│   └── adr-NNN_{slug}.md
 └── work/
-    ├── backlog/                    # Future work items
-    ├── doing/                      # Active work items
-    └── done/                       # Completed work items (permanent)
+    ├── backlog/
+    ├── doing/
+    │   └── capability-NN_{slug}/
+    │       ├── {slug}.capability.md
+    │       ├── {slug}.prd.md        # Optional: Capability-scoped PRD from which the capability spec in (`{slug}.capability.md`) is derived
+    │       ├── {slug}.prd.md        # Optional: Capability-scoped TRD from which capability-scoped ADRs are derived
+    │       ├── decisions/           # Optional: Capability-scoped ADRs
+    │       ├── tests/
+    │       └── feature-NN_{slug}/
+    │           ├── {slug}.prd.md    # Optional: Feature-scoped PRD from which the feature spec in `{slug}.feature.md` is derived
+    │           ├── {slug}.trd.md    # Optional: Feature-scoped TRD from which the feature-scoped ADRs are derived
+    │           ├── {slug}.feature.md
+    │           ├── decisions/       # Optional: Feature-scoped ADRs
+    │           ├── tests/
+    │           └── story-NN_{slug}/
+    │               ├── {slug}.story.md
+    │               └── tests/
+    └── done/
 ```
 
-### Three-Level Hierarchy (All Levels Work The Same)
+### Work Item Hierarchy
 
-```
-specs/work/{doing,backlog,done}/
-└── capability-NN_{slug}/                    # Level 1 (TOP)
-    ├── {slug}.capability.md                 # Work item definition
-    ├── {topic}.prd.md                       # Optional: requirements catalyst
-    ├── decisions/adr-NNN_{slug}.md          # Architectural decisions
-    ├── tests/                               # E2E tests
-    │   └── DONE.md                          # Completion marker
-    │
-    └── feature-NN_{slug}/                   # Level 2
-        ├── {slug}.feature.md                # Work item definition
-        ├── {topic}.trd.md                   # Optional: requirements catalyst
-        ├── decisions/adr-NNN_{slug}.md      # Architectural decisions
-        ├── tests/                           # Integration tests
-        │   └── DONE.md                      # Completion marker
-        │
-        └── story-NN_{slug}/                 # Level 3 (BOTTOM)
-            ├── {slug}.story.md              # Work item definition
-            └── tests/                       # Unit tests
-                └── DONE.md                  # Completion marker
-```
+- **Capability**: E2E scenario with product-wide impact
+  - Tests graduate to `tests/e2e/`
+  - Triggered by PRD
+  - Contains features
 
-### What Lives Where
+- **Feature**: Integration scenario with specific functionality
+  - Tests graduate to `tests/integration/`
+  - Triggered by TRD
+  - Contains stories
 
-| Level          | Work Item         | Optional Catalyst | Has Decisions? | Test Type   |
-| -------------- | ----------------- | ----------------- | -------------- | ----------- |
-| 1 (Capability) | `*.capability.md` | `*.prd.md`        | ✅ Yes         | E2E         |
-| 2 (Feature)    | `*.feature.md`    | `*.trd.md`        | ✅ Yes         | Integration |
-| 3 (Story)      | `*.story.md`      | ❌ None           | ❌ Inherits    | Unit        |
+- **Story**: Unit-tested atomic implementation
+  - Tests graduate to `tests/unit/`
+  - No children
+  - Atomic implementation unit
 
-**Key insight**: Capabilities ARE the top level. No `specs/project.prd.md` above them.
+### Key Principles
 
-**Fractal nature**: PRD at capability level spawns features. TRD at feature level spawns stories. Stories are atomic—no children.
+- **PRD OR TRD** at same scope, never both
+- **Requirements immutable** - code adapts to requirements, not vice versa
+- **BSP numbering**: Two-digit (10-99), lower number = must complete first
+- **Test graduation**: `specs/.../tests/` → `tests/{unit,integration,e2e}/`
+- **Status rules**:
+  - OPEN: No tests exist
+  - IN_PROGRESS: Tests exist, no DONE.md
+  - DONE: DONE.md exists
 
----
+</structure_definition>
 
 ## READ: Status and What to Work On Next
+
+<understanding_work_items>
 
 ### Three States
 
@@ -100,9 +125,15 @@ feature-87_e2e-workflow [IN_PROGRESS] ← Was already started, then dependency d
 
 **Next work item**: `feature-48_test-harness` → its first OPEN story.
 
+</understanding_work_items>
+
 ---
 
 ## EDIT: Adding or Reordering Work Items
+
+<managing_work_items>
+
+<numbering_work_items>
 
 ### BSP Numbering
 
@@ -146,8 +177,9 @@ feature-54_second/
 feature-76_appended/    ← NEW
 ```
 
-### Creating a Work Item
+</numbering_work_items>
 
+<creating_work_items>
 Every work item needs:
 
 1. **Directory**: `NN_{slug}/`
@@ -156,8 +188,12 @@ Every work item needs:
 
 Optional:
 
-- **Requirements catalyst**: `{topic}.prd.md` (capability) or `{topic}.trd.md` (feature)
-- **Decisions**: `decisions/adr-NNN_{slug}.md`
+- **Requirements document**: `{topic}.prd.md` or `{topic}.trd.md`
+- **Decision Records**: `decisions/adr-NNN_{slug}.md`
+
+</creating_work_items>
+
+</managing_work_items>
 
 **Templates**: Use `/managing-specs` skill to access templates.
 

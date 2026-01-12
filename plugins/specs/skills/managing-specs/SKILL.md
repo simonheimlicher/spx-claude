@@ -103,20 +103,22 @@ The specs/ directory follows the SPX framework structure defined in `structure.y
 
 ```
 specs/
-├── [product-name].prd.md          # Product-wide PRD (optional)
-├── decisions/                      # Product-wide ADRs
+├── [product-name].prd.md          # Product-wide PRD 
+├── decisions/                      # Product-wide ADRs (optional)
 │   └── adr-NNN_{slug}.md
 └── work/
     ├── backlog/
     ├── doing/
     │   └── capability-NN_{slug}/
     │       ├── {slug}.capability.md
-    │       ├── {topic}.prd.md       # Optional PRD catalyst
+    │       ├── {slug}.prd.md       # Optional capability-scoped PRD from which the capability work item (`{slug}.capability.md`) is derived
+    │       ├── {slug}.prd.md       # Optional capability-scoped TRD from which capability-scoped ADRs are derived
     │       ├── decisions/           # Capability-scoped ADRs
     │       ├── tests/
     │       └── feature-NN_{slug}/
+    │           ├── {slug}.prd.md   # Optional capability-scoped PRD from which the feature spec in `{slug}.feature.md` is derived
+    │           ├── {slug}.trd.md   # Optional capability-scoped TRD from which the feature-scoped ADRs are derived
     │           ├── {slug}.feature.md
-    │           ├── {topic}.trd.md   # Optional TRD catalyst
     │           ├── decisions/       # Feature-scoped ADRs
     │           ├── tests/
     │           └── story-NN_{slug}/
@@ -145,8 +147,6 @@ specs/
 ### Key Principles
 
 - **PRD OR TRD** at same scope, never both
-- **Capability** triggered by PRD → spawns features
-- **Feature** triggered by TRD → spawns stories
 - **Requirements immutable** - code adapts to requirements, not vice versa
 - **BSP numbering**: Two-digit (10-99), lower number = must complete first
 - **Test graduation**: `specs/.../tests/` → `tests/{unit,integration,e2e}/`
@@ -155,18 +155,122 @@ specs/
   - IN_PROGRESS: Tests exist, no DONE.md
   - DONE: DONE.md exists
 
-### structure.yaml
-
-`structure.yaml` defines the complete framework:
-
-- Work item hierarchy (capability → feature → story)
-- Directory patterns: `{level}-{bsp}_{slug}`
-- File patterns: `{slug}.{level}.md`
-- Test graduation paths for each level
-- BSP numbering rules and status determination
-
-**All products use structure.yaml as-is. No per-product customization.**
 </structure_definition>
+
+## READ: Status and What to Work On Next
+
+<understanding_work_items>
+
+### Three States
+
+Status is determined by the `tests/` directory at each level:
+
+| State           | `tests/` Directory           | Meaning          |
+| --------------- | ---------------------------- | ---------------- |
+| **OPEN**        | Missing OR empty             | Work not started |
+| **IN_PROGRESS** | Has `*.test.*`, no `DONE.md` | Work underway    |
+| **DONE**        | Has `DONE.md`                | Complete         |
+
+### 🚨 BSP Numbers = Dependency Order
+
+> **Lower BSP number = must complete FIRST.**
+>
+> You CANNOT work on item N until ALL items with numbers < N are DONE.
+
+This applies at every level:
+
+| If you see...                                   | It means...                                      |
+| ----------------------------------------------- | ------------------------------------------------ |
+| `feature-48` before `feature-87`                | feature-48 MUST be DONE before feature-87 starts |
+| `story-21` before `story-32`                    | story-21 MUST be DONE before story-32 starts     |
+| `feature-48 [OPEN]`, `feature-87 [IN_PROGRESS]` | **BUG**: Dependency violation                    |
+
+### Finding the Next Work Item
+
+```
+1. List all work items in BSP order (capability → feature → story)
+2. Return the FIRST item where status ≠ DONE
+3. That item blocks everything after it
+```
+
+**Example**:
+
+```text
+feature-48_test-harness [OPEN]        ← Was added after feature-87 but blocks it
+feature-87_e2e-workflow [IN_PROGRESS] ← Was already started, then dependency discovered
+```
+
+**Next work item**: `feature-48_test-harness` → its first OPEN story.
+
+</understanding_work_items>
+
+---
+
+## EDIT: Adding or Reordering Work Items
+
+<managing_work_items>
+
+<numbering_work_items>
+
+### BSP Numbering
+
+Two-digit prefixes in range **[10, 99]** encode dependency order.
+
+### Creating New Items
+
+#### Case 1: First Item (No Siblings)
+
+Use position **21** (leaves room for ~10 items before/after):
+
+```
+# First feature in a new capability
+capability-21_foo/
+└── feature-21_first-feature/
+```
+
+#### Case 2: Insert Between Siblings
+
+Use midpoint: `new = floor((left + right) / 2)`
+
+```
+# Insert between feature-21 and feature-54
+new = floor((21 + 54) / 2) = 37
+
+feature-21_first/
+feature-37_inserted/    ← NEW
+feature-54_second/
+```
+
+#### Case 3: Append After Last
+
+Use midpoint to upper bound: `new = floor((last + 99) / 2)`
+
+```
+# Append after feature-54
+new = floor((54 + 99) / 2) = 76
+
+feature-21_first/
+feature-54_second/
+feature-76_appended/    ← NEW
+```
+
+</numbering_work_items>
+
+<creating_work_items>
+Every work item needs:
+
+1. **Directory**: `NN_{slug}/`
+2. **Definition file**: `{slug}.{capability|feature|story}.md`
+3. **Tests directory**: `tests/` (create when starting work)
+
+Optional:
+
+- **Requirements document**: `{topic}.prd.md` or `{topic}.trd.md`
+- **Decision Records**: `decisions/adr-NNN_{slug}.md`
+
+</creating_work_items>
+
+</managing_work_items>
 
 <adr_templates>
 
@@ -330,7 +434,7 @@ Examples:
 
 - `specs/work/doing/capability-21_core-cli/core-cli.capability.md`
 - `specs/work/doing/capability-21_core-cli/feature-10_init/init.feature.md`
-- `specs/work/doing/capability-21_core-cli/feature-10_init/story-01_parse-flags/parse-flags.story.md`
+- `specs/work/doing/capability-21_core-cli/feature-15_init/story-87_parse-flags/parse-flags.story.md`
 
 ### Test Graduation
 
