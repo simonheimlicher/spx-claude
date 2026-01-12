@@ -172,17 +172,29 @@ Read existing ADRs to ensure consistency:
 
 You produce ADRs. The scope depends on what you're deciding:
 
-| Decision Scope      | ADR Location                                               | Example                                |
-| ------------------- | ---------------------------------------------------------- | -------------------------------------- |
-| Project-wide        | `specs/decisions/adr-{NNN}_{slug}.md`                      | "Use Pydantic for all data validation" |
-| Capability-specific | `specs/doing/capability-NN/decisions/adr-{NNN}_{slug}.md`  | "Clone tree approach for snapshots"    |
-| Feature-specific    | `specs/doing/.../feature-NN/decisions/adr-{NNN}_{slug}.md` | "Use rclone sync with --checksum"      |
+| Decision Scope      | ADR Location                                              | Example                                |
+| ------------------- | --------------------------------------------------------- | -------------------------------------- |
+| Project-wide        | `specs/decisions/adr-{NN}_{slug}.md`                      | "Use Pydantic for all data validation" |
+| Capability-specific | `specs/doing/capability-NN/decisions/adr-{NN}_{slug}.md`  | "Clone tree approach for snapshots"    |
+| Feature-specific    | `specs/doing/.../feature-NN/decisions/adr-{NN}_{slug}.md` | "Use rclone sync with --checksum"      |
 
 ### ADR Numbering
 
-- Three-digit numbers: 001, 002, 003, ...
-- Sequential within scope
-- Never reuse numbers (even for superseded ADRs)
+- BSP range: [10, 99]
+- Lower number = must decide first (within scope)
+- Insert using midpoint calculation: `new = floor((left + right) / 2)`
+- Append using: `new = floor((last + 99) / 2)`
+- First ADR in scope: use 21
+
+See `specs:managing-specs` skill `<adr_templates>` section for complete BSP numbering rules.
+
+**Within-scope dependency order**:
+
+- Capability ADRs: adr-21 must be decided before adr-37
+- Feature ADRs: adr-21 must be decided before adr-37
+- Product ADRs: adr-21 must be decided before adr-37
+
+**Cross-scope dependencies**: Must be documented explicitly in ADR "Context" section using markdown links.
 
 ---
 
@@ -453,27 +465,27 @@ See the `/testing-python` skill for details.
 
 ### ADRs Written
 
-| ADR                      | Scope         | Decision Summary                        |
-| ------------------------ | ------------- | --------------------------------------- |
-| `adr-001_type-safety.md` | Project       | Use strict Mypy, Pydantic at boundaries |
-| `adr-002_clone-tree.md`  | Capability-10 | Clone-based snapshot traversal          |
+| ADR                                                                         | Scope         | Decision Summary                        |
+| --------------------------------------------------------------------------- | ------------- | --------------------------------------- |
+| [Type Safety](specs/decisions/adr-21_type-safety.md)                        | Project       | Use strict Mypy, Pydantic at boundaries |
+| [Clone Tree](specs/work/doing/capability-10/decisions/adr-21_clone-tree.md) | Capability-10 | Clone-based snapshot traversal          |
 
 ### Key Constraints for Downstream Skills
 
 1. **coding-python must**:
-   - {constraint from ADR-001}
-   - {constraint from ADR-002}
+   - {constraint from [Type Safety](specs/decisions/adr-21_type-safety.md)}
+   - {constraint from [Clone Tree](specs/work/doing/capability-10/decisions/adr-21_clone-tree.md)}
 
 2. **reviewing-python must verify**:
-   - {verification from ADR-001}
-   - {verification from ADR-002}
+   - {verification from [Type Safety](specs/decisions/adr-21_type-safety.md)}
+   - {verification from [Clone Tree](specs/work/doing/capability-10/decisions/adr-21_clone-tree.md)}
 
 ### Abort Conditions
 
 If any of these assumptions fail, downstream skills must ABORT:
 
-1. {assumption from ADR-001}
-2. {assumption from ADR-002}
+1. {assumption from [Type Safety](specs/decisions/adr-21_type-safety.md)}
+2. {assumption from [Clone Tree](specs/work/doing/capability-10/decisions/adr-21_clone-tree.md)}
 
 ### Ready for Implementation
 

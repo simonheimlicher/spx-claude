@@ -92,8 +92,8 @@ describe("[Module/Function]", () => {
 
 ### Relevant ADRs
 
-1. `specs/decisions/adr-001_hugolit-architecture.md` - Overall architecture decisions
-2. `specs/doing/capability-NN_{slug}/decisions/` - Capability-specific decisions (if applicable)
+1. [Hugolit Architecture](../../../decisions/adr-21_hugolit-architecture.md) - Overall architecture decisions
+2. Capability-specific decisions: See `specs/doing/capability-NN_{slug}/decisions/` (if applicable)
 
 ## Quality Requirements
 

@@ -3,7 +3,8 @@ Read these reference files NOW:
 
 1. `references/document-types.md` - Required documents at each level
 2. `references/abort-protocol.md` - Error handling and remediation
-   </required_reading>
+
+</required_reading>
 
 <process>
 Execute these phases IN ORDER. ABORT immediately if any required document is missing.
@@ -76,9 +77,9 @@ Read: [ADR path]
 ✓ Product Context Loaded
   - specs/CLAUDE.md
   - Product ADRs: 3
-    • adr-001_type-safety.md
-    • adr-002_testing-strategy.md
-    • adr-003_cli-framework.md
+    • [Type Safety](../decisions/adr-21_type-safety.md)
+    • [Testing Strategy](../decisions/adr-37_testing-strategy.md)
+    • [CLI Framework](../decisions/adr-54_cli-framework.md)
 ```
 
 ---
@@ -127,8 +128,8 @@ Read: [ADR path]
   - cli.capability.md
   - command-architecture.prd.md
   - Capability ADRs: 2
-    • adr-001_commander-pattern.md
-    • adr-002_config-loading.md
+    • [Commander Pattern](decisions/adr-21_commander-pattern.md)
+    • [Config Loading](decisions/adr-37_config-loading.md)
 ```
 
 ---
@@ -179,7 +180,7 @@ Read: [ADR path]
   - commands.feature.md
   - command-framework.trd.md
   - Feature ADRs: 1
-    • adr-001_subcommand-structure.md
+    • [Subcommand Structure](decisions/adr-21_subcommand-structure.md)
 ```
 
 ---
@@ -252,24 +253,24 @@ Glob: "{story-path}/tests/"
 
 - **Guide**: specs/CLAUDE.md
 - **ADRs**: 3 documents
-  - adr-001_type-safety.md
-  - adr-002_testing-strategy.md
-  - adr-003_cli-framework.md
+  - [Type Safety](../decisions/adr-21_type-safety.md)
+  - [Testing Strategy](../decisions/adr-37_testing-strategy.md)
+  - [CLI Framework](../decisions/adr-54_cli-framework.md)
 
 ### Capability Level: cli
 
 - **Spec**: capability-10_cli/cli.capability.md
 - **PRD**: capability-10_cli/command-architecture.prd.md
 - **ADRs**: 2 documents
-  - decisions/adr-001_commander-pattern.md
-  - decisions/adr-002_config-loading.md
+  - [Commander Pattern](decisions/adr-21_commander-pattern.md)
+  - [Config Loading](decisions/adr-37_config-loading.md)
 
 ### Feature Level: commands
 
 - **Spec**: feature-20_commands/commands.feature.md
 - **TRD**: feature-20_commands/command-framework.trd.md
 - **ADRs**: 1 document
-  - decisions/adr-001_subcommand-structure.md
+  - [Subcommand Structure](decisions/adr-21_subcommand-structure.md)
 
 ### Story Level: build
 

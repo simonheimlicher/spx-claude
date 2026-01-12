@@ -1,4 +1,12 @@
-# ADR NNN: [Decision Title]
+# ADR: [Decision Title]
+
+<!--
+IMPORTANT: Do NOT include the ADR number in this header.
+- The number exists ONLY in the filename: adr-NN_slug.md
+- This prevents drift when ADRs are renumbered (BSP insertion)
+- The "ADR:" prefix identifies the document type
+- Example: File adr-21_type-safety.md has header "# ADR: Type Safety"
+-->
 
 ## Problem
 
@@ -50,10 +58,10 @@
 
 ### Test Harness
 
-| Level | Harness        | Location/Dependency                                   |
-| ----- | -------------- | ----------------------------------------------------- |
-| 2     | [Harness name] | `path/to/harness.ts` or "Built by Feature NN"         |
-| 3     | [Harness name] | `path/to/harness.ts` or "Built by ADR-NNN/Feature NN" |
+| Level | Harness        | Location/Dependency                                          |
+| ----- | -------------- | ------------------------------------------------------------ |
+| 2     | [Harness name] | `path/to/harness.ts` or [Feature NN](../../feature-NN_slug/) |
+| 3     | [Harness name] | `path/to/harness.ts` or [ADR Title](../adr-NN_slug.md)       |
 
 *Level 1 typically needs no harness (pure functions). Include only levels that require test infrastructure.*
 

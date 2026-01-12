@@ -92,17 +92,29 @@ Read existing ADRs to ensure consistency:
 <adr_scope>
 You produce ADRs. The scope depends on what you're deciding:
 
-| Decision Scope      | ADR Location                                               | Example                              |
-| ------------------- | ---------------------------------------------------------- | ------------------------------------ |
-| Project-wide        | `specs/decisions/adr-{NNN}_{slug}.md`                      | "Use Zod for all data validation"    |
-| Capability-specific | `specs/doing/capability-NN/decisions/adr-{NNN}_{slug}.md`  | "CLI command structure"              |
-| Feature-specific    | `specs/doing/.../feature-NN/decisions/adr-{NNN}_{slug}.md` | "Use execa for subprocess execution" |
+| Decision Scope      | ADR Location                                              | Example                              |
+| ------------------- | --------------------------------------------------------- | ------------------------------------ |
+| Project-wide        | `specs/decisions/adr-{NN}_{slug}.md`                      | "Use Zod for all data validation"    |
+| Capability-specific | `specs/doing/capability-NN/decisions/adr-{NN}_{slug}.md`  | "CLI command structure"              |
+| Feature-specific    | `specs/doing/.../feature-NN/decisions/adr-{NN}_{slug}.md` | "Use execa for subprocess execution" |
 
 **ADR Numbering:**
 
-- Three-digit numbers: 001, 002, 003, ...
-- Sequential within scope
-- Never reuse numbers (even for superseded ADRs)
+- BSP range: [10, 99]
+- Lower number = must decide first (within scope)
+- Insert using midpoint calculation: `new = floor((left + right) / 2)`
+- Append using: `new = floor((last + 99) / 2)`
+- First ADR in scope: use 21
+
+See `specs:managing-specs` skill `<adr_templates>` section for complete BSP numbering rules.
+
+**Within-scope dependency order**:
+
+- Capability ADRs: adr-21 must be decided before adr-37
+- Feature ADRs: adr-21 must be decided before adr-37
+- Product ADRs: adr-21 must be decided before adr-37
+
+**Cross-scope dependencies**: Must be documented explicitly in ADR "Context" section using markdown links.
 
 </adr_scope>
 
@@ -194,7 +206,8 @@ Use the project's template. Each ADR must include:
 2. **Do NOT review code**. That's a separate concern.
 3. **Do NOT fix bugs**. That's an implementation concern.
 4. **Do NOT create work items**. That's a project management concern.
-   </what_you_do_not_do>
+
+</what_you_do_not_do>
 
 <reference_index>
 Detailed patterns and principles:
@@ -214,15 +227,15 @@ When you complete ADR creation, provide:
 
 ### ADRs Written
 
-| ADR                        | Scope         | Decision Summary                 |
-| -------------------------- | ------------- | -------------------------------- |
-| `adr-001_type-safety.md`   | Project       | Use strict TS, Zod at boundaries |
-| `adr-002_cli-structure.md` | Capability-32 | Commander.js with subcommands    |
+| ADR                                                                               | Scope         | Decision Summary                 |
+| --------------------------------------------------------------------------------- | ------------- | -------------------------------- |
+| [Type Safety](specs/decisions/adr-21_type-safety.md)                              | Project       | Use strict TS, Zod at boundaries |
+| [CLI Structure](specs/work/doing/capability-32/decisions/adr-21_cli-structure.md) | Capability-32 | Commander.js with subcommands    |
 
 ### Key Constraints
 
-1. {constraint from ADR-001}
-2. {constraint from ADR-002}
+1. {constraint from [Type Safety](specs/decisions/adr-21_type-safety.md)}
+2. {constraint from [CLI Structure](specs/work/doing/capability-32/decisions/adr-21_cli-structure.md)}
 
 ### Testing Strategy Summary
 

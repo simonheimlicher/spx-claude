@@ -103,9 +103,9 @@ The specs/ directory follows the SPX framework structure defined in `structure.y
 
 ```
 specs/
-├── [product-name].prd.md          # Product-wide PRD 
+├── [product-name].prd.md          # Product-wide PRD
 ├── decisions/                      # Product-wide ADRs (optional)
-│   └── adr-NNN_{slug}.md
+│   └── adr-NN_{slug}.md
 └── work/
     ├── backlog/
     ├── doing/
@@ -303,20 +303,166 @@ Read: ${SKILL_DIR}/templates/decisions/architectural-decision.adr.md
 
 ADRs can exist at three levels:
 
-- **Project**: `specs/decisions/adr-NNN_{slug}.md`
-- **Capability**: `specs/work/doing/capability-NN/decisions/adr-NNN_{slug}.md`
-- **Feature**: `specs/work/doing/.../feature-NN/decisions/adr-NNN_{slug}.md`
+- **Project**: `specs/decisions/adr-NN_{slug}.md`
+- **Capability**: `specs/work/doing/capability-NN/decisions/adr-NN_{slug}.md`
+- **Feature**: `specs/work/doing/.../feature-NN/decisions/adr-NN_{slug}.md`
 
 Stories inherit decisions from parent feature/capability.
 
 ### Naming Convention
 
-Format: `adr-{NNN}_{slug}.md`
+Format: `adr-{NN}_{slug}.md`
 
-- NNN: Three-digit sequential number (001, 002, ...)
+- NN: BSP number in range [10, 99]
 - slug: Kebab-case description (e.g., `use-postgresql-for-persistence`)
 
+### BSP Numbering for ADRs
+
+**Lower BSP number = must decide first (within scope).**
+
+ADRs follow the same BSP numbering as work items:
+
+#### Creating First ADR in Scope
+
+Use position **21** (leaves room for ~10 items before/after):
+
+```
+decisions/adr-21_first-decision.md
+```
+
+#### Inserting Between ADRs
+
+Use midpoint: `new = floor((left + right) / 2)`
+
+```
+# Insert between adr-21 and adr-54
+new = floor((21 + 54) / 2) = 37
+
+decisions/adr-21_type-safety.md
+decisions/adr-37_inserted-decision.md    ← NEW
+decisions/adr-54_cli-framework.md
+```
+
+#### Appending After Last
+
+Use midpoint to upper bound: `new = floor((last + 99) / 2)`
+
+```
+# Append after adr-54
+new = floor((54 + 99) / 2) = 76
+
+decisions/adr-21_type-safety.md
+decisions/adr-54_cli-framework.md
+decisions/adr-76_appended-decision.md    ← NEW
+```
+
+### Dependency Order Within Scope
+
+**Scope boundaries**: ADRs are scoped to product/capability/feature.
+
+**Within scope**: Lower BSP = must decide first.
+
+| If you see...             | It means...                              |
+| ------------------------- | ---------------------------------------- |
+| `adr-21_type-safety.md`   | Foundational decision, must decide first |
+| `adr-37_validation.md`    | Depends on adr-21, must come after       |
+| `adr-54_cli-framework.md` | May depend on both adr-21 and adr-37     |
+
+**Cross-scope dependencies**: Must be documented explicitly in the ADR content.
+
+| Dependency                            | How to Express                           |
+| ------------------------------------- | ---------------------------------------- |
+| Feature ADR depends on capability ADR | Reference in "Context" section with link |
+| Capability ADR depends on product ADR | Reference in "Context" section with link |
+
+### Why BSP Numbering?
+
+**Problem**: Sequential numbering (001, 002, 003) cannot accommodate discovered dependencies.
+
+**Example**: You have decisions adr-001, adr-002, adr-003. You discover adr-002 needs a prior decision about type safety. With sequential numbering, you must renumber all subsequent ADRs.
+
+**Solution**: BSP numbering allows insertion at any point using midpoint calculation.
+
+### Why No Numbers in Content?
+
+**Problem**: If ADR file is renumbered (e.g., adr-023 → adr-37), content with embedded numbers becomes stale.
+
+**Examples**:
+
+- Header `# ADR 023: Foo` - wrong after renumbering
+- Reference "See ADR-023" - wrong after renumbering
+
+**Solution**:
+
+- Header: `# ADR: Foo` (document type prefix, no number)
+- References: `[Foo](decisions/adr-37_foo.md)` (markdown link with path)
+- Filenames can be renamed, slugs stay stable, markdown links update automatically
+
+### Why Markdown Links Only?
+
+**Problem**: Plain text references like "ADR-023" or even `` `adr-023_foo.md` `` break when files are renumbered.
+
+**Solution**: Markdown links `[Decision Title](relative/path/to/adr-NN_slug.md)`:
+
+- Modern editors update links automatically on file rename
+- Links are clickable for navigation
+- Slug provides stability even if number changes
+- Can search by slug if link breaks
+
 </adr_templates>
+
+<referencing_adrs>
+
+## How to Reference ADRs
+
+### In Markdown Documents
+
+**Always use markdown links with descriptive titles.**
+
+#### Within Same Directory
+
+```markdown
+See [Type Safety](adr-21_type-safety.md) for validation approach.
+```
+
+#### From Child to Parent Scope
+
+```markdown
+<!-- Feature ADR referencing capability ADR -->
+
+This decision builds on [Config Loading](../../decisions/adr-21_config-loading.md).
+
+<!-- Story referencing feature ADR -->
+
+Implementation follows [CLI Structure](../../decisions/adr-21_cli-structure.md).
+```
+
+#### From Work Item to ADR
+
+```markdown
+<!-- From story to capability ADR -->
+
+Architectural constraints: [Commander Pattern](../../decisions/adr-21_commander-pattern.md)
+
+<!-- From feature to product ADR -->
+
+Type system: [Type Safety](../../../../decisions/adr-21_type-safety.md)
+```
+
+### Never Use These Formats
+
+❌ Plain text reference: "See ADR-021"
+❌ Code-only reference: `` `adr-021_type-safety.md` ``
+❌ Number-only reference: "ADR 21 specifies..."
+
+### Why Markdown Links?
+
+- **Clickable**: Navigate directly in editors/viewers
+- **Stable**: Slug provides stability even if number changes
+- **Updatable**: Modern editors can update links on file rename
+- **Descriptive**: Title provides context without opening file
+
+</referencing_adrs>
 
 <requirement_templates>
 
