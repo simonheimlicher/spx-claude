@@ -296,6 +296,37 @@ Requirements documentation and specification skills.
 
 Search for `SKILL.md` in `.claude/plugins/cache/{marketplace-name}/{plugin-name}/`
 
+## Proactive Skill Invocation
+
+Certain skills must be invoked **automatically** when specific conditions are met, without waiting for explicit user request.
+
+### Specs Skills (Mandatory Autonomous Triggering)
+
+**BEFORE implementing any work item** (capability/feature/story), you MUST:
+
+1. **Invoke `/understanding-specs`** on the work item file
+   - **Trigger**: User requests implementation of a work item
+   - **Purpose**: Load complete context hierarchy (requirements → decisions → work item)
+   - **Example**: User says "implement story-21" → STOP and invoke `/understanding-specs` FIRST, then proceed
+   - **Non-negotiable**: Do NOT read story/feature/capability files directly without invoking this skill
+
+2. **Invoke `/managing-specs`** when creating/organizing specs
+   - **Trigger**: User requests creating PRD/TRD/ADR or asks about spec structure
+   - **Purpose**: Access templates from skill's `templates/` directory, understand BSP numbering, structure guidance
+   - **Example**: User says "create a PRD" → STOP and invoke `/managing-specs` to read template
+   - **Critical**: Templates are in `.claude/plugins/cache/.../managing-specs/templates/`, NOT in the project
+
+**Pattern**: Specs skills are preparatory and blocking. You MUST invoke them BEFORE writing code or documents. Do NOT proceed without skill invocation.
+
+**Rationale**: Without these skills, you will:
+
+- Miss requirements and violate ADRs (without `/understanding-specs`)
+- Search for templates that don't exist in the project (without `/managing-specs`)
+- Create work items with incorrect BSP numbering
+- Generate requirements documents with wrong structure
+
+See [specs/CLAUDE.md](specs/CLAUDE.md) for complete triggering rules and decision tree.
+
 ## Naming Skills
 
 The `name` field in SKILL.md YAML frontmatter is how users invoke your skill (`/skill-name`).

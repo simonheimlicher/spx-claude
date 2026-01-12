@@ -3,30 +3,31 @@
 > **Purpose**: Defines a marketable increment of product functionality and serves as an authoritative contract for implementation.
 >
 > - Written BEFORE capability/feature structure exists—drives folder creation
-> - Scoped as MVP or targeted enhancement delivering real user value
+> - Defines targeted enhancement delivering real user value
 > - Excludes fantasies and bells/whistles to accelerate deployment and user feedback
 > - Authoritative: Changes to scope or user outcomes require user approval
 > - Triggers ADR creation for technical decisions; if ADRs reveal scope too large → split into multiple PRDs
 > - Spawns work items (features/stories) AFTER scope validated and ADRs created
 > - No size constraints, no state tracking (OPEN/IN PROGRESS/DONE)
 > - Can exist at: project level (`specs/work/{backlog,doing}/[Name].prd.md`), capability level (`.../capability/[Name].prd.md`) or feature level (`.../feature/[Name].prd.md`)
+>
+> **Core Principle**: Requirements describe WHAT should exist (the ideal solution), NOT WHEN it gets implemented. Use "Out of scope" for boundaries, NOT "Defer to Phase 2" or "MVP excludes...". Implementation timing belongs in work items (capability/feature/story breakdown), NOT in requirements.
 
 ## Required Sections
 
 A PRD is ready for implementation when all sections below contain complete information. Empty or placeholder content indicates the PRD is not ready.
 
-| Section           | Purpose                                                                    |
-| ----------------- | -------------------------------------------------------------------------- |
-| Product Vision    | User problem, value proposition, customer journey, and user assumptions    |
-| Expected Outcome  | Quantified measurable outcome with evidence metrics                        |
-| Acceptance Tests  | Complete E2E journey test and Gherkin scenarios proving measurable outcome |
-| Scope Definition  | Explicit boundaries: what's included, what's excluded, and why             |
-| Product Approach  | Interaction model, UX principles, technical approach (triggers ADRs)       |
-| Success Criteria  | User outcomes, quality attributes, definition of "done"                    |
-| Open Decisions    | Questions for user, ADR triggers, product trade-offs                       |
-| Dependencies      | Work items, customer-facing, technical, and performance requirements       |
-| Pre-Mortem        | Assumptions to validate (adoption, performance, platform, scope)           |
-| Delivery Strategy | Phased approach (if dependencies require), success criteria, rollout plan  |
+| Section          | Purpose                                                                    |
+| ---------------- | -------------------------------------------------------------------------- |
+| Product Vision   | User problem, value proposition, customer journey, and user assumptions    |
+| Expected Outcome | Quantified measurable outcome with evidence metrics                        |
+| Acceptance Tests | Complete E2E journey test and Gherkin scenarios proving measurable outcome |
+| Scope Definition | Explicit boundaries: what's included, what's excluded, and why             |
+| Product Approach | Interaction model, UX principles, technical approach (triggers ADRs)       |
+| Success Criteria | User outcomes, quality attributes, definition of "done"                    |
+| Open Decisions   | Questions for user, ADR triggers, product trade-offs                       |
+| Dependencies     | Work items, customer-facing, technical, and performance requirements       |
+| Pre-Mortem       | Assumptions to validate (adoption, performance, platform, scope)           |
 
 ## Testing Methodology
 
@@ -145,14 +146,14 @@ describe("Feature: [Feature Name]", () => {
     await page.goto("/[entry-point]");
 
     // When: [User performs workflow phases]
-    await expect(page.locator('[data-testid="phase-1-element"]')).toBeVisible();
-    await page.click('[data-testid="user-action-1"]');
+    await expect(page.locator("[data-testid=\"phase-1-element\"]")).toBeVisible();
+    await page.click("[data-testid=\"user-action-1\"]");
 
-    await page.fill('[data-testid="input-field"]', "test data");
-    await page.click('[data-testid="user-action-2"]');
+    await page.fill("[data-testid=\"input-field\"]", "test data");
+    await page.click("[data-testid=\"user-action-2\"]");
 
     // Then: [User achieves measurable outcome]
-    await expect(page.locator('[data-testid="success-indicator"]')).toBeVisible();
+    await expect(page.locator("[data-testid=\"success-indicator\"]")).toBeVisible();
 
     const completionTime = Date.now() - startTime;
     expect(completionTime).toBeLessThan(TARGET_TIME_MS);
@@ -478,49 +479,6 @@ Example: "Feature scope is achievable within complexity budget for single releas
 - **Impact**: [Low/Medium/High] - [What happens if assumption is wrong]
 - **Mitigation**: [Specific actions to validate assumption or reduce impact]
 
-## Delivery Strategy
-
-### Phased Delivery Approach
-
-If this deliverable unit must be delivered in phases due to dependency constraints or risk mitigation, document the phases here. Phases are driven by technical dependencies or risk reduction, NOT arbitrary decomposition.
-
-If no phased delivery is required, write "Single release delivery" and proceed.
-
-**Phase 1: [Phase Name - e.g., "Read-Only Career Visibility"]**
-
-- **Value Delivered**: [User capability enabled]
-- **Dependencies Required**: [Minimal dependencies needed]
-- **Risk Mitigation**: [What risks this phase reduces]
-
-**Phase 2: [Phase Name - e.g., "Direct Career Management"]**
-
-- **Value Delivered**: [Additional user capability enabled]
-- **Dependencies Required**: [Additional dependencies needed - e.g., Platform Capability 40]
-- **Risk Mitigation**: [What risks this phase reduces]
-
-**Phase 3: [Phase Name - e.g., "Advanced Features"]**
-
-- **Value Delivered**: [Final user capability enabled]
-- **Dependencies Required**: [Final dependencies needed]
-- **Risk Mitigation**: [What risks this phase reduces]
-
-### Success Criteria for Delivery
-
-How do we know this deliverable succeeded after launch?
-
-- **User Feedback**: [How user feedback drives refinement - surveys, support tickets, direct feedback]
-- **Performance Metrics**: [What metrics demonstrate efficiency improvements - from Evidence of Success table]
-- **Adoption Metrics**: [What indicates users are adopting the feature - usage rates, retention]
-- **Quality Metrics**: [What indicates the feature works reliably - error rates, support load]
-
-### Feature Flags and Rollout
-
-If progressive rollout is planned, document the strategy. If not applicable, write "Direct release without feature flags" and proceed.
-
-- **Feature Flag Strategy**: [How feature flags control rollout - percentage-based, user-segment-based, etc.]
-- **Rollout Stages**: [Stages: Internal testing → Beta users → General availability]
-- **Rollback Plan**: [What triggers rollback and how it's executed]
-
 ## Readiness Criteria
 
 A reviewing agent should verify the following before approving this PRD for implementation:
@@ -589,13 +547,7 @@ A reviewing agent should verify the following before approving this PRD for impl
 - Each assumption has likelihood, impact, and specific mitigation
 - Mitigations are actionable, not just "monitor" or "communicate"
 
-### 10. Delivery Strategy
-
-- Phased approach (if needed) has clear value delivered per phase and dependency rationale
-- Success criteria for delivery defined (metrics, feedback, adoption)
-- Feature flag and rollout strategy defined (if progressive rollout planned) or marked "Direct release"
-
-### 11. Completeness
+### 10. Completeness
 
 - No placeholder content (all [brackets] filled with real content or "None identified")
 - No section is marked "TBD" or "TODO"
