@@ -29,6 +29,14 @@ allowed-tools: Read, Write, Glob, Grep, AskUserQuestion
 - Test infrastructure documented OR in dependencies (no vagueness)
 - Readiness Criteria self-check before delivery
 
+**Requirements define WHAT, not WHEN:**
+
+- Requirements describe the ideal solution (timeless vision)
+- Define scope boundaries ("Out of scope: X is separate")
+- NEVER include implementation timing ("MVP", "Phase 2", "Defer to")
+- Avoid: "Not in MVP", "Phase X", "Defer until", "Later"
+- Correct: "Out of scope for this PRD", "Future capability", "Separate requirement"
+
 </essential_principles>
 
 <objective>
@@ -43,7 +51,8 @@ Create complete, testable Product Requirements Documents that serve as authorita
 4. **Define scope** (what's included, what's excluded, why)
 5. **Write PRD** (complete file with all sections)
 6. **Verify readiness** (self-check against criteria)
-   </quick_start>
+
+</quick_start>
 
 <context_reading_protocol>
 **Before asking questions, read project context:**
@@ -158,7 +167,8 @@ Is this scope achievable as one deliverable unit delivering real user value?
 2. Test level assignments (per `/testing` methodology)
 3. Acceptance test scenarios (derived from approved capabilities)
 4. Product approach and ADR triggers
-   </mandatory_user_interactions>
+
+</mandatory_user_interactions>
 
 <gap_handling>
 When product decisions are unclear:

@@ -29,12 +29,28 @@ Is this scope achievable as one deliverable unit?
 <define_excluded>
 **List capabilities explicitly EXCLUDED with rationale:**
 
-| Excluded Capability              | Rationale                                                  |
-| -------------------------------- | ---------------------------------------------------------- |
-| [e.g., Multi-user collaboration] | Defer until single-user validates value; different product |
-| [e.g., Cloud sync]               | Local-first reduces complexity; defer until v2             |
+| Excluded Capability              | Rationale                                                     |
+| -------------------------------- | ------------------------------------------------------------- |
+| [e.g., Multi-user collaboration] | Out of scope: Different product concern, separate requirement |
+| [e.g., Cloud sync]               | Out of scope: This PRD addresses local-first workflows only   |
 
 **If no exclusions: write "None identified"**
+
+<anti_patterns>❌ **AVOID implementation timing language:**
+
+- "Defer to Phase 2"
+- "Not in MVP"
+- "Later" or "Future version"
+- "v2" or "v3"
+
+✅ **USE scope boundary language:**
+
+- "Out of scope: This PRD addresses [specific boundary]"
+- "Separate capability: [explain what makes it distinct]"
+- "Different product concern: [explain separation]"
+
+**Rationale:** Requirements describe WHAT should exist, not WHEN it gets built.</anti_patterns>
+
 </define_excluded>
 
 <propose_boundaries>

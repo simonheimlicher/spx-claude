@@ -28,6 +28,14 @@ allowed-tools: Read, Write, Glob, Grep, AskUserQuestion
 - Every guarantee (G1, G2, etc.) maps to ≥1 BDD scenario
 - Readiness Criteria self-check before delivery
 
+**Requirements define WHAT, not WHEN:**
+
+- Requirements describe the ideal solution (timeless vision)
+- Define scope boundaries ("Out of scope: X is separate")
+- NEVER include implementation timing ("MVP", "Phase 2", "Defer to")
+- Avoid: "Not in MVP", "Phase X", "Defer until", "Later"
+- Correct: "Out of scope for this TRD", "Future capability", "Separate requirement"
+
 </essential_principles>
 
 <objective>
@@ -42,7 +50,8 @@ Create complete, testable Technical Requirements Documents that serve as authori
 4. **Discover infrastructure** (harnesses, credentials, gaps)
 5. **Write TRD** (complete file with all sections)
 6. **Verify readiness** (self-check against criteria)
-   </quick_start>
+
+</quick_start>
 
 <context_reading_protocol>
 **Before asking questions, read project context:**
