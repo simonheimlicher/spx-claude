@@ -1,0 +1,11 @@
+{
+  "name": "frontend",
+  "version": "0.0.1",
+  "description": "Design and build beautiful web UI that doesn't look generic",
+  "author": {
+    "name": "Simon Heimlicher"
+  },
+  "repository": "https://github.com/simonheimlicher/spx-claude",
+  "license": "MIT",
+  "keywords": ["design", "frontend"]
+}

@@ -23,13 +23,25 @@ By passing a filesystem path like `~/Code/claude-repo`, Claude Code treats this 
 claude plugin marketplace add ~/Code/claude-repo
 ```
 
-### 2. Add a first plugin
+### 2. Add plugins
 
 ```zsh
+claude plugin install core@spx-claude
 claude plugin install claude@spx-claude
 ```
 
-Now the slash command `/core:commit` and the skill `creating-skills` are available in all projects on your machine.
+Now the slash commands `/commit`, `/handoff`, `/pickup` and skills like `/creating-skills` are available in all projects on your machine.
+
+### 3. Update marketplace
+
+```zsh
+# Update only `spx-claude`
+claude plugin marketplace update spx-claude
+
+
+# Update all marketplaces (may take a while)
+claude plugin marketplace update
+```
 
 ## Repository Structure
 
@@ -40,14 +52,35 @@ Refer to the [official plugin marketplace documentation](https://code.claude.com
 ├── .claude-plugin
 │   └── marketplace.json
 ├── plugins
-│   ├── claude
-│   │   ├── .claude-plugin
-│   │   │   └── plugin.json
+│   ├── core                    # Productivity commands
 │   │   ├── commands
-│   │   │   └── commit.md
+│   │   │   ├── commit.md
+│   │   │   ├── handoff.md
+│   │   │   └── pickup.md
 │   │   └── skills
-│   │       ├── committing-changes
-│   │       │   └── SKILL.md
+│   │       └── committing-changes/
+│   ├── claude                  # Meta-skills for Claude Code
+│   │   └── skills
+│   │       └── creating-skills/
+│   ├── code                    # Autonomous coding
+│   │   └── skills
+│   │       └── coding-autonomously/
+│   ├── frontend                # Frontend design
+│   │   └── skills
+│   │       └── designing-frontend/
+│   ├── test                    # Foundational testing
+│   │   └── skills
+│   │       └── testing/
+│   ├── typescript              # TypeScript engineering
+│   │   ├── agents
+│   │   │   └── typescript-simplifier.md
+│   │   └── skills/
+│   ├── python                  # Python engineering
+│   │   ├── commands
+│   │   │   └── autopython.md
+│   │   └── skills/
+│   └── specs                   # Requirements documentation
+│       └── skills/
 [...]
 ```
 
@@ -74,15 +107,50 @@ claude
 
 ## What's in This Repo
 
-This repo contains skills and commands for testing, Python and Typescript development, and Claude Code productivity.
+This repo contains skills and commands for testing, Python and TypeScript development, and Claude Code productivity.
+
+### core
+
+Core productivity commands and skills.
+
+| Type    | Name                  | Purpose                                 |
+| ------- | --------------------- | --------------------------------------- |
+| Skill   | `/committing-changes` | Commit message guidance                 |
+| Command | `/commit`             | Git commit with Conventional Commits    |
+| Command | `/handoff`            | Create timestamped context handoff      |
+| Command | `/pickup`             | Load and continue from previous handoff |
+
+### claude
+
+Meta-skills for Claude Code plugin development.
+
+| Type  | Name               | Purpose                    |
+| ----- | ------------------ | -------------------------- |
+| Skill | `/creating-skills` | Create maintainable skills |
+
+### code
+
+Autonomous coding orchestration.
+
+| Type  | Name                   | Purpose                            |
+| ----- | ---------------------- | ---------------------------------- |
+| Skill | `/coding-autonomously` | Autonomous implementation patterns |
+
+### frontend
+
+Frontend design and styling.
+
+| Type  | Name                  | Purpose                                |
+| ----- | --------------------- | -------------------------------------- |
+| Skill | `/designing-frontend` | Create distinctive frontend interfaces |
 
 ### test
 
 BDD testing methodology with three-tier testing (Unit, Integration, E2E).
 
-| Skill      | Purpose                         |
-| ---------- | ------------------------------- |
-| `/testing` | Foundational testing principles |
+| Type  | Name       | Purpose                         |
+| ----- | ---------- | ------------------------------- |
+| Skill | `/testing` | Foundational testing principles |
 
 ### typescript
 
@@ -90,6 +158,7 @@ Complete TypeScript development workflow.
 
 | Type  | Name                                 | Purpose                            |
 | ----- | ------------------------------------ | ---------------------------------- |
+| Agent | `typescript-simplifier`              | Simplify code for maintainability  |
 | Skill | `/testing-typescript`                | TypeScript-specific testing        |
 | Skill | `/coding-typescript`                 | Implementation with remediation    |
 | Skill | `/reviewing-typescript`              | Strict code review                 |
@@ -109,17 +178,16 @@ Complete Python development workflow.
 | Skill   | `/architecting-python`           | ADR producer with testing strategy |
 | Skill   | `/reviewing-python-architecture` | ADR validator                      |
 
-### claude
+### specs
 
-Claude Code productivity skills.
+Requirements documentation and specification skills.
 
-| Type    | Name                  | Purpose                                 |
-| ------- | --------------------- | --------------------------------------- |
-| Skill   | `/creating-skills`    | Create maintainable skills              |
-| Skill   | `/committing-changes` | Commit message guidance                 |
-| Command | `/commit`             | Git commit with Conventional Commits    |
-| Command | `/handoff`            | Create timestamped context handoff      |
-| Command | `/pickup`             | Load and continue from previous handoff |
+| Type  | Name                   | Purpose                            |
+| ----- | ---------------------- | ---------------------------------- |
+| Skill | `/writing-prd`         | Write product requirements         |
+| Skill | `/writing-trd`         | Write technical requirements       |
+| Skill | `/managing-specs`      | Set up specs directory structure   |
+| Skill | `/understanding-specs` | Load context before implementation |
 
 ## Quick Install
 
@@ -127,10 +195,14 @@ If you just want to use these skills without forking:
 
 ```bash
 /plugin marketplace add simonheimlicher/spx-claude
+/plugin install core@spx-claude
+/plugin install claude@spx-claude
+/plugin install code@spx-claude
+/plugin install frontend@spx-claude
 /plugin install test@spx-claude
 /plugin install typescript@spx-claude
 /plugin install python@spx-claude
-/plugin install claude@spx-claude
+/plugin install specs@spx-claude
 ```
 
 ## Documentation

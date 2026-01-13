@@ -1,0 +1,19 @@
+{
+  "name": "claude",
+  "version": "0.0.1",
+  "description": "Claude Code plugin agents, commands, and skills",
+  "author": {
+    "name": "Simon Heimlicher"
+  },
+  "repository": "https://github.com/simonheimlicher/spx-claude",
+  "license": "MIT",
+  "keywords": [
+    "claude code",
+    "claude",
+    "plugin",
+    "marketplace",
+    "skill",
+    "command",
+    "agent"
+  ]
+}

@@ -1,11 +1,11 @@
 {
   "name": "code",
-  "version": "0.0.1",
-  "description": "Code maintainability and simplicity for Python and Typescript",
+  "version": "0.0.2",
+  "description": "Autonomous coding orchestration",
   "author": {
     "name": "Simon Heimlicher"
   },
   "repository": "https://github.com/simonheimlicher/spx-claude",
   "license": "MIT",
-  "keywords": ["code", "simplify", "idiomatic", "maintainable", "testable"]
+  "keywords": ["code", "autonomous", "coding", "agent"]
 }

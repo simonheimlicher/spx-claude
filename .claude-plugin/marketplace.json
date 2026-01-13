@@ -1,7 +1,7 @@
 {
   "name": "spx-claude",
   "metadata": {
-    "description": "Spec-Driven Engineering for Python and Typescript"
+    "description": "Spec-Driven Engineering for Python and TypeScript"
   },
   "owner": {
     "name": "Simon Heimlicher"
@@ -10,22 +10,32 @@
     {
       "name": "core",
       "source": "./plugins/core",
-      "description": "Core engineering: /creating-skills, /committing-changes, /designing-frontend, /commit, /handoff, /pickup"
+      "description": "Core productivity: /committing-changes skill, /commit, /handoff, /pickup commands"
+    },
+    {
+      "name": "claude",
+      "source": "./plugins/claude",
+      "description": "Claude Code meta-skills: /creating-skills"
     },
     {
       "name": "code",
       "source": "./plugins/code",
-      "description": "Engineering maintainable, idiomatic and simple with Python and Typescrip"
+      "description": "Autonomous coding: /coding-autonomously skill"
+    },
+    {
+      "name": "frontend",
+      "source": "./plugins/frontend",
+      "description": "Frontend design: /designing-frontend skill"
     },
     {
       "name": "test",
       "source": "./plugins/test",
-      "description": "Behavior-driven testing skills: /testing (foundational)"
+      "description": "Behavior-driven testing: /testing (foundational)"
     },
     {
       "name": "typescript",
       "source": "./plugins/typescript",
-      "description": "TypeScript engineering: /testing-typescript, /coding-typescript, /reviewing-typescript, /architecting-typescript, /reviewing-typescript-architecture"
+      "description": "TypeScript engineering: /testing-typescript, /coding-typescript, /reviewing-typescript, /architecting-typescript, /reviewing-typescript-architecture, typescript-simplifier agent"
     },
     {
       "name": "python",

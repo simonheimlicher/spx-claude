@@ -1,6 +1,6 @@
 # SPX-Claude Plugin Marketplace
 
-Simon Heimlicher's Claude Code plugin marketplace, based on the spec-driven development framework [SPX](https://spx.sh).
+Claude Code plugin marketplace, based on the spec-driven development framework [SPX](https://spx.sh).
 
 ## Marketplace Is a Product
 
@@ -89,7 +89,7 @@ All plugins follow semantic versioning: `MAJOR.MINOR.PATCH`
 
 **Plugin version** (always update):
 
-```bash
+```zsh
 plugins/{plugin-name}/.claude-plugin/plugin.json
 ```
 
@@ -102,7 +102,7 @@ plugins/{plugin-name}/.claude-plugin/plugin.json
 
 **Marketplace catalog** (optional, only if description changes):
 
-```bash
+```zsh
 .claude-plugin/marketplace.json
 ```
 
@@ -118,13 +118,23 @@ plugins/{plugin-name}/.claude-plugin/plugin.json
 }
 ```
 
+**IMPORTANT:** Validate after any changes:
+
+```zsh
+# Validate marketplace.json
+claude plugin validate .
+
+# Validate plugin.json
+find plugins -maxdepth 1 -type d -mindepth 1 -exec claude plugin validate {} \;
+```
+
 ### Version Bump Workflow
 
 **CRITICAL: Version bumps must be in the SAME commit as the changes that warrant them.**
 
 ❌ **WRONG** - Separate commits:
 
-```bash
+```zsh
 git commit -m "refactor(skills): simplify descriptions"
 # ... then later ...
 git commit -m "chore: bump versions"
@@ -132,7 +142,7 @@ git commit -m "chore: bump versions"
 
 ✅ **CORRECT** - Single atomic commit:
 
-```bash
+```zsh
 # 1. Make your changes to skills/commands/etc
 # 2. Update version numbers in plugin.json files
 # 3. Stage everything together
@@ -181,9 +191,52 @@ Skills follow a **reference pattern** to avoid duplication:
 
 Claude Code skills cannot automatically invoke other skills. However, skills can:
 
-1. Instruct the AI to read another skill file first
+1. Instruct Claude to read another skill file first
 2. Reference foundational concepts by skill name
-3. Be invoked sequentially by the user/AI
+3. Be invoked sequentially by the user/Claude
+
+---
+
+## Core Plugin
+
+Productivity skills and commands.
+
+### Skills
+
+| Skill                 | Purpose                                   |
+| --------------------- | ----------------------------------------- |
+| `/creating-skills`    | Create production-grade, reusable skills  |
+| `/committing-changes` | Comprehensive git commit message guidance |
+
+### Commands
+
+| Command    | Purpose                                             |
+| ---------- | --------------------------------------------------- |
+| `/commit`  | Git commit with Conventional Commits (auto-context) |
+| `/handoff` | Create timestamped context handoff                  |
+| `/pickup`  | Load and continue from previous handoff             |
+
+## Code Plugin
+
+Coding agents and commands.
+
+### Agents
+
+| Command    | Purpose                                             |
+| ---------- | --------------------------------------------------- |
+| `/commit`  | Git commit with Conventional Commits (auto-context) |
+| `/handoff` | Create timestamped context handoff                  |
+| `/pickup`  | Load and continue from previous handoff             |
+
+## Frontend Plugin
+
+Frontend design and coding skills and commands.
+
+### Skills
+
+| Skill                | Purpose                                                  |
+| -------------------- | -------------------------------------------------------- |
+| `designing-frontend` | Create distinctive, production-grade frontend interfaces |
 
 ## Test Plugin (`/testing`)
 
@@ -244,31 +297,12 @@ Complete Python development workflow with testing, implementation, and review.
 | ------------- | -------------------------------------- |
 | `/autopython` | Autonomous implementation orchestrator |
 
-### Core Principles
+### Foundational Principles
 
 - No mocking - dependency injection only
 - Reality is the oracle
 - Behavior testing, not implementation testing
 - Tests at appropriate levels (Unit/Integration/E2E)
-
-## Claude Plugin
-
-Productivity skills and commands for Claude Code.
-
-### Skills
-
-| Skill                 | Purpose                                   |
-| --------------------- | ----------------------------------------- |
-| `/creating-skills`    | Create production-grade, reusable skills  |
-| `/committing-changes` | Comprehensive git commit message guidance |
-
-### Commands
-
-| Command    | Purpose                                             |
-| ---------- | --------------------------------------------------- |
-| `/commit`  | Git commit with Conventional Commits (auto-context) |
-| `/handoff` | Create timestamped context handoff                  |
-| `/pickup`  | Load and continue from previous handoff             |
 
 ## Specs Plugin
 
@@ -513,7 +547,7 @@ ${SKILL_DIR}/
 
 **Always use the skill's base directory, not the user's project directory.**
 
-\`\`\`bash
+\`\`\`zsh
 
 # Pattern
 
@@ -540,7 +574,7 @@ If you cannot find a template:
 
 Replace all relative paths with `${SKILL_DIR}` prefix:
 
-```bash
+```zsh
 # ❌ WRONG - Ambiguous
 Read: templates/example.md
 
@@ -616,7 +650,7 @@ Error: Bash command permission check failed for pattern "!find .spx/sessions -ma
 
 ---
 
-## For AI Agents Modifying This Marketplace
+## For Claude Agents Modifying This Marketplace
 
 ### ⛔ Path Restrictions
 
@@ -656,14 +690,14 @@ Error: Bash command permission check failed for pattern "!find .spx/sessions -ma
 
 3. **Update plugin.json version** in the same working session:
 
-   ```bash
+   ```zsh
    # Location: plugins/{plugin-name}/.claude-plugin/plugin.json
    # Update "version" field according to rules above
    ```
 
 4. **Update marketplace description** (only if needed):
 
-   ```bash
+   ```zsh
    # Location: .claude-plugin/marketplace.json
    # Update description for the modified plugin (only if description changes)
    ```
@@ -672,7 +706,7 @@ Error: Bash command permission check failed for pattern "!find .spx/sessions -ma
 
 6. **Stage and commit EVERYTHING together** in ONE commit:
 
-   ```bash
+   ```zsh
    git add plugins/{plugin-name}/ plugins/{plugin-name}/.claude-plugin/plugin.json
    git commit -m "type(scope): your changes including version bump"
    ```

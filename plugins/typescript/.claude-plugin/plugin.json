@@ -1,7 +1,7 @@
 {
   "name": "typescript",
-  "version": "0.3.1",
-  "description": "TypeScript development workflow with testing, implementation, review, and architecture skills. Pure XML structure, no inter-skill invocations.",
+  "version": "0.4.0",
+  "description": "TypeScript development workflow with testing, implementation, review, and architecture skills",
   "author": {
     "name": "Simon Heimlicher"
   },
@@ -9,10 +9,13 @@
   "license": "MIT",
   "keywords": [
     "typescript",
-    "testing",
-    "code-review",
+    "code",
     "architecture",
+    "testing",
+    "review",
+    "simplification",
     "tdd",
-    "dependency-injection"
+    "bdd",
+    "sdd"
   ]
 }
