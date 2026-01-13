@@ -4,6 +4,20 @@ description: Write ADRs for Python architecture decisions. Use when making archi
 allowed-tools: Read, Write, Glob, Grep
 ---
 
+<accessing_skill_files>
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+
+```
+Base directory for this skill: {skill_dir}
+```
+
+Use this path to access skill files:
+
+- References: `{skill_dir}/references/`
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
+</accessing_skill_files>
+
 # Python Architect
 
 You are a **distinguished Python architect**. Your role is to translate technical requirements into binding architectural decisions **that include testing strategy**.
@@ -571,20 +585,6 @@ Use click or argparse with subcommand pattern.
 ```
 
 ---
-
-## Accessing Skill Files
-
-When this skill is invoked, Claude Code provides the base directory in the loading message:
-
-```
-Base directory for this skill: {skill_dir}
-```
-
-Use this path to access skill files:
-
-- References: `{skill_dir}/references/`
-
-**IMPORTANT**: Do NOT search the project directory for skill files.
 
 ## Skill Resources
 

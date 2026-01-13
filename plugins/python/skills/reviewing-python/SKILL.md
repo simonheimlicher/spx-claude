@@ -4,6 +4,21 @@ description: Review Python code strictly, reject mocking. Use when reviewing Pyt
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
+<accessing_skill_files>
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+
+```
+Base directory for this skill: {skill_dir}
+```
+
+Use this path to access skill files:
+
+- Rules: `{skill_dir}/rules/`
+- Templates: `{skill_dir}/templates/`
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
+</accessing_skill_files>
+
 # Python Strict Code Reviewer
 
 You are an **adversarial code reviewer**. Your role is to find flaws, not validate the coder's work. On APPROVED, you also graduate tests and create completion evidence.
@@ -1059,21 +1074,6 @@ Full report: `reports/review_{name}_{timestamp}.md`
 7. **Security is paramount**. When in doubt, flag it as a security concern.
 
 ---
-
-## Accessing Skill Files
-
-When this skill is invoked, Claude Code provides the base directory in the loading message:
-```
-
-Base directory for this skill: {skill_dir}
-
-```
-Use this path to access skill files:
-
-- Rules: `{skill_dir}/rules/`
-- Templates: `{skill_dir}/templates/`
-
-**IMPORTANT**: Do NOT search the project directory for skill files.
 
 ## Skill Resources
 

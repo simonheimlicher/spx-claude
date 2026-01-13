@@ -4,6 +4,23 @@ description: Review TypeScript code strictly, reject mocking. Use when reviewing
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
+<accessing_skill_files>
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+
+```
+Base directory for this skill: {skill_dir}
+```
+
+Use this path to access skill files:
+
+- References: `{skill_dir}/references/`
+- Workflows: `{skill_dir}/workflows/`
+- Templates: `{skill_dir}/templates/`
+- Rules: `{skill_dir}/rules/`
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
+</accessing_skill_files>
+
 <essential_principles>
 **TRUST NO ONE. REJECT MOCKING. ZERO TOLERANCE.**
 
@@ -117,23 +134,6 @@ Execute these phases IN ORDER. Do not skip phases.
 **If verdict is APPROVED**: Continue to Phase 6.
 **If verdict is NOT APPROVED**: Skip graduation and commit, return feedback.
 </review_phases>
-
-<accessing_skill_files>
-When this skill is invoked, Claude Code provides the base directory in the loading message:
-
-```
-Base directory for this skill: {skill_dir}
-```
-
-Use this path to access skill files:
-
-- References: `{skill_dir}/references/`
-- Workflows: `{skill_dir}/workflows/`
-- Templates: `{skill_dir}/templates/`
-- Rules: `{skill_dir}/rules/`
-
-**IMPORTANT**: Do NOT search the project directory for skill files.
-</accessing_skill_files>
 
 <reference_index>
 

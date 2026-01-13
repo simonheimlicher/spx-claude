@@ -4,6 +4,21 @@ description: Read all specs for a story, feature, or capability before starting 
 allowed-tools: Read, Glob, Grep
 ---
 
+<accessing_skill_files>
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+
+```
+Base directory for this skill: {skill_dir}
+```
+
+Use this path to access skill files:
+
+- References: `{skill_dir}/references/`
+- Workflows: `{skill_dir}/workflows/`
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
+</accessing_skill_files>
+
 <essential_principles>
 **COMPLETE CONTEXT OR ABORT. NO EXCEPTIONS.**
 
@@ -58,21 +73,6 @@ All inputs route to: `workflows/ingest-context.md`
 
 This skill has a single workflow that handles all context ingestion.
 </routing>
-
-<accessing_skill_files>
-When this skill is invoked, Claude Code provides the base directory in the loading message:
-
-```
-Base directory for this skill: {skill_dir}
-```
-
-Use this path to access skill files:
-
-- References: `{skill_dir}/references/`
-- Workflows: `{skill_dir}/workflows/`
-
-**IMPORTANT**: Do NOT search the project directory for skill files.
-</accessing_skill_files>
 
 <reference_index>
 Detailed patterns and error handling:

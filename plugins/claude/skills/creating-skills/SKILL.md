@@ -3,6 +3,23 @@ name: creating-skills
 description: Create and refine Claude Code Skills. Use when creating skills, writing SKILL.md files, or improving existing skills.
 ---
 
+<accessing_skill_files>
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+
+```
+Base directory for this skill: {skill_dir}
+```
+
+Use this path for all skill file access:
+
+- References: `{skill_dir}/references/`
+- Workflows: `{skill_dir}/workflows/`
+- Templates: `{skill_dir}/templates/`
+- Scripts: `{skill_dir}/scripts/`
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
+</accessing_skill_files>
+
 <essential_principles>
 Skills are prompts. All prompting best practices apply. Be clear, be direct, assume Claude is smart.
 
@@ -104,23 +121,6 @@ description: | # What + When, ≤1024 chars, third person
 - `creating-skills`, `processing-pdfs`, `reviewing-code`
 
 </quick_reference>
-
-<accessing_skill_files>
-When this skill is invoked, Claude Code provides the base directory in the loading message:
-
-```
-Base directory for this skill: {skill_dir}
-```
-
-Use this path for all skill file access:
-
-- References: `{skill_dir}/references/`
-- Workflows: `{skill_dir}/workflows/`
-- Templates: `{skill_dir}/templates/`
-- Scripts: `{skill_dir}/scripts/`
-
-**IMPORTANT**: Do NOT search the project directory for skill files.
-</accessing_skill_files>
 
 <reference_index>
 All in `references/`:
