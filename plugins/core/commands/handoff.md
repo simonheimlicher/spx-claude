@@ -168,6 +168,7 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
    - Delete all other `.md` files in `.spx/sessions/` (except the new `TODO_` one)
    - Report what was deleted
 8. Confirm handoff created with full path
+
 </workflow>
 
 <example>

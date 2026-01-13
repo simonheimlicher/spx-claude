@@ -129,7 +129,7 @@ async function createMinimalSite(dir: string): Promise<void> {
     `
 title = "Test Site"
 baseURL = "http://localhost:1313/"
-`
+`,
   );
 
   await mkdir(join(dir, "content"), { recursive: true });
@@ -143,7 +143,7 @@ title: "Home"
 # Welcome
 
 This is a test site.
-`
+`,
   );
 
   await mkdir(join(dir, "layouts", "_default"), { recursive: true });
@@ -155,19 +155,19 @@ This is a test site.
 <head><title>{{ .Title }}</title></head>
 <body>{{ block "main" . }}{{ end }}</body>
 </html>
-`
+`,
   );
   await writeFile(
     join(dir, "layouts", "_default", "list.html"),
     `
 {{ define "main" }}{{ .Content }}{{ end }}
-`
+`,
   );
   await writeFile(
     join(dir, "layouts", "_default", "single.html"),
     `
 {{ define "main" }}{{ .Content }}{{ end }}
-`
+`,
   );
 }
 
@@ -284,7 +284,7 @@ async function createCaddyHarness(staticDir: string): Promise<CaddyHarness> {
     output discard
   }
 }
-`
+`,
       );
 
       process = execa("caddy", ["run", "--config", caddyfilePath], {

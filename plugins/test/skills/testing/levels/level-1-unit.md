@@ -371,7 +371,7 @@ describe("validateRunAuditInput", () => {
       validateRunAuditInput({
         urls: ["/"],
         preset: "invalid",
-      })
+      }),
     ).toBeNull();
   });
 
@@ -521,7 +521,7 @@ url_sets:
   critical:
     - /
     - /about/
-`
+`,
     );
 
     const config = await loadConfig(configPath);
@@ -741,7 +741,7 @@ describe("formatValidationErrors", () => {
       },
     ]);
 
-    expect(result).toContain('(got: "abc")');
+    expect(result).toContain("(got: \"abc\")");
   });
 
   test("formats multiple errors", () => {

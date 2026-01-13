@@ -38,6 +38,7 @@ If you're reviewing ADRs for a spec-driven work item (story/feature/capability),
 2. **Identify violations** - what contradicts testing principles
 3. **Output decision** - APPROVED or REJECTED with specific violations
 4. **Show correct approach** - what the architecture should be
+
 </process>
 
 <principles_to_enforce>

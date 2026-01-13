@@ -78,7 +78,8 @@ After gathering findings:
 2. Prioritize by impact
 3. Identify patterns across findings
 4. Make specific recommendations
-   </synthesis>
+
+</synthesis>
 
 <success_criteria>
 Analysis is complete when:

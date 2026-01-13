@@ -30,7 +30,8 @@ Ask about USER'S context (not domain knowledge):
 1. **Data shape**: "What structure will input have?"
 2. **Output type**: "What artifact to create?"
 3. **Constraints**: "Any specific requirements?"
-   </required_clarifications>
+
+</required_clarifications>
 
 <output_specification>
 {{Define what the artifact looks like}}

@@ -78,6 +78,7 @@ pip install {{packages}}
 2. **Execute**: Run the automation script
 3. **Validate**: Check output is correct
 4. **Clean up**: Remove temporary files
+
 </workflow>
 
 <success_criteria>

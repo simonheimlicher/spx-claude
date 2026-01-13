@@ -1,31 +1,36 @@
 {
   "name": "spx-claude",
   "metadata": {
-    "description": "SPX-based Claude Code plugin marketplace for spec-driven development"
+    "description": "Spec-Driven Engineering for Python and Typescript"
   },
   "owner": {
     "name": "Simon Heimlicher"
   },
   "plugins": [
     {
+      "name": "core",
+      "source": "./plugins/core",
+      "description": "Core engineering: /creating-skills, /committing-changes, /designing-frontend, /commit, /handoff, /pickup"
+    },
+    {
+      "name": "code",
+      "source": "./plugins/code",
+      "description": "Engineering maintainable, idiomatic and simple with Python and Typescrip"
+    },
+    {
       "name": "test",
       "source": "./plugins/test",
-      "description": "BDD testing skills: /testing (foundational)"
+      "description": "Behavior-driven testing skills: /testing (foundational)"
     },
     {
       "name": "typescript",
       "source": "./plugins/typescript",
-      "description": "TypeScript workflow: /testing-typescript, /coding-typescript, /reviewing-typescript, /architecting-typescript, /reviewing-typescript-architecture"
+      "description": "TypeScript engineering: /testing-typescript, /coding-typescript, /reviewing-typescript, /architecting-typescript, /reviewing-typescript-architecture"
     },
     {
       "name": "python",
       "source": "./plugins/python",
-      "description": "Python workflow: /autopython (command), /testing-python, /coding-python, /reviewing-python, /architecting-python, /reviewing-python-architecture"
-    },
-    {
-      "name": "claude",
-      "source": "./plugins/claude",
-      "description": "Claude Code: /creating-skills, /committing-changes, /designing-frontend, /ci (commit), /handoff, /pickup"
+      "description": "Python engineering: /testing-python, /coding-python, /reviewing-python, /architecting-python, /reviewing-python-architecture"
     },
     {
       "name": "specs",

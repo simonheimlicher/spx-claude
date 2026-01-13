@@ -40,7 +40,8 @@ The skill will:
 2. Read all documents from product level down to target
 3. Fail immediately if any required document is missing
 4. Output structured context summary when complete
-   </quick_start>
+
+</quick_start>
 
 <intake>
 Provide the work item you're working on:

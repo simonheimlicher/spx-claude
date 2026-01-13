@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git add:*), Bash(git commit:*), Skill
-description: Commit with Conventional Commits
+description: Commit following Conventional Commits
 argument-hint: [files-to-stage]
 ---
 
@@ -37,8 +37,8 @@ Review the status above. If nothing is staged, carefully review all changes and 
 
 **IMPORTANT:** When this command is invoked, you MUST:
 
-1. **Invoke the `claude:committing-changes` skill** using the Skill tool
+1. **Invoke the `core:committing-changes` skill** using the Skill tool
 
 ## What This Does
 
-Activates the `claude:committing-changes` skill. You must follow its instructions to the letter.
+Activates the `core:committing-changes` skill. You must follow its instructions to the letter.

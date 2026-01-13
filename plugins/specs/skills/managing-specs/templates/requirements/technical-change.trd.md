@@ -109,11 +109,11 @@ Define boundaries between components. These become integration points for Level 
 
 List each behavior the solution must guarantee. Assign to the lowest test level that can verify it.
 
-| #   | Guarantee                                                  | Level | Rationale                                            |
-| --- | ---------------------------------------------------------- | ----- | ---------------------------------------------------- |
-| G1  | [e.g., Price calculation handles edge cases]               | 1     | Pure arithmetic logic, no external dependencies      |
-| G2  | [e.g., Database persists order records]                    | 2     | Requires real PostgreSQL; use Docker harness         |
-| G3  | [e.g., Payment processing completes with real credentials] | 3     | Requires Stripe test account and real API connection |
+| #  | Guarantee                                                  | Level | Rationale                                            |
+| -- | ---------------------------------------------------------- | ----- | ---------------------------------------------------- |
+| G1 | [e.g., Price calculation handles edge cases]               | 1     | Pure arithmetic logic, no external dependencies      |
+| G2 | [e.g., Database persists order records]                    | 2     | Requires real PostgreSQL; use Docker harness         |
+| G3 | [e.g., Payment processing completes with real credentials] | 3     | Requires Stripe test account and real API connection |
 
 ### BDD Scenarios
 

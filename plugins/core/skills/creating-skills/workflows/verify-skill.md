@@ -4,7 +4,8 @@
 Read these reference files NOW:
 
 1. `references/core-principles.md`
-   </required_reading>
+
+</required_reading>
 
 <process>
 ## Step 1: Identify Skill to Verify

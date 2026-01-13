@@ -6,7 +6,8 @@ Read these reference files NOW:
 1. `references/core-principles.md`
 2. `references/use-xml-tags.md`
 3. `references/skill-patterns.md`
-   </required_reading>
+
+</required_reading>
 
 <process>
 ## Step 1: Adaptive Requirements Gathering

@@ -4,7 +4,8 @@
 Read these reference files NOW:
 
 1. `references/use-xml-tags.md`
-   </required_reading>
+
+</required_reading>
 
 <process>
 ## Step 1: Identify Target Skill

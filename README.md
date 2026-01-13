@@ -29,7 +29,7 @@ claude plugin marketplace add ~/Code/claude-repo
 claude plugin install claude@spx-claude
 ```
 
-Now the slash command `/claude:ci` and the skill `creating-skills` are available in all projects on your machine.
+Now the slash command `/claude:commit` and the skill `creating-skills` are available in all projects on your machine.
 
 ## Repository Structure
 
@@ -44,7 +44,7 @@ Refer to the [official plugin marketplace documentation](https://code.claude.com
 │   │   ├── .claude-plugin
 │   │   │   └── plugin.json
 │   │   ├── commands
-│   │   │   └── ci.md
+│   │   │   └── commit.md
 │   │   └── skills
 │   │       ├── committing-changes
 │   │       │   └── SKILL.md
@@ -117,7 +117,7 @@ Claude Code productivity skills.
 | ------- | --------------------- | --------------------------------------- |
 | Skill   | `/creating-skills`    | Create maintainable skills              |
 | Skill   | `/committing-changes` | Commit message guidance                 |
-| Command | `/ci`                 | Git commit with Conventional Commits    |
+| Command | `/commit`             | Git commit with Conventional Commits    |
 | Command | `/handoff`            | Create timestamped context handoff      |
 | Command | `/pickup`             | Load and continue from previous handoff |
 

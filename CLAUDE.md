@@ -266,7 +266,7 @@ Productivity skills and commands for Claude Code.
 
 | Command    | Purpose                                             |
 | ---------- | --------------------------------------------------- |
-| `/ci`      | Git commit with Conventional Commits (auto-context) |
+| `/commit`  | Git commit with Conventional Commits (auto-context) |
 | `/handoff` | Create timestamped context handoff                  |
 | `/pickup`  | Load and continue from previous handoff             |
 
@@ -694,7 +694,7 @@ spx-claude/
 │   │   ├── .claude-plugin/
 │   │   │   └── plugin.json       # Version: 0.4.0
 │   │   ├── commands/
-│   │   │   ├── ci.md
+│   │   │   ├── commit.md
 │   │   │   ├── handoff.md
 │   │   │   └── pickup.md
 │   │   └── skills/

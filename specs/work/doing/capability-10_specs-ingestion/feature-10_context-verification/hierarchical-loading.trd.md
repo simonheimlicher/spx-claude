@@ -65,12 +65,12 @@ through file system traversal and pattern matching, resulting in abort-on-missin
 
 ### Guarantees Required
 
-| #   | Guarantee                                               | Level | Rationale                                       |
-| --- | ------------------------------------------------------- | ----- | ----------------------------------------------- |
-| G1  | Path pattern matching correctly identifies documents    | 1     | Pure string matching logic, no external deps    |
-| G2  | File system verification finds existing documents       | 2     | Requires real file system with SPX structure    |
-| G3  | Abort protocol generates actionable error messages      | 1     | Pure string formatting, can test with fixtures  |
-| G4  | Complete workflow integrates with implementation skills | 3     | Requires real skill invocation and coordination |
+| #  | Guarantee                                               | Level | Rationale                                       |
+| -- | ------------------------------------------------------- | ----- | ----------------------------------------------- |
+| G1 | Path pattern matching correctly identifies documents    | 1     | Pure string matching logic, no external deps    |
+| G2 | File system verification finds existing documents       | 2     | Requires real file system with SPX structure    |
+| G3 | Abort protocol generates actionable error messages      | 1     | Pure string formatting, can test with fixtures  |
+| G4 | Complete workflow integrates with implementation skills | 3     | Requires real skill invocation and coordination |
 
 ### BDD Scenarios
 

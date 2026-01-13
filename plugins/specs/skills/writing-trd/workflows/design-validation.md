@@ -79,11 +79,11 @@ Can this be verified with pure logic and dependency injection?
 
 Build the table with unique IDs:
 
-| #   | Guarantee             | Level | Rationale                   |
-| --- | --------------------- | ----- | --------------------------- |
-| G1  | [Behavior guaranteed] | 1     | [Why Level 1 is sufficient] |
-| G2  | [Behavior guaranteed] | 2     | [Why Level 2 is needed]     |
-| G3  | [Behavior guaranteed] | 3     | [Why Level 3 is needed]     |
+| #  | Guarantee             | Level | Rationale                   |
+| -- | --------------------- | ----- | --------------------------- |
+| G1 | [Behavior guaranteed] | 1     | [Why Level 1 is sufficient] |
+| G2 | [Behavior guaranteed] | 2     | [Why Level 2 is needed]     |
+| G3 | [Behavior guaranteed] | 3     | [Why Level 3 is needed]     |
 
 **Rationale must explain:**
 

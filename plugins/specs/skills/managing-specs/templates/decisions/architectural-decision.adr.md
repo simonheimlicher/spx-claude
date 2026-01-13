@@ -34,8 +34,8 @@ IMPORTANT: Do NOT include the ADR number in this header.
 
 > **Architect**: Invoke the following skills efore writing this section:
 >
-> 1. `spx-claude:test` skill
-> 2. `spx-claude:{language}-test` where `{language}` is the language-specific skill
+> 1. `test:testing` skill
+> 2. `test:testing-{language}` where `{language}` is the language-specific skill
 >
 > This section is the contract between architect and coder.
 

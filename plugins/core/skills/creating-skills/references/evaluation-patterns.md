@@ -18,7 +18,8 @@ This approach ensures you're solving actual problems rather than anticipating re
 4. **Write minimal instructions**: Create just enough content to address the gaps and pass evaluations.
 
 5. **Iterate**: Execute evaluations, compare against baseline, refine.
-   </evaluation_driven_development>
+
+</evaluation_driven_development>
 
 <evaluation_structure>
 

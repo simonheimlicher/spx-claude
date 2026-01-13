@@ -32,17 +32,17 @@ Product
 | Document      | Pattern                 | Required? | Purpose                              |
 | ------------- | ----------------------- | --------- | ------------------------------------ |
 | Project Guide | `CLAUDE.md`             | ✅ YES    | Project structure and navigation     |
-| Product ADRs  | `decisions/adr-*.md`    | ⚠️ NO     | Product-wide architectural decisions |
-| Product PRD   | `{product-name}.prd.md` | ⚠️ NO     | Optional product-wide requirements   |
+| Product ADRs  | `decisions/adr-*.md`    | ⚠️ NO      | Product-wide architectural decisions |
+| Product PRD   | `{product-name}.prd.md` | ⚠️ NO      | Optional product-wide requirements   |
 
 ### Capability-Level Documents
 
 **Location**: `specs/work/{status}/capability-NN_{slug}/`
 
-| Document        | Pattern                  | Required?                 | Purpose                          |
-| --------------- | ------------------------ | ------------------------- | -------------------------------- |
-| Capability Spec | `{slug}.capability.md`   | ✅ YES                    | E2E scenario definition          |
-| PRD             | `{topic}.prd.md`         | ✅ YES (strict mode)      | Product requirements catalyst    |
+| Document        | Pattern                  | Required?                | Purpose                          |
+| --------------- | ------------------------ | ------------------------ | -------------------------------- |
+| Capability Spec | `{slug}.capability.md`   | ✅ YES                   | E2E scenario definition          |
+| PRD             | `{topic}.prd.md`         | ✅ YES (strict mode)     | Product requirements catalyst    |
 | Capability ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Capability-scoped decisions      |
 | Tests           | `tests/`                 | ⚠️ NO (determines status) | Progress tests before graduation |
 
@@ -52,10 +52,10 @@ Product
 
 **Location**: `specs/work/{status}/capability-NN_{slug}/feature-NN_{slug}/`
 
-| Document     | Pattern                  | Required?                 | Purpose                          |
-| ------------ | ------------------------ | ------------------------- | -------------------------------- |
-| Feature Spec | `{slug}.feature.md`      | ✅ YES                    | Integration scenario definition  |
-| TRD          | `{topic}.trd.md`         | ✅ YES (strict mode)      | Technical requirements catalyst  |
+| Document     | Pattern                  | Required?                | Purpose                          |
+| ------------ | ------------------------ | ------------------------ | -------------------------------- |
+| Feature Spec | `{slug}.feature.md`      | ✅ YES                   | Integration scenario definition  |
+| TRD          | `{topic}.trd.md`         | ✅ YES (strict mode)     | Technical requirements catalyst  |
 | Feature ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Feature-scoped decisions         |
 | Tests        | `tests/`                 | ⚠️ NO (determines status) | Progress tests before graduation |
 
@@ -65,9 +65,9 @@ Product
 
 **Location**: `specs/work/{status}/.../story-NN_{slug}/`
 
-| Document   | Pattern           | Required?                 | Purpose                          |
-| ---------- | ----------------- | ------------------------- | -------------------------------- |
-| Story Spec | `{slug}.story.md` | ✅ YES                    | Atomic implementation definition |
+| Document   | Pattern           | Required?                | Purpose                          |
+| ---------- | ----------------- | ------------------------ | -------------------------------- |
+| Story Spec | `{slug}.story.md` | ✅ YES                   | Atomic implementation definition |
 | Tests      | `tests/`          | ⚠️ NO (determines status) | Progress tests before graduation |
 | Completion | `tests/DONE.md`   | ⚠️ NO (signals DONE)      | Evidence of completion           |
 

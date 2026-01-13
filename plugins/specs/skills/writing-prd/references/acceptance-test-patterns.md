@@ -35,12 +35,12 @@ test("user achieves [outcome] through [workflow]", async ({ page }) => {
   await page.goto("/entry-point");
 
   // When: User performs workflow
-  await page.click('[data-testid="action-1"]');
-  await page.fill('[data-testid="input"]', "test data");
-  await page.click('[data-testid="action-2"]');
+  await page.click("[data-testid=\"action-1\"]");
+  await page.fill("[data-testid=\"input\"]", "test data");
+  await page.click("[data-testid=\"action-2\"]");
 
   // Then: Verify observable outcome
-  await expect(page.locator('[data-testid="success"]')).toBeVisible();
+  await expect(page.locator("[data-testid=\"success\"]")).toBeVisible();
 
   // And: Verify business metric
   const completionTime = Date.now() - startTime;
