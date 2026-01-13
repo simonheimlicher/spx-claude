@@ -1060,6 +1060,21 @@ Full report: `reports/review_{name}_{timestamp}.md`
 
 ---
 
+## Accessing Skill Files
+
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+```
+
+Base directory for this skill: {skill_dir}
+
+```
+Use this path to access skill files:
+
+- Rules: `{skill_dir}/rules/`
+- Templates: `{skill_dir}/templates/`
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
+
 ## Skill Resources
 
 - `rules/mypy_strict.toml` - Strict Mypy configuration

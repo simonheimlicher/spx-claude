@@ -209,6 +209,20 @@ Use the project's template. Each ADR must include:
 
 </what_you_do_not_do>
 
+<accessing_skill_files>
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+
+```
+Base directory for this skill: {skill_dir}
+```
+
+Use this path to access skill files:
+
+- References: `{skill_dir}/references/`
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
+</accessing_skill_files>
+
 <reference_index>
 Detailed patterns and principles:
 

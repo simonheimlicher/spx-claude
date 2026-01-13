@@ -572,6 +572,20 @@ Use click or argparse with subcommand pattern.
 
 ---
 
+## Accessing Skill Files
+
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+
+```
+Base directory for this skill: {skill_dir}
+```
+
+Use this path to access skill files:
+
+- References: `{skill_dir}/references/`
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
+
 ## Skill Resources
 
 - `references/type-system-patterns.md` - Python type system guidance

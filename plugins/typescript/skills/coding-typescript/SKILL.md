@@ -115,6 +115,21 @@ Determine your mode from the input, then follow the appropriate workflow.
 
 </core_principles>
 
+<accessing_skill_files>
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+
+```
+Base directory for this skill: {skill_dir}
+```
+
+Use this path to access skill files:
+
+- References: `{skill_dir}/references/`
+- Workflows: `{skill_dir}/workflows/`
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
+</accessing_skill_files>
+
 <reference_index>
 
 | File                                   | Purpose                               |

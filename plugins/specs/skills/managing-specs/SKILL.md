@@ -23,11 +23,19 @@ Use progressive disclosure - read only what you need.
 
 <how_to_access>
 **All templates are stored within this skill's base directory.**
+
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+
+```
+Base directory for this skill: {skill_dir}
+```
+
+Use this exact path for all file access. Throughout this documentation, `${SKILL_DIR}` is a placeholder—Claude must substitute it manually from the loading message.
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
 </how_to_access>
 
 <skill_directory_structure>
-
-When you invoke `/managing-specs`, Claude loads this skill from the skill's base directory. Throughout this documentation, we refer to this as `${SKILL_DIR}`.
 
 **The skill's base directory path pattern:**
 

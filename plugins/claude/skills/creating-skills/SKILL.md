@@ -105,6 +105,23 @@ description: | # What + When, ≤1024 chars, third person
 
 </quick_reference>
 
+<accessing_skill_files>
+When this skill is invoked, Claude Code provides the base directory in the loading message:
+
+```
+Base directory for this skill: {skill_dir}
+```
+
+Use this path for all skill file access:
+
+- References: `{skill_dir}/references/`
+- Workflows: `{skill_dir}/workflows/`
+- Templates: `{skill_dir}/templates/`
+- Scripts: `{skill_dir}/scripts/`
+
+**IMPORTANT**: Do NOT search the project directory for skill files.
+</accessing_skill_files>
+
 <reference_index>
 All in `references/`:
 
