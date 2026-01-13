@@ -44,3 +44,4 @@ out/
 *.temp
 *.bak
 *.orig
+/.coverage

@@ -47,7 +47,7 @@ def needs_blank_line_before_tag(output_lines: list[str]) -> bool:
 
 def process_fence_marker(
     line: str, in_fence: bool, fence: str | None
-) -> tuple[bool, str | None, re.Pattern | None]:
+) -> tuple[bool, str | None, re.Pattern[str] | None]:
     """Process code fence markers and return updated fence state."""
     m = FENCE_START_RE.match(line)
     if not m:
@@ -60,6 +60,7 @@ def process_fence_marker(
         return True, marker, fence_end_re
 
     # Potentially closing fence - check if it matches
+    assert fence is not None, "fence must be set when in_fence is True"
     fence_end_re = re.compile(FENCE_END_RE.pattern.format(fence=re.escape(fence)))
     if fence_end_re.match(line):
         return False, None, None
@@ -107,6 +108,7 @@ def fix_file(path: Path) -> bool:
         if not in_fence:
             should_skip, modified_line = process_closing_tag(line, out)
             if should_skip:
+                assert modified_line is not None
                 out.append(modified_line)
                 continue
 

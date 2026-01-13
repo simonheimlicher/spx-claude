@@ -29,7 +29,7 @@ claude plugin marketplace add ~/Code/claude-repo
 claude plugin install claude@spx-claude
 ```
 
-Now the slash command `/claude:commit` and the skill `creating-skills` are available in all projects on your machine.
+Now the slash command `/core:commit` and the skill `creating-skills` are available in all projects on your machine.
 
 ## Repository Structure
 
