@@ -33,6 +33,7 @@ When reviewing tests, verify:
 | Tests implementation | `expect(mockFn).toHaveBeenCalledWith(...)` | REJECTED |
 | Wrong level          | Unit test for Chrome automation            | REJECTED |
 | Arbitrary test data  | `"test@example.com"` hardcoded             | REJECTED |
+| Deep relative import | `from "../../../../../../tests/helpers"`   | REJECTED |
 
 ```typescript
 // ❌ REJECT: Mocking
@@ -100,6 +101,7 @@ If you're reviewing code for a spec-driven work item (story/feature/capability),
 - Hardcoded secrets
 - `eval()` or `new Function()` usage
 - `child_process.exec()` with untrusted input
+- Deep relative imports (2+ levels of `../`) to stable locations
 
 </verdict_definitions>
 

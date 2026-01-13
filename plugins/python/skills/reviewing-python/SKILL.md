@@ -39,6 +39,8 @@ When reviewing tests, you MUST verify:
 | Wrong level                 | Unit test for Dropbox OAuth    | REJECTED |
 | No escalation justification | Level 3 without explanation    | REJECTED |
 | Arbitrary test data         | `"test@example.com"` hardcoded | REJECTED |
+| Deep relative import        | `from .....tests.helpers`      | REJECTED |
+| sys.path manipulation       | `sys.path.insert(0, ...)`      | REJECTED |
 
 ### What to Look For
 
@@ -87,7 +89,40 @@ Execute these phases IN ORDER. Do not skip phases.
 
 ### Phase 1: Static Analysis
 
-Run all three tools. ALL must pass.
+Run all tools. ALL must pass.
+
+#### 1.0 Import Hygiene Check (Automated)
+
+**Run FIRST before other tools.** Deep relative imports and `sys.path` manipulation are blocking violations.
+
+```bash
+# Detect deep relative imports (2+ levels)
+grep -rn --include="*.py" 'from \.\.\.' src/ tests/
+
+# Detect sys.path manipulation
+grep -rn --include="*.py" 'sys\.path\.(insert\|append)' src/ tests/
+```
+
+**Interpretation:**
+
+| Output        | Verdict | Action                                        |
+| ------------- | ------- | --------------------------------------------- |
+| No matches    | ✅ PASS | Continue to next check                        |
+| Matches found | ❌ FAIL | List violations, continue checks, will REJECT |
+
+**Example output (blocking):**
+
+```text
+src/myproject/commands/sync.py:5:from ...shared.config import Config
+tests/unit/test_parser.py:3:from .....tests.helpers import fixture
+```
+
+**For each match, determine:**
+
+1. **Is this module-internal?** (Same package, moves together) → ⚠️ WARN, not blocking
+2. **Is this infrastructure?** (tests/, lib/, shared/) → ❌ REJECT, use absolute import
+
+See Phase 4.7 "Import Hygiene" for the full decision tree.
 
 #### Tool Invocation Strategy
 
@@ -360,7 +395,181 @@ Read ALL code under review. Check each item:
 - [ ] Single responsibility per module/class
 - [ ] Clear separation of concerns (IO vs logic)
 
-#### 4.7 Testing
+#### 4.7 Import Hygiene
+
+**Before evaluating any import, ask yourself:**
+
+> "Is this import referring to a **module-internal file** (same package, moves together) or **infrastructure** (test utilities, shared libraries, other packages)?"
+
+- [ ] No deep relative imports (2+ levels of `..`)
+- [ ] Imports to infrastructure use absolute imports, not relative paths
+- [ ] Module-internal files may use `.` or `..` (1 level max)
+- [ ] No `sys.path` manipulation to "fix" import errors
+- [ ] Project properly packaged with editable install
+
+##### Module-Internal vs. Infrastructure
+
+**Module-internal files** live in the same package and move together. Relative imports are acceptable:
+
+```python
+# ✅ ACCEPTABLE: Same package, files move together
+# File: src/myproject/parser/lexer.py
+from . import tokens  # ./tokens.py in same directory
+from .position import Position  # Part of "parser" package
+```
+
+**Infrastructure** is stable code that doesn't move when your feature moves. Must use absolute imports:
+
+```python
+# ❌ REJECT: Deep relative to test infrastructure
+# File: specs/work/doing/capability-21/feature-54/story-54/tests/test_validate.py
+from .......tests.helpers import create_tree
+
+# ✅ ACCEPT: Absolute import (requires proper packaging)
+from tests.helpers import create_tree
+
+# or if tests installed as package:
+from myproject_tests.helpers import create_tree
+```
+
+##### Depth Rules (Strict)
+
+| Depth     | Syntax              | Verdict   | Rationale                                      |
+| --------- | ------------------- | --------- | ---------------------------------------------- |
+| Same dir  | `from . import x`   | ✅ OK     | Module-internal, same package                  |
+| 1 level   | `from .. import x`  | ⚠️ REVIEW  | Is this truly module-internal?                 |
+| 2+ levels | `from ... import x` | ❌ REJECT | Use absolute import — crosses package boundary |
+
+##### Examples: Module-Internal (Relative OK)
+
+```python
+# File: src/myproject/commands/sync/__init__.py
+from .validate import validate_args  # ✅ Same command module
+from .options import SyncOptions  # ✅ Same command module
+from ..shared import format_output  # ⚠️ Review: is "shared" module-internal?
+
+# File: src/myproject/parser/ast/node.py
+from .position import Position  # ✅ Same AST package
+from ..types import NodeType  # ⚠️ Borderline: "../types" might be shared
+```
+
+##### Examples: Infrastructure (Absolute Import Required)
+
+```python
+# ❌ REJECT: These are all infrastructure
+from .......tests.helpers.db import create_test_db
+from ....lib.logging import Logger
+from ...shared.config import Config
+
+# ✅ ACCEPT: Use absolute imports with proper packaging
+from tests.helpers.db import create_test_db
+from myproject.lib.logging import Logger
+from myproject.shared.config import Config
+```
+
+##### Examples: Test Files (Special Attention)
+
+Test files are the most common source of import problems:
+
+```python
+# File: tests/integration/test_api.py
+# ❌ REJECT: Relative imports from tests to src
+from ...src.myproject.services import UserService
+
+# ✅ ACCEPT: Absolute imports (package installed)
+from myproject.services import UserService
+from tests.fixtures import create_user
+
+# File: specs/work/doing/story-42/tests/test_feature.py
+# ❌ REJECT: Deep relative to test infrastructure
+from .......tests.helpers import fixture
+
+# ✅ ACCEPT: Absolute import
+from tests.helpers import fixture
+```
+
+##### Required Project Setup
+
+When rejecting code for import issues, guide the developer to fix project structure:
+
+**1. Use `src` layout:**
+
+```text
+myproject/
+├── src/
+│   └── myproject/
+│       ├── __init__.py
+│       └── ...
+├── tests/
+│   ├── __init__.py      # Make tests a package too
+│   ├── helpers/
+│   │   └── __init__.py
+│   └── ...
+└── pyproject.toml
+```
+
+**2. Configure `pyproject.toml`:**
+
+```toml
+[project]
+name = "myproject"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Or for modern tools:
+[tool.hatch.build.targets.wheel]
+packages = ["src/myproject"]
+```
+
+**3. Install in editable mode:**
+
+```bash
+# With uv
+uv pip install -e .
+
+# With pip
+pip install -e .
+```
+
+**4. For test utilities as importable package:**
+
+```toml
+# In pyproject.toml
+[tool.pytest.ini_options]
+pythonpath = ["src", "tests"]
+```
+
+##### Decision Tree for Import Review
+
+```text
+Is this import using 2+ levels of relative (from ... import)?
+├── NO → ✅ Likely acceptable (verify it's truly module-internal)
+└── YES → Is the target infrastructure (tests/, lib/, shared/)?
+    ├── YES → ❌ REJECT: Use absolute import with proper packaging
+    └── NO → Is this a temporary/experimental structure?
+        ├── YES → ⚠️ WARN: Will need refactoring before merge
+        └── NO → ❌ REJECT: Restructure or fix package setup
+```
+
+##### Anti-Patterns to Reject
+
+```python
+# ❌ REJECT: sys.path manipulation
+import sys
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from myproject import something
+
+# ❌ REJECT: Deep relative imports
+from .....lib.utils import helper
+
+# ❌ REJECT: Assuming working directory
+# (breaks when run from different directory)
+from lib.utils import helper  # Only works if CWD is project root
+```
+
+#### 4.8 Testing
 
 **Test Existence & Coverage**:
 
@@ -619,10 +828,10 @@ When verdict is **REJECTED** or **CONDITIONAL**, provide actionable feedback to 
 
 ### Issues Found
 
-| #   | File:Line   | Category   | Issue               | Suggested Fix            |
-| --- | ----------- | ---------- | ------------------- | ------------------------ |
-| 1   | `foo.py:42` | Type Error | Missing return type | Add `-> int`             |
-| 2   | `bar.py:17` | Security   | Bare except         | Catch specific exception |
+| # | File:Line   | Category   | Issue               | Suggested Fix            |
+| - | ----------- | ---------- | ------------------- | ------------------------ |
+| 1 | `foo.py:42` | Type Error | Missing return type | Add `-> int`             |
+| 2 | `bar.py:17` | Security   | Bare except         | Catch specific exception |
 
 ### Tool Outputs
 
@@ -690,6 +899,8 @@ The code is **REJECTED** if ANY of these are true:
 | Hardcoded secrets detected                   | Manual/Semgrep |
 | `eval()` or `exec()` without justification   | Manual/Semgrep |
 | `shell=True` with untrusted input            | Manual/Semgrep |
+| Deep relative imports (2+ levels) to infra   | grep/Manual    |
+| `sys.path` manipulation to fix import errors | grep/Manual    |
 | Design or architectural problems             | Manual         |
 
 ### BLOCKED Criteria

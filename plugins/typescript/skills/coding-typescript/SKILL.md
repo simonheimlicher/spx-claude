@@ -111,8 +111,9 @@ Determine your mode from the input, then follow the appropriate workflow.
 
 5. **Humility**: Your code must pass review. Write code that will survive adversarial review.
 
-6. **Clean Architecture**: Dependency injection, single responsibility, no circular imports.
-   </core_principles>
+6. **Clean Architecture**: Dependency injection, single responsibility, no circular imports, **no deep relative imports**.
+
+</core_principles>
 
 <reference_index>
 
@@ -157,6 +158,43 @@ const API_KEY = "sk-1234567890abcdef";
 // RIGHT
 const API_KEY = process.env.API_KEY;
 if (!API_KEY) throw new Error("API_KEY required");
+```
+
+**Never Use Deep Relative Imports**:
+
+Before writing any import, ask: *"Is this a module-internal file (same module, moves together) or infrastructure (lib/, tests/helpers/, shared/)?"*
+
+```typescript
+// WRONG: Deep relatives to stable locations — will REJECT in review
+import { helper } from "../../../../../../tests/helpers/tree-builder";
+import { Logger } from "../../../../lib/logging";
+import { Config } from "../../../shared/config";
+
+// RIGHT: Configure path aliases in tsconfig.json
+import { Logger } from "@lib/logging";
+import { Config } from "@shared/config";
+import { helper } from "@test/helpers/tree-builder";
+```
+
+**Depth Rules:**
+
+- `./sibling` — ✅ OK (same directory, module-internal)
+- `../parent` — ⚠️ Review (is it truly module-internal?)
+- `../../` or deeper — ❌ REJECT (use path alias)
+
+**Configure tsconfig.json:**
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@test/*": ["tests/*"],
+      "@lib/*": ["lib/*"]
+    }
+  }
+}
 ```
 
 </what_not_to_do>

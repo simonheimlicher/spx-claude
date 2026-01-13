@@ -10,6 +10,36 @@
 
 Run all tools. ALL must pass.
 
+### 1.0 Import Hygiene Check (Automated)
+
+**Run FIRST before other tools.** Deep relative imports are a blocking violation.
+
+```bash
+# Detect deep relative imports (2+ levels of ../)
+grep -rn --include="*.ts" --include="*.tsx" 'from ["'"'"']\.\.\/\.\.\/' src/ test/ tests/
+```
+
+**Interpretation:**
+
+| Output        | Verdict | Action                                        |
+| ------------- | ------- | --------------------------------------------- |
+| No matches    | ✅ PASS | Continue to next check                        |
+| Matches found | ❌ FAIL | List violations, continue checks, will REJECT |
+
+**Example output (blocking):**
+
+```text
+src/commands/build/index.ts:5:import { Config } from "../../shared/config";
+tests/unit/parser.test.ts:3:import { helper } from "../../../test-utils/fixtures";
+```
+
+**For each match, determine:**
+
+1. **Is this module-internal?** (Same module, moves together) → ⚠️ WARN, not blocking
+2. **Is this a stable location?** (lib/, tests/helpers/, shared/) → ❌ REJECT, must use alias
+
+See `references/manual-review-checklist.md` → "Import Hygiene" for the full decision tree.
+
 ### Tool Invocation Strategy
 
 Priority order:

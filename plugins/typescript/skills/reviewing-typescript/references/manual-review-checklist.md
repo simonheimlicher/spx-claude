@@ -49,6 +49,158 @@ Read ALL code under review. Check each item:
 - [ ] Single responsibility per module/class
 - [ ] Clear separation of concerns (IO vs logic)
 
+## Import Hygiene
+
+**Before evaluating any import, ask yourself:**
+
+> "Is this import referring to a **module-internal file** (lives in the same module, will move together) or **infrastructure** (stable locations like `lib/`, `tests/helpers/`, `shared/`)?"
+
+- [ ] No deep relative imports (2+ levels of `../`)
+- [ ] Imports to stable locations use path aliases, not relative paths
+- [ ] Module-internal files may use `./` or `../` (1 level max)
+- [ ] Test files use `@test/` alias for shared test infrastructure
+
+### Module-Internal vs. Infrastructure
+
+**Module-internal files** live together and move together. Relative imports are acceptable because if you move the module, you move both files:
+
+```typescript
+// ✅ ACCEPTABLE: Same module, files move together
+// File: src/parser/lexer.ts
+import { Position } from "./position"; // These files are part of "parser" module
+import { Token } from "./token"; // ./token.ts is in same directory
+```
+
+**Stable locations** are infrastructure that doesn't move when your feature moves. These MUST use path aliases:
+
+```typescript
+// ❌ REJECT: test helpers are stable infrastructure
+// File: specs/work/doing/capability-21/feature-54/story-54/tests/validate.test.ts
+import { helper } from "../../../../../../tests/helpers/tree-builder";
+
+// ✅ ACCEPT: Use path alias for stable locations
+import { helper } from "@test/helpers/tree-builder";
+```
+
+### Depth Rules (Strict)
+
+| Depth     | Example        | Verdict   | Rationale                                   |
+| --------- | -------------- | --------- | ------------------------------------------- |
+| Same dir  | `./utils`      | ✅ OK     | Module-internal, same module                |
+| 1 level   | `../types`     | ⚠️ REVIEW  | Is this truly module-internal?              |
+| 2+ levels | `../../config` | ❌ REJECT | Use path alias — this crosses module bounds |
+
+### Examples: Module-Internal (Relative OK)
+
+```typescript
+// File: src/commands/build/index.ts
+import { formatOutput } from "../shared"; // ⚠️ Review: is "shared" truly module-internal?
+import { BuildOptions } from "./types"; // ✅ Same command module
+import { validateArgs } from "./validate"; // ✅ Same command module
+
+// File: src/parser/ast/node.ts
+import { NodeType } from "../types"; // ⚠️ Borderline: "../types" might be shared infrastructure
+import { Position } from "./position"; // ✅ Same AST module
+```
+
+### Examples: Stable Locations (Path Alias Required)
+
+```typescript
+// ❌ REJECT: These are all stable infrastructure
+import { createTestDb } from "../../../../../../tests/helpers/db";
+import { Logger } from "../../../../lib/logging";
+import { Config } from "../../../shared/config";
+import { mockServer } from "../../../test-utils/server";
+
+// ✅ ACCEPT: Use configured path aliases
+import { Logger } from "@lib/logging";
+import { Config } from "@shared/config";
+import { createTestDb } from "@test/helpers/db";
+import { mockServer } from "@test/utils/server";
+```
+
+### Examples: Test Files (Special Attention)
+
+Test files are the most common source of deep relative imports:
+
+```typescript
+// File: tests/integration/api/users.test.ts
+// ❌ REJECT: Reaching back into src with relatives
+import { UserService } from "../../../src/services/user";
+import { createFixture } from "../../helpers/fixtures";
+
+// ✅ ACCEPT: Path aliases make intent clear
+import { UserService } from "@/services/user";
+import { createFixture } from "@test/helpers/fixtures";
+
+// File: specs/work/doing/story-42/tests/feature.test.ts
+// ❌ REJECT: Deep relative to shared test helpers
+import { helper } from "../../../../../../tests/helpers/tree-builder";
+
+// ✅ ACCEPT: Alias for test infrastructure
+import { helper } from "@test/helpers/tree-builder";
+```
+
+### Examples: Monorepo Packages
+
+```typescript
+// File: packages/cli/src/commands/init.ts
+// ❌ REJECT: Crossing package boundaries with relatives
+import { Logger } from "../../../shared/src/logging";
+import { Config } from "../../config/src/types";
+
+// ✅ ACCEPT: Use workspace package imports
+import { Config } from "@myorg/config";
+import { Logger } from "@myorg/shared";
+```
+
+### Required tsconfig.json Setup
+
+When you reject code for deep imports, guide the developer to configure aliases:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@test/*": ["tests/*"],
+      "@lib/*": ["lib/*"],
+      "@shared/*": ["shared/*"]
+    }
+  }
+}
+```
+
+For monorepos with project references:
+
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@myorg/shared": ["packages/shared/src"],
+      "@myorg/config": ["packages/config/src"]
+    }
+  },
+  "references": [
+    { "path": "../shared" },
+    { "path": "../config" }
+  ]
+}
+```
+
+### Decision Tree for Import Review
+
+```text
+Is this import using 2+ levels of "../"?
+├── NO → ✅ Likely acceptable (verify it's truly module-internal)
+└── YES → Is the target a stable location (lib/, tests/helpers/, shared/)?
+    ├── YES → ❌ REJECT: Must use path alias
+    └── NO → Is this a temporary/experimental structure?
+        ├── YES → ⚠️ WARN: Will need refactoring before merge
+        └── NO → ❌ REJECT: Restructure or add path alias
+```
+
 ## Testing
 
 **Test Existence & Coverage**:

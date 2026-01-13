@@ -232,6 +232,42 @@ def sync_files(source: Path, dest: Path, logger: Logger) -> SyncResult:
     logger.info(f"Syncing {source} to {dest}")
 ```
 
+**Import Hygiene**:
+
+Before writing any import, ask: *"Is this a module-internal file (same package, moves together) or infrastructure (tests/, lib/, shared/)?"*
+
+```python
+# WRONG: Deep relative imports to infrastructure — will REJECT in review
+from .....tests.helpers import create_fixture
+from ...shared.config import Config
+from ....lib.logging import Logger
+
+# WRONG: sys.path manipulation
+import sys
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+# RIGHT: Use absolute imports with proper packaging
+from tests.helpers import create_fixture
+from myproject.shared.config import Config
+from myproject.lib.logging import Logger
+```
+
+**Depth Rules:**
+
+- `from . import sibling` — ✅ OK (same package, module-internal)
+- `from .. import parent` — ⚠️ Review (is it truly module-internal?)
+- `from ... import` or deeper — ❌ REJECT (use absolute import)
+
+**Fix import issues with proper packaging:**
+
+```bash
+# Install project in editable mode
+uv pip install -e .
+# or
+pip install -e .
+```
+
 ### Phase 3: Self-Verification
 
 Before declaring completion, run ALL verification tools:
