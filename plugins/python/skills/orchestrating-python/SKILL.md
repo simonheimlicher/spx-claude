@@ -1,6 +1,6 @@
 ---
-name: auto-python
-description: Implement Python stories sequentially with specs, testing, coding, and review. Use when implementing features with multiple stories or when auto-implementing a feature.
+name: orchestrating-python
+description: Orchestrate Python story implementation through specs, testing, coding, and review. Use when implementing features with multiple stories or when auto-implementing a feature.
 ---
 
 <objective>

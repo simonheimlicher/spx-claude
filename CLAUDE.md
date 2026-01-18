@@ -267,7 +267,7 @@ Complete TypeScript development workflow with testing, implementation, and revie
 | `/reviewing-typescript`              | Strict code review with zero-tolerance                     |
 | `/architecting-typescript`           | ADR producer with testing strategy                         |
 | `/reviewing-typescript-architecture` | ADR validator against testing principles                   |
-| `/auto-typescript`                   | Autonomous story implementation orchestrator               |
+| `/orchestrating-typescript`          | Orchestrate story implementation through skills            |
 
 ### Commands
 
@@ -297,13 +297,13 @@ Complete Python development workflow with testing, implementation, and review.
 | `/reviewing-python`              | Strict code review with zero-tolerance                 |
 | `/architecting-python`           | ADR producer with testing strategy                     |
 | `/reviewing-python-architecture` | ADR validator against testing principles               |
-| `/auto-python`                   | Autonomous story implementation orchestrator           |
+| `/orchestrating-python`          | Orchestrate story implementation through skills        |
 
 ### Commands
 
-| Command       | Purpose                                     |
-| ------------- | ------------------------------------------- |
-| `/autopython` | Implement stories in a feature sequentially |
+| Command        | Purpose                                     |
+| -------------- | ------------------------------------------- |
+| `/auto-python` | Implement stories in a feature sequentially |
 
 ### Core Principles
 

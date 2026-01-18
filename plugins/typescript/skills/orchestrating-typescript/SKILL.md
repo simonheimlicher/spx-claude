@@ -1,6 +1,6 @@
 ---
-name: auto-typescript
-description: Implement TypeScript stories sequentially with specs, testing, coding, and review. Use when implementing features with multiple stories or when auto-implementing a feature.
+name: orchestrating-typescript
+description: Orchestrate TypeScript story implementation through specs, testing, coding, and review. Use when implementing features with multiple stories or when auto-implementing a feature.
 ---
 
 <objective>
