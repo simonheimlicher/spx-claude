@@ -2,6 +2,11 @@
 
 A Claude Code plugin marketplace with skills and commands for testing, Python and TypeScript development, specifications, and productivity.
 
+## Philosophy
+
+1. **RTFM:** Follow state-of-the-art (SOTA) model prompting guidance, such as [structured prompts based on XML tags](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/use-xml-tags#tagging-best-practices)
+2. **KILO:**: *Keep It Local and Observable,* to facilitate discovery by agents by keeping the golden source for all specifications locally within the project's Git repository
+
 ## Quick Install
 
 Add this marketplace and install plugins directly from GitHub:
@@ -44,6 +49,8 @@ Productivity commands and skills.
 | Command | `/commit`             | Git commit with Conventional Commits    |
 | Command | `/handoff`            | Create timestamped context handoff      |
 | Command | `/pickup`             | Load and continue from previous handoff |
+
+Credit: `/handoff` is inspired by [TÂCHES Claude Code Resources](https://github.com/glittercowboy/taches-cc-resources/tree/main?tab=readme-ov-file#context-handoff).
 
 ### test
 
@@ -113,6 +120,10 @@ Meta-skills for Claude Code plugin development.
 | Type  | Name               | Purpose                    |
 | ----- | ------------------ | -------------------------- |
 | Skill | `/creating-skills` | Create maintainable skills |
+
+Credit: `/creating-skills` is inspired by [TÂCHES Claude Code Resources](https://github.com/glittercowboy/taches-cc-resources?tab=readme-ov-file#skills).
+
+---
 
 ## Build Your Own Marketplace
 
