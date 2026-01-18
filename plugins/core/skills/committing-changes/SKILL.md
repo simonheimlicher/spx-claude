@@ -1,31 +1,56 @@
 ---
 name: committing-changes
-description: Write git commit messages following Conventional Commits. Use when committing changes or writing commit messages.
+description: Write git commit messages following Conventional Commits. Use when committing changes, writing commit messages, staging files, or asking about commit format and conventions.
 ---
 
-# Commit Message
+<objective>
+Write effective git commit messages following Conventional Commits standard with selective staging, atomic commits, and domain-specific type conventions.
+</objective>
 
-Write effective git commits with Conventional Commits standard and pre-commit verification.
+<quick_start>
 
-## What This Skill Does
+1. Review changes: `git status`, `git diff --cached`
+2. Stage specific files: `git add path/to/file.ts` (never `git add .`)
+3. Write message: `type(scope): description` (imperative, under 50 chars)
+4. Commit following verification protocol below
+
+</quick_start>
+
+<success_criteria>
+
+A successful commit has:
+
+- Selective staging (specific files, not `git add .`)
+- Atomic change (single logical purpose)
+- Conventional Commits format (type, optional scope, imperative description)
+- No debug code or unintended files
+- Clean diff review confirms expected changes only
+
+</success_criteria>
+
+<capabilities>
 
 - Guides selective file staging (never `git add .`)
 - Writes commit messages in Conventional Commits format
 - Verifies atomic commit principles
 - Adapts commit types to project domain
 
-## What This Skill Does NOT Do
+</capabilities>
+
+<exclusions>
+
+This skill does NOT:
 
 - Push commits to remote
 - Create pull requests
 - Modify git configuration
 - Bypass pre-commit hooks
 
----
+</exclusions>
 
-## Before Creating Any Commit
+<context_gathering>
 
-Gather context:
+**Before creating any commit, gather context:**
 
 | Source           | Gather                                                  |
 | ---------------- | ------------------------------------------------------- |
@@ -35,11 +60,11 @@ Gather context:
 | **Project docs** | Custom commit types (CLAUDE.md, CONTRIBUTING.md)        |
 | **Conversation** | User's intent - what story/issue does this commit solve |
 
----
+</context_gathering>
 
-## Pre-Commit Verification Protocol
+<verification_protocol>
 
-### Step 1: Selective Staging
+**Step 1: Selective Staging**
 
 ```bash
 # NEVER do this
@@ -56,7 +81,7 @@ git add path/to/file1.ts path/to/file2.ts
 - Exclude experimental/incomplete work
 - Use explicit paths, not wildcards
 
-### Step 2: Diff Review
+**Step 2: Diff Review**
 
 ```bash
 git diff --cached           # Review actual changes
@@ -70,24 +95,24 @@ git diff --cached --name-only  # Verify file list
 - [ ] All changes related to single purpose
 - [ ] No debug code (console.log, print statements, temp comments)
 
-### Step 3: Atomic Commit Verification
+**Step 3: Atomic Commit Verification**
 
 - [ ] Single purpose - does exactly one thing
 - [ ] Independent - can be reverted without breaking other features
 - [ ] Complete - includes everything needed for the change to work
 
-### Red Flags - DO NOT COMMIT IF
+**Red Flags - DO NOT COMMIT IF:**
 
 - More than 10 files for a simple fix
 - Changes span unrelated modules
 - Experimental code mixed with stable fixes
 - New unintended files included
 
----
+</verification_protocol>
 
-## Commit Message Format
+<message_format>
 
-```
+```text
 <type>[(scope)]: <description>
 
 [optional body]
@@ -95,35 +120,35 @@ git diff --cached --name-only  # Verify file list
 [optional footer(s)]
 ```
 
-### Subject Line (Required)
+**Subject Line (Required)**
 
-- **Type**: Required (see types table)
+- **Type**: Required (see commit_types section)
 - **Scope**: Optional, component/module name
 - **Description**: Imperative mood, 50 chars max, no period
 
-```
+```text
 feat(auth): add OAuth2 token refresh
 fix: handle empty response from API
 refactor(db): extract query builder module
 ```
 
-### Body (Optional)
+**Body (Optional)**
 
 - Wrap at 72 characters
 - Explain WHAT and WHY, not HOW
 - Blank line between subject and body
 
-### Footer (Optional)
+**Footer (Optional)**
 
 - `BREAKING CHANGE: description` - major version bump
 - `Refs: #123` or `Closes #456` - issue references
 - Work item refs: `Refs: feature-32/story-27`
 
----
+</message_format>
 
-## Commit Types
+<commit_types>
 
-### Standard Types
+**Standard Types**
 
 | Type         | Purpose                               | SemVer |
 | ------------ | ------------------------------------- | ------ |
@@ -138,7 +163,7 @@ refactor(db): extract query builder module
 | **build**    | Build system, dependencies            | PATCH  |
 | **revert**   | Revert previous commit                | varies |
 
-### Domain-Specific Types
+**Domain-Specific Types**
 
 Projects may define custom types:
 
@@ -152,48 +177,48 @@ Projects may define custom types:
 
 Check project's CLAUDE.md or commit-standards.md for custom types.
 
-### Avoid
+**Avoid**
 
 - `chore:` - Everything has purpose; use specific type instead
 
----
+</commit_types>
 
-## Breaking Changes
+<breaking_changes>
 
 Mark breaking changes with:
 
-1. **`!` suffix**: `feat!: remove deprecated API`
+1. **Exclamation suffix**: "feat!: remove deprecated API"
 2. **Footer**:
 
-   ```
+   ```text
    feat: change authentication flow
 
    BREAKING CHANGE: JWT tokens now expire in 1 hour instead of 24
    ```
 
----
+</breaking_changes>
 
-## Scope Usage
+<scope_guidelines>
 
-### Use Scope When
+**Use Scope When:**
 
 - Component-specific: `feat(auth): add 2FA support`
 - Module changes: `fix(api): handle rate limiting`
 - Clear subsystem: `test(db): add connection pool tests`
 
-### Omit Scope When
+**Omit Scope When:**
 
 - Single-file change: `fix: correct typo in error message`
 - Cross-cutting: `refactor: consolidate error handling`
 - Obvious context: `docs: update installation guide`
 
----
+</scope_guidelines>
 
-## Examples
+<examples>
 
-### Good
+**Good Examples**
 
-```bash
+```text
 feat(parser): add support for nested expressions
 
 Enables users to write complex queries with unlimited nesting depth.
@@ -202,23 +227,23 @@ Previously limited to 3 levels.
 Refs: #234
 ```
 
-```bash
+```text
 fix: prevent crash on empty config file
 
 Return sensible defaults when config is missing or empty
 instead of throwing unhandled exception.
 ```
 
-```bash
+```text
 refactor: extract validation logic into separate module
 
 Prepares codebase for unit testing by isolating validation
 from business logic.
 ```
 
-### Bad
+**Bad Examples**
 
-```bash
+```text
 # Too vague
 fix: bug fixes
 
@@ -232,11 +257,11 @@ feat: add export feature (by John)
 refactor: various improvements
 ```
 
----
+</examples>
 
-## Quick Decision Tree
+<decision_tree>
 
-```
+```text
 Is this a new user feature?           → feat:
 Is this fixing a bug?                 → fix:
 Is this improving performance?        → perf:
@@ -248,9 +273,9 @@ Is this adding/changing tests?        → test:
 Is this context/workflow docs?        → ctx: (if project uses it)
 ```
 
----
+</decision_tree>
 
-## Critical Rules
+<critical_rules>
 
 1. **NO ATTRIBUTION** - Never include author names in commit messages
 2. **IMPERATIVE MOOD** - "add feature" not "added feature" or "adds feature"
@@ -258,9 +283,9 @@ Is this context/workflow docs?        → ctx: (if project uses it)
 4. **SELECTIVE STAGING** - Never use `git add .`
 5. **ATOMIC COMMITS** - One logical change per commit
 
----
+</critical_rules>
 
-## Git Commands Reference
+<commands_reference>
 
 ```bash
 # Check what will be committed
@@ -285,3 +310,5 @@ EOF
 # View recent commits for style reference
 git log --oneline -10
 ```
+
+</commands_reference>

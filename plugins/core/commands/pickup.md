@@ -2,7 +2,7 @@
 name: pickup
 description: Load a handoff document to continue previous work
 argument-hint: [--list]
-allowed-tools: Read, Glob, Bash(ls:*), Bash(git:*), Bash(mv:*), Bash(basename:*), AskUserQuestion
+allowed-tools: Read, Bash(spx:*), Bash(git:*), AskUserQuestion
 ---
 
 ## Current Context
@@ -13,87 +13,87 @@ allowed-tools: Read, Glob, Bash(ls:*), Bash(git:*), Bash(mv:*), Bash(basename:*)
 **Current branch:**
 !`git branch --show-current`
 
-**Available handoffs:**
-!`find .spx/sessions -maxdepth 1 -name 'TODO_*.md'`
+**Available sessions:**
+!`spx session list`
 
-Load a handoff document from `.spx/sessions/` to continue previous work in the current context.
+Load a handoff document from `.spx/sessions/todo/` to continue previous work in the current context.
+
+## Session Commands
+
+All session management uses `spx session` CLI commands:
+
+```bash
+# List sessions by status
+spx session list [--status todo|doing|archive] [--json]
+
+# Claim a session (move todo -> doing)
+spx session pickup [id] [--auto]
+
+# Show session content
+spx session show <id>
+```
 
 ## Behavior
 
 ### Default (no arguments)
 
-Load and present the **oldest** handoff file based on UTC timestamp in filename.
+Claim and load the **highest priority** (or oldest if same priority) session using `--auto`.
 
 ### With `--list` flag
 
 Check if `$ARGUMENTS` contains `--list` to activate list mode.
 
-Present all available handoff files and use `AskUserQuestion` tool to let the user select which one to load.
+Present all available todo sessions and use `AskUserQuestion` tool to let the user select which one to load.
 
 ## Workflow
 
-### 1. Find Available Handoffs
+### 1. List Available Sessions
 
 ```bash
-# List all TODO (unclaimed) handoff files
-# Glob expands in alphabetical order (oldest first)
-find .spx/sessions -maxdepth 1 -name 'TODO_*.md'
+# List all todo sessions
+spx session list --status todo
+
+# Or get JSON for parsing
+spx session list --status todo --json
 ```
 
-### 2. Atomic Claim (Prevents Parallel Agent Conflicts)
+### 2a. Default Mode (auto-claim)
 
-Claim a handoff by atomically renaming `TODO_` to `DOING_`:
+1. Claim the highest priority available session:
+   ```bash
+   spx session pickup --auto
+   ```
+   The CLI handles:
+   - Selecting highest priority (or oldest if tied)
+   - Atomic move from `todo/` to `doing/`
+   - Outputting `<PICKUP_ID>...</PICKUP_ID>` marker for `/handoff` to find
+   - Displaying the claimed session content
 
-```bash
-# Loop through TODO files (oldest first)
-# Only one agent can successfully rename each file
-for f in .spx/sessions/TODO_*.md; do
-  # Attempt atomic rename TODO_ → DOING_
-  mv "$f" "${f/TODO_/DOING_}" 2>/dev/null && {
-    # Success! We claimed this handoff
-    CLAIMED_FILE="${f/TODO_/DOING_}"
-    echo "Claimed: $(basename "$CLAIMED_FILE")"
-    break
-  }
-  # If mv failed, another agent claimed it - try next file
-done
-```
-
-**Why this works:**
-
-- `mv` operation is atomic at filesystem level
-- Only ONE agent can successfully rename a given file
-- Glob expands in alphabetical order (oldest first = consistent priority)
-- Loop continues to next file if rename fails
-- When rename succeeds, loop breaks immediately
-- No race conditions or duplicate work
-
-### 2a. Default Mode (oldest first)
-
-1. Find TODO handoff files (oldest first via alphabetical glob expansion)
-2. Atomically claim the first available one (see step 2 above: loop + rename `TODO_` → `DOING_`)
-3. Read the entire claimed `DOING_` file
-4. Present formatted summary but only include the following sections:
+2. Present formatted summary including:
    - Metadata (timestamp, branch, project)
    - Original task
    - Work remaining
-   - **Note**: Mention that this handoff has been claimed for this session
-5. Offer to read files mentioned in the handoff if they exist
+   - Note that this session has been claimed for this session
 
-**Priority**: Oldest TODO files are picked up first (FIFO queue behavior)
+3. Offer to read files mentioned in the handoff if they exist
 
 ### 2b. List Mode (`--list` flag)
 
-1. Get all TODO handoff files sorted by timestamp (limit to 10 most recent)
-2. Parse each file to extract:
-   - Timestamp from filename (e.g., `2026-01-08T163022Z.md`)
+1. Get all todo sessions:
+   ```bash
+   spx session list --status todo --json
+   ```
+
+2. Parse each session to extract:
+   - Session ID (e.g., `2026-01-08_16-30-22`)
+   - Priority and tags from metadata
    - Original task from `<original_task>` section
-   - Git branch from `<metadata>` section
+
 3. Use `AskUserQuestion` tool to present options:
    - **Question**: "Which handoff would you like to load?"
-   - **Header**: "Select handoff"
-   - **Options**: Each handoff with format:
-     - **Label**: `YYYY-MM-DD HH:MM:SS UTC [branch]`
+   - **Header**: "Handoff"
+   - **Options**: Each session with format:
+     - **Label**: `YYYY-MM-DD HH:MM [priority] (tags)`
      - **Description**: First 100 chars of original task
 
 Example `AskUserQuestion` call:
@@ -107,15 +107,15 @@ Example `AskUserQuestion` call:
       "multiSelect": false,
       "options": [
         {
-          "label": "2026-01-08 16:30 UTC [main]",
+          "label": "2026-01-08 16:30 [high] (refactor)",
           "description": "Implement /handoff and /pickup commands for context preservation"
         },
         {
-          "label": "2026-01-08 14:15 UTC [feature/auth]",
+          "label": "2026-01-08 14:15 [medium] (auth)",
           "description": "Add OAuth2 authentication flow with token refresh"
         },
         {
-          "label": "2026-01-07 22:45 UTC [main]",
+          "label": "2026-01-07 22:45 [low]",
           "description": "Debug performance issues in API gateway"
         }
       ]
@@ -124,20 +124,25 @@ Example `AskUserQuestion` call:
 }
 ```
 
-1. After user selection, atomically claim it by renaming `TODO_` → `DOING_` (see step 2 above)
-2. Read and present the claimed `DOING_` file
+1. After user selection, claim the chosen session:
+   ```bash
+   spx session pickup <selected-session-id>
+   ```
+
+2. Present the claimed session content
 
 ### 3. Present Handoff Content
 
 Format the handoff in a clear, readable way:
 
 ```markdown
-# Handoff: [Timestamp]
+# Handoff: [Session ID]
 
 **Project**: [project name]
 **Branch**: [branch name]
 **Status**: [git status]
-**Working Directory**: [path]
+**Priority**: [priority]
+**Tags**: [tags]
 
 ## Original Task
 
@@ -176,41 +181,38 @@ After presenting the handoff, use the `AskUserQuestion` to ask the user:
 
 ## Error Handling
 
-**No handoffs directory**:
+**No sessions directory or empty**:
 
 ```
-No handoffs found. Use `/handoff` to create your first handoff document.
-```
-
-**Empty handoffs directory**:
-
-```
-No handoff files found in .spx/sessions/
+No handoff sessions found in .spx/sessions/todo/
 Use `/handoff` to create a handoff document.
 ```
 
-**Only DOING handoffs exist**:
+**Only doing sessions exist**:
 
 ```
-Found only DOING_ handoffs. Either other agents have claimed them and are busy working, or they are remanants from abandanoed sessions.
+Found only doing sessions - these are claimed by active sessions.
 
-# Check what `DOING_` handoffs are available (always use `find` and quote wildcards to avoid issues with `zsh` expansion when there are no matches)
-find .spx/sessions -maxdepth 1 -name 'DOING_*.md' | head -1
+Current doing sessions:
+[list from: spx session list --status doing]
 ```
 
-Determine which options make the most sense and present them to the user via the `AskUserQuestion` tool.
+Present options via `AskUserQuestion`:
 
-**Invalid handoff format**:
+- Wait for other sessions to complete
+- Check if doing sessions are orphaned (from abandoned sessions)
+
+**Invalid session format**:
 
 ```
-Warning: Handoff file [filename] appears to be corrupted or incomplete.
+Warning: Session [id] appears to be corrupted or incomplete.
 Showing raw content:
-[show file content]
+[show file content via spx session show <id>]
 ```
 
 ## Examples
 
-### Load most recent handoff
+### Load highest priority session
 
 ```bash
 /pickup
@@ -224,13 +226,13 @@ Showing raw content:
 
 ## Implementation Notes
 
-- Parse timestamp from filename format: `TODO_YYYY-MM-DDTHHMMSSZ.md` or `DOING_YYYY-MM-DDTHHMMSSZ.md`
+- Session IDs use format: `YYYY-MM-DD_HH-MM-SS`
+- Sessions organized in subdirectories: `todo/`, `doing/`, `archive/`
 - Extract sections using XML tags: `<metadata>`, `<original_task>`, etc.
 - Handle missing sections gracefully
-- Sort by timestamp (oldest first = alphabetical order) when picking up
-- Limit list to most recent 10 handoffs to keep UI manageable
-- Always filter out `DOING_*` files when listing available handoffs (only show `TODO_*`)
-- Claim files atomically using `mv` (rename `TODO_` → `DOING_`) to prevent parallel agent conflicts
+- Priority order: high > medium > low (oldest first within same priority)
+- Limit list to most recent 10 sessions to keep UI manageable
+- CLI handles atomic operations - no manual file moves needed
 
 ## Self-Organizing Handoff System
 
@@ -238,29 +240,27 @@ This command works with `/handoff` to create a self-organizing handoff workflow:
 
 **The Claim Mechanism:**
 
-1. `/pickup` finds available `TODO_` handoffs (oldest first via glob expansion)
-2. Atomically renames the first one: `TODO_timestamp.md` → `DOING_timestamp.md`
-3. Only one agent can successfully claim each handoff (atomic filesystem operation)
-4. Loop continues to next file if claim fails (another agent got it first)
-5. Agent works on the claimed `DOING_` task throughout the session
+1. `/pickup` claims a session using `spx session pickup`
+2. CLI atomically moves session from `todo/` to `doing/`
+3. Only one agent can successfully claim each session
+4. Agent works on the claimed session throughout the conversation
 
 **Automatic Cleanup:**
 
-- When the session creates a new handoff via `/handoff`, it:
-  - Searches its conversation history for the `DOING_` file it claimed
-  - Deletes the `DOING_` file (work complete, superseded by new handoff)
-  - Leaves only active `TODO_` handoffs in the directory
+- When the session ends with `/handoff`, it:
+  - Creates a new session in `todo/`
+  - Deletes the `doing/` session (superseded by new handoff)
+  - Leaves only available `todo/` sessions
 
 **Parallel Agent Safety:**
 
 - Multiple agents can run `/pickup` simultaneously
-- Atomic `mv` ensures only one agent claims each handoff
-- Losing agents automatically try the next `TODO_` file in the loop
-- FIFO behavior: oldest handoffs are prioritized (alphabetical glob order)
-- No shared state, no race conditions, no duplicate work
+- CLI ensures atomic operations - no race conditions
+- Priority-based selection with FIFO within same priority
+- No duplicate work
 
 **Visual Status:**
 
-- `TODO_*.md` = Available for pickup
-- `DOING_*.md` = Currently being worked on
-- (deleted after `/handoff` creates new TODO)
+- `todo/*.md` = Available for pickup
+- `doing/*.md` = Currently being worked on
+- `archive/*.md` = Completed (future)

@@ -4,10 +4,7 @@ description: Create timestamped handoff document for continuing work in a fresh 
 argument-hint: [--prune]
 allowed-tools:
   - Read
-  - Write
-  - Bash(date:*)
-  - Bash(mkdir:*)
-  - Bash(find:*)
+  - Bash(spx:*)
   - Bash(git:*)
   - Glob
 ---
@@ -22,23 +19,64 @@ allowed-tools:
 **Working Directory:**
 !`pwd`
 
+**Current Sessions:**
+!`spx session list`
+
 Create a comprehensive, detailed handoff document with UTC timestamp that captures all context from the current conversation. This allows continuing the work in a fresh context with complete precision.
 </context>
 
-<file_location>
-Write to: `.spx/sessions/TODO_YYYY-MM-DDTHHMMSSZ.md`
+<session_management>
 
-Generate timestamp with: `date -u +"%Y-%m-%dT%H%M%SZ"`
+## Session Commands
 
-The `TODO_` prefix indicates this handoff is available for pickup by `/pickup`.
-</file_location>
+All session management uses `spx session` CLI commands:
+
+```bash
+# Create new session (returns file path to edit)
+spx session handoff
+# Output:
+#   <HANDOFF_ID>2026-01-17_15-11-02</HANDOFF_ID>
+#   <SESSION_FILE>/path/to/.spx/sessions/todo/2026-01-17_15-11-02.md</SESSION_FILE>
+
+# Then use Write tool to write content to <SESSION_FILE> path
+
+# List sessions by status
+spx session list [--status todo|doing|archive]
+
+# Delete a session
+spx session delete <session-id>
+```
+
+## Session Directory Structure
+
+Sessions are organized by status in subdirectories:
+
+```
+.spx/sessions/
+├── todo/      # Available for pickup
+├── doing/     # Currently claimed
+└── archive/   # Completed (future)
+```
+
+</session_management>
+
+<multi_agent_awareness>
+
+**Multiple agents may be working in parallel.** The todo queue contains work for ALL agents, not just this session. Never delete todo sessions - they belong to the shared work queue.
+
+- `todo/` = Shared work queue (DO NOT delete others' work)
+- `doing/` = Claimed by active agents (only delete YOUR claimed session)
+- `archive/` = Completed work (safe to prune old entries)
+
+</multi_agent_awareness>
 
 <arguments>
-**`--prune`**: After successfully writing the new handoff, delete ALL other handoff files in the directory. This ensures you only keep the latest handoff and prevents accumulation.
+**`--prune`**: After successfully writing the new handoff, delete old **archive** sessions to prevent accumulation. Does NOT touch the todo queue.
 
 Check for prune flag: `$ARGUMENTS` will contain `--prune` if present.
 
-⚠️ **IMPORTANT**: Only delete files AFTER the new handoff is successfully written to avoid data loss if context window runs out during creation.
+**Note:** Prune only affects archive sessions. Todo sessions are the shared work queue for all agents.
+
 </arguments>
 
 <instructions>
@@ -85,7 +123,13 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 
 <output_format>
 
+Write this content to the `<SESSION_FILE>` path using the Write tool:
+
 ```text
+---
+priority: medium
+tags: [optional, tags]
+---
 <metadata>
   timestamp: [UTC timestamp]
   project: [Project name from cwd]
@@ -152,66 +196,140 @@ Adapt the level of detail to the task type (coding, research, analysis, writing,
 </output_format>
 
 <workflow>
-1. **Check for claimed handoff to cleanup**: Search conversation history for a `/pickup` command that renamed a handoff file `TODO_*.md` → `DOING_*.md`. If found, note this `DOING_` file for cleanup.
-2. Create `.spx/sessions/` directory if it doesn't exist
-3. Generate UTC timestamp: `date -u +"%Y-%m-%dT%H%M%SZ"`
-4. Gather all context from current conversation
-5. Write comprehensive handoff to `.spx/sessions/TODO_[timestamp].md`
-6. **Cleanup claimed handoff**: If a `DOING_` file was found in step 1, delete it now:
+
+1. **Check for claimed session to cleanup**: Search conversation history for `<PICKUP_ID>` marker from `spx session pickup`. This is the doing session to delete after creating the new handoff.
+
+2. **Gather context**: Collect all information from current conversation for the handoff content.
+
+3. **Create handoff session**:
    ```bash
-   # Delete the DOING_ handoff file that this session was based on
-   rm -f .spx/sessions/DOING_*.md
+   spx session handoff
    ```
-   Report: "✓ Cleaned up claimed handoff: [filename]"
-7. If `--prune` flag is present:
-   - Verify the new handoff file exists and has content
-   - Delete all other `.md` files in `.spx/sessions/` (except the new `TODO_` one)
-   - Report what was deleted
-8. Confirm handoff created with full path
+   Parse the output for:
+   - `<HANDOFF_ID>` - The session ID for confirmation
+   - `<SESSION_FILE>` - The file path to write content to
+
+4. **Write handoff content** using the Write tool to the `<SESSION_FILE>` path:
+   - Include YAML frontmatter with priority and optional tags
+   - Write the full handoff content (see output_format section)
+
+5. **Cleanup claimed session**: If a doing session was found in step 1, delete it:
+   ```bash
+   spx session delete <doing-session-id>
+   ```
+   Report: "Cleaned up claimed session: [session-id]"
+
+6. **If `--prune` flag is present**:
+   ```bash
+   # List archive sessions and delete old ones
+   spx session list --status archive --json
+   # Delete each archive session (safe - these are completed work)
+   spx session delete <archive-session-id>
+   ```
+   Report what was deleted. **Never delete todo sessions** - they are the shared work queue.
+
+7. **Confirm handoff created** with session ID.
 
 </workflow>
 
 <example>
 
+**Step 1: Search conversation for `<PICKUP_ID>` from earlier pickup**
+
+Found in conversation: `<PICKUP_ID>2026-01-08_14-59-03</PICKUP_ID>`
+
+**Step 2: Create handoff session**
+
 ```bash
-# Check if this session started from a pickup
-# Search conversation history for: mv TODO_2026-01-08T145903Z.md DOING_2026-01-08T145903Z.md
-# Found? Then we'll clean it up after writing the new handoff
-
-# Create handoff
-
-mkdir -p .spx/sessions
-TIMESTAMP=$(date -u +"%Y-%m-%dT%H%M%SZ")
-echo "Writing handoff to .spx/sessions/TODO_${TIMESTAMP}.md"
-
-# ... write handoff content ...
-
-# Cleanup claimed handoff (self-organizing!)
-
-rm -f .spx/sessions/DOING_2026-01-08T145903Z.md
-echo "✓ Cleaned up claimed handoff from this session"
-
-# If --prune flag present:
-
-find .spx/sessions -name "*.md" -not -name "TODO_${TIMESTAMP}.md" -delete
+spx session handoff
 ```
+
+Output:
+
+```text
+Created handoff session <HANDOFF_ID>2026-01-08_16-30-22</HANDOFF_ID>
+<SESSION_FILE>/Users/dev/spx-claude/.spx/sessions/todo/2026-01-08_16-30-22.md</SESSION_FILE>
+```
+
+**Step 3: Write content to SESSION_FILE using Write tool**
+
+Write to `/Users/dev/spx-claude/.spx/sessions/todo/2026-01-08_16-30-22.md`:
+
+```text
+---
+priority: medium
+tags: [refactor, testing]
+---
+<metadata>
+  timestamp: 2026-01-08T16:30:22Z
+  project: spx-claude
+  git_branch: main
+  git_status: dirty
+  working_directory: /Users/dev/spx-claude
+</metadata>
+
+<original_task>
+Refactor session management to use spx session CLI
+</original_task>
+
+<work_completed>
+- Updated /handoff command to use spx session handoff
+- Updated /pickup command to use spx session pickup
+- Tested full workflow: create -> pickup -> handoff cycle
+</work_completed>
+
+<work_remaining>
+- Add archive command to spx-cli
+- Add prune command to spx-cli
+- Update documentation
+</work_remaining>
+
+<attempted_approaches>
+- Tried using filesystem operations directly - worked but fragile
+- Moved to CLI commands for better abstraction
+</attempted_approaches>
+
+<critical_context>
+- Session IDs are now YYYY-MM-DD_HH-MM-SS format
+- Sessions organized in subdirectories: todo/, doing/, archive/
+- Atomic operations handled by CLI
+</critical_context>
+
+<current_state>
+- /handoff and /pickup updated and tested
+- CLI commands working
+- Missing: archive and prune commands
+</current_state>
+```
+
+**Step 4: Cleanup claimed session**
+
+```bash
+spx session delete 2026-01-08_14-59-03
+```
+
+Output: `Deleted session: 2026-01-08_14-59-03`
+
+**Step 5: Confirm to user**
+
+"Handoff created: `2026-01-08_16-30-22`. Cleaned up claimed session: `2026-01-08_14-59-03`"
 
 </example>
 
 <system_description>
 This command works with `/pickup` to create a self-organizing handoff system:
 
-1. **`/pickup`** atomically claims a handoff: `TODO_timestamp.md` → `DOING_timestamp.md`
+1. **`/pickup`** claims a session: moves from `todo/` to `doing/`
 2. Agent works on the claimed task throughout the session
-3. **`/handoff`** creates new `TODO_` handoff AND deletes the `DOING_` file
-4. Result: Only active `TODO_` handoffs remain, no manual cleanup needed
+3. **`/handoff`** creates new session in `todo/` AND deletes the `doing/` session
+4. Result: Only available `todo/` sessions remain, no manual cleanup needed
 
-**Parallel agents**: Multiple agents can run `/pickup` simultaneously - only one will *successfully* *claim* *each* handoff (atomic `mv` operation).
+**Parallel agents**: Multiple agents can run `/pickup` simultaneously - the CLI handles atomic operations to prevent conflicts.
 
 **Visual Status**:
 
-- `TODO_*.md` = Available for pickup (queue of work to be done)
-- `DOING_*.md` = Currently being worked on (claimed by active session)
-- New handoffs are created as `TODO_` (ready for next session)
+- `todo/*.md` = Available for pickup (queue of work)
+- `doing/*.md` = Currently being worked on (claimed by active session)
+- New handoffs are created in `todo/` (ready for next session)
 
 </system_description>
