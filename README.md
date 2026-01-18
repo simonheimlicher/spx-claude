@@ -6,7 +6,7 @@ A Claude Code plugin marketplace with skills and commands for testing, Python an
 
 Add this marketplace and install plugins directly from GitHub:
 
-```zsh
+```bash
 # Add the marketplace
 claude plugin marketplace add simonheimlicher/spx-claude
 
@@ -22,7 +22,7 @@ Now slash commands like `/commit`, `/handoff`, `/pickup` and skills like `/testi
 
 ### Update Plugins
 
-```zsh
+```bash
 # Update this marketplace
 claude plugin marketplace update spx-claude
 
@@ -120,7 +120,7 @@ Want to create your own plugin marketplace? Fork this repo as a starting point.
 
 ### Clone and Set Up
 
-```zsh
+```bash
 # Clone as your own marketplace
 git clone https://github.com/simonheimlicher/spx-claude.git ~/Code/my-claude-plugins
 cd ~/Code/my-claude-plugins
@@ -134,7 +134,7 @@ git remote add origin git@github.com:yourusername/my-claude-plugins.git
 
 During development, add your local clone as a marketplace:
 
-```zsh
+```bash
 claude plugin marketplace add ~/Code/my-claude-plugins
 ```
 
@@ -168,7 +168,7 @@ my-claude-plugins/
 
 Once your marketplace is on GitHub, others can add it:
 
-```zsh
+```bash
 claude plugin marketplace add yourusername/my-claude-plugins
 claude plugin install my-plugin@my-claude-plugins
 ```

@@ -1047,7 +1047,7 @@ Full report: `reports/review_{name}_{timestamp}.md`
 
 ### Next Action (for coder)
 
-→ **APPROVED**: Reviewer has committed. Coder runs `spx status` to check for more items.
+→ **APPROVED**: Reviewer has committed. Coder runs `spx spec status` to check for more items.
 → **REJECTED**: Coder remediates issues using feedback above, re-invokes `/reviewing-python`.
 → **CONDITIONAL**: Coder adds noqa comments per instructions, re-invokes `/reviewing-python`.
 → **BLOCKED**: Coder returns `BLOCKED` to orchestrator.

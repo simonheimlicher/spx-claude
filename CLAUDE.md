@@ -89,7 +89,7 @@ All plugins follow semantic versioning: `MAJOR.MINOR.PATCH`
 
 **Plugin version** (always update):
 
-```zsh
+```bash
 plugins/{plugin-name}/.claude-plugin/plugin.json
 ```
 
@@ -102,7 +102,7 @@ plugins/{plugin-name}/.claude-plugin/plugin.json
 
 **Marketplace catalog** (optional, only if description changes):
 
-```zsh
+```bash
 .claude-plugin/marketplace.json
 ```
 
@@ -120,7 +120,7 @@ plugins/{plugin-name}/.claude-plugin/plugin.json
 
 **IMPORTANT:** Validate after any changes:
 
-```zsh
+```bash
 # Validate marketplace.json
 claude plugin validate .
 
@@ -134,7 +134,7 @@ find plugins -maxdepth 1 -type d -mindepth 1 -exec claude plugin validate {} \;
 
 ❌ **WRONG** - Separate commits:
 
-```zsh
+```bash
 git commit -m "refactor(skills): simplify descriptions"
 # ... then later ...
 git commit -m "chore: bump versions"
@@ -142,7 +142,7 @@ git commit -m "chore: bump versions"
 
 ✅ **CORRECT** - Single atomic commit:
 
-```zsh
+```bash
 # 1. Make your changes to skills/commands/etc
 # 2. Update version numbers in plugin.json files
 # 3. Stage everything together
@@ -574,7 +574,7 @@ If you cannot find a template:
 
 Replace all relative paths with `${SKILL_DIR}` prefix:
 
-```zsh
+```bash
 # ❌ WRONG - Ambiguous
 Read: templates/example.md
 
@@ -633,7 +633,7 @@ The script respects code fences and won't modify content inside `` ``` `` blocks
 
 ## Restrictions on Using `!` Expansion in Commands
 
-```zsh
+```bash
 # Avoid shell operators such as `(N)` (nullglob in zsh)
 Error: Bash command permission check failed for pattern "!ls .spx/sessions/TODO_*.md(N) | wc -l | xargs printf "TODO: %s\n" && ls .spx/sessions/DOING_*.md(N) | wc -l | xargs printf "DOING: %s\n"": This command uses shell operators that require approval for safety
 
@@ -690,14 +690,14 @@ Error: Bash command permission check failed for pattern "!find .spx/sessions -ma
 
 3. **Update plugin.json version** in the same working session:
 
-   ```zsh
+   ```bash
    # Location: plugins/{plugin-name}/.claude-plugin/plugin.json
    # Update "version" field according to rules above
    ```
 
 4. **Update marketplace description** (only if needed):
 
-   ```zsh
+   ```bash
    # Location: .claude-plugin/marketplace.json
    # Update description for the modified plugin (only if description changes)
    ```
@@ -706,7 +706,7 @@ Error: Bash command permission check failed for pattern "!find .spx/sessions -ma
 
 6. **Stage and commit EVERYTHING together** in ONE commit:
 
-   ```zsh
+   ```bash
    git add plugins/{plugin-name}/ plugins/{plugin-name}/.claude-plugin/plugin.json
    git commit -m "type(scope): your changes including version bump"
    ```

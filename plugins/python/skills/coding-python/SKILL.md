@@ -33,8 +33,8 @@ You must complete ALL work items before returning DONE. A single completed item 
 ### Main Loop
 
 ```
-1. Run `spx status` to see work item overview
-2. Run `spx next` to get the next work item
+1. Run `spx spec status` to see work item overview
+2. Run `spx spec next` to get the next work item
 3. IF no items → return DONE
 4. IF no ADRs in scope → invoke /architecting-python
 5. IMPLEMENT code + tests (existing Implementation Protocol)
@@ -46,7 +46,7 @@ You must complete ALL work items before returning DONE. A single completed item 
         CONDITIONAL → add noqa comments, continue loop
         ABORT → invoke /architecting-python, restart implementation
         BLOCKED → return BLOCKED
-7. Run `spx status` to check if more items
+7. Run `spx spec status` to check if more items
 8. IF items remain → return CONTINUE
 9. IF no items → return DONE
 ```
@@ -55,18 +55,18 @@ You must complete ALL work items before returning DONE. A single completed item 
 
 You MUST return one of these values:
 
-| Return     | Meaning                      | When                                    |
-| ---------- | ---------------------------- | --------------------------------------- |
-| `CONTINUE` | Item done, more items remain | After APPROVED, `spx status` shows more |
-| `DONE`     | All items complete           | `spx status` shows no OPEN/IN_PROGRESS  |
-| `BLOCKED`  | Cannot proceed               | Reviewer returned BLOCKED               |
+| Return     | Meaning                      | When                                         |
+| ---------- | ---------------------------- | -------------------------------------------- |
+| `CONTINUE` | Item done, more items remain | After APPROVED, `spx spec status` shows more |
+| `DONE`     | All items complete           | `spx spec status` shows no OPEN/IN_PROGRESS  |
+| `BLOCKED`  | Cannot proceed               | Reviewer returned BLOCKED                    |
 
 ### Phase -1: Find Next Work Item
 
 **Before any implementation**, assess the project state:
 
-1. **Run `spx status`** to see work item overview
-2. **Run `spx next`** to get the next work item path
+1. **Run `spx spec status`** to see work item overview
+2. **Run `spx spec next`** to get the next work item path
 3. **Check item counts**:
    - If no items → return `DONE`
    - Otherwise, continue
@@ -346,13 +346,13 @@ Re-invoke `/reviewing-python`.
 
 ### Handling Reviewer Verdicts
 
-| Verdict         | Action                                                           |
-| --------------- | ---------------------------------------------------------------- |
-| **APPROVED**    | Reviewer committed. Run `spx status` to check for more items.    |
-| **REJECTED**    | Parse feedback, remediate issues, re-invoke `/reviewing-python`. |
-| **CONDITIONAL** | Add noqa comments per feedback, re-invoke `/reviewing-python`.   |
-| **BLOCKED**     | Return `BLOCKED` to orchestrator.                                |
-| **ABORT**       | Invoke `/architecting-python` to revise ADRs, restart.           |
+| Verdict         | Action                                                             |
+| --------------- | ------------------------------------------------------------------ |
+| **APPROVED**    | Reviewer committed. Run `spx spec status` to check for more items. |
+| **REJECTED**    | Parse feedback, remediate issues, re-invoke `/reviewing-python`.   |
+| **CONDITIONAL** | Add noqa comments per feedback, re-invoke `/reviewing-python`.     |
+| **BLOCKED**     | Return `BLOCKED` to orchestrator.                                  |
+| **ABORT**       | Invoke `/architecting-python` to revise ADRs, restart.             |
 
 ### Max Iterations
 

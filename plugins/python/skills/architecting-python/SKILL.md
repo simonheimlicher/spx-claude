@@ -593,7 +593,7 @@ Use click or argparse with subcommand pattern.
 - `references/security-patterns.md` - Security-by-design patterns
 - `references/testability-patterns.md` - Designing for testability
 
-For methodology, use the `spx` CLI (`spx status`, `spx next`).
+For methodology, use the `spx` CLI (`spx spec status`, `spx spec next`).
 
 ---
 

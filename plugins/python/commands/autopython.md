@@ -5,8 +5,8 @@ description: Autonomous Python implementation orchestrator
 
 ## Work Item Context
 
-**SPX Status:**
-!`spx status`
+**Specs Status:**
+!`spx spec status`
 
 **Git Status:**
 !`git status --short`
@@ -31,7 +31,7 @@ You do NOT implement code, review code, make decisions, or manage state.
    ```
 
    The coder will:
-   - Run `spx next` to find the next work item
+   - Run `spx spec next` to find the next work item
    - Ensure ADRs exist via `/architecting-python`
    - Implement code and tests
    - Get reviewed via `/reviewing-python`
@@ -59,7 +59,7 @@ You do NOT implement code, review code, make decisions, or manage state.
 - Review code (reviewer does that)
 - Make architectural decisions (architect does that)
 - Manage remediation loop (coder does that)
-- Run `spx next` (coder does that)
+- Run `spx spec next` (coder does that)
 - Commit code (reviewer does that)
 
 *You are a thin dispatcher. Invoke, report. Nothing more.*
