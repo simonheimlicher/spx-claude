@@ -91,7 +91,7 @@ Read: [ADR path]
 **Required Documents**:
 
 - `{capability-path}/{slug}.capability.md` ✅ MUST EXIST
-- `{capability-path}/*.prd.md` ✅ MUST EXIST (strict mode)
+- `{capability-path}/*.prd.md` ⚠️ OPTIONAL (read if present)
 - `{capability-path}/decisions/adr-*.md` ⚠️ May not exist
 
 **Actions**:
@@ -102,12 +102,12 @@ Glob: "{capability-path}/*.capability.md"
 # Verify exactly one file found
 Read: {capability-path}/{slug}.capability.md
 
-# Read PRD (strict mode enforced)
+# Read PRD if present (optional enrichment)
 Glob: "{capability-path}/*.prd.md"
 # If found:
 Read: [PRD path]
 # If not found:
-ABORT with PRD missing error
+# Continue without PRD (it's optional)
 
 # Read capability ADRs
 Glob: "{capability-path}/decisions/adr-*.md"
@@ -117,16 +117,20 @@ Read: [ADR path]
 
 **Abort if**:
 
-- Capability spec missing
-- PRD missing (strict mode enabled)
+- Capability spec missing (but PRD exists → offer to create spec from PRD)
 - Multiple capability specs found (ambiguous)
+
+**Offer to create spec if**:
+
+- Capability spec missing BUT PRD exists at this level
+- Prompt: "Found PRD but no capability.md - create spec from it?"
 
 **Output**:
 
 ```
 ✓ Capability Context Loaded: capability-10_cli
   - cli.capability.md
-  - command-architecture.prd.md
+  - command-architecture.prd.md (optional, found)
   - Capability ADRs: 2
     • [Commander Pattern](decisions/adr-21_commander-pattern.md)
     • [Config Loading](decisions/adr-37_config-loading.md)
@@ -143,7 +147,7 @@ Read: [ADR path]
 **Required Documents**:
 
 - `{feature-path}/{slug}.feature.md` ✅ MUST EXIST
-- `{feature-path}/*.trd.md` ✅ MUST EXIST (strict mode)
+- `{feature-path}/*.trd.md` ⚠️ OPTIONAL (read if present)
 - `{feature-path}/decisions/adr-*.md` ⚠️ May not exist
 
 **Actions**:
@@ -154,12 +158,12 @@ Glob: "{feature-path}/*.feature.md"
 # Verify exactly one file found
 Read: {feature-path}/{slug}.feature.md
 
-# Read TRD (strict mode enforced)
+# Read TRD if present (optional enrichment)
 Glob: "{feature-path}/*.trd.md"
 # If found:
 Read: [TRD path]
 # If not found:
-ABORT with TRD missing error
+# Continue without TRD (it's optional)
 
 # Read feature ADRs
 Glob: "{feature-path}/decisions/adr-*.md"
@@ -169,16 +173,20 @@ Read: [ADR path]
 
 **Abort if**:
 
-- Feature spec missing
-- TRD missing (strict mode enabled)
+- Feature spec missing (but TRD exists → offer to create spec from TRD)
 - Multiple feature specs found (ambiguous)
+
+**Offer to create spec if**:
+
+- Feature spec missing BUT TRD exists at this level
+- Prompt: "Found TRD but no feature.md - create spec from it?"
 
 **Output**:
 
 ```
 ✓ Feature Context Loaded: feature-20_commands
   - commands.feature.md
-  - command-framework.trd.md
+  - command-framework.trd.md (optional, found)
   - Feature ADRs: 1
     • [Subcommand Structure](decisions/adr-21_subcommand-structure.md)
 ```

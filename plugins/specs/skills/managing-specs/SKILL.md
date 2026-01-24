@@ -151,12 +151,12 @@ specs/
 
 - **Capability**: E2E scenario with product-wide impact
   - Tests graduate to `tests/e2e/`
-  - Triggered by PRD
+  - May have optional PRD as catalyst/enrichment
   - Contains features
 
 - **Feature**: Integration scenario with specific functionality
   - Tests graduate to `tests/integration/`
-  - Triggered by TRD
+  - May have optional TRD as catalyst/enrichment
   - Contains stories
 
 - **Story**: Unit-tested atomic implementation
@@ -604,7 +604,7 @@ Read: ${SKILL_DIR}/templates/requirements/technical-change.trd.md
 
 - **PRD OR TRD** at same scope, never both
 - **Immutable**: Code adapts to requirements, not vice versa
-- **Catalyst pattern**: PRD spawns capability, TRD spawns feature
+- **Optional catalyst**: PRD/TRD may exist as enrichment; spec file is always required
 
 </requirements_rules>
 

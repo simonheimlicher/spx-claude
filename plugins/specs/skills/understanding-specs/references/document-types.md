@@ -8,13 +8,13 @@ Complete reference of all document types in the spec-driven development hierarch
 Product
 └── Capability (E2E level)
     ├── {slug}.capability.md     ✅ REQUIRED
-    ├── {topic}.prd.md           ✅ REQUIRED (strict mode)
+    ├── {topic}.prd.md           ⚠️ OPTIONAL (enrichment)
     ├── decisions/
     │   └── adr-NNN_{slug}.md    ⚠️ OPTIONAL
     ├── tests/                   ⚠️ OPTIONAL (for progress tests)
     └── Feature (Integration level)
         ├── {slug}.feature.md    ✅ REQUIRED
-        ├── {topic}.trd.md       ✅ REQUIRED (strict mode)
+        ├── {topic}.trd.md       ⚠️ OPTIONAL (enrichment)
         ├── decisions/
         │   └── adr-NNN_{slug}.md ⚠️ OPTIONAL
         ├── tests/               ⚠️ OPTIONAL (for progress tests)
@@ -42,11 +42,11 @@ Product
 | Document        | Pattern                  | Required?                | Purpose                          |
 | --------------- | ------------------------ | ------------------------ | -------------------------------- |
 | Capability Spec | `{slug}.capability.md`   | ✅ YES                   | E2E scenario definition          |
-| PRD             | `{topic}.prd.md`         | ✅ YES (strict mode)     | Product requirements catalyst    |
+| PRD             | `{topic}.prd.md`         | ⚠️ NO (optional)          | Product requirements catalyst    |
 | Capability ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Capability-scoped decisions      |
 | Tests           | `tests/`                 | ⚠️ NO (determines status) | Progress tests before graduation |
 
-**Strict Mode**: PRD must exist at capability level
+**Note**: PRD is optional enrichment. If PRD exists but spec is missing, offer to create spec from PRD.
 
 ### Feature-Level Documents
 
@@ -55,11 +55,11 @@ Product
 | Document     | Pattern                  | Required?                | Purpose                          |
 | ------------ | ------------------------ | ------------------------ | -------------------------------- |
 | Feature Spec | `{slug}.feature.md`      | ✅ YES                   | Integration scenario definition  |
-| TRD          | `{topic}.trd.md`         | ✅ YES (strict mode)     | Technical requirements catalyst  |
+| TRD          | `{topic}.trd.md`         | ⚠️ NO (optional)          | Technical requirements catalyst  |
 | Feature ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Feature-scoped decisions         |
 | Tests        | `tests/`                 | ⚠️ NO (determines status) | Progress tests before graduation |
 
-**Strict Mode**: TRD must exist at feature level
+**Note**: TRD is optional enrichment. If TRD exists but spec is missing, offer to create spec from TRD.
 
 ### Story-Level Documents
 
@@ -115,17 +115,13 @@ Product
 - **Compliance**: How adherence will be verified
 - **Testing Strategy**: Test levels for components
 
-## Strict Mode
+## PRD/TRD as Optional Enrichment
 
-**Enabled by default** for this skill.
+PRD and TRD documents are **optional** at all levels. The spec file (`.capability.md`, `.feature.md`, `.story.md`) is the only required document for each work item.
 
-| Level      | Strict Mode Requirement            |
-| ---------- | ---------------------------------- |
-| Capability | PRD must exist                     |
-| Feature    | TRD must exist                     |
-| Story      | (inherits from feature/capability) |
+**When PRD/TRD exists without spec file:**
 
-**Rationale**: "Optional" PRD/TRD should exist to document the catalyst for capability/feature. Strict mode enforces complete documentation.
+If a PRD or TRD exists at a level but the corresponding spec file is missing, offer to create the spec from the requirements document. This handles cases where work was initiated from a requirements document but the spec wasn't yet created.
 
 ## Status Determination
 

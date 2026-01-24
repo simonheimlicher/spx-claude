@@ -8,10 +8,10 @@ ABORT immediately when ANY of these conditions are met:
 
 1. **Work item not found**: Cannot locate work item in `specs/work/`
 2. **Product guide missing**: `specs/CLAUDE.md` does not exist
-3. **Spec file missing**: Work item spec file (`.capability.md`, `.feature.md`, `.story.md`) missing
-4. **PRD missing**: Capability-level PRD missing (strict mode)
-5. **TRD missing**: Feature-level TRD missing (strict mode)
-6. **Multiple specs found**: Ambiguous - multiple spec files at same level
+3. **Spec file missing**: Work item spec file (`.capability.md`, `.feature.md`, `.story.md`) missing AND no PRD/TRD to create it from
+4. **Multiple specs found**: Ambiguous - multiple spec files at same level
+
+**Note**: PRD/TRD are optional. Missing PRD/TRD does NOT trigger abort.
 
 ## Abort Message Format
 
@@ -96,26 +96,32 @@ ABORT immediately when ANY of these conditions are met:
 **Cannot proceed with implementation until capability spec exists.**
 ```
 
-### 4. Capability PRD Missing (Strict Mode)
+### 4. Capability Spec Missing (with PRD available)
 
-**Trigger**: Phase 2 - PRD not found at capability level
+**Trigger**: Phase 2 - Capability spec not found BUT PRD exists
+
+**This is an OFFER scenario, not an ABORT scenario.**
 
 ```markdown
-❌ CONTEXT INGESTION FAILED
+⚠️ SPEC FILE MISSING - OFFER TO CREATE
 
 **Phase**: Phase 2 - Capability Context
-**Missing Document**: Product Requirements Document (PRD)
-**Expected Path**: specs/work/doing/capability-10_cli/{topic}.prd.md
-**Reason**: Capability triggered by PRD (strict mode enforced)
+**Missing Document**: Capability specification
+**Expected Path**: specs/work/doing/capability-10_cli/cli.capability.md
+**Available Source**: specs/work/doing/capability-10_cli/command-architecture.prd.md
 
-**Remediation**:
+**Found PRD but no capability.md - create spec from it?**
 
-1. Invoke `/writing-prd` skill
-2. Create PRD at capability level documenting user value and measurable outcomes
-3. PRD should explain WHY this capability exists and WHAT value it provides
-4. Re-run `/understanding-specs` to verify
+If user accepts:
 
-**Cannot proceed with implementation until PRD exists.**
+1. Read the PRD to understand requirements
+2. Use `/managing-specs` template: `templates/work-items/capability-name.capability.md`
+3. Create capability spec derived from PRD requirements
+4. Continue with context ingestion
+
+If user declines:
+
+1. ABORT - cannot proceed without spec file
 ```
 
 ### 5. Feature Spec Missing
@@ -140,30 +146,32 @@ ABORT immediately when ANY of these conditions are met:
 **Cannot proceed with implementation until feature spec exists.**
 ```
 
-### 6. Feature TRD Missing (Strict Mode)
+### 6. Feature Spec Missing (with TRD available)
 
-**Trigger**: Phase 3 - TRD not found at feature level
+**Trigger**: Phase 3 - Feature spec not found BUT TRD exists
+
+**This is an OFFER scenario, not an ABORT scenario.**
 
 ```markdown
-❌ CONTEXT INGESTION FAILED
+⚠️ SPEC FILE MISSING - OFFER TO CREATE
 
 **Phase**: Phase 3 - Feature Context
-**Missing Document**: Technical Requirements Document (TRD)
-**Expected Path**: specs/work/doing/.../feature-20_commands/{topic}.trd.md
-**Reason**: Feature triggered by TRD (strict mode enforced)
+**Missing Document**: Feature specification
+**Expected Path**: specs/work/doing/.../feature-20_commands/commands.feature.md
+**Available Source**: specs/work/doing/.../feature-20_commands/command-framework.trd.md
 
-**Remediation**:
+**Found TRD but no feature.md - create spec from it?**
 
-1. Invoke `/writing-trd` skill
-2. Create TRD at feature level documenting architecture and validation strategy
-3. TRD must include:
-   - System design
-   - Test level assignments (Unit/Integration/E2E)
-   - BDD scenarios
-   - Test infrastructure requirements
-4. Re-run `/understanding-specs` to verify
+If user accepts:
 
-**Cannot proceed with implementation until TRD exists.**
+1. Read the TRD to understand technical requirements
+2. Use `/managing-specs` template: `templates/work-items/feature-name.feature.md`
+3. Create feature spec derived from TRD requirements
+4. Continue with context ingestion
+
+If user declines:
+
+1. ABORT - cannot proceed without spec file
 ```
 
 ### 7. Story Spec Missing
@@ -268,13 +276,17 @@ When all documents exist:
 You may now proceed with implementation.
 ```
 
-## Strict Mode Toggle
+## PRD/TRD Handling
 
-**Current default**: Strict mode ENABLED
+**PRD and TRD are optional enrichment documents.**
 
-To disable strict mode (allow missing PRD/TRD):
+- Missing PRD/TRD does NOT cause abort
+- If PRD/TRD exists, read it for additional context
+- If spec file is missing but PRD/TRD exists at that level, offer to create spec from it
 
-- User must explicitly request it
-- Not recommended - PRD/TRD document the catalyst for work
+**Offer-to-create workflow**:
 
-**Strict mode OFF** would skip PRD/TRD ABORT and show warnings instead.
+1. Detect missing spec file with available PRD/TRD
+2. Prompt user: "Found [PRD/TRD] but no [spec].md - create spec from it?"
+3. If accepted: Create spec using template and requirements document
+4. If declined: Abort with spec missing error

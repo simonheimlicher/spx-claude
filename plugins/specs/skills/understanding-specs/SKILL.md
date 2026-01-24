@@ -22,9 +22,9 @@ Use this path to access skill files:
 <essential_principles>
 **COMPLETE CONTEXT OR ABORT. NO EXCEPTIONS.**
 
-- Every work item requires complete documentation hierarchy
-- Missing documents = ABORT immediately with clear error
-- "Optional" PRD/TRD must exist in strict mode (fail if missing)
+- Every work item requires its spec file (`.capability.md`, `.feature.md`, `.story.md`)
+- Missing spec file = ABORT immediately with clear error
+- PRD/TRD are optional enrichment - read if present, offer to create spec from them if spec is missing
 - Read order: Product → Capability → Feature → Story (top-down)
 - All ADRs at all levels must be read and understood
 - This skill runs BEFORE any implementation work begins
@@ -99,10 +99,10 @@ Context ingestion succeeds when:
 - [ ] Product guide (`specs/CLAUDE.md`) read
 - [ ] All product ADRs read
 - [ ] Capability spec exists and read
-- [ ] Capability PRD/TRD exists and read (strict mode)
+- [ ] Capability PRD/TRD read if present (optional enrichment)
 - [ ] All capability ADRs read
 - [ ] Feature spec exists and read (if working on feature/story)
-- [ ] Feature TRD exists and read (if working on feature/story, strict mode)
+- [ ] Feature PRD/TRD read if present (optional enrichment)
 - [ ] All feature ADRs read
 - [ ] Story spec exists and read (if working on story)
 - [ ] Structured context summary generated with document count and ADR list
