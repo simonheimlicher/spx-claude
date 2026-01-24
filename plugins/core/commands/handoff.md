@@ -10,14 +10,14 @@ allowed-tools:
 ---
 
 <context>
-**Git Status:**
-!`git status --short`
-
-**Current Branch:**
-!`git branch --show-current`
-
 **Working Directory:**
 !`pwd`
+
+**Git Status:**
+!`git status --short || echo "Not in a git repo"`
+
+**Current Branch:**
+!`git branch --show-current || echo "Not in a git repo"`
 
 **Current Sessions:**
 !`spx session list`

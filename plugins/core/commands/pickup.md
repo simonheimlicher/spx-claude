@@ -8,10 +8,7 @@ allowed-tools: Read, Bash(spx:*), Bash(git:*), AskUserQuestion
 ## Current Context
 
 **Git status:**
-!`git status --short`
-
-**Current branch:**
-!`git branch --show-current`
+!`git status --short || echo "Not in a git repo"`
 
 **Available sessions:**
 !`spx session list`
