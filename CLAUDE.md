@@ -322,7 +322,7 @@ Requirements documentation and specification skills.
 | ---------------------- | ------------------------------------------------------------------------------------------------------- |
 | `/writing-prd`         | Systematic PRD creation with user value proposition, measurable outcomes, and acceptance criteria       |
 | `/writing-trd`         | Systematic TRD creation with testing methodology, validation strategy, and infrastructure documentation |
-| `/managing-specs`      | Manage spec-driven development structure with templates for PRDs, TRDs, ADRs, and work items            |
+| `/managing-specs`      | Create and manage specs: capabilities, features, stories, PRDs, TRDs, ADRs                              |
 | `/understanding-specs` | Hierarchical context ingestion protocol that verifies all specification documents before implementation |
 
 ### Core Principles
@@ -352,10 +352,10 @@ Certain skills must be invoked **automatically** when specific conditions are me
    - **Example**: User says "implement story-21" → STOP and invoke `/understanding-specs` FIRST, then proceed
    - **Non-negotiable**: Do NOT read story/feature/capability files directly without invoking this skill
 
-2. **Invoke `/managing-specs`** when creating/organizing specs
-   - **Trigger**: User requests creating PRD/TRD/ADR or asks about spec structure
+2. **Invoke `/managing-specs`** when creating specs or work items
+   - **Trigger**: User requests creating capability, feature, story, PRD, TRD, or ADR
    - **Purpose**: Access templates from skill's `templates/` directory, understand BSP numbering, structure guidance
-   - **Example**: User says "create a PRD" → STOP and invoke `/managing-specs` to read template
+   - **Example**: User says "create the feature" or "create the story" → STOP and invoke `/managing-specs` to read template
    - **Critical**: Templates are in `.claude/plugins/cache/.../managing-specs/templates/`, NOT in the project
 
 **Pattern**: Specs skills are preparatory and blocking. You MUST invoke them BEFORE writing code or documents. Do NOT proceed without skill invocation.
@@ -470,10 +470,10 @@ name: writing-trd
 description: Write TRDs documenting how to build and test it. Use when writing TRDs or technical requirements.
 
 name: managing-specs
-description: Set up specs directory with templates for PRDs, TRDs, and ADRs. Use when creating or organizing spec structure.
+description: Create and manage specs: capabilities, features, stories, PRDs, TRDs, ADRs. Use when creating a feature, creating a story, or setting up spec structure.
 
-name: understanding-specs
-description: Read all specs for a story, feature, or capability before starting work. Use when starting implementation to load requirements and context.
+  name: understanding-specs
+  description: Read all specs for a story, feature, or capability before starting work. Use when starting implementation to load requirements and context.
 ```
 
 **Why these work:**

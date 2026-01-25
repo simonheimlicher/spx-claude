@@ -1,6 +1,6 @@
 ---
 name: managing-specs
-description: Set up specs directory with templates for PRDs, TRDs, and ADRs. Use when creating or organizing spec structure.
+description: Create and manage specs including capabilities, features, stories, PRDs, TRDs, and ADRs. Use when creating a feature, creating a story, adding specs, or setting up spec structure.
 ---
 
 <objective>
