@@ -24,11 +24,19 @@ Map test types to destinations:
 
 ### 6.2 Move Tests
 
-```bash
-# Example: Graduate story tests to production suite
-cp specs/doing/.../story-XX/tests/feature.test.ts test/unit/feature.test.ts
+**Use `git mv` for committed files, `mv` otherwise.** This preserves git history.
 
-# Update imports if needed (relative paths may change)
+> **WARNING: You do NOT have permission to use `rm`.** You cannot delete files to clean up after a copy. You MUST use move semantics (`git mv` or `mv`) to avoid creating duplicates. Think before you act — there is no undo.
+
+```bash
+# Check if file is tracked by git
+git ls-files --error-unmatch specs/doing/.../story-XX/tests/feature.test.ts
+
+# If tracked (exit 0): use git mv
+git mv specs/doing/.../story-XX/tests/feature.test.ts test/unit/feature.test.ts
+
+# If untracked (exit 1): use mv
+mv specs/doing/.../story-XX/tests/feature.test.ts test/unit/feature.test.ts
 ```
 
 **Important**: If import paths need updating, edit the moved files to fix them.
@@ -43,13 +51,9 @@ npx vitest run test/unit/feature.test.ts
 
 **If graduated tests fail**: The verdict becomes REJECTED with reason "Graduation failed - tests don't pass in new location."
 
-### 6.4 Clean Up (Optional)
-
-After successful graduation, the original tests in `specs/.../tests/` can be removed or left as documentation.
-
 ## Phase 7: Create DONE.md
 
-Create completion evidence in the work item directory.
+Create completion evidence in the work item's `tests/` subdirectory (same location where tests were before graduation).
 
 ### 7.1 Write DONE.md
 
