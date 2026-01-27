@@ -36,17 +36,21 @@ Verify and load complete hierarchical context for a work item by reading all spe
 </objective>
 
 <quick_start>
-Invoke with work item identifier:
+Invoke with **FULL work item path**:
 
 ```bash
-# By path
+# ALWAYS use full path (REQUIRED)
 /understanding-specs capability-10_cli/feature-20_commands/story-30_build
+```
 
-# By story name (skill locates it)
+**🚨 NEVER use bare story/feature numbers** - BSP numbers are sibling-unique, not globally unique:
+
+```bash
+# ❌ WRONG: Ambiguous - which story-30?
 /understanding-specs story-30_build
 
-# By natural language
-/understanding-specs I'm working on the build command story
+# ✅ CORRECT: Unambiguous full path
+/understanding-specs capability-10_cli/feature-20_commands/story-30_build
 ```
 
 The skill will:
@@ -59,11 +63,16 @@ The skill will:
 </quick_start>
 
 <intake>
-Provide the work item you're working on:
+Provide the **FULL work item path** you're working on:
 
-- **Work item path**: `capability-NN_slug/feature-NN_slug/story-NN_slug`
-- **Work item name**: Story name (e.g., "story-30_build")
-- **Natural language**: "I'm implementing the build command story"
+- **Full path** (REQUIRED): `capability-NN_slug/feature-NN_slug/story-NN_slug`
+
+**🚨 BSP numbers are sibling-unique, not globally unique.**
+
+| ❌ WRONG (Ambiguous)   | ✅ CORRECT (Unambiguous)                               |
+| ---------------------- | ------------------------------------------------------ |
+| "story-30_build"       | "capability-10_cli/feature-20_commands/story-30_build" |
+| "implement feature-20" | "implement capability-10_cli/feature-20_commands"      |
 
 The skill will locate and verify all documents in the hierarchy.
 </intake>
