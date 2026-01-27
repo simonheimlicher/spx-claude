@@ -29,6 +29,92 @@ Use this path to access skill files:
 
 </essential_principles>
 
+<hierarchy_of_authority>
+**Where to look for guidance, in order of precedence:**
+
+| Priority | Source                    | What It Provides                                      |
+| -------- | ------------------------- | ----------------------------------------------------- |
+| 1        | `docs/`, `README.md`      | Project architecture, design decisions, intended APIs |
+| 2        | `CLAUDE.md`               | Project-specific rules for Claude                     |
+| 3        | ADRs, TRDs, specs         | Documented decisions and requirements                 |
+| 4        | This skill (`SKILL.md`)   | Generic TypeScript best practices                     |
+| 5        | Existing code (reference) | Evidence of implementation, NOT authority             |
+
+**CRITICAL: Existing code is NOT authoritative.**
+
+- Documentation describes **intent** — what SHOULD be done
+- Existing code shows **implementation** — what WAS done (may be legacy, wrong, or outdated)
+- When docs and code conflict, **docs win**
+- When no docs exist, ASK before copying existing patterns
+
+**Never copy patterns from existing code without verifying they match documented intent.**
+
+</hierarchy_of_authority>
+
+<codebase_discovery>
+**BEFORE writing any code, discover what already exists.**
+
+### Phase 0: Discovery (MANDATORY)
+
+Run these searches before implementation:
+
+```bash
+# 1. Read project documentation
+Read: README.md, docs/, CLAUDE.md, CONTRIBUTING.md
+
+# 2. Check available dependencies (don't add what exists)
+Read: package.json → dependencies, devDependencies
+
+# 3. Find prior art for what you're building
+Grep: function names, class names, patterns similar to your task
+Glob: files in similar directories (src/utils/, src/services/, etc.)
+
+# 4. Detect project conventions
+Read: existing files in the same directory you'll write to
+```
+
+### What to Discover
+
+| Question                        | How to Find                                 |
+| ------------------------------- | ------------------------------------------- |
+| What libraries are available?   | `package.json` → dependencies               |
+| How does this project handle X? | `Grep` for similar patterns                 |
+| What utilities already exist?   | `Glob` for `**/utils/**`, `**/helpers/**`   |
+| What's the naming convention?   | Read 3-5 files in the target directory      |
+| What error classes exist?       | `Grep` for `extends Error`                  |
+| What logging pattern is used?   | `Grep` for `logger`, `console.log`, `debug` |
+| How are configs structured?     | `Glob` for `**/*.config.*`, `**/config/**`  |
+
+### Discovery Anti-Patterns
+
+```typescript
+// ❌ WRONG: Adding lodash when ramda is already used
+import _ from "lodash"; // package.json has ramda, not lodash
+
+// ❌ WRONG: Creating new logger when one exists
+const logger = console; // Project has @lib/logger
+
+// ❌ WRONG: Inventing naming convention
+function fetch_user_by_id() {} // Project uses camelCase
+
+// ❌ WRONG: New error class when domain errors exist
+class MyError extends Error {} // Project has @/errors
+```
+
+### Discovery Checklist
+
+Before writing code, confirm:
+
+- [ ] Read `package.json` — know what libraries are available
+- [ ] Searched for prior art — found (or confirmed none exists)
+- [ ] Identified naming conventions from existing files
+- [ ] Found existing utilities to reuse (or confirmed none exist)
+- [ ] Checked for existing error classes, loggers, configs
+
+**If discovery reveals existing patterns that conflict with this skill's guidance, follow the project's documented patterns.**
+
+</codebase_discovery>
+
 <testing_methodology>
 **For complete testing methodology, invoke `/testing-typescript` skill.**
 

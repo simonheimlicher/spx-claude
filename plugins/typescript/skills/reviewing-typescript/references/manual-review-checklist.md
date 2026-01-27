@@ -2,6 +2,28 @@
 
 Read ALL code under review. Check each item:
 
+## Project Convention Matching (CHECK FIRST)
+
+**New code must fit the existing project, not introduce foreign patterns.**
+
+- [ ] Uses libraries from `package.json` (no new dependencies without justification)
+- [ ] Follows project's naming conventions (check 3-5 existing files in same directory)
+- [ ] Reuses existing utilities instead of reinventing (grep for similar functions)
+- [ ] Matches project's error handling pattern (custom error classes, logging style)
+- [ ] File structure matches project conventions (where do types go? configs?)
+
+### Convention Rejection Criteria
+
+| Violation                       | Example                                              | Verdict  |
+| ------------------------------- | ---------------------------------------------------- | -------- |
+| Adds dependency when one exists | Uses `axios` when project has `fetch` wrapper        | REJECTED |
+| Invents new utility             | New `formatDate()` when `@/utils/date` exists        | REJECTED |
+| Wrong naming convention         | `fetch_user` when project uses `fetchUser`           | REJECTED |
+| Different error style           | Bare `throw new Error()` when project has `AppError` | REJECTED |
+| Ignores existing patterns       | New logging approach when `@/lib/logger` exists      | REJECTED |
+
+**If conventions are unclear**: Check `docs/`, `CLAUDE.md`, `README.md` before rejecting. If no docs exist and code is inconsistent, flag for clarification rather than rejecting.
+
 ## Type Safety (Beyond tsc)
 
 - [ ] No use of `any` without explicit justification
@@ -84,11 +106,11 @@ import { helper } from "@test/helpers/tree-builder";
 
 ### Depth Rules (Strict)
 
-| Depth     | Example        | Verdict   | Rationale                                   |
-| --------- | -------------- | --------- | ------------------------------------------- |
-| Same dir  | `./utils`      | ✅ OK     | Module-internal, same module                |
-| 1 level   | `../types`     | ⚠️ REVIEW  | Is this truly module-internal?              |
-| 2+ levels | `../../config` | ❌ REJECT | Use path alias — this crosses module bounds |
+| Depth     | Example        | Verdict | Rationale                                   |
+| --------- | -------------- | ------- | ------------------------------------------- |
+| Same dir  | `./utils`      | OK      | Module-internal, same module                |
+| 1 level   | `../types`     | REVIEW  | Is this truly module-internal?              |
+| 2+ levels | `../../config` | REJECT  | Use path alias — this crosses module bounds |
 
 ### Examples: Module-Internal (Relative OK)
 

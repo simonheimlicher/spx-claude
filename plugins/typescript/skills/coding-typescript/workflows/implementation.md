@@ -18,6 +18,42 @@ Before writing any code:
 - Do NOT proceed with assumptions
 - Document any decisions made
 
+## Phase 0.5: Codebase Discovery (MANDATORY)
+
+**Before writing ANY code, discover what already exists.**
+
+See `<codebase_discovery>` in SKILL.md for complete guidance.
+
+### Quick Checklist
+
+```bash
+# 1. Read project docs (highest authority)
+Read: README.md, docs/, CLAUDE.md
+
+# 2. Check available libraries
+Read: package.json → dependencies, devDependencies
+
+# 3. Find prior art
+Grep: patterns similar to your task
+Glob: files in directories where you'll write
+
+# 4. Detect conventions
+Read: 3-5 existing files in target directory
+```
+
+### Discovery Output
+
+Before proceeding to Phase 1, document:
+
+- **Libraries to use**: (from package.json, don't add new ones)
+- **Prior art found**: (existing utilities, patterns to follow)
+- **Conventions detected**: (naming, structure, error handling)
+- **Utilities to reuse**: (don't reinvent what exists)
+
+**Remember the hierarchy**: `docs/` > `CLAUDE.md` > `specs` > `SKILL.md` >>> existing code
+
+Existing code is REFERENCE, not authority. When docs and code conflict, docs win.
+
 ## Phase 1: Write Tests First (TDD)
 
 For each function/class to implement:
