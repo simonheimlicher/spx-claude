@@ -12,6 +12,39 @@ Do NOT grep for templates. Do NOT search for structure definitions. Do NOT guess
 
 ---
 
+## 🚨 CRITICAL: BSP Numbers Are SIBLING-UNIQUE, Not Global
+
+**BSP numbers (capability-NN, feature-NN, story-NN) are ONLY unique among siblings at the same level.**
+
+```text
+capability-21/feature-01/story-54  ← One story-54
+capability-22/feature-01/story-54  ← DIFFERENT story-54
+capability-21/feature-02/story-54  ← DIFFERENT story-54
+```
+
+**ALWAYS use the FULL PATH when referencing work items:**
+
+| ❌ WRONG (Ambiguous)     | ✅ CORRECT (Unambiguous)                     |
+| ------------------------ | -------------------------------------------- |
+| "story-54"               | "capability-21/feature-54/story-54"          |
+| "implement feature-01"   | "implement capability-21/feature-01"         |
+| "Continue with story-54" | "Continue capability-21/feature-54/story-54" |
+
+**Why this matters:**
+
+- Different capabilities can have identically-numbered features
+- Different features can have identically-numbered stories
+- "story-54" could refer to dozens of different stories across the codebase
+- Without the full path, agents will access the WRONG work item
+
+**When communicating about work items:**
+
+1. Always include the full hierarchy path
+2. Never use bare numbers like "story-54" without context
+3. When in doubt, use the absolute path from `specs/work/`
+
+---
+
 ## When to Invoke Skills
 
 ### Before Implementing ANY Work Item → `/understanding-specs`
@@ -107,13 +140,19 @@ User: "What should I work on next?"
 
 **BSP Numbering**: Lower number = must complete FIRST. You CANNOT work on item N until ALL items with numbers < N are DONE.
 
-**Status Determination** (read from `tests/` directory at each level):
+**Status Determination** (use CLI commands, do NOT check manually):
 
-- **OPEN**: Missing OR empty `tests/` directory
-- **IN_PROGRESS**: Has `*.test.*` files, no `DONE.md`
-- **DONE**: Has `DONE.md` file
+```bash
+# View project status
+spx spec status --format table
 
-**Finding Next Work Item**: Invoke `/managing-specs` and ask "What's the next work item?" Do NOT calculate this yourself.
+# Get next work item (respects BSP ordering)
+spx spec next
+```
+
+Status values: OPEN, IN_PROGRESS, DONE
+
+**Finding Next Work Item**: Run `spx spec next` or invoke `/managing-specs`. Do NOT manually check for `DONE.md` files or inspect `tests/` directories yourself.
 
 **Test Graduation**:
 

@@ -43,8 +43,8 @@ spx session handoff
 # List sessions by status
 spx session list [--status todo|doing|archive]
 
-# Delete a session
-spx session delete <session-id>
+# Archive a session
+spx session archive <session-id>
 ```
 
 ## Session Directory Structure
@@ -62,10 +62,10 @@ Sessions are organized by status in subdirectories:
 
 <multi_agent_awareness>
 
-**Multiple agents may be working in parallel.** The todo queue contains work for ALL agents, not just this session. Never delete todo sessions - they belong to the shared work queue.
+**Multiple agents may be working in parallel.** The todo queue contains work for ALL agents, not just this session. Never archive or even delete todo sessions - they belong to the shared work queue.
 
-- `todo/` = Shared work queue (DO NOT delete others' work)
-- `doing/` = Claimed by active agents (only delete YOUR claimed session)
+- `todo/` = Shared work queue (DO NOT archive others' work)
+- `doing/` = Claimed by active agents (only archive YOUR claimed session)
 - `archive/` = Completed work (safe to prune old entries)
 
 </multi_agent_awareness>
@@ -197,7 +197,7 @@ tags: [optional, tags]
 
 <workflow>
 
-1. **Check for claimed session to cleanup**: Search conversation history for `<PICKUP_ID>` marker from `spx session pickup`. This is the doing session to delete after creating the new handoff.
+1. **Check for claimed session to cleanup**: Search conversation history for `<PICKUP_ID>` marker from `spx session pickup`. This is the doing session to archive after creating the new handoff.
 
 2. **Gather context**: Collect all information from current conversation for the handoff content.
 
@@ -213,9 +213,9 @@ tags: [optional, tags]
    - Include YAML frontmatter with priority and optional tags
    - Write the full handoff content (see output_format section)
 
-5. **Cleanup claimed session**: If a doing session was found in step 1, delete it:
+5. **Cleanup claimed session**: If a doing session was found in step 1, archive it:
    ```bash
-   spx session delete <doing-session-id>
+   spx session archive <doing-session-id>
    ```
    Report: "Cleaned up claimed session: [session-id]"
 
@@ -226,7 +226,7 @@ tags: [optional, tags]
    # Delete each archive session (safe - these are completed work)
    spx session delete <archive-session-id>
    ```
-   Report what was deleted. **Never delete todo sessions** - they are the shared work queue.
+   Report what was deleted. **Never delete todo or doing sessions** - they are the shared work queue.
 
 7. **Confirm handoff created** with session ID.
 
@@ -305,7 +305,7 @@ Refactor session management to use spx session CLI
 **Step 4: Cleanup claimed session**
 
 ```bash
-spx session delete 2026-01-08_14-59-03
+spx session archive 2026-01-08_14-59-03
 ```
 
 Output: `Deleted session: 2026-01-08_14-59-03`

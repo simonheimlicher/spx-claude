@@ -11,8 +11,8 @@ Implement all stories in a Python feature by launching the orchestrating-python 
 <context>
 **Feature path:** $ARGUMENTS
 
-**Discover stories:**
-!`find $ARGUMENTS -maxdepth 2 -type d -name "story-*" 2>/dev/null | sort`
+**Project status:**
+!`spx spec status --format table`
 </context>
 
 <workflow>
@@ -21,10 +21,10 @@ Implement all stories in a Python feature by launching the orchestrating-python 
    - Confirm the feature path contains a `.feature.md` spec file
    - If not found, STOP and report error
 
-2. **Discover stories**
-   - List all `story-NN_*` directories in the feature
-   - Sort by BSP number (lower numbers first - dependencies)
-   - Identify which stories are already DONE (have `DONE.md` in tests/)
+2. **Discover next story**
+   - Run `spx spec next` to get the next incomplete work item
+   - The CLI handles BSP ordering and status determination automatically
+   - Do NOT manually check for `DONE.md` files or list directories
 
 3. **For each incomplete story (in BSP order):**
    - Launch the `orchestrating-python` subagent via Task tool

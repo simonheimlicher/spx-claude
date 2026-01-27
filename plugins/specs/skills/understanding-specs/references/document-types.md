@@ -125,13 +125,17 @@ If a PRD or TRD exists at a level but the corresponding spec file is missing, of
 
 ## Status Determination
 
-Work item status is determined by presence of tests and DONE.md:
+**Use CLI commands to check status (do NOT manually inspect directories):**
 
-| Condition                     | Status      |
-| ----------------------------- | ----------- |
-| No `tests/` directory         | OPEN        |
-| `tests/` exists, no `DONE.md` | IN_PROGRESS |
-| `DONE.md` exists in tests/    | DONE        |
+```bash
+# View project status
+spx spec status --format table
+
+# Get next work item (respects BSP ordering)
+spx spec next
+```
+
+Status values: OPEN, IN_PROGRESS, DONE
 
 ## Test Graduation Paths
 

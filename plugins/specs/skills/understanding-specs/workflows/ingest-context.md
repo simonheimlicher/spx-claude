@@ -212,12 +212,10 @@ Glob: "{story-path}/*.story.md"
 # Verify exactly one file found
 Read: {story-path}/{slug}.story.md
 
-# Check for tests directory (status determination)
-Glob: "{story-path}/tests/"
-# Determine status:
-# - No tests/ → OPEN
-# - tests/ exists, no DONE.md → IN_PROGRESS
-# - DONE.md exists → DONE (shouldn't be modifying)
+# Check status using CLI (preferred method)
+spx spec status --format json
+# Or check specific work item status in the output
+# Status values: OPEN, IN_PROGRESS, DONE
 ```
 
 **Abort if**:
@@ -227,14 +225,14 @@ Glob: "{story-path}/tests/"
 
 **Warning if**:
 
-- Working on DONE story (has DONE.md)
+- Working on DONE story (status = DONE)
 
 **Output**:
 
 ```
 ✓ Story Context Loaded: story-30_build
   - build.story.md
-  - Status: IN_PROGRESS (tests/ exists, no DONE.md)
+  - Status: IN_PROGRESS (from `spx spec status`)
 ```
 
 ---

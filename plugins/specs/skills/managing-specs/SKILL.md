@@ -171,13 +171,46 @@ specs/
 - **PRD OR TRD** at same scope, never both
 - **Requirements immutable** - code adapts to requirements, not vice versa
 - **BSP numbering**: Two-digit (10-99), lower number = must complete first
+- **BSP numbers are SIBLING-UNIQUE**: Numbers are only unique among siblings, not globally (see `<bsp_sibling_uniqueness>` below)
 - **Test graduation**: `specs/.../tests/` → `tests/{unit,integration,e2e}/`
-- **Status rules**:
-  - OPEN: No tests exist
-  - IN_PROGRESS: Tests exist, no DONE.md
-  - DONE: DONE.md exists
+- **Status rules** (use CLI, do NOT check manually):
+  - `spx spec status --format table` - View project status
+  - `spx spec next` - Get next work item (respects BSP ordering)
 
 </key_principles>
+
+<bsp_sibling_uniqueness>
+
+**🚨 CRITICAL: BSP numbers are ONLY unique among siblings at the same level.**
+
+```text
+capability-21/feature-01/story-54  ← One story-54
+capability-22/feature-01/story-54  ← DIFFERENT story-54
+capability-21/feature-02/story-54  ← DIFFERENT story-54
+```
+
+**ALWAYS use the FULL PATH when referencing work items:**
+
+| ❌ WRONG (Ambiguous)     | ✅ CORRECT (Unambiguous)                     |
+| ------------------------ | -------------------------------------------- |
+| "story-54"               | "capability-21/feature-54/story-54"          |
+| "implement feature-01"   | "implement capability-21/feature-01"         |
+| "Continue with story-54" | "Continue capability-21/feature-54/story-54" |
+
+**Why this matters:**
+
+- Different capabilities can have identically-numbered features
+- Different features can have identically-numbered stories
+- "story-54" could refer to dozens of different stories across the codebase
+- Without the full path, agents will access the WRONG work item
+
+**When communicating about work items:**
+
+1. Always include the full hierarchy path
+2. Never use bare numbers like "story-54" without context
+3. When in doubt, use the absolute path from `specs/work/`
+
+</bsp_sibling_uniqueness>
 
 </structure_definition>
 
@@ -188,13 +221,23 @@ specs/
 <understanding_work_items>
 
 <three_states>
-Status is determined by the `tests/` directory at each level:
+**Use CLI commands to check status (do NOT manually inspect directories):**
 
-| State           | `tests/` Directory           | Meaning          |
-| --------------- | ---------------------------- | ---------------- |
-| **OPEN**        | Missing OR empty             | Work not started |
-| **IN_PROGRESS** | Has `*.test.*`, no `DONE.md` | Work underway    |
-| **DONE**        | Has `DONE.md`                | Complete         |
+```bash
+# View project status
+spx spec status --format table
+
+# Get next work item (respects BSP ordering)
+spx spec next
+```
+
+Status values:
+
+| State           | Meaning          |
+| --------------- | ---------------- |
+| **OPEN**        | Work not started |
+| **IN_PROGRESS** | Work underway    |
+| **DONE**        | Complete         |
 
 </three_states>
 

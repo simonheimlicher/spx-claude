@@ -62,6 +62,24 @@ This skill does NOT:
 
 </context_gathering>
 
+<review_workflow_context>
+
+**When invoked from a reviewing skill** (e.g., `reviewing-python`, `reviewing-typescript`):
+
+This skill may be referenced during the commit phase of a code review. In that context:
+
+1. **Committing is the seal of approval** — Only commit after verdict is APPROVED
+2. **Scope to work item** — Stage only files from the approved work item:
+   - Implementation files
+   - Graduated tests (moved from specs/ to tests/)
+   - Completion evidence (DONE.md)
+3. **Include work item reference** — Add `Refs: {capability}/{feature}/{story}` in footer
+4. **Verify graduated tests pass** — Tests must pass in their new location before committing
+
+The reviewing skill provides the specific file list and work item context. This skill provides the commit protocol mechanics.
+
+</review_workflow_context>
+
 <verification_protocol>
 
 **Step 1: Selective Staging**

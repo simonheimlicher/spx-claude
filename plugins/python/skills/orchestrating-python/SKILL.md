@@ -8,9 +8,10 @@ Autonomous Python implementation orchestrator. Implements stories in a feature o
 </objective>
 
 <essential_principles>
-**NO MOCKING. BEHAVIOR TESTING. CONSTANTS PATTERN. EVERY CREATING SKILL IS FOLLOWED BY A REVIEWING SKILL. FOLLOW THE STRICT SEQUENCE.**
+**NO MOCKING. BEHAVIOR TESTING. CONSTANTS PATTERN. FULL BSP PATHS. FOLLOW THE STRICT SEQUENCE.**
 
 - **Strict Sequence of Skills:** Follow the workflow sequence **exactly** - no skipping steps
+- **Full BSP Paths ALWAYS:** BSP numbers are sibling-unique, not globally unique. ALWAYS use full paths like `capability-21/feature-54/story-54`, never bare numbers like `story-54`
 - **Behavior-Driven Development:** Tests are written first to verify **behavior**, never implementation, then code is written to (i) validate that the tests are appropriate and (ii) pass them. Finally code and tests are refactored until they pass reviewing skills without reservation
 - **Do Not Repeat Yourself (DRY):** Do not use any literal string multiple times. Define **constants in the implementation,** then check for constants in tests (not literal strings)
 - **Mandatory Review Quality Gate:** Each story and its tests must pass review before proceeding to the next
@@ -20,9 +21,9 @@ Autonomous Python implementation orchestrator. Implements stories in a feature o
 <quick_start>
 **Given a feature with stories to implement:**
 
-1. Identify the first/next incomplete story
+1. Run `spx spec next` to identify the next incomplete story
 2. Run the 5-step implementation cycle
-3. Repeat until all stories complete
+3. Repeat until `spx spec next` returns no more work items
 
 ```text
 Story → Specs → Test Design → Implement → Review → Remediate → Next Story
@@ -31,9 +32,17 @@ Story → Specs → Test Design → Implement → Review → Remediate → Next 
       -specs      -python    -python  review     -python
 ```
 
+**CLI commands for status:**
+
+- `spx spec next` - Get next work item (respects BSP ordering)
+- `spx spec status --format table` - View project status
+
 </quick_start>
 
 <workflow>
+
+## Part A: Story Implementation
+
 **For each story in the feature:**
 
 **Step 1: Load Story Context**
@@ -87,7 +96,64 @@ Invoke `/reviewing-python` to review the implementation.
 **Step 6: Next Story**
 Return to Step 1 with the next story in the feature.
 
-Continue until all stories in the feature are implemented and approved. Then continue in the same manner with the subsequent feature until all features of the capability are implemented.
+Continue until all stories in the feature are implemented and approved.
+
+---
+
+## Part B: Feature Completion
+
+**After ALL stories in a feature are approved**, complete the feature:
+
+**Step 7: Feature-Level Tests**
+
+1. **Read the feature spec** to find `## Feature Integration Tests (Level 2)` section
+2. **Check for specified tests** (FI1, FI2, etc.)
+3. **If Level 2 tests are specified:**
+   - Implement each test following the spec's pseudocode
+   - Tests go in `tests/integration/{capability}/{feature}/`
+   - Use real infrastructure via test harnesses (no mocking)
+   - Run tests to verify they pass: `uv run --extra dev pytest tests/integration/ -v`
+4. **If no Level 2 tests specified:** Document why in feature DONE.md (e.g., "Level 1 sufficient—no external integrations")
+
+**Step 8: Feature DONE.md**
+
+Create `DONE.md` in the feature's spec directory:
+
+- Document all graduated Level 1 tests (from stories)
+- Document all graduated Level 2 tests (from this step)
+- Verify all story DONE.md files exist
+- Include test run output showing all feature tests pass
+
+**Step 9: Next Feature**
+Return to Part A, Step 1 with the first story of the next feature.
+
+Continue until all features in the capability are implemented.
+
+---
+
+## Part C: Capability Completion
+
+**After ALL features in a capability are approved**, complete the capability:
+
+**Step 10: Capability-Level Tests**
+
+1. **Read the capability spec** to find `## Capability E2E Tests (Level 3)` section
+2. **Check for specified tests** (E2E1, E2E2, etc.)
+3. **If Level 3 tests are specified:**
+   - Implement each test following the spec's pseudocode
+   - Tests go in `tests/e2e/{capability}/`
+   - Use real credentials and services (full user workflows)
+   - Run tests to verify they pass: `uv run --extra dev pytest tests/e2e/ -v`
+4. **If no Level 3 tests specified:** Document why in capability DONE.md (e.g., "Level 2 sufficient—no external services")
+
+**Step 11: Capability DONE.md**
+
+Create `DONE.md` in the capability's spec directory:
+
+- Document all graduated tests across all levels
+- Verify all feature DONE.md files exist
+- Include test run output showing all capability tests pass
+- Summary of delivered value
 
 </workflow>
 
@@ -101,40 +167,75 @@ Continue until all stories in the feature are implemented and approved. Then con
 | `/coding-python`       | Implement code and tests            | After test design    |
 | `/reviewing-python`    | Automated code review               | After implementation |
 
-**Invocation syntax:**
+**Invocation syntax (ALWAYS use full paths):**
 
 ```text
-/understanding-specs {story-path}
-/testing-python
-/coding-python
-/reviewing-python
+# ✅ CORRECT: Full path
+/understanding-specs capability-21/feature-54/story-54
+
+# ❌ WRONG: Bare story number (ambiguous)
+/understanding-specs story-54
 ```
 
 </skill_invocations>
 
 <progress_tracking>
-**Track progress through the feature:**
+**Track progress through the capability (ALWAYS use full paths):**
 
 ```text
-Feature: {feature-name}
-├── [✓] story-10_first - Approved
-├── [→] story-20_second - In Progress (Step 3: Implementing)
-├── [ ] story-30_third - Pending
-└── [ ] story-40_fourth - Pending
+Capability: capability-21_core-cli
+├── Feature: capability-21/feature-54_commands
+│   ├── [✓] capability-21/feature-54/story-10_init - DONE.md ✓
+│   ├── [✓] capability-21/feature-54/story-20_build - DONE.md ✓
+│   ├── [→] capability-21/feature-54/story-30_run - In Progress (Step 3)
+│   └── [ ] capability-21/feature-54/story-40_test - Pending
+│   └── [L2] Feature Integration Tests - Pending (after all stories)
+│   └── [ ] Feature DONE.md - Pending
+├── Feature: capability-21/feature-65_config
+│   └── [ ] (stories pending)
+│   └── [L2] Feature Integration Tests - Pending
+│   └── [ ] Feature DONE.md - Pending
+└── [L3] Capability E2E Tests - Pending (after all features)
+└── [ ] Capability DONE.md - Pending
 ```
 
-Update this tracking as you complete each story.
+**Legend:**
+
+- `[✓]` = Complete with DONE.md
+- `[→]` = In progress
+- `[ ]` = Pending
+- `[L2]` = Level 2 integration tests (feature-level)
+- `[L3]` = Level 3 E2E tests (capability-level)
+
+Update this tracking as you complete each work item.
 
 </progress_tracking>
 
 <success_criteria>
-Feature implementation is complete when:
 
-- [ ] All stories in the feature have been processed
-- [ ] Each story passed approval by `/reviewing-python` and its tests have been graduated
+## Story Complete
+
+- [ ] Story passed approval by `/reviewing-python`
+- [ ] Story Level 1 tests graduated to `tests/unit/`
+- [ ] Story DONE.md created
+
+## Feature Complete
+
+- [ ] All stories in the feature have DONE.md
+- [ ] Feature Level 2 tests implemented (if specified in feature spec)
+- [ ] Feature Level 2 tests graduated to `tests/integration/`
+- [ ] Feature DONE.md created
 - [ ] All tests pass (`uv run --extra dev pytest tests/ -v`)
 - [ ] Type checking passes (`uv run --extra dev mypy src/`)
 - [ ] Linting passes (`uv run --extra dev ruff check src/`)
+
+## Capability Complete
+
+- [ ] All features in the capability have DONE.md
+- [ ] Capability Level 3 tests implemented (if specified in capability spec)
+- [ ] Capability Level 3 tests graduated to `tests/e2e/`
+- [ ] Capability DONE.md created
+- [ ] All tests pass at all levels
 
 Implementation quality (no mocking, constants pattern) is verified by `/reviewing-python`.
 
