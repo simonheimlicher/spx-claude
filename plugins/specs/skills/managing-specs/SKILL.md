@@ -481,9 +481,9 @@ decisions/adr-76_appended-decision.md    ← NEW
 
 <why_bsp_numbering>
 
-**Problem**: Sequential numbering (001, 002, 003) cannot accommodate discovered dependencies.
+**Problem**: Sequential numbering (01, 02, 03) cannot accommodate discovered dependencies.
 
-**Example**: You have decisions adr-001, adr-002, adr-003. You discover adr-002 needs a prior decision about type safety. With sequential numbering, you must renumber all subsequent ADRs.
+**Example**: You have decisions adr-01, adr-02, adr-03. You discover adr-02 needs a prior decision about type safety. With sequential numbering, you must renumber all subsequent ADRs.
 
 **Solution**: BSP numbering allows insertion at any point using midpoint calculation.
 
@@ -491,12 +491,12 @@ decisions/adr-76_appended-decision.md    ← NEW
 
 <why_no_numbers_in_content>
 
-**Problem**: If ADR file is renumbered (e.g., adr-023 → adr-37), content with embedded numbers becomes stale.
+**Problem**: If ADR file is renumbered (e.g., adr-23 → adr-37), content with embedded numbers becomes stale.
 
 **Examples**:
 
-- Header `# ADR 023: Foo` - wrong after renumbering
-- Reference "See ADR-023" - wrong after renumbering
+- Header `# ADR 23: Foo` - wrong after renumbering
+- Reference "See ADR-23" - wrong after renumbering
 
 **Solution**:
 
@@ -508,7 +508,7 @@ decisions/adr-76_appended-decision.md    ← NEW
 
 <why_markdown_links_only>
 
-**Problem**: Plain text references like "ADR-023" or even `` `adr-023_foo.md` `` break when files are renumbered.
+**Problem**: Plain text references like "ADR-23" or even `` `adr-23_foo.md` `` break when files are renumbered.
 
 **Solution**: Markdown links `[Decision Title](relative/path/to/adr-NN_slug.md)`:
 
@@ -569,8 +569,8 @@ Type system: [Type Safety](../../../../decisions/adr-21_type-safety.md)
 
 <never_use_these_formats>
 
-❌ Plain text reference: "See ADR-021"
-❌ Code-only reference: `` `adr-021_type-safety.md` ``
+❌ Plain text reference: "See ADR-21"
+❌ Code-only reference: `` `adr-21_type-safety.md` ``
 ❌ Number-only reference: "ADR 21 specifies..."
 
 </never_use_these_formats>

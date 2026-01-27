@@ -1,6 +1,6 @@
 ---
 name: understanding-specs
-description: Read all specs for a story, feature, or capability before starting work. Use when starting implementation to load requirements and context.
+description: Read all specs for a story, feature, or capability including PRDs, TRDs, and ADRs. Use when starting implementation, checking progress, or asked to "read the spec".
 allowed-tools: Read, Glob, Grep
 ---
 
