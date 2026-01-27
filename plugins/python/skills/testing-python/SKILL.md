@@ -363,29 +363,19 @@ def test_files_synced():
 
 ## Test Infrastructure Paths
 
-Keep test infrastructure separate from tests:
-
-```
-lib/
-└── testing/
-    ├── __init__.py
-    ├── context.py           # Test environment context manager (withTestEnv)
-    ├── fixtures/
-    │   ├── __init__.py
-    │   └── values.py        # TYPICAL, EDGES collections
-    ├── harnesses/
-    │   ├── __init__.py
-    │   ├── postgres.py      # PostgreSQL harness
-    │   └── docker.py        # Generic Docker harness
-    └── generators/
-        ├── __init__.py
-        └── factories.py     # Seeded data factories
-```
-
-**Regression tests** (graduated from specs):
+Test infrastructure lives alongside tests:
 
 ```
 tests/
+├── harness/                 # Active code for tests
+│   ├── __init__.py
+│   ├── context.py           # Test environment context manager (withTestEnv)
+│   ├── postgres.py          # PostgreSQL harness
+│   ├── docker.py            # Generic Docker harness
+│   └── factories.py         # Seeded data factories
+├── fixtures/                # Static test data
+│   ├── sample-config.json
+│   └── values.py            # TYPICAL, EDGES collections
 ├── unit/
 │   └── {capability}/
 │       └── {feature}/
@@ -396,3 +386,6 @@ tests/
     └── {capability}/
         └── {feature}/
 ```
+
+**harness/** = Code that runs (context managers, harnesses, factories)
+**fixtures/** = Data that's read (JSON files, sample configs, test values)
