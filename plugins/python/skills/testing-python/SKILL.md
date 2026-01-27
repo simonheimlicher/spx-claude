@@ -357,4 +357,42 @@ def test_files_synced():
 
 ---
 
-*For foundational principles (progress vs regression tests, escalation justification), see `/test`.*
+*For foundational principles (progress vs regression tests, escalation justification), see `/testing`.*
+
+---
+
+## Test Infrastructure Paths
+
+Keep test infrastructure separate from tests:
+
+```
+lib/
+└── testing/
+    ├── __init__.py
+    ├── context.py           # Test environment context manager (withTestEnv)
+    ├── fixtures/
+    │   ├── __init__.py
+    │   └── values.py        # TYPICAL, EDGES collections
+    ├── harnesses/
+    │   ├── __init__.py
+    │   ├── postgres.py      # PostgreSQL harness
+    │   └── docker.py        # Generic Docker harness
+    └── generators/
+        ├── __init__.py
+        └── factories.py     # Seeded data factories
+```
+
+**Regression tests** (graduated from specs):
+
+```
+tests/
+├── unit/
+│   └── {capability}/
+│       └── {feature}/
+├── integration/
+│   └── {capability}/
+│       └── {feature}/
+└── e2e/
+    └── {capability}/
+        └── {feature}/
+```

@@ -6,28 +6,42 @@ allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 
 # Test Strategy (Foundational Skill)
 
-You are the **foundational test strategy authority**. All other skills—architect, coder, reviewer—MUST consult you before making decisions.
+You are the **foundational test strategy authority**. All other skills—architect, coder, reviewer—MUST consult you before making decisions about testing.
 
 ---
 
-## Fundamentals
+## The Overarching Question
 
-In this projec, we follow the Behavior-Driven Development methodology.
+> **What evidence do I need to convince the user that my code correctly implements the specification?**
 
-> Tests are not everything—but without tests, everything is nothing.
-
-### The One Question That Matters
-
-> **When a user runs your CLI, visits your website, or opens your app—will it ACTUALLY WORK?**
->
-> Not "did the tests pass?" Not "is coverage high?"
-> **Will. It. Actually. Work.**
-
-Everything in this skill flows from that question. Tests exist to give you **justified confidence** that the answer is YES.
+Every test exists to answer this question. Tests are not bureaucracy—they are **evidence** that your code works. If a test doesn't provide evidence, delete it.
 
 ---
 
-### The Confidence Pyramid
+## Tests Serve Three Purposes
+
+| Purpose          | What It Means                     | Example                                                    |
+| ---------------- | --------------------------------- | ---------------------------------------------------------- |
+| **Code quickly** | Fast feedback loop while building | Run Level 1 tests in <1 second to verify logic as you code |
+| **Evidence**     | Prove the spec is implemented     | Show user that acceptance criteria are met                 |
+| **Debug**        | Find bugs when regressions occur  | Named test cases point directly to the broken behavior     |
+
+---
+
+## The Cardinal Rule: No Mocking
+
+> **Mocking is always wrong. There is no exception.**
+
+Mocking gives you a test that passes while your production code fails. This is worse than no test at all.
+
+If you feel you need to mock:
+
+1. **Redesign** using dependency injection with real in-memory implementations, OR
+2. **Test at a different level**—push to Level 2 or 3 where real dependencies are available
+
+---
+
+## The Three Levels
 
 ```
 ┌─────────────────────┐
@@ -37,757 +51,399 @@ Everything in this skill flows from that question. Tests exist to give you **jus
 └──────────┬──────────┘
            │
 ┌──────────▼──────────┐
-│      LEVEL 2        │  "Does our code work with real infrastructure?"
+│      LEVEL 2        │  "Does it work with real infrastructure?"
 │    Integration      │  Real binaries, real databases
 │                     │  Test harnesses required
 └──────────┬──────────┘
            │
 ┌──────────▼──────────┐
-│      LEVEL 1        │  "Is the logic of our functions correct?"
-│    Unit / Pure      │  No external dependencies
-│                     │  Dependency injection, temp dirs, test runner only
+│      LEVEL 1        │  "Is our logic correct?"
+│    Unit / Pure      │  Standard dev environment only
+│                     │  DI with real in-memory implementations
 └─────────────────────┘
 ```
 
-**Build from the bottom up.** Each level answers a question the previous level cannot.
+### Level 1: Standard Dev Environment
+
+**The question**: Is our logic correct, independent of any external system?
+
+**Allowed:**
+
+| Resource           | Examples                               | Why                     |
+| ------------------ | -------------------------------------- | ----------------------- |
+| Test runner        | pytest, vitest, jest, go test          | Dev environment         |
+| Temp directories   | `tempfile.mkdtemp()`, `os.tmpdir()`    | OS-provided, isolated   |
+| Environment vars   | Set/read env vars within test          | Language runtime        |
+| Standard dev tools | git, node, npm (tool), python, curl    | CI without setup        |
+| DI implementations | In-memory repositories, stub notifiers | Real code, test-focused |
+| Factories/builders | Generate test data programmatically    | Reproducible            |
+
+**Forbidden:**
+
+| Resource                  | Why                                      |
+| ------------------------- | ---------------------------------------- |
+| Real databases            | Level 2                                  |
+| Real HTTP APIs            | Level 2 or 3                             |
+| Project-specific binaries | Level 2 (ffmpeg, hugo, custom tools)     |
+| Installing dependencies   | `npm install`, `pip install` are Level 2 |
+| Mocking external systems  | Never. Redesign with DI instead.         |
+
+**Critical filesystem rule**: All Level 1 tests MUST use OS-provided temporary directories exclusively. Never write outside temp directories.
+
+### Level 2: Project-Specific Dependencies
+
+**The question**: Does our code correctly interact with real external dependencies?
+
+**Covers:**
+
+- Project-specific tools: Hugo, Caddy, FFmpeg, custom binaries
+- Project-specific build tools: Make, Gradle, Maven
+- Containerized services: Docker databases, message queues
+
+**Required before writing**: Document the test harness for each dependency.
+
+**If you don't know the harness, STOP and ask:**
+
+> I need to write integration tests for [dependency].
+>
+> To proceed, I need to know:
+>
+> 1. What test harness exists or should I build?
+> 2. How do I start/stop/reset it?
+> 3. Where are fixture files or seed data?
+> 4. What environment variables configure it?
+
+### Level 3: Real Environment
+
+**The question**: Does the complete system work the way users will actually use it?
+
+**Covers:**
+
+- Real credentials against real (test) environments
+- Third-party services in production or staging
+- Browser-based testing for web applications
+- Complete user workflows end-to-end
+
+**Required before writing**: Document credentials and test accounts.
+
+**If you don't know the credentials, STOP and ask:**
+
+> I need to write end-to-end tests that use [external service].
+>
+> To proceed, I need to know:
+>
+> 1. Where are the test credentials stored?
+> 2. What test accounts/environments exist?
+> 3. Are there rate limits or quotas?
+> 4. How do I reset test data between runs?
 
 ---
 
-### 🚨 The Cardinal Rule: No Mocking
+## The Three Dimensions
 
-> **Mocking is a confession that your code is poorly designed—or that you're testing at the wrong level.**
+Every test level offers different tradeoffs across three orthogonal dimensions:
 
-If you need to mock something:
+### 1. Detection: What Bugs Can This Level Find?
 
-1. **Redesign** to use dependency injection, OR
-2. **Don't test that interaction at this level**—push it to Level 2 or 3
+Each level has a **different lens**—not progressively broader, but genuinely different:
 
-Mocking gives you a test that passes while your production code fails. This is worse than no test at all.
+| Level  | Detects                                             | Cannot Detect                                 |
+| ------ | --------------------------------------------------- | --------------------------------------------- |
+| **L1** | Algorithmic bugs, edge cases, invariant violations  | Race conditions, integration mismatches       |
+| **L2** | Race conditions, integration mismatches, contracts  | Pure logic bugs hidden in stack, graphical UX |
+| **L3** | Workflow breaks, UX failures, real-world edge cases | Algorithmic bugs, intermittent races          |
+
+**Key insight**: L1 property-based tests catch algorithmic bugs that L3 almost never detects. L2 randomized harnesses catch race conditions that L1 can't see.
+
+### 2. Validity: What Does a Passing Test Prove?
+
+| Level  | A Passing Test Proves                           | False Confidence Risk                               |
+| ------ | ----------------------------------------------- | --------------------------------------------------- |
+| **L1** | The isolated logic is correct for tested inputs | Low—tests exactly what it claims                    |
+| **L2** | Components integrate correctly with the harness | Medium—depends on harness fidelity to production    |
+| **L3** | The workflow succeeds in the test environment   | High—can pass while feature is broken in production |
+
+**Key insight**: "E2E tests pass" does NOT mean "it works for users." L3 has the highest false confidence risk.
+
+### 3. Cost: What Investment Does This Level Require?
+
+| Aspect          | L1                          | L2                                             | L3                                             |
+| --------------- | --------------------------- | ---------------------------------------------- | ---------------------------------------------- |
+| **Upfront**     | Low (no setup, just code)   | Medium (harnesses, fixtures, containers)       | High (real env, credentials, test accounts)    |
+| **Per-run**     | Milliseconds                | Seconds to minutes                             | Minutes to hours                               |
+| **Maintenance** | Low (stable, deterministic) | Medium (harness evolution, dependency updates) | High (brittle to UI changes, flaky, env drift) |
+
+**Key insight**: A test cheap to write can be expensive to maintain. L3 tests often become "tests you're afraid to touch."
 
 ---
 
-### 🚨 Progress Tests vs Regression Tests
+## Where Evidence Lives
 
-> **CRITICAL INVARIANT: The production test suite (`test/` or `tests/`) MUST ALWAYS PASS.**
+Some outcomes can only be proven at specific levels:
 
-| Location            | Name                 | May Fail? | Purpose                          |
-| ------------------- | -------------------- | --------- | -------------------------------- |
-| `specs/.../tests/`  | **Progress tests**   | YES       | TDD red-green during development |
-| `test/` or `tests/` | **Regression tests** | NO        | Protect working functionality    |
+| Outcome                             | Minimum Level | Best Combination                                  |
+| ----------------------------------- | ------------- | ------------------------------------------------- |
+| Algorithm correctness               | 1             | L1 with property-based testing                    |
+| Parser handles grammar              | 1             | L1 typical + edges + properties                   |
+| User can export data as CSV         | 1             | L1 with temp directory (file I/O is Level 1)      |
+| Database query returns correct data | 2             | L2 integration; L1 only if query logic is complex |
+| CLI binary behaves correctly        | 2             | L2 with fixture files                             |
+| API contract is honored             | 2 or 3        | L2 against test server; L3 against staging        |
+| Clipboard works in browsers         | 3 only        | L3 in real browser; L1/L2 prove nothing           |
+| Payment flow completes              | 3 only        | L3 with test credentials                          |
 
-**The Rule**: Never write failing tests directly in the regression suite. Write progress tests first, graduate them when complete.
+### The Clipboard Example
+
+A "copy to clipboard" React component:
+
+- **L1 test** (component renders): Proves nothing about clipboard functionality
+- **L3 test** (actually copies in browser): Proves the feature works
+
+**Best combination**: Skip L1/L2 entirely, write L3 tests in target browsers.
+
+### The Pricing Engine Example
+
+A complex pricing calculation with discounts, taxes, promotions:
+
+- **L2 only** (integration test checks total): Knows IF wrong, not WHERE the bug is
+- **L1 + L2**: L1 isolates which rule is broken; L2 confirms end-to-end
+
+**Best combination**: L1 with full 4-part progression + L2 for integration.
 
 ---
 
-## Level 1: Unit / Pure Logic
+## Add Lower Levels for Debuggability
 
-### The Question This Level Answers
+When Level 2 or 3 is required for evidence, add Level 1 tests ONLY if:
 
-> **"Is our logic correct, independent of any external system?"**
+1. **The code is complex**—your logic (algorithms, parsers, rules), not library wiring
+2. **Debugging will be hard**—when the higher-level test fails, will you know where to look?
+3. **Property-based testing adds value**—would generated inputs find edge cases?
 
-If a user's request fails, Level 1 tests help you instantly rule out (or identify) bugs in your core logic.
+| Scenario                                        | Add Level 1? | Reason                                        |
+| ----------------------------------------------- | ------------ | --------------------------------------------- |
+| Integration test fails on a complex algorithm   | YES          | Level 1 isolates the algorithm                |
+| Integration test fails on argparse flag parsing | NO           | Trust argparse; check your usage              |
+| E2E test fails on payment flow                  | MAYBE        | If payment calculation logic is complex, yes  |
+| E2E test fails on clipboard                     | NO           | It's a browser API call, nothing to unit test |
 
-### What You Can Use
+---
 
-| Allowed              | Examples                                               | Why It's OK                   |
-| -------------------- | ------------------------------------------------------ | ----------------------------- |
-| Test runner          | pytest, vitest, jest, go test                          | Part of dev environment       |
-| Language primitives  | temp files, env vars, in-memory structures             | Part of runtime               |
-| Standard dev tools   | git, node, npm, npx, curl, python, cat, grep, sed, awk | Available in CI without setup |
-| Dependency injection | Pass interfaces, not implementations                   | Enables isolation             |
-| Factories/builders   | Generate test data programmatically                    | Reproducible tests            |
+## Trust the Library
 
-**Standard dev tools** are those available in CI environments without installation (git, node, npm, npx, curl, python, cat, grep, sed, awk). Project-specific tools (make, pip install, hugo, custom binaries) are Level 2.
+Libraries like argparse, Zod, pydantic, js-yaml are battle-tested. Don't test that they work—test YOUR logic.
 
-**CRITICAL FILESYSTEM RULE:**
-
-All Level 1 tests MUST use OS-provided temporary directories exclusively (`os.tmpdir()`, `tempfile.mkdtemp()`, `/tmp/`, etc.). Never write outside temporary directories. This ensures tests are isolated, reentrant, and don't pollute the user's filesystem. Fast execution is possible thanks to modern SSDs.
-
-### What You Cannot Use
-
-| Forbidden                                | Why                                               |
-| ---------------------------------------- | ------------------------------------------------- |
-| Real databases                           | That's Level 2                                    |
-| Real HTTP calls                          | That's Level 2 or 3                               |
-| Project-specific binaries (ffmpeg, hugo) | That's Level 2                                    |
-| Project-specific build tools (make, npm) | That's Level 2                                    |
-| Mocks of external systems                | Never. Use DI and don't test the interaction here |
-
-### The Key Insight
-
-**If you can't test something without mocking an external system, you're at the wrong level.**
-
-Don't mock the database—design your code so the business logic doesn't know about the database. Then test the business logic here, and test the database integration at Level 2.
-
-### Pattern: Dependency Injection
+**Don't test library behavior:**
 
 ```python
-## ❌ BAD: Hardcoded dependency, requires mocking to test
+# BAD: Tests argparse, not your code
+def test_verbose_flag_is_parsed():
+    args = parser.parse_args(["--verbose"])
+    assert args.verbose is True
+```
+
+**Do test your behavior:**
+
+```python
+# GOOD: Tests your logic that uses the parsed result
+def test_verbose_mode_produces_detailed_output():
+    output = run_command(verbose=True)
+    assert "DEBUG:" in output
+```
+
+---
+
+## Randomized Test Harnesses
+
+Always ask: **What is the data structure that describes the fixture?**
+
+Example: When testing directory tree operations:
+
+1. The underlying structure is a DAG (directed acyclic graph)
+2. Generate a DAG data structure first
+3. Test your logic against the DAG at Level 1
+4. Convert to actual directories in temp directory for Level 2
+
+### Seeding
+
+- Seeds should derive from system time (different every run)
+- Show seed on failure for reproduction
+- This maximizes variety while enabling reproduction
+
+---
+
+## The 4-Part Progression
+
+Organize tests at any level to serve all three purposes (code/evidence/debug):
+
+### Part 0: Shared Test Values
+
+Create a test values file with named, typed data:
+
+```typescript
+export const TYPICAL = {
+  BASIC: { input: "simple", expected: 42 },
+  COMPLEX: { input: "with-flags", expected: 100 },
+} as const;
+
+export const EDGES = {
+  EMPTY: { input: "", expected: 0 },
+  MAX: { input: "x".repeat(1000), expected: "ERROR" },
+} as const;
+```
+
+### Part 1: Named Typical Cases
+
+One `it()` per category. When test fails, you know EXACTLY which case.
+
+### Part 2: Named Edge Cases
+
+One `it()` per boundary condition. Each boundary is independently debuggable.
+
+### Part 3: Systematic Coverage Loop
+
+Loop over all known cases. Should ONLY fail if Parts 1-2 missed a category.
+
+### Part 4: Generated/Property-Based
+
+Reproducible via seed. Escalate from debuggable loops to comprehensive properties.
+
+### Level Breadth
+
+| Level   | Typical Parts      | Why                                   |
+| ------- | ------------------ | ------------------------------------- |
+| Level 1 | All 4 parts        | Cheapest—can afford full breadth      |
+| Level 2 | Parts 1-2, maybe 3 | More expensive—focus on key scenarios |
+| Level 3 | Part 1 only        | Most expensive—critical flows only    |
+
+---
+
+## Progress Tests vs Regression Tests
+
+| Location                                | Name             | May Fail? | Purpose                          |
+| --------------------------------------- | ---------------- | --------- | -------------------------------- |
+| `specs/.../tests/`                      | Progress tests   | YES       | TDD red-green during development |
+| `tests/{level}/{capability}/{feature}/` | Regression tests | NO        | Protect working functionality    |
+
+**The invariant**: The regression test suite MUST ALWAYS PASS.
+
+**Graduation**: When a story is complete, tests graduate from `specs/work/doing/{capability}/{feature}/{story}/tests/` to `tests/{level}/{capability}/{feature}/`.
+
+Stories are ephemeral—they disappear as a directory level, becoming test files within the feature.
+
+---
+
+## Test Infrastructure
+
+Keep test infrastructure separate from tests. Categories:
+
+### 1. Test Environment Context Managers
+
+Shared utilities (like `withTestEnv`) that handle:
+
+- Seeding and reproducibility
+- Temp directory lifecycle
+- Environment variable isolation
+- Shared setup/teardown
+
+### 2. Containerized Services
+
+Local databases, dev servers, message queues. Managed via docker-compose.
+
+### 3. Fixtures
+
+Named test values (TYPICAL, EDGES)—static data collections.
+
+### 4. Generators
+
+Randomized data generation with seeding for reproducibility.
+
+---
+
+## Dependency Injection Pattern
+
+```python
+# BAD: Hardcoded dependency, requires mocking
 class OrderProcessor:
     def process(self, order):
         db = PostgresDatabase()  # Hardcoded!
         db.save(order)
-        EmailService().send(order.customer, "Order confirmed")
 
 
-## ✅ GOOD: Injected dependencies, testable without mocks
+# GOOD: Injected dependencies, testable without mocks
 class OrderProcessor:
-    def __init__(self, repository, notifier):
+    def __init__(self, repository):
         self.repository = repository
-        self.notifier = notifier
 
     def process(self, order):
         self.repository.save(order)
-        self.notifier.notify(order.customer, "Order confirmed")
 
 
-## Level 1 test: Use simple in-memory implementations
-def test_order_processing_saves_and_notifies():
-    # These are NOT mocks—they're real implementations with test-friendly behavior
-    saved_orders = []
-    notifications = []
+# Level 1 test: Real in-memory implementation
+def test_order_processing_saves():
+    saved = []
 
     class InMemoryRepo:
         def save(self, order):
-            saved_orders.append(order)
+            saved.append(order)
 
-    class InMemoryNotifier:
-        def notify(self, to, msg):
-            notifications.append((to, msg))
+    processor = OrderProcessor(InMemoryRepo())
+    processor.process(Order(customer="alice"))
 
-    processor = OrderProcessor(InMemoryRepo(), InMemoryNotifier())
-    processor.process(Order(customer="alice@test.com", items=["book"]))
-
-    assert len(saved_orders) == 1
-    assert notifications == [("alice@test.com", "Order confirmed")]
-```
-
-### Pattern: Pure Function Testing
-
-```python
-## Pure functions are Level 1's sweet spot
-def calculate_shipping(weight_kg: float, distance_km: float, express: bool) -> float:
-    base = weight_kg * 0.5 + distance_km * 0.01
-    return base * 1.5 if express else base
-
-
-def test_shipping_calculation():
-    assert calculate_shipping(10, 100, express=False) == 6.0
-    assert calculate_shipping(10, 100, express=True) == 9.0
-```
-
-### Pattern: Temporary Directories
-
-```python
-import tempfile
-from pathlib import Path
-
-
-def test_config_file_generation():
-    with tempfile.TemporaryDirectory() as tmpdir:
-        config_path = Path(tmpdir) / "config.yaml"
-
-        generate_config(config_path, {"debug": True})
-
-        content = config_path.read_text()
-        assert "debug: true" in content
-```
-
-### What Level 1 Tests Prove
-
-✅ Your business logic handles edge cases correctly\
-✅ Your parsing/validation works\
-✅ Your algorithms produce correct results\
-✅ Your error handling works as expected
-
-### What Level 1 Tests Cannot Prove
-
-❌ That PostgreSQL accepts your queries\
-❌ That the HTTP API returns what you expect\
-❌ That the CLI binary does what the docs say\
-❌ That the real system works end-to-end
-
-**This is why Level 2 exists.**
-
----
-
-## Level 2: Integration
-
-### The Question This Level Answers
-
-> **"Does our code correctly interact with real external dependencies?"**
-
-Level 1 proved your logic is correct. Level 2 proves your code actually works with the real databases, binaries, and services it depends on.
-
-Integration testing covers two scenarios:
-
-**1. Project-specific tools:**
-
-- CLI tools NOT in standard dev environment: Hugo, Caddy, Claude Code, FFmpeg, etc.
-- Project-specific build tools: Make, Gradle, Maven, etc.
-- Local execution only (no network required)
-
-**2. Virtualized environments:**
-
-- Docker containers and containerized test services
-- Virtual machines or sandboxed environments
-- Creates infrastructure dependencies beyond standard developer setup
-
-### The Critical Requirement: Test Harnesses
-
-> **Before writing ANY Level 2 test, you must identify or build the test harness for each external dependency.**
-
-#### What Is a Test Harness?
-
-A test harness is the infrastructure that lets you run tests against a real dependency in a controlled, repeatable way.
-
-| Dependency Type | Harness Examples                                                 |
-| --------------- | ---------------------------------------------------------------- |
-| Database        | Docker container with test schema, or test database with cleanup |
-| HTTP API        | Local mock server, or sandbox/staging environment                |
-| CLI binary      | Installed binary with known version, fixture files               |
-| File system     | Temp directories with fixture data                               |
-| Message queue   | Docker container or embedded instance                            |
-
-#### 🚨 THE RULE: If You Don't Know the Harness, STOP
-
-> **If you cannot describe the test harness for a dependency, you MUST ask the user before proceeding.**
-
-Do not guess. Do not assume. Ask:
-
-```
-I need to write integration tests for [dependency].
-
-To proceed, I need to know:
-1. What test harness exists or should I build?
-2. How do I start/stop/reset it?
-3. Where are fixture files or seed data?
-4. What environment variables configure it?
-
-Please provide this information or point me to existing test infrastructure.
-```
-
-### Pattern: Document Your Harnesses
-
-Every project should have a `test/harnesses/` directory or documentation:
-
-```
-test/
-├── harnesses/
-│   ├── README.md           # Overview of all harnesses
-│   ├── postgres.py         # Start/stop/reset Postgres container
-│   ├── redis.py            # Start/stop/reset Redis container
-│   └── hugo.py             # Verify Hugo binary, create fixture sites
-├── fixtures/
-│   ├── sample-site/        # Fixture data for Hugo tests
-│   └── seed-data.sql       # Seed data for Postgres tests
-└── integration/
-    ├── test_database.py
-    └── test_hugo_build.py
-```
-
-### Pattern: Real Database Testing
-
-```python
-import pytest
-from harnesses.postgres import PostgresHarness
-
-
-@pytest.fixture(scope="module")
-def database():
-    """Harness: Docker Postgres with schema applied"""
-    harness = PostgresHarness()
-    harness.start()
-    harness.apply_schema("schema.sql")
-    yield harness.connection_string
-    harness.stop()
-
-
-def test_user_repository_saves_and_retrieves(database):
-    repo = UserRepository(database)
-
-    user = User(email="test@example.com", name="Test User")
-    repo.save(user)
-
-    retrieved = repo.find_by_email("test@example.com")
-
-    assert retrieved is not None
-    assert retrieved.name == "Test User"
-```
-
-### Pattern: Real Binary Testing
-
-```python
-import subprocess
-import tempfile
-from pathlib import Path
-
-
-@pytest.fixture
-def hugo_site():
-    """Harness: Temp directory with minimal Hugo site structure"""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        site_dir = Path(tmpdir)
-        # Create minimal Hugo site
-        (site_dir / "config.toml").write_text('title = "Test Site"')
-        (site_dir / "content").mkdir()
-        (site_dir / "content" / "_index.md").write_text("# Home")
-        yield site_dir
-
-
-def test_hugo_builds_site(hugo_site):
-    """Level 2: Verify Hugo binary actually builds our site structure"""
-    result = subprocess.run(
-        ["hugo", "--source", str(hugo_site)], capture_output=True, text=True
-    )
-
-    assert result.returncode == 0
-    assert (hugo_site / "public" / "index.html").exists()
-```
-
-### Pattern: Real HTTP API Testing
-
-```python
-import pytest
-import httpx
-from harnesses.api_server import LocalAPIServer
-
-
-@pytest.fixture(scope="module")
-def api_server():
-    """Harness: Local instance of the API under test"""
-    server = LocalAPIServer(port=8089)
-    server.start()
-    server.wait_until_ready()
-    yield server.base_url
-    server.stop()
-
-
-def test_api_creates_resource(api_server):
-    response = httpx.post(f"{api_server}/resources", json={"name": "test-resource"})
-
-    assert response.status_code == 201
-    assert response.json()["name"] == "test-resource"
-```
-
-### What Level 2 Tests Prove
-
-✅ PostgreSQL accepts your queries and returns expected results\
-✅ Hugo builds your site structure correctly\
-✅ The HTTP client handles real responses correctly\
-✅ File operations work on real file systems
-
-### What Level 2 Tests Cannot Prove
-
-❌ That production credentials work\
-❌ That third-party APIs behave the same in prod\
-❌ That the full user workflow succeeds\
-❌ That performance is acceptable under load
-
-**This is why Level 3 exists.**
-
----
-
-## Level 3: System / End-to-End
-
-### The Question This Level Answers
-
-> **"Does the complete system work the way users will actually use it?"**
-
-Level 2 proved your integrations work locally. Level 3 proves the **entire system** works with **real credentials** against **real (test) environments**.
-
-### The Critical Requirement: Credentials & Test Accounts
-
-> **Before writing ANY Level 3 test, you must know where the credentials are and what test accounts exist.**
-
-#### 🚨 THE RULE: No Credentials, No Level 3 Tests
-
-> **If you do not have explicit information about test credentials and accounts, you MUST ask the user before proceeding.**
-
-Do not guess. Do not use production credentials. Ask:
-
-```
-I need to write end-to-end tests that use [external service].
-
-To proceed, I need to know:
-1. Where are the test credentials stored? (env vars, secrets manager, etc.)
-2. What test accounts/environments exist?
-3. Are there rate limits or quotas on the test account?
-4. How do I reset test data between runs?
-5. Is there a staging/sandbox environment, or do tests run against production?
-
-Please provide this information before I proceed with Level 3 tests.
-```
-
-### Pattern: Credential Management
-
-```python
-import os
-import pytest
-
-## Document where credentials come from
-CREDENTIALS_SOURCE = """
-Level 3 tests require these environment variables:
-- STRIPE_TEST_API_KEY: From 1Password vault "Engineering/Test Credentials"
-- SENDGRID_TEST_API_KEY: From .env.test (not committed)
-- TEST_USER_EMAIL: test-automation@example.com
-- TEST_USER_PASSWORD: In 1Password vault "Engineering/Test Credentials"
-"""
-
-
-@pytest.fixture(scope="session")
-def stripe_client():
-    api_key = os.environ.get("STRIPE_TEST_API_KEY")
-    if not api_key:
-        pytest.skip(f"STRIPE_TEST_API_KEY not set.\n{CREDENTIALS_SOURCE}")
-    return StripeClient(api_key=api_key)
-
-
-@pytest.fixture(scope="session")
-def authenticated_user(browser):
-    email = os.environ.get("TEST_USER_EMAIL")
-    password = os.environ.get("TEST_USER_PASSWORD")
-    if not email or not password:
-        pytest.skip(f"Test user credentials not set.\n{CREDENTIALS_SOURCE}")
-
-    # Log in once per session
-    browser.goto("/login")
-    browser.fill("[name=email]", email)
-    browser.fill("[name=password]", password)
-    browser.click("[type=submit]")
-    browser.wait_for_url("/dashboard")
-
-    yield browser
-```
-
-### Pattern: Full User Workflow
-
-```python
-def test_complete_purchase_workflow(authenticated_user, stripe_client):
-    """
-    Level 3: Complete user workflow with real services
-
-    Prerequisites:
-    - TEST_USER has a saved payment method in Stripe test mode
-    - Product "test-product" exists in test catalog
-    """
-    browser = authenticated_user
-
-    # User browses to product
-    browser.goto("/products/test-product")
-
-    # User adds to cart
-    browser.click("[data-testid=add-to-cart]")
-    browser.wait_for_selector("[data-testid=cart-count]:has-text('1')")
-
-    # User checks out
-    browser.goto("/checkout")
-    browser.click("[data-testid=pay-now]")
-
-    # Verify order completed
-    browser.wait_for_url("/order-confirmation")
-    order_id = browser.locator("[data-testid=order-id]").text_content()
-
-    # Verify in Stripe
-    charges = stripe_client.charges.list(limit=1)
-    assert charges.data[0].metadata["order_id"] == order_id
-```
-
-### Pattern: CLI End-to-End
-
-```python
-import subprocess
-import os
-
-
-def test_cli_full_workflow():
-    """
-    Level 3: CLI works with real credentials against real services
-
-    Prerequisites:
-    - LHCI_TOKEN set in environment
-    - Test site deployed at https://staging.example.com
-    """
-    # Verify prerequisites
-    if not os.environ.get("LHCI_TOKEN"):
-        pytest.skip("LHCI_TOKEN not set")
-
-    result = subprocess.run(
-        [
-            "hugolit",
-            "run",
-            "--url",
-            "https://staging.example.com",
-            "--upload",  # Uploads to LHCI server
-        ],
-        capture_output=True,
-        text=True,
-        env={**os.environ, "CI": "true"},
-    )
-
-    assert result.returncode == 0
-    assert "Report uploaded" in result.stdout
-```
-
-### What Level 3 Tests Prove
-
-✅ Real credentials work\
-✅ Real third-party APIs behave as expected\
-✅ The full user workflow succeeds\
-✅ All integrations work together in a real environment
-
-### When Level 3 Tests Fail
-
-Level 3 failures are the most serious because they mean **users will experience failures**. When a Level 3 test fails:
-
-1. **Check credentials**: Did they expire? Get rotated?
-2. **Check third-party status**: Is the external service down?
-3. **Check test data**: Did seed data get corrupted or deleted?
-4. **Then** look at your code
-
----
-
-## The Testing Decision Protocol
-
-When you need to test a feature, execute these phases IN ORDER.
-
-### Phase 1: List the Guarantees You Need
-
-Before writing any test, list what you need to guarantee:
-
-```markdown
-### Guarantees Needed for "User Registration"
-
-1. Email validation logic rejects invalid formats
-2. Password hashing produces correct hashes
-3. Database correctly stores and retrieves user records
-4. Email service actually sends the welcome email
-5. Complete signup flow works from the user's perspective
-```
-
-### Phase 2: Assign Each Guarantee to a Level
-
-| Guarantee                       | Level   | Why This Level?                       |
-| ------------------------------- | ------- | ------------------------------------- |
-| Email validation logic          | Level 1 | Pure function, no dependencies        |
-| Password hashing                | Level 1 | Pure function, deterministic          |
-| Database stores/retrieves users | Level 2 | Needs real database                   |
-| Email service sends email       | Level 2 | Needs email harness (Mailhog/sandbox) |
-| Complete signup flow            | Level 3 | Needs real credentials, real services |
-
-### Phase 3: Identify Harnesses (Level 2) and Credentials (Level 3)
-
-Before writing Level 2 or Level 3 tests:
-
-**For Level 2, document your harnesses:**
-
-```markdown
-### Test Harnesses Required
-
-- **PostgreSQL**: Docker container via `docker-compose.test.yml`
-  - Start: `docker-compose -f docker-compose.test.yml up -d postgres`
-  - Reset: `docker-compose exec postgres psql -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"`
-- **Email (Mailhog)**: Docker container captures all outgoing email
-  - Start: `docker-compose -f docker-compose.test.yml up -d mailhog`
-  - API: `http://localhost:8025/api/v2/messages`
-```
-
-**For Level 3, document your credentials:**
-
-```markdown
-### Test Credentials Required
-
-- **TEST_USER_EMAIL**: `test-automation@example.com`
-- **TEST_USER_PASSWORD**: In 1Password vault "Engineering/Test Credentials"
-- **SENDGRID_API_KEY**: In `.env.test` (get from team lead)
-
-### Test Environment
-
-- Staging URL: `https://staging.example.com`
-- Test Stripe account: Uses `sk_test_*` keys (auto-set in staging)
-```
-
-### Phase 4: Write Tests Bottom-Up
-
-Start with Level 1. Only move to Level 2 when Level 1 is complete. Only move to Level 3 when Level 2 is complete.
-
-```python
-## test/unit/test_registration.py (Level 1)
-def test_email_validation_rejects_invalid():
-    assert validate_email("notanemail") is False
-    assert validate_email("also@invalid") is False
-    assert validate_email("valid@example.com") is True
-
-
-def test_password_hashing_is_deterministic():
-    hash1 = hash_password("secret123")
-    hash2 = hash_password("secret123")
-    assert verify_password("secret123", hash1)
-    assert verify_password("secret123", hash2)
-
-
-## test/integration/test_registration.py (Level 2)
-def test_user_repository_creates_user(database):
-    repo = UserRepository(database)
-    user = repo.create(email="new@example.com", password_hash="hash123")
-
-    retrieved = repo.find_by_email("new@example.com")
-    assert retrieved.id == user.id
-
-
-def test_email_service_sends_welcome_email(mailhog):
-    service = EmailService(smtp_url=mailhog.smtp_url)
-    service.send_welcome("recipient@example.com")
-
-    messages = mailhog.get_messages()
-    assert len(messages) == 1
-    assert messages[0]["To"] == "recipient@example.com"
-
-
-## test/e2e/test_registration.py (Level 3)
-def test_complete_signup_workflow(browser, test_credentials):
-    browser.goto("https://staging.example.com/signup")
-    browser.fill("[name=email]", "e2e-test@example.com")
-    browser.fill("[name=password]", "SecurePass123!")
-    browser.click("[type=submit]")
-
-    browser.wait_for_url("/welcome")
-    assert "Welcome" in browser.title()
+    assert len(saved) == 1
 ```
 
 ---
 
-## Anti-Patterns
+## Quick Reference: Level Selection
 
-### Anti-Pattern: Mocking External Systems
-
-```python
-## ❌ NEVER DO THIS
-@patch("myapp.database.PostgresClient")
-def test_saves_user(mock_db):
-    mock_db.save.return_value = {"id": 1}
-    result = save_user({"email": "test@example.com"})
-    mock_db.save.assert_called_once()  # What did we prove? NOTHING.
-```
-
-**Instead**: Use dependency injection at Level 1, real database at Level 2.
-
-### Anti-Pattern: Skipping Levels
-
-```python
-## ❌ Going straight to E2E without unit/integration coverage
-def test_full_checkout():
-    # If this fails, you have no idea if it's:
-    # - Your pricing logic (Level 1)
-    # - Your database queries (Level 2)
-    # - Your payment integration (Level 2)
-    # - The third-party service (Level 3)
-    # - Your test credentials (Level 3)
-    ...
-```
-
-**Instead**: Build confidence from the bottom up.
-
-### Anti-Pattern: Guessing at Harnesses or Credentials
-
-```python
-## ❌ Assuming a database exists
-def test_integration():
-    db = connect("postgresql://localhost:5432/test")  # Does this exist? Who knows!
-
-
-## ❌ Hardcoding credentials
-def test_e2e():
-    stripe = Stripe(api_key="sk_test_abc123")  # Will this work? For how long?
-```
-
-**Instead**: Document harnesses and credential sources explicitly. Ask if you don't know.
-
-### Anti-Pattern: Testing Implementation
-
-```python
-## ❌ Testing HOW, not WHAT
-def test_uses_correct_query():
-    repo = UserRepository(mock_db)
-    repo.find_active_users()
-    mock_db.query.assert_called_with("SELECT * FROM users WHERE active = true")
-
-
-## ✅ Test the BEHAVIOR
-def test_returns_only_active_users(database):
-    seed_data(
-        database,
-        [
-            {"email": "active@test.com", "active": True},
-            {"email": "inactive@test.com", "active": False},
-        ],
-    )
-
-    repo = UserRepository(database)
-    users = repo.find_active_users()
-
-    assert len(users) == 1
-    assert users[0].email == "active@test.com"
-```
-
----
-
-## Quick Reference: When to Use Each Level
-
-| If you need to verify...        | Use Level |
-| ------------------------------- | --------- |
-| Business logic correctness      | 1         |
-| Parsing/validation              | 1         |
-| Algorithm output                | 1         |
-| Error handling                  | 1         |
-| Database queries work           | 2         |
-| HTTP calls work                 | 2         |
-| CLI binary works                | 2         |
-| File I/O works                  | 2         |
-| Full user workflow              | 3         |
-| Real credentials work           | 3         |
-| Production-like environment     | 3         |
-| Third-party service integration | 3         |
+| Evidence needed for...  | Level |
+| ----------------------- | ----- |
+| Business logic          | 1     |
+| Parsing/validation      | 1     |
+| Algorithm output        | 1     |
+| File I/O with temp dirs | 1     |
+| Database queries        | 2     |
+| HTTP calls              | 2     |
+| CLI binary behavior     | 2     |
+| Full user workflow      | 3     |
+| Real credentials        | 3     |
+| Browser behavior        | 3     |
+| Third-party services    | 3     |
 
 ---
 
 ## Checklist Before Declaring Tests Complete
 
-- [ ] All critical guarantees have tests at the appropriate level
-- [ ] Level 1 tests use DI, not mocking
-- [ ] Level 2 harnesses are documented and reproducible
-- [ ] Level 3 credentials are documented (not hardcoded)
+- [ ] Evidence exists at the level where it can be proven
+- [ ] No mocking anywhere—DI with real implementations
+- [ ] Level 2 harnesses documented
+- [ ] Level 3 credentials documented (not hardcoded)
 - [ ] Tests verify behavior, not implementation
-- [ ] Fast-failing: environment checks run first
-- [ ] Progress tests in `specs/`, regression tests in `test/`
-- [ ] All regression tests pass
+- [ ] Regression tests all pass
 
 ---
 
-## When You're Stuck: The Questions to Ask
+## When You're Stuck
 
 **For Level 1:**
 
-> "Can I verify this behavior using only the test runner, language primitives, and dependency injection?"
+> Can I verify this behavior using only the test runner, language primitives, temp dirs, and DI?
 >
 > If no → move to Level 2
 
 **For Level 2:**
 
-> "What test harness do I need? How do I start/stop/reset it?"
+> What test harness do I need?
 >
 > If you don't know → **STOP AND ASK THE USER**
 
 **For Level 3:**
 
-> "Where are the credentials? What test accounts exist?"
+> Where are the credentials?
 >
 > If you don't know → **STOP AND ASK THE USER**
 
 ---
 
-*Remember: The goal is not "passing tests." The goal is **justified confidence that your code works in the real world**. Every test should move you closer to that confidence. If a test doesn't, delete it.*
-
----
-
-*Remember: The goal is not "passing tests." The goal is **justified confidence that your code works in the real world**. Every test should move you closer to that confidence. If a test doesn't, delete it.*
+*The goal is not "passing tests" or "high coverage"—it's **justified confidence that your code works in the real world**.*

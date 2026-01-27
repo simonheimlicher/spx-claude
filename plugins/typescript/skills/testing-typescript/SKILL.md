@@ -445,6 +445,43 @@ Detailed patterns and examples for each level:
 
 </level_references>
 
+<test_infrastructure_paths>
+Keep test infrastructure separate from tests:
+
+```
+src/
+└── __testing__/
+    ├── index.ts
+    ├── context.ts           # Test environment context manager (withTestEnv)
+    ├── fixtures/
+    │   ├── index.ts
+    │   └── values.ts        # TYPICAL, EDGES collections
+    ├── harnesses/
+    │   ├── index.ts
+    │   ├── postgres.ts      # PostgreSQL harness
+    │   └── docker.ts        # Generic Docker harness
+    └── generators/
+        ├── index.ts
+        └── factories.ts     # Seeded data factories
+```
+
+**Regression tests** (graduated from specs):
+
+```
+tests/
+├── unit/
+│   └── {capability}/
+│       └── {feature}/
+├── integration/
+│   └── {capability}/
+│       └── {feature}/
+└── e2e/
+    └── {capability}/
+        └── {feature}/
+```
+
+</test_infrastructure_paths>
+
 <success_criteria>
 Before declaring tests complete:
 
