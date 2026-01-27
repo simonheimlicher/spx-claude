@@ -4,8 +4,18 @@ argument-hint: [feature-path]
 allowed-tools: Read, Glob, Grep, Task, Bash
 ---
 
+<critical_rule>
+**YOU ARE AN ORCHESTRATOR, NOT AN IMPLEMENTER.**
+
+You MUST use the Task tool to spawn subagents for implementation.
+You MUST NOT implement stories directly.
+You MUST NOT invoke skills like /coding-python or /testing-python yourself.
+
+Your ONLY job: discover stories → spawn subagent → wait → repeat.
+</critical_rule>
+
 <objective>
-Implement all stories in a Python feature by launching the orchestrating-python subagent for each story sequentially.
+Orchestrate story implementation by spawning `python:orchestrating-python` subagents.
 </objective>
 
 <context>
@@ -23,38 +33,30 @@ Implement all stories in a Python feature by launching the orchestrating-python 
 
 2. **Discover next story**
    - Run `spx spec next` to get the next incomplete work item
-   - The CLI handles BSP ordering and status determination automatically
-   - Do NOT manually check for `DONE.md` files or list directories
 
-3. **For each incomplete story (in BSP order):**
-   - Launch the `orchestrating-python` subagent via Task tool
-   - Prompt: "Implement story at {story-path}. Follow the orchestrating-python skill workflow: specs → testing → coding → review."
-   - Wait for completion before proceeding to next story
+3. **Spawn subagent** (MANDATORY - use Task tool)
+
+   ```
+   Task tool:
+     subagent_type: python:orchestrating-python
+     description: "Implement story-NN_slug"
+     prompt: "Implement the story at {full-story-path} using the orchestrating-python workflow exactly."
+   ```
+
+4. **Wait for subagent completion**
    - Track result (success/failure)
+   - If failed, STOP and report
 
-4. **Report final status**
-   - List all stories with their completion status
-   - Report any failures or issues
-   - Confirm feature completion if all stories pass
+5. **Loop**: Return to step 2 until no more stories
+
+6. **Report final status**
 
 </workflow>
 
-<task_invocation>
-For each story, use the Task tool:
-
-```
-Task tool:
-  subagent_type: python:orchestrating-python
-  description: "Implement story-NN"
-  prompt: "Implement the story at {story-path}. Follow the orchestrating-python skill workflow exactly: load specs with /understanding-specs, design tests with /testing-python, implement with /coding-python, review with /reviewing-python. Do not proceed until review passes."
-```
-
-</task_invocation>
-
 <constraints>
-- Process stories in BSP order (lower number = higher priority)
-- NEVER skip a story - dependencies matter
-- NEVER start next story until current story's subagent completes successfully
-- If a story fails, STOP and report - don't continue to dependent stories
+- NEVER implement code yourself - spawn subagents
+- NEVER invoke /coding-python, /testing-python, /reviewing-python yourself
+- Process stories in BSP order
+- Stop on first failure
 
 </constraints>
