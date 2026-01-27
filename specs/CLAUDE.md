@@ -8,7 +8,14 @@ This guide explains WHEN to invoke specs skills. It is a **router** that tells y
 
 **YOU MUST STOP AND INVOKE THE APPROPRIATE SKILL BEFORE PROCEEDING.**
 
-Do NOT grep for templates. Do NOT search for structure definitions. Do NOT guess at requirements patterns. The skills contain everything you need.
+Do NOT grep for templates.
+Do NOT search for structure definitions.
+Do NOT copy patterns you find in the repository.
+Do NOT guess at requirements patterns.
+
+DO use the skills as described below.
+
+**The skills are the only authoritative source.**
 
 ---
 
@@ -17,9 +24,9 @@ Do NOT grep for templates. Do NOT search for structure definitions. Do NOT guess
 **BSP numbers (capability-NN, feature-NN, story-NN) are ONLY unique among siblings at the same level.**
 
 ```text
-capability-21/feature-01/story-54  ← One story-54
-capability-22/feature-01/story-54  ← DIFFERENT story-54
-capability-21/feature-02/story-54  ← DIFFERENT story-54
+capability-21/feature-32/story-54  ← One story-54
+capability-28/feature-32/story-54  ← DIFFERENT story-54
+capability-21/feature-87/story-54  ← DIFFERENT story-54
 ```
 
 **ALWAYS use the FULL PATH when referencing work items:**
@@ -27,7 +34,7 @@ capability-21/feature-02/story-54  ← DIFFERENT story-54
 | ❌ WRONG (Ambiguous)     | ✅ CORRECT (Unambiguous)                     |
 | ------------------------ | -------------------------------------------- |
 | "story-54"               | "capability-21/feature-54/story-54"          |
-| "implement feature-01"   | "implement capability-21/feature-01"         |
+| "implement feature-32"   | "implement capability-21/feature-32"         |
 | "Continue with story-54" | "Continue capability-21/feature-54/story-54" |
 
 **Why this matters:**
