@@ -232,13 +232,13 @@ spx/
 
 States must communicate **what needs to happen**, not just describe the situation. Poetry in philosophy, precision in indicators.
 
-| State         | Meaning                        | Required Action            |
-| ------------- | ------------------------------ | -------------------------- |
-| **Pending**   | Spec exists, no tests          | Write tests                |
-| **Failing**   | Tests exist, not passing       | Fix code or fix tests      |
-| **Stale**     | Spec changed, tests outdated   | Update tests to match spec |
-| **Passing**   | All tests pass, spec unchanged | None—potential realized    |
-| **Regressed** | Was passing, now failing       | Investigate and fix        |
+| State         | Meaning                            | Required Action          |
+| ------------- | ---------------------------------- | ------------------------ |
+| **Unknown**   | Test Files links don't resolve     | Write tests              |
+| **Pending**   | Tests exist, not all passing       | Fix code or fix tests    |
+| **Stale**     | Spec or test blob changed          | Re-stamp with `spx test` |
+| **Passing**   | All tests pass, blobs unchanged    | None—potential realized  |
+| **Regressed** | Was passing, now fails, blobs same | Investigate and fix      |
 
 ### Why Not "Aspiration" and "Realized"?
 

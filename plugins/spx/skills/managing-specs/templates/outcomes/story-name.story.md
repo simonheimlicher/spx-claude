@@ -51,9 +51,9 @@ THEN [expected result]
 
 #### Test Files
 
-| File                                                   | Level | Harness                                      |
-| ------------------------------------------------------ | ----- | -------------------------------------------- |
-| [{slug}.integration](tests/{slug}.integration.test.ts) | 2     | [harness-name](spx/capability-NN/feature-NN) |
+| File                                                   | Level | Harness                                                                 |
+| ------------------------------------------------------ | ----- | ----------------------------------------------------------------------- |
+| [{slug}.integration](tests/{slug}.integration.test.ts) | 2     | [harness-name](spx/NN-test-infrastructure.capability/NN-{name}.feature) |
 
 #### Analysis
 

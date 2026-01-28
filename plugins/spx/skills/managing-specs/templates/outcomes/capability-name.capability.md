@@ -27,9 +27,9 @@
 - **1 → 2**: [What confidence does Level 2 add that Level 1 cannot provide?]
 - **2 → 3**: [What confidence does Level 3 add that Level 2 cannot provide?]
 
-## Capability Tests (Level 3)
+## Outcomes
 
-### E2E1: [Primary user journey]
+### 1. [Primary user journey]
 
 ```gherkin
 GIVEN [full environment with real services]
@@ -37,11 +37,13 @@ WHEN [complete user workflow]
 THEN [value delivered to user]
 ```
 
-| File                                   | Level | Harness                                                         |
-| -------------------------------------- | ----- | --------------------------------------------------------------- |
-| [{slug}.e2e](tests/{slug}.e2e.test.ts) | 3     | [e2e-harness](spx/capability-13_test-infrastructure/feature-NN) |
+| File                                   | Level | Harness                                                                     |
+| -------------------------------------- | ----- | --------------------------------------------------------------------------- |
+| [{slug}.e2e](tests/{slug}.e2e.test.ts) | 3     | [e2e-harness](spx/NN-test-infrastructure.capability/NN-e2e-harness.feature) |
 
-### E2E2: [Alternative scenario]
+---
+
+### 2. [Alternative scenario]
 
 ```gherkin
 GIVEN [alternative preconditions]
@@ -49,13 +51,14 @@ WHEN [user action]
 THEN [expected behavior]
 ```
 
-| File                                           | Level | Harness                                                         |
-| ---------------------------------------------- | ----- | --------------------------------------------------------------- |
-| [{slug}-alt.e2e](tests/{slug}-alt.e2e.test.ts) | 3     | [e2e-harness](spx/capability-13_test-infrastructure/feature-NN) |
+| File                                           | Level | Harness                                                                     |
+| ---------------------------------------------- | ----- | --------------------------------------------------------------------------- |
+| [{slug}-alt.e2e](tests/{slug}-alt.e2e.test.ts) | 3     | [e2e-harness](spx/NN-test-infrastructure.capability/NN-e2e-harness.feature) |
 
-## Completion Criteria
+---
 
-- [ ] All Level 1 tests pass (via feature/story completion)
-- [ ] All Level 2 tests pass (via feature completion)
-- [ ] All Level 3 E2E tests pass
-- [ ] Success metric achieved
+## Architectural Constraints
+
+| ADR                              | Constraint                         |
+| -------------------------------- | ---------------------------------- |
+| [adr-NN_name](../adr-NN_name.md) | [What constraint this ADR imposes] |

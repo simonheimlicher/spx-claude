@@ -19,9 +19,9 @@
 
 - **1 → 2**: [What confidence does Level 2 add that Level 1 cannot provide?]
 
-## Feature Tests
+## Outcomes
 
-### FI1: [Primary integration scenario]
+### 1. [Primary integration scenario]
 
 ```gherkin
 GIVEN [real environment with tools]
@@ -29,11 +29,13 @@ WHEN [feature action]
 THEN [integrated behavior verified]
 ```
 
-| File                                                   | Level | Harness                                      |
-| ------------------------------------------------------ | ----- | -------------------------------------------- |
-| [{slug}.integration](tests/{slug}.integration.test.ts) | 2     | [harness-name](spx/capability-NN/feature-NN) |
+| File                                                   | Level | Harness                                                                 |
+| ------------------------------------------------------ | ----- | ----------------------------------------------------------------------- |
+| [{slug}.integration](tests/{slug}.integration.test.ts) | 2     | [harness-name](spx/NN-test-infrastructure.capability/NN-{name}.feature) |
 
-### FI2: [Error handling scenario]
+---
+
+### 2. [Error handling scenario]
 
 ```gherkin
 GIVEN [error condition]
@@ -41,12 +43,14 @@ WHEN [feature action]
 THEN [graceful failure with clear message]
 ```
 
-| File                                                                 | Level | Harness                                      |
-| -------------------------------------------------------------------- | ----- | -------------------------------------------- |
-| [{slug}-errors.integration](tests/{slug}-errors.integration.test.ts) | 2     | [harness-name](spx/capability-NN/feature-NN) |
+| File                                                                 | Level | Harness                                                                 |
+| -------------------------------------------------------------------- | ----- | ----------------------------------------------------------------------- |
+| [{slug}-errors.integration](tests/{slug}-errors.integration.test.ts) | 2     | [harness-name](spx/NN-test-infrastructure.capability/NN-{name}.feature) |
 
-## Completion Criteria
+---
 
-- [ ] All Level 1 tests pass (via story completion)
-- [ ] All Level 2 integration tests pass
-- [ ] Escalation rationale documented
+## Architectural Constraints
+
+| ADR                              | Constraint                         |
+| -------------------------------- | ---------------------------------- |
+| [adr-NN_name](../adr-NN_name.md) | [What constraint this ADR imposes] |

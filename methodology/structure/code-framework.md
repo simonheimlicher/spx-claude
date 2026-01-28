@@ -147,19 +147,40 @@ Constraints and invariants that tests must verify.
 | CLI integration   | 2     | cli-harness | Needs real spx binary           |
 | Full workflow     | 3     | e2e-harness | Needs credentials               |
 
-## Completion Criteria
+### Escalation Rationale
 
-- [ ] All Level 1 tests pass
-- [ ] Level 2 tests pass with documented harness
+- **1 → 2**: [What confidence does Level 2 add that Level 1 cannot provide?]
+- **2 → 3**: [What confidence does Level 3 add that Level 2 cannot provide?]
+
+## Outcomes
+
+### 1. [Scenario name]
+
+\`\`\`gherkin
+GIVEN [precondition]
+WHEN [action]
+THEN [expected result]
+\`\`\`
+
+| File                                   | Level | Harness                                                                     |
+| -------------------------------------- | ----- | --------------------------------------------------------------------------- |
+| [{slug}.e2e](tests/{slug}.e2e.test.ts) | 3     | [e2e-harness](spx/NN-test-infrastructure.capability/NN-e2e-harness.feature) |
+
+## Architectural Constraints
+
+| ADR                              | Constraint                         |
+| -------------------------------- | ---------------------------------- |
+| [adr-NN_name](../adr-NN_name.md) | [What constraint this ADR imposes] |
 ```
 
 ### Rationale
 
 - **No drift** between spec prose and test ledger—`pass.csv` is the sole contract
 - **Test strategy** documents approach without duplicating test logic
-- **Harness references** make infrastructure dependencies explicit
+- **Harness references** point to the harness spec (the durable contract), not the implementation code
 - **Prose requirements** capture intent that tests alone cannot express
-- **Completion criteria** at capability/feature level only—stories have none
+- **Outcomes** use the same numbered Gherkin pattern as stories for consistency
+- **Architectural Constraints** reference ADRs that impose requirements on this container
 
 ---
 
@@ -293,12 +314,13 @@ cli.integration.test.ts,9ac4...,2026-01-28T14:15:00Z
 
 ### State derivation
 
-| Condition                              | State       | Meaning                |
-| -------------------------------------- | ----------- | ---------------------- |
-| No `tests/` directory                  | Spec only   | No tests written yet   |
-| `tests/` exists, no `pass.csv`         | Blocked     | Tests exist, none pass |
-| `pass.csv` has 2 of 5 tests            | In progress | 2 pass, 3 don't        |
-| `pass.csv` lists all tests in `tests/` | Validated   | All tests pass         |
+| Condition                             | State     | Required Action          |
+| ------------------------------------- | --------- | ------------------------ |
+| Test Files links don't resolve        | Unknown   | Write tests              |
+| Tests exist, not all passing          | Pending   | Fix code or fix tests    |
+| Spec or test blob changed since stamp | Stale     | Re-stamp with `spx test` |
+| All tests pass, blobs unchanged       | Passing   | None—potential realized  |
+| Was passing, now fails, blobs same    | Regressed | Investigate and fix      |
 
 ### Failure classification
 
@@ -412,21 +434,33 @@ Test harnesses are production code requiring their own specifications and test c
 
 ### Location
 
+Harness **specs** live in `spx/`; harness **code** lives in `tests/harness/` (same level as `src/`):
+
 ```
-spx/
-  13-test-infrastructure.capability/
-    test-infrastructure.capability.md
-    10-cli-harness.feature/
-      cli-harness.feature.md
-      pass.csv
-      tests/
-        setup.unit.test.ts
-        isolation.integration.test.ts
-    20-e2e-harness.feature/
-      e2e-harness.feature.md
-      pass.csv
-      tests/
+project/
+├── src/                                  # Implementation code
+├── tests/
+│   └── harness/                          # Harness implementation code
+│       ├── cli/                          # CLI harness code
+│       └── e2e/                          # E2E harness code
+└── spx/
+    └── 13-test-infrastructure.capability/  # Harness specs
+        ├── test-infrastructure.capability.md
+        ├── 10-cli-harness.feature/
+        │   ├── cli-harness.feature.md
+        │   ├── pass.csv
+        │   └── tests/                    # Tests for the harness itself
+        │       ├── setup.unit.test.ts
+        │       └── isolation.integration.test.ts
+        └── 20-e2e-harness.feature/
+            ├── e2e-harness.feature.md
+            ├── pass.csv
+            └── tests/
 ```
+
+**Key distinction**: Harness specs in `spx/` define *what the harness must do*. Harness code in `tests/harness/` is *the implementation*. Tests in `spx/.../tests/` verify the harness works correctly.
+
+**Harness references in Test Files tables point to the spec**, not the implementation. The spec is the durable contract; code organization can change.
 
 ### Why harnesses need specs
 
