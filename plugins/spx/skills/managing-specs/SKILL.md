@@ -120,29 +120,23 @@ The specs/ directory follows the SPX framework structure defined in `structure.y
 <directory_structure>
 
 ```
-specs/
-├── [product-name].prd.md          # Product-wide PRD
-├── decisions/                      # Product-wide ADRs (optional)
-│   └── adr-NN_{slug}.md
-└── work/
-    ├── backlog/
-    ├── doing/
-    │   └── capability-NN_{slug}/
-    │       ├── {slug}.capability.md
-    │       ├── {slug}.prd.md       # Optional capability-scoped PRD from which the capability work item (`{slug}.capability.md`) is derived
-    │       ├── {slug}.prd.md       # Optional capability-scoped TRD from which capability-scoped ADRs are derived
-    │       ├── decisions/           # Capability-scoped ADRs
-    │       ├── tests/
-    │       └── feature-NN_{slug}/
-    │           ├── {slug}.prd.md   # Optional capability-scoped PRD from which the feature spec in `{slug}.feature.md` is derived
-    │           ├── {slug}.trd.md   # Optional capability-scoped TRD from which the feature-scoped ADRs are derived
-    │           ├── {slug}.feature.md
-    │           ├── decisions/       # Feature-scoped ADRs
-    │           ├── tests/
-    │           └── story-NN_{slug}/
-    │               ├── {slug}.story.md
-    │               └── tests/
-    └── done/
+spx/
+├── {product-name}.prd.md             # Product requirements
+├── NN-{slug}.adr.md                  # Product-wide ADRs (interleaved)
+└── NN-{slug}.capability/
+    ├── {slug}.capability.md
+    ├── pass.csv                       # Test verification ledger
+    ├── tests/
+    ├── NN-{slug}.adr.md              # Capability-scoped ADRs (interleaved)
+    └── NN-{slug}.feature/
+        ├── {slug}.feature.md
+        ├── pass.csv
+        ├── tests/
+        ├── NN-{slug}.adr.md          # Feature-scoped ADRs (interleaved)
+        └── NN-{slug}.story/
+            ├── {slug}.story.md
+            ├── pass.csv
+            └── tests/
 ```
 
 </directory_structure>
@@ -184,18 +178,18 @@ specs/
 **🚨 CRITICAL: BSP numbers are ONLY unique among siblings at the same level.**
 
 ```text
-capability-21/feature-01/story-54  ← One story-54
-capability-22/feature-01/story-54  ← DIFFERENT story-54
-capability-21/feature-02/story-54  ← DIFFERENT story-54
+21-foo.capability/21-bar.feature/54-baz.story/  ← One story-54
+21-foo.capability/37-qux.feature/54-baz.story/  ← DIFFERENT story-54
+37-other.capability/21-bar.feature/54-baz.story/  ← DIFFERENT story-54
 ```
 
 **ALWAYS use the FULL PATH when referencing work items:**
 
-| ❌ WRONG (Ambiguous)     | ✅ CORRECT (Unambiguous)                     |
-| ------------------------ | -------------------------------------------- |
-| "story-54"               | "capability-21/feature-54/story-54"          |
-| "implement feature-01"   | "implement capability-21/feature-01"         |
-| "Continue with story-54" | "Continue capability-21/feature-54/story-54" |
+| ❌ WRONG (Ambiguous)     | ✅ CORRECT (Unambiguous)                                  |
+| ------------------------ | --------------------------------------------------------- |
+| "story-54"               | "21-foo.capability/21-bar.feature/54-baz.story/"          |
+| "implement feature-21"   | "implement 21-foo.capability/21-bar.feature/"             |
+| "Continue with story-54" | "Continue 21-foo.capability/21-bar.feature/54-baz.story/" |
 
 **Why this matters:**
 
@@ -208,7 +202,7 @@ capability-21/feature-02/story-54  ← DIFFERENT story-54
 
 1. Always include the full hierarchy path
 2. Never use bare numbers like "story-54" without context
-3. When in doubt, use the absolute path from `specs/work/`
+3. When in doubt, use the absolute path from `spx/`
 
 </bsp_sibling_uniqueness>
 
@@ -249,11 +243,11 @@ Status values:
 
 This applies at every level:
 
-| If you see...                                   | It means...                                      |
-| ----------------------------------------------- | ------------------------------------------------ |
-| `feature-48` before `feature-87`                | feature-48 MUST be DONE before feature-87 starts |
-| `story-21` before `story-32`                    | story-21 MUST be DONE before story-32 starts     |
-| `feature-48 [OPEN]`, `feature-87 [IN_PROGRESS]` | **BUG**: Dependency violation                    |
+| If you see...                              | It means...                              |
+| ------------------------------------------ | ---------------------------------------- |
+| `48-foo.feature/` before `87-bar.feature/` | 48-foo MUST be DONE before 87-bar starts |
+| `21-foo.story/` before `32-bar.story/`     | 21-foo MUST be DONE before 32-bar starts |
+| `48-foo [OPEN]`, `87-bar [IN_PROGRESS]`    | **BUG**: Dependency violation            |
 
 </bsp_dependency_order>
 
@@ -268,11 +262,11 @@ This applies at every level:
 **Example**:
 
 ```text
-feature-48_test-harness [OPEN]        ← Was added after feature-87 but blocks it
-feature-87_e2e-workflow [IN_PROGRESS] ← Was already started, then dependency discovered
+48-test-harness.feature/ [OPEN]        ← Was added after 87 but blocks it
+87-e2e-workflow.feature/ [IN_PROGRESS] ← Was already started, then dependency discovered
 ```
 
-**Next work item**: `feature-48_test-harness` → its first OPEN story.
+**Next work item**: `48-test-harness.feature/` → its first OPEN story.
 
 </finding_next_work_item>
 
@@ -298,8 +292,8 @@ Use position **21** (leaves room for ~10 items before/after):
 
 ```
 # First feature in a new capability
-capability-21_foo/
-└── feature-21_first-feature/
+21-foo.capability/
+└── 21-first-feature.feature/
 ```
 
 </case_1_first_item>
@@ -309,12 +303,12 @@ capability-21_foo/
 Use midpoint: `new = floor((left + right) / 2)`
 
 ```
-# Insert between feature-21 and feature-54
+# Insert between 21 and 54
 new = floor((21 + 54) / 2) = 37
 
-feature-21_first/
-feature-37_inserted/    ← NEW
-feature-54_second/
+21-first.feature/
+37-inserted.feature/    ← NEW
+54-second.feature/
 ```
 
 </case_2_insert_between>
@@ -324,12 +318,12 @@ feature-54_second/
 Use midpoint to upper bound: `new = floor((last + 99) / 2)`
 
 ```
-# Append after feature-54
+# Append after 54
 new = floor((54 + 99) / 2) = 76
 
-feature-21_first/
-feature-54_second/
-feature-76_appended/    ← NEW
+21-first.feature/
+54-second.feature/
+76-appended.feature/    ← NEW
 ```
 
 </case_3_append_after>
@@ -341,14 +335,13 @@ feature-76_appended/    ← NEW
 <creating_work_items>
 Every work item needs:
 
-1. **Directory**: `NN_{slug}/`
-2. **Definition file**: `{slug}.{capability|feature|story}.md`
+1. **Directory**: `NN-{slug}.{type}/` (e.g., `21-auth.capability/`)
+2. **Spec file**: `{slug}.{type}.md` (e.g., `auth.capability.md`)
 3. **Tests directory**: `tests/` (create when starting work)
 
 Optional:
 
-- **Requirements document**: `{topic}.prd.md` or `{topic}.trd.md`
-- **Decision Records**: `decisions/adr-NNN_{slug}.md`
+- **Decision Records**: `NN-{slug}.adr.md` (interleaved with work items)
 
 </creating_work_items>
 
@@ -391,11 +384,11 @@ Read: ${SKILL_DIR}/templates/decisions/architectural-decision.adr.md
 
 <scope_levels>
 
-ADRs can exist at three levels:
+ADRs are interleaved with work items at any level:
 
-- **Project**: `specs/decisions/adr-NN_{slug}.md`
-- **Capability**: `specs/work/doing/capability-NN/decisions/adr-NN_{slug}.md`
-- **Feature**: `specs/work/doing/.../feature-NN/decisions/adr-NN_{slug}.md`
+- **Product**: `spx/NN-{slug}.adr.md`
+- **Capability**: `spx/NN-{slug}.capability/NN-{slug}.adr.md`
+- **Feature**: `spx/.../NN-{slug}.feature/NN-{slug}.adr.md`
 
 Stories inherit decisions from parent feature/capability.
 
@@ -403,7 +396,7 @@ Stories inherit decisions from parent feature/capability.
 
 <naming_convention>
 
-Format: `adr-{NN}_{slug}.md`
+Format: `NN-{slug}.adr.md`
 
 - NN: BSP number in range [10, 99]
 - slug: Kebab-case description (e.g., `use-postgresql-for-persistence`)
@@ -421,7 +414,7 @@ ADRs follow the same BSP numbering as work items:
 Use position **21** (leaves room for ~10 items before/after):
 
 ```
-decisions/adr-21_first-decision.md
+21-first-decision.adr.md
 ```
 
 </creating_first_adr>
@@ -431,12 +424,12 @@ decisions/adr-21_first-decision.md
 Use midpoint: `new = floor((left + right) / 2)`
 
 ```
-# Insert between adr-21 and adr-54
+# Insert between 21 and 54
 new = floor((21 + 54) / 2) = 37
 
-decisions/adr-21_type-safety.md
-decisions/adr-37_inserted-decision.md    ← NEW
-decisions/adr-54_cli-framework.md
+21-type-safety.adr.md
+37-inserted-decision.adr.md    ← NEW
+54-cli-framework.adr.md
 ```
 
 </inserting_between_adrs>
@@ -446,12 +439,12 @@ decisions/adr-54_cli-framework.md
 Use midpoint to upper bound: `new = floor((last + 99) / 2)`
 
 ```
-# Append after adr-54
+# Append after 54
 new = floor((54 + 99) / 2) = 76
 
-decisions/adr-21_type-safety.md
-decisions/adr-54_cli-framework.md
-decisions/adr-76_appended-decision.md    ← NEW
+21-type-safety.adr.md
+54-cli-framework.adr.md
+76-appended-decision.adr.md    ← NEW
 ```
 
 </appending_after_last>
@@ -466,9 +459,9 @@ decisions/adr-76_appended-decision.md    ← NEW
 
 | If you see...             | It means...                              |
 | ------------------------- | ---------------------------------------- |
-| `adr-21_type-safety.md`   | Foundational decision, must decide first |
-| `adr-37_validation.md`    | Depends on adr-21, must come after       |
-| `adr-54_cli-framework.md` | May depend on both adr-21 and adr-37     |
+| `21-type-safety.adr.md`   | Foundational decision, must decide first |
+| `37-validation.adr.md`    | Depends on 21, must come after           |
+| `54-cli-framework.adr.md` | May depend on both 21 and 37             |
 
 **Cross-scope dependencies**: Must be documented explicitly in the ADR content.
 
@@ -501,16 +494,16 @@ decisions/adr-76_appended-decision.md    ← NEW
 **Solution**:
 
 - Header: `# ADR: Foo` (document type prefix, no number)
-- References: `[Foo](decisions/adr-37_foo.md)` (markdown link with path)
+- References: `[Foo](37-foo.adr.md)` (markdown link with path)
 - Filenames can be renamed, slugs stay stable, markdown links update automatically
 
 </why_no_numbers_in_content>
 
 <why_markdown_links_only>
 
-**Problem**: Plain text references like "ADR-23" or even `` `adr-23_foo.md` `` break when files are renumbered.
+**Problem**: Plain text references like "ADR-23" or even `` `23-foo.adr.md` `` break when files are renumbered.
 
-**Solution**: Markdown links `[Decision Title](relative/path/to/adr-NN_slug.md)`:
+**Solution**: Markdown links `[Decision Title](NN-slug.adr.md)`:
 
 - Modern editors update links automatically on file rename
 - Links are clickable for navigation
@@ -532,7 +525,7 @@ decisions/adr-76_appended-decision.md    ← NEW
 <within_same_directory>
 
 ```markdown
-See [Type Safety](adr-21_type-safety.md) for validation approach.
+See [Type Safety](21-type-safety.adr.md) for validation approach.
 ```
 
 </within_same_directory>
@@ -542,11 +535,11 @@ See [Type Safety](adr-21_type-safety.md) for validation approach.
 ```markdown
 <!-- Feature ADR referencing capability ADR -->
 
-This decision builds on [Config Loading](../../decisions/adr-21_config-loading.md).
+This decision builds on [Config Loading](../21-config-loading.adr.md).
 
 <!-- Story referencing feature ADR -->
 
-Implementation follows [CLI Structure](../../decisions/adr-21_cli-structure.md).
+Implementation follows [CLI Structure](../21-cli-structure.adr.md).
 ```
 
 </from_child_to_parent_scope>
@@ -556,11 +549,11 @@ Implementation follows [CLI Structure](../../decisions/adr-21_cli-structure.md).
 ```markdown
 <!-- From story to capability ADR -->
 
-Architectural constraints: [Commander Pattern](../../decisions/adr-21_commander-pattern.md)
+Architectural constraints: [Commander Pattern](../../21-commander-pattern.adr.md)
 
 <!-- From feature to product ADR -->
 
-Type system: [Type Safety](../../../../decisions/adr-21_type-safety.md)
+Type system: [Type Safety](../../../21-type-safety.adr.md)
 ```
 
 </from_work_item_to_adr>
@@ -570,7 +563,7 @@ Type system: [Type Safety](../../../../decisions/adr-21_type-safety.md)
 <never_use_these_formats>
 
 ❌ Plain text reference: "See ADR-21"
-❌ Code-only reference: `` `adr-21_type-safety.md` ``
+❌ Code-only reference: `` `21-type-safety.adr.md` ``
 ❌ Number-only reference: "ADR 21 specifies..."
 
 </never_use_these_formats>
@@ -705,14 +698,14 @@ Adapt: List graduated tests by level
 Work items follow this pattern:
 
 ```
-specs/work/{backlog|doing|done}/{level}-{bsp}_{slug}/{slug}.{level}.md
+spx/{BSP}-{slug}.{type}/{slug}.{type}.md
 ```
 
 Examples:
 
-- `specs/work/doing/capability-21_core-cli/core-cli.capability.md`
-- `specs/work/doing/capability-21_core-cli/feature-10_init/init.feature.md`
-- `specs/work/doing/capability-21_core-cli/feature-15_init/story-87_parse-flags/parse-flags.story.md`
+- `spx/21-core-cli.capability/core-cli.capability.md`
+- `spx/21-core-cli.capability/10-init.feature/init.feature.md`
+- `spx/21-core-cli.capability/15-init.feature/87-parse-flags.story/parse-flags.story.md`
 
 </file_placement>
 
