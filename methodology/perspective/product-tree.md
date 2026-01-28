@@ -32,7 +32,7 @@ The work of engineering is converting potential into reality. Tests are the proo
 This is CODE's most radical constraint. You cannot dump vague ideas into the system. Every idea must be concrete enough to fit the physics of the product:
 
 ```
-capability-NN → feature-NN → story-NN → scenarios (Gherkin)
+NN-slug.capability/ → NN-slug.feature/ → NN-slug.story/ → scenarios (Gherkin)
 ```
 
 If you can't express it as a Gherkin scenario with Given/When/Then, it doesn't belong in the engineering system. This naturally filters wishlist items, scope creep, and "wouldn't it be nice if" features.
@@ -41,7 +41,7 @@ If you can't express it as a Gherkin scenario with Given/When/Then, it doesn't b
 
 ## BSP: Binary Space Partitioning for Dependencies
 
-The `NN` in `capability-NN`, `feature-NN`, `story-NN` isn't arbitrary. It's **BSP numbering**—a scheme that encodes dependency order while allowing insertion at any point.
+The `NN` in `NN-slug.capability/`, `NN-slug.feature/`, `NN-slug.story/` isn't arbitrary. It's **BSP numbering**—a scheme that encodes dependency order while allowing insertion at any point.
 
 ### The Rules
 
@@ -58,16 +58,16 @@ The `NN` in `capability-NN`, `feature-NN`, `story-NN` isn't arbitrary. It's **BS
 Traditional sequential numbering (01, 02, 03) breaks when you discover dependencies late:
 
 ```
-feature-02_auth
-feature-03_dashboard
+02-auth.feature/
+03-dashboard.feature/
 ```
 
 You realize auth needs a config system first. With sequential numbering, you must renumber everything. With BSP:
 
 ```
-feature-21_config      ← Insert: floor((10 + 37) / 2) = 23... or just use 21 if first
-feature-37_auth        ← Was 02, now has room before it
-feature-54_dashboard   ← Was 03, now has room before and after
+21-config.feature/      ← Insert: floor((10 + 37) / 2) = 23... or just use 21 if first
+37-auth.feature/        ← Was 02, now has room before it
+54-dashboard.feature/   ← Was 03, now has room before and after
 ```
 
 ### Parallel Work: Same Number, Different Names
@@ -75,21 +75,21 @@ feature-54_dashboard   ← Was 03, now has room before and after
 Items with the **same BSP number** can be worked on in parallel—they all depend on the previous number, but not on each other:
 
 ```
-story-21_setup
-story-37_auth        ← All depend on 21
-story-37_profile     ← but NOT on each other
-story-37_settings    ← can work in parallel
-story-54_integration ← depends on ALL 37s completing
+21-setup.story/
+37-auth.story/        ← All depend on 21
+37-profile.story/     ← but NOT on each other
+37-settings.story/    ← can work in parallel
+54-integration.story/ ← depends on ALL 37s completing
 ```
 
 This extends to capabilities:
 
 ```
-capability-21_test-harness      ← Infrastructure (must complete first)
-capability-37_users             ← Functional (parallel)
-capability-37_billing           ← Functional (parallel)
-capability-37_reports           ← Functional (parallel)
-capability-54_linter            ← Improvement (after all functional)
+21-test-harness.capability/      ← Infrastructure (must complete first)
+37-users.capability/             ← Functional (parallel)
+37-billing.capability/           ← Functional (parallel)
+37-reports.capability/           ← Functional (parallel)
+54-linter.capability/            ← Improvement (after all functional)
 ```
 
 ### Strategic Insertion
@@ -104,117 +104,119 @@ BSP enables two critical patterns:
 This means the same concept can appear at different BSP numbers:
 
 ```
-capability-21_auth       ← Core auth (must complete first)
-capability-54_auth       ← Auth improvements (after other features work)
+21-auth.capability/       ← Core auth (must complete first)
+54-auth.capability/       ← Auth improvements (after other features work)
 ```
 
-### Unified Number Space: Type in Extension, Order in Prefix
+### Unified Number Space: BSP First, Type Last
 
-Within a container, ALL items share the same BSP number space—ADRs, features, stories. The type moves to the file extension; the BSP number encodes pure dependency order.
+Within a container, ALL items share the same BSP number space—ADRs, features, stories. The BSP number comes first (for sorting), the type comes last (for identification).
 
 **Example: Capability with interleaved ADRs and features**
 
 ```
-capability-21_users/
-├── 10_bootstrap.feature.md           ← No ADR dependency, can start immediately
-├── 15_config.feature.md              ← No ADR dependency
-├── 21_auth-strategy.adr.md           ← Architectural decision
-├── 22_login.feature.md               ← Depends on ADR 21
-├── 22_registration.feature.md        ← Depends on ADR 21 (parallel with login)
-├── 37_oauth.feature.md               ← Depends on features 22
-├── 54_session-management.adr.md      ← Later decision (after OAuth works)
-├── 55_logout.feature.md              ← Depends on ADR 54
-└── 55_token-refresh.feature.md       ← Depends on ADR 54 (parallel with logout)
+37-users.capability/
+├── 10-bootstrap.feature/             ← No ADR dependency, can start immediately
+├── 15-config.feature/                ← No ADR dependency
+├── 21-auth-strategy.adr.md           ← Architectural decision
+├── 22-login.feature/                 ← Depends on ADR 21
+├── 22-registration.feature/          ← Depends on ADR 21 (parallel with login)
+├── 37-oauth.feature/                 ← Depends on features 22
+├── 54-session-management.adr.md      ← Later decision (after OAuth works)
+├── 55-logout.feature/                ← Depends on ADR 54
+└── 55-token-refresh.feature/         ← Depends on ADR 54 (parallel with logout)
 ```
 
 **Example: Feature with interleaved ADRs and stories**
 
 ```
-feature-22_login/
-├── 10_parse-credentials.story.md     ← No ADR needed
-├── 21_password-hashing.adr.md        ← Security decision
-├── 22_hash-password.story.md         ← Implements ADR 21
-├── 22_verify-password.story.md       ← Implements ADR 21 (parallel)
-├── 37_rate-limiting.adr.md           ← Performance decision
-├── 38_throttle-attempts.story.md     ← Implements ADR 37
-└── 54_login-flow.story.md            ← Integration (depends on all above)
+22-login.feature/
+├── login.feature.md                  ← Spec file (slug.type.md)
+├── 10-parse-credentials.story/       ← No ADR needed
+├── 21-password-hashing.adr.md        ← Security decision
+├── 22-hash-password.story/           ← Implements ADR 21
+├── 22-verify-password.story/         ← Implements ADR 21 (parallel)
+├── 37-rate-limiting.adr.md           ← Performance decision
+├── 38-throttle-attempts.story/       ← Implements ADR 37
+└── 54-login-flow.story/              ← Integration (depends on all above)
 ```
 
 **What this enables:**
 
-| Pattern             | Example                                                | Meaning                                        |
-| ------------------- | ------------------------------------------------------ | ---------------------------------------------- |
-| Feature before ADR  | `10_bootstrap.feature.md` before `21_auth.adr.md`      | Some work doesn't need architectural decisions |
-| ADR blocks features | `21_auth.adr.md` blocks `22_login.feature.md`          | Decision must be made before dependent work    |
-| Parallel after ADR  | `22_login.feature.md` and `22_registration.feature.md` | Both depend on ADR, not on each other          |
-| Later ADR           | `54_session.adr.md` after features 22-37               | Some decisions emerge from implementation      |
+| Pattern             | Example                                            | Meaning                                        |
+| ------------------- | -------------------------------------------------- | ---------------------------------------------- |
+| Feature before ADR  | `10-bootstrap.feature/` before `21-auth.adr.md`    | Some work doesn't need architectural decisions |
+| ADR blocks features | `21-auth.adr.md` blocks `22-login.feature/`        | Decision must be made before dependent work    |
+| Parallel after ADR  | `22-login.feature/` and `22-registration.feature/` | Both depend on ADR, not on each other          |
+| Later ADR           | `54-session.adr.md` after features 22-37           | Some decisions emerge from implementation      |
 
-**The filename tells you both WHEN (BSP prefix) and WHAT (extension).**
+**The name tells you both WHEN (BSP prefix) and WHAT (type suffix).**
 
 ### Sibling-Unique, Not Global
 
 BSP numbers are only unique among siblings (combined with slug):
 
 ```
-capability-21/feature-21/story-54  ← One story-54
-capability-21/feature-37/story-54  ← DIFFERENT story-54
-capability-37/feature-21/story-54  ← DIFFERENT story-54
+21-foo.capability/21-bar.feature/54-baz.story/  ← One story-54
+21-foo.capability/37-qux.feature/54-baz.story/  ← DIFFERENT story-54
+37-other.capability/21-bar.feature/54-baz.story/  ← DIFFERENT story-54
 ```
 
-**Always use full paths** when referencing work items. "story-54" is ambiguous; "capability-21/feature-37/story-54" is not.
+**Always use full paths** when referencing work items. "story-54" is ambiguous; the full path is not.
 
 ## The Product Tree Structure
 
 ```
 spx/
-├── product.prd.md                    # The trunk: what is this product?
-├── 21_core-decision.adr.md           # Product-level ADR
+├── product.prd.md                        # The trunk: what is this product?
+├── 21-core-decision.adr.md               # Product-level ADR
 │
-├── 21_test-harness/                  # Infrastructure capability (BSP 21)
+├── 21-test-harness.capability/           # Infrastructure (must complete first)
 │   ├── test-harness.capability.md
-│   └── status.yaml
+│   ├── pass.csv
+│   └── tests/
 │
-├── 37_users/                         # Functional capability (parallel with billing)
+├── 37-users.capability/                  # Functional (parallel with billing)
 │   ├── users.capability.md
-│   ├── status.yaml
+│   ├── pass.csv
 │   │
-│   ├── 10_bootstrap.feature.md       # Feature before any ADR (flat, no stories)
+│   ├── 10-bootstrap.feature/             # Feature before any ADR
+│   │   └── bootstrap.feature.md
 │   │
-│   ├── 21_auth-strategy.adr.md       # ADR at position 21
+│   ├── 21-auth-strategy.adr.md           # ADR at position 21
 │   │
-│   ├── 22_login/                     # Feature depends on ADR 21
+│   ├── 22-login.feature/                 # Feature depends on ADR 21
 │   │   ├── login.feature.md
-│   │   ├── status.yaml
+│   │   ├── pass.csv
 │   │   │
-│   │   ├── 21_password-hashing.adr.md    # Story-level ADR
-│   │   ├── 22_hash-password/             # Story depends on ADR 21
+│   │   ├── 21-password-hashing.adr.md        # Feature-level ADR
+│   │   ├── 22-hash-password.story/           # Story depends on ADR 21
 │   │   │   ├── hash-password.story.md
-│   │   │   ├── status.yaml
+│   │   │   ├── pass.csv
 │   │   │   └── tests/
-│   │   │       ├── hash-password.unit.test.ts
-│   │   │       └── pass.csv
+│   │   │       └── hash-password.unit.test.ts
 │   │   │
-│   │   └── 22_verify-password/           # Parallel with hash-password
+│   │   └── 22-verify-password.story/         # Parallel with hash-password
 │   │       ├── verify-password.story.md
 │   │       └── tests/
 │   │
-│   └── 37_profile/                   # Feature depends on login (22)
+│   └── 37-profile.feature/               # Feature depends on login (22)
 │       └── profile.feature.md
 │
-├── 37_billing/                       # Parallel with users (same BSP)
+├── 37-billing.capability/                # Parallel with users (same BSP)
 │   └── billing.capability.md
 │
-└── 54_linter/                        # Improvement (after functional capabilities)
+└── 54-linter.capability/                 # Improvement (after functional)
     └── linter.capability.md
 ```
 
 **Key observations:**
 
-- BSP prefix on directories AND files
-- Type in extension (`.adr.md`, `.capability.md`, `.feature.md`, `.story.md`)
-- ADRs interleaved with features/stories at same level
-- Directories for containers (capabilities, features, stories with tests)
-- Flat files for leaf ADRs or simple features without stories
+- Directory format: `{BSP}-{slug}.{type}/` (BSP first, then slug, type suffix)
+- Spec file format: `{slug}.{type}.md` (matches directory naming)
+- ADR format: `{BSP}-{slug}.adr.md` (flat files, interleaved with containers)
+- Status derived from `pass.csv`, not a separate status file
+- Everything sorts by BSP number first—humans see dependency order at a glance
 
 ### Why a Tree?
 
@@ -259,9 +261,22 @@ Traditional metrics (velocity, burndown) measure how fast you're emptying a buck
 | Metric               | What it measures                                 |
 | -------------------- | ------------------------------------------------ |
 | **Realization Rate** | Stories moving from Pending → Passing per week   |
-| **Stability Index**  | Days since last regression                       |
+| **Drift**            | % of Passing stories that Regressed this week    |
 | **Potential Energy** | Count of Pending + Stale stories (work waiting)  |
 | **Coverage Depth**   | % of capabilities with passing integration tests |
+
+### Understanding Drift
+
+Drift measures how often *unrelated* changes break *previously working* stories. A story regresses when its tests fail without anyone touching its spec or tests—something elsewhere in the codebase caused the failure.
+
+| Drift Rate | Interpretation                            |
+| ---------- | ----------------------------------------- |
+| < 1%       | Well-isolated architecture                |
+| 1-5%       | Normal coupling, monitor trends           |
+| 5-10%      | High coupling, consider refactoring       |
+| > 10%      | Brittle architecture, intervention needed |
+
+**Drift is unavoidable but manageable.** All codebases drift. The goal isn't zero drift—it's understanding your drift rate and keeping it sustainable.
 
 ### The Momentum Dashboard
 
@@ -273,7 +288,7 @@ Realized      ████████████████████░░
 In Motion     ████░░░░░░░░░░░░░░░░░░░░   6/52 stories
 Potential     ██░░░░░░░░░░░░░░░░░░░░░░   4/52 stories
 
-Stability: 14 days since regression
+Drift: 2.4% (1/42 regressed this week)
 This week: +3 realized, +2 potential created
 ```
 
@@ -283,7 +298,7 @@ This dashboard tells a story of growth, not debt.
 
 ### Writing a New Spec = Creating Potential
 
-When you create `story-54_export-csv/export-csv.story.md`, you're not adding to a backlog. You're defining a piece of reality that should exist. The system now has potential energy—a gap between what is defined and what is proven.
+When you create `54-export-csv.story/export-csv.story.md`, you're not adding to a backlog. You're defining a piece of reality that should exist. The system now has potential energy—a gap between what is defined and what is proven.
 
 ### Passing Tests = Realizing Potential
 
