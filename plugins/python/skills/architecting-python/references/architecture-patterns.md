@@ -423,13 +423,13 @@ project/
 │       ├── adapters/       # External integrations
 │       ├── ports/          # Interfaces
 │       └── main.py         # Entry point
-├── tests/
+├── tests/                  # Graduated regression tests
 │   ├── unit/
 │   ├── integration/
 │   └── e2e/
-└── specs/                  # Project specifications
+└── spx/                    # Specs as durable map (CODE framework)
     ├── CLAUDE.md           # Navigation and work item management
-    └── templates/          # Document templates
+    └── NN-{slug}.capability/  # Capabilities with co-located tests
 ```
 
 ---

@@ -76,13 +76,13 @@ You MUST return one of these values:
 
 Before implementing, verify ADRs exist for the work item's scope:
 
-1. **Check for ADRs** in:
-   - `specs/decisions/` (project-level)
-   - `specs/doing/capability-NN/decisions/` (capability-level)
-   - `specs/doing/.../feature-NN/decisions/` (feature-level)
+1. **Check for ADRs** (interleaved in containers):
+   - `spx/NN-{slug}.adr.md` (product-level)
+   - `spx/NN-{slug}.capability/NN-{slug}.adr.md` (capability-level)
+   - `spx/.../NN-{slug}.feature/NN-{slug}.adr.md` (feature-level)
 
 2. **If ADRs are missing or don't cover this work item**:
-   - Invoke `/architecting-python` with the TRD and work item spec
+   - Invoke `/architecting-python` with the feature spec and work item spec
    - Wait for ADRs to be created
    - Continue to implementation
 
@@ -134,7 +134,7 @@ You operate in one of two modes depending on your input:
 
 | Input                            | Mode               | Protocol                             |
 | -------------------------------- | ------------------ | ------------------------------------ |
-| Spec (TRD, ADR, design doc)      | **Implementation** | Follow Implementation Protocol below |
+| Spec (feature spec, ADR)         | **Implementation** | Follow Implementation Protocol below |
 | Rejection feedback from reviewer | **Remediation**    | Follow Remediation Protocol below    |
 
 ---

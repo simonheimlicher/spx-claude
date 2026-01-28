@@ -183,12 +183,12 @@ Key areas:
 
 Based on findings:
 
-| Verdict         | Criteria                                  | Next Phase           |
-| --------------- | ----------------------------------------- | -------------------- |
-| **APPROVED**    | All checks pass, no issues                | Phase 6 (Graduation) |
-| **CONDITIONAL** | Only false-positive violations            | Return to coder      |
-| **REJECTED**    | Real bugs, security issues, test failures | Return to coder      |
-| **BLOCKED**     | Infrastructure cannot be provisioned      | Fix environment      |
+| Verdict         | Criteria                                  | Next Phase             |
+| --------------- | ----------------------------------------- | ---------------------- |
+| **APPROVED**    | All checks pass, no issues                | Phase 6 (Verification) |
+| **CONDITIONAL** | Only false-positive violations            | Return to coder        |
+| **REJECTED**    | Real bugs, security issues, test failures | Return to coder        |
+| **BLOCKED**     | Infrastructure cannot be provisioned      | Fix environment        |
 
-**If verdict is APPROVED**: Continue to `workflows/graduation-protocol.md`
+**If verdict is APPROVED**: Continue to `workflows/verification-protocol.md`
 **If verdict is NOT APPROVED**: Return rejection feedback

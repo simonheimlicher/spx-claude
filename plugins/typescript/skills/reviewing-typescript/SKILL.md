@@ -67,27 +67,27 @@ expect(result.success).toBe(true); // Tests behavior
 </test_verification>
 
 <context_loading>
-**For specs-based work items: Verify context was loaded before reviewing.**
+**For spx-based work items: Verify context was loaded before reviewing.**
 
 If you're reviewing code for a spec-driven work item (story/feature/capability), verify the implementation has complete context:
 
-1. **Check that `specs:understanding-specs` was invoked** - Look for context loading in implementation
-2. **Verify all ADRs are referenced** - Implementation should follow architectural decisions
-3. **Verify TRD/spec requirements met** - Code should satisfy documented requirements
+1. **Check that `spx:understanding-specs` was invoked** - Look for context loading in implementation
+2. **Verify all ADRs are referenced** - Implementation should follow architectural decisions (interleaved in containers)
+3. **Verify feature spec requirements met** - Code should satisfy documented requirements
 
-**The `specs:understanding-specs` skill provides:**
+**The `spx:understanding-specs` skill provides:**
 
 - Complete ADR hierarchy (product/capability/feature decisions)
-- TRD with validation strategy and acceptance criteria
+- Feature spec with validation strategy and acceptance criteria
 - Story/feature/capability spec with functional requirements
 
 **Review focus:**
 
 - Does implementation honor all ADRs in hierarchy?
-- Does implementation satisfy TRD validation strategy?
+- Does implementation satisfy feature spec validation strategy?
 - Does implementation meet story/feature acceptance criteria?
 
-**If NOT working on specs-based work item**: Proceed directly with code review using provided specification.
+**If NOT working on spx-based work item**: Proceed directly with code review using provided specification.
 </context_loading>
 
 <verdict_definitions>
@@ -125,14 +125,14 @@ If you're reviewing code for a spec-driven work item (story/feature/capability),
 <review_phases>
 Execute these phases IN ORDER. Do not skip phases.
 
-| Phase | Name                  | Workflow                           |
-| ----- | --------------------- | ---------------------------------- |
-| 0-5   | Review Protocol       | `workflows/review-protocol.md`     |
-| 6-7   | Graduation (APPROVED) | `workflows/graduation-protocol.md` |
-| 8     | Commit (APPROVED)     | `workflows/commit-protocol.md`     |
+| Phase | Name                    | Workflow                             |
+| ----- | ----------------------- | ------------------------------------ |
+| 0-5   | Review Protocol         | `workflows/review-protocol.md`       |
+| 6-7   | Verification (APPROVED) | `workflows/verification-protocol.md` |
+| 8     | Commit (APPROVED)       | `workflows/commit-protocol.md`       |
 
 **If verdict is APPROVED**: Continue to Phase 6.
-**If verdict is NOT APPROVED**: Skip graduation and commit, return feedback.
+**If verdict is NOT APPROVED**: Skip verification and commit, return feedback.
 </review_phases>
 
 <reference_index>
@@ -147,11 +147,11 @@ Execute these phases IN ORDER. Do not skip phases.
 
 <workflows_index>
 
-| Workflow                           | Purpose                               |
-| ---------------------------------- | ------------------------------------- |
-| `workflows/review-protocol.md`     | Static analysis, tests, manual review |
-| `workflows/graduation-protocol.md` | Move tests to test/, create DONE.md   |
-| `workflows/commit-protocol.md`     | Stage and commit approved work        |
+| Workflow                             | Purpose                               |
+| ------------------------------------ | ------------------------------------- |
+| `workflows/review-protocol.md`       | Static analysis, tests, manual review |
+| `workflows/verification-protocol.md` | Verify tests pass, stamp pass.csv     |
+| `workflows/commit-protocol.md`       | Stage and commit approved work        |
 
 </workflows_index>
 
@@ -209,7 +209,7 @@ Review is complete when:
 - [ ] All tests executed with coverage measured
 - [ ] Manual review checklist completed
 - [ ] Verdict determined and documented
-- [ ] If APPROVED: tests graduated, DONE.md created, changes committed
+- [ ] If APPROVED: tests verified, pass.csv stamped, changes committed
 - [ ] If REJECTED: actionable feedback provided with file:line references
 
 *Your job is to protect the codebase from defects. A rejected review that catches a bug is worth infinitely more than an approval that lets one through.*

@@ -18,27 +18,27 @@ This skill assumes you understand from `/testing`:
 - No mocking principle - use dependency injection
 - Behavior vs implementation testing
 - Reality is the oracle
-- Test graduation workflow
+- Test co-location in CODE framework
 
 **What this skill adds:** TypeScript-specific patterns, Vitest configuration, type-safe test factories, and concrete examples.
 </skill_relationship>
 
 <context_loading>
-**For specs-based work items: Load complete context before designing tests.**
+**For spx-based work items: Load complete context before designing tests.**
 
 If you're designing tests for a spec-driven work item (story/feature/capability), ensure complete hierarchical context is loaded:
 
-1. **Invoke `specs:understanding-specs`** with the work item identifier
-2. **Verify all ADRs are loaded** - Testing decisions may be in product/capability/feature ADRs
-3. **Verify TRD exists** - Features should have TRDs that document validation strategy and test levels
+1. **Invoke `spx:understanding-specs`** with the work item identifier
+2. **Verify all ADRs are loaded** - Testing decisions may be in product/capability/feature ADRs (interleaved)
+3. **Verify feature spec exists** - Features should document validation strategy and test levels
 
-**The `specs:understanding-specs` skill provides:**
+**The `spx:understanding-specs` skill provides:**
 
 - Complete ADR hierarchy (product/capability/feature decisions)
-- TRD with validation strategy and test level assignments
+- Feature spec with validation strategy and test level assignments
 - Story/feature/capability spec with acceptance criteria
 
-**If NOT working on specs-based work item**: Proceed directly with test design using provided requirements.
+**If NOT working on spx-based work item**: Proceed directly with test design using provided requirements.
 </context_loading>
 
 <essential_principles>
@@ -52,48 +52,52 @@ If you're designing tests for a spec-driven work item (story/feature/capability)
 
 </essential_principles>
 
-<progress_vs_regression>
-**CRITICAL INVARIANT: The production test suite (`test/`) MUST ALWAYS PASS.**
+<test_location_code_framework>
+**CRITICAL INVARIANT: Tests are co-located with specs in the CODE framework.**
 
-This is the deployment gate. A failing test in `test/` means undeployable code.
+Tests live alongside their specs in `spx/.../tests/` directories. Test level is indicated by filename suffix, not directory location.
 
-**The Two Test Locations:**
+**Test Location in CODE Framework:**
 
-| Location           | Name                 | May Fail? | Purpose                                |
-| ------------------ | -------------------- | --------- | -------------------------------------- |
-| `specs/.../tests/` | **Progress tests**   | YES       | TDD red-green cycle during development |
-| `test/`            | **Regression tests** | NO        | Protect working functionality          |
+| Container  | Test Location                      | Filename Suffix         |
+| ---------- | ---------------------------------- | ----------------------- |
+| Story      | `spx/.../NN-{slug}.story/tests/`   | `*.unit.test.ts`        |
+| Feature    | `spx/.../NN-{slug}.feature/tests/` | `*.integration.test.ts` |
+| Capability | `spx/NN-{slug}.capability/tests/`  | `*.e2e.test.ts`         |
 
-**Progress tests** allow TDD:
+**Test Verification Ledger (pass.csv):**
 
-1. Write failing test in `specs/.../tests/` (RED)
+Each container has a `pass.csv` that records test verification:
+
+```csv
+timestamp,test_file,blob_sha,result
+2024-01-15T10:30:00Z,auth.unit.test.ts,a1b2c3d,PASS
+```
+
+**TDD Workflow in CODE Framework:**
+
+1. Write failing test in `spx/.../tests/` (RED)
 2. Implement code until test passes (GREEN)
-3. Graduate test to `test/` when work item complete
-
-**Regression tests** protect the codebase:
-
-- Run in CI on every commit
-- Must always pass
-- Failure = broken build = blocked deployment
+3. Run `spx test --stamp` to record pass in `pass.csv`
 
 **The Rule:**
 
-> **NEVER write tests directly in `test/`**
+> **Tests stay co-located with their specs.**
 >
-> Writing a failing test in `test/` breaks CI until implementation is complete.
-> Always write progress tests in `specs/.../tests/` first, then graduate them.
+> No test graduation. Tests remain in `spx/.../tests/` permanently.
+> The `pass.csv` ledger provides verification evidence.
 
 **Quick Decision:**
 
 ```
 Am I implementing new functionality?
-├── YES → Write test in specs/.../tests/ (progress test)
-│         Graduate to test/ when DONE
-└── NO  → Modify existing test in test/ (regression test)
-          Must stay GREEN
+├── YES → Write test in spx/.../tests/ with appropriate suffix
+│         Run `spx test --stamp` when passing
+└── NO  → Modify existing test in spx/.../tests/
+          Ensure pass.csv is updated
 ```
 
-</progress_vs_regression>
+</test_location_code_framework>
 
 <core_principles>
 **1. Behavior Only**

@@ -11,7 +11,7 @@ Single source of truth for spx/ directory structure and all document templates. 
 Different use cases read different sections:
 
 - **Template access** → Read `<accessing_templates>` FIRST to understand where templates are located
-- **Structure definition** → Read `<structure_definition>` for spx/ directory hierarchy, BSP numbering, test graduation
+- **Structure definition** → Read `<structure_definition>` for spx/ directory hierarchy, BSP numbering, test co-location
 - **ADR templates** → Read `<adr_templates>` for Architectural Decision Record patterns
 - **PRD templates** → Read `<requirement_templates>` for Product Requirements
 - **Work item templates** → Read `<work_item_templates>` for capability, feature, and story patterns
@@ -88,17 +88,6 @@ Read: .claude/plugins/cache/spx-claude/spx/0.1.2/skills/managing-specs/templates
 
 </how_to_read_templates>
 
-<troubleshooting>
-
-If you cannot find a template:
-
-1. ✅ Verify you're using the skill's base directory, NOT the project directory
-2. ✅ Ensure path starts with `${SKILL_DIR}/templates/...` or `.claude/plugins/cache/...`
-3. ✅ Use Glob to discover: `Glob: .claude/plugins/cache/**/managing-specs/templates/**/*.md`
-4. ❌ Do NOT look for templates in the user's project (e.g., `specs/templates/`)
-
-</troubleshooting>
-
 </accessing_templates>
 
 <structure_definition>
@@ -142,17 +131,17 @@ spx/
 <work_item_hierarchy>
 
 - **Capability**: E2E scenario with product-wide impact
-  - Tests graduate to `tests/e2e/`
+  - Tests co-located in `spx/NN-{slug}.capability/tests/` with `.e2e.test.*` suffix
   - May have optional PRD as catalyst/enrichment
   - Contains features
 
 - **Feature**: Integration scenario with specific functionality
-  - Tests graduate to `tests/integration/`
+  - Tests co-located in `spx/.../NN-{slug}.feature/tests/` with `.integration.test.*` suffix
   - Technical details documented in feature.md (no separate TRD)
   - Contains stories
 
 - **Story**: Unit-tested atomic implementation
-  - Tests graduate to `tests/unit/`
+  - Tests co-located in `spx/.../NN-{slug}.story/tests/` with `.unit.test.*` suffix
   - No children
   - Atomic implementation unit
 
@@ -163,7 +152,7 @@ spx/
 - **Requirements immutable** - code adapts to requirements, not vice versa
 - **BSP numbering**: Two-digit (10-99), lower number = must complete first
 - **BSP numbers are SIBLING-UNIQUE**: Numbers are only unique among siblings, not globally (see `<bsp_sibling_uniqueness>` below)
-- **Test graduation**: `spx/.../tests/` → `tests/{unit,integration,e2e}/`
+- **Test co-location**: Tests stay in `spx/.../tests/` permanently (no graduation)
 - **Status rules** (use CLI, do NOT check manually):
   - `spx spec status --format table` - View project status
   - `spx spec next` - Get next work item (respects BSP ordering)
@@ -674,17 +663,17 @@ Examples:
 
 </file_placement>
 
-<test_graduation>
+<test_verification>
 
-When work is complete, tests graduate:
+Tests stay co-located with their specs permanently. Test level is indicated by filename suffix:
 
-- Capability tests: `spx/.../tests/` → `tests/e2e/`
-- Feature tests: `spx/.../tests/` → `tests/integration/`
-- Story tests: `spx/.../tests/` → `tests/unit/`
+- Capability tests: `spx/NN-{slug}.capability/tests/*.e2e.test.*`
+- Feature tests: `spx/.../NN-{slug}.feature/tests/*.integration.test.*`
+- Story tests: `spx/.../NN-{slug}.story/tests/*.unit.test.*`
 
-DONE.md documents this graduation and provides verification evidence.
+The `pass.csv` ledger documents test verification and provides completion evidence.
 
-</test_graduation>
+</test_verification>
 
 </work_item_templates>
 
@@ -696,7 +685,7 @@ Skill is working correctly when:
 - [ ] Other skills can successfully read templates from appropriate sections
 - [ ] Progressive disclosure guides readers to relevant sections
 - [ ] ADR, requirement, and work item patterns are clearly documented
-- [ ] Test graduation paths are correctly specified for each level
+- [ ] Test co-location paths are correctly specified for each level
 - [ ] BSP numbering uses consistent two-digit format (10-99)
 
 </success_criteria>

@@ -6,20 +6,20 @@ Read `references/prd-template-guide.md` for complete template structure.
 <determine_location>
 Based on conversation and project structure:
 
-**Project-level PRD:**
+**Product-level PRD:**
 
-- File: `specs/{backlog,doing}/[Name].prd.md`
+- File: `spx/{product-name}.prd.md`
 - For: New product capability at highest level
 
 **Capability-level PRD:**
 
-- File: `specs/{backlog,doing}/capability-NN_{name}/[Name].prd.md`
-- For: Product change within existing capability
+- File: `spx/NN-{slug}.capability/{topic}.prd.md`
+- For: Product change within existing capability (optional catalyst)
 
 **Feature-level PRD:**
 
-- File: `specs/{backlog,doing}/capability-NN_{name}/feature-NN_{name}/[Name].prd.md`
-- For: Feature-specific product requirements
+- File: `spx/.../NN-{slug}.feature/{topic}.prd.md`
+- For: Feature-specific product requirements (rare)
 
 **Verify location with user if unclear.**
 </determine_location>

@@ -124,7 +124,7 @@ The `/testing-typescript` skill provides:
 - Dependency injection patterns (NO MOCKING)
 - Behavior-only testing approach
 - Test organization for debuggability
-- Test graduation workflow
+- Test co-location in CODE framework
 
 **Quick Reference - Testing Levels:**
 

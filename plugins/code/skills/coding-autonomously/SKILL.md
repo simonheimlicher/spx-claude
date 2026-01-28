@@ -31,8 +31,7 @@ Each story follows this cycle:
                    │                                 │
                    │                                 ▼
                    │    ┌────────────────────────────────────────────────────────────────────┐
-                   │    │ - Graduates tests to the product-wide *regression* test directory  │
-                   │    │ - Creates DONE.md                                                  │
+                   │    │ - Records test verification in pass.csv ledger                     │
                    │    │ - Commits changes                                                  │
                    │    └────────────────────────────────────────────────────────────────────┘
                    │

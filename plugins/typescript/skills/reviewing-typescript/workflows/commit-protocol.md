@@ -2,7 +2,7 @@
 
 > **APPROVED Only**: Committing is the reviewer's seal of approval.
 
-After creating DONE.md, commit the completed work item.
+After stamping pass.csv, commit the completed work item.
 
 **Follow the `committing-changes` skill** for core commit protocol (selective staging, verification, Conventional Commits format).
 
@@ -14,11 +14,11 @@ When committing as part of review approval, apply these additional guidelines:
 
 Stage **only** files from the approved work item:
 
-| Category            | Example Paths                            |
-| ------------------- | ---------------------------------------- |
-| Implementation      | `src/{modified files for this story}`    |
-| Graduated tests     | `test/unit/`, `test/integration/`        |
-| Completion evidence | `specs/doing/.../story-XX/tests/DONE.md` |
+| Category            | Example Paths                             |
+| ------------------- | ----------------------------------------- |
+| Implementation      | `src/{modified files for this story}`     |
+| Co-located tests    | `spx/.../NN-{slug}.story/tests/*.test.ts` |
+| Verification ledger | `spx/.../NN-{slug}.story/pass.csv`        |
 
 **Exclude**: Unrelated files, experimental code, files from other work items.
 
@@ -30,7 +30,7 @@ Include work item reference in footer:
 feat({scope}): implement {story-slug}
 
 - {brief description of what was implemented}
-- Tests graduated to test/{location}/
+- Tests verified in pass.csv
 
 Refs: {capability}/{feature}/{story}
 ```
@@ -44,7 +44,7 @@ After successful commit:
 
 Commit: {commit_hash}
 Files committed: {count}
-Tests graduated: {list}
+Tests verified: {list from pass.csv}
 
 Work item is DONE.
 ```

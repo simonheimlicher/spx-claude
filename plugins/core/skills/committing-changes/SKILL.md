@@ -71,10 +71,10 @@ This skill may be referenced during the commit phase of a code review. In that c
 1. **Committing is the seal of approval** — Only commit after verdict is APPROVED
 2. **Scope to work item** — Stage only files from the approved work item:
    - Implementation files
-   - Graduated tests (moved from specs/ to tests/)
-   - Completion evidence (DONE.md)
+   - Co-located tests (in `spx/.../tests/`)
+   - Updated pass.csv (test verification ledger)
 3. **Include work item reference** — Add `Refs: {capability}/{feature}/{story}` in footer
-4. **Verify graduated tests pass** — Tests must pass in their new location before committing
+4. **Verify tests pass** — All tests in pass.csv must pass before committing
 
 The reviewing skill provides the specific file list and work item context. This skill provides the commit protocol mechanics.
 
