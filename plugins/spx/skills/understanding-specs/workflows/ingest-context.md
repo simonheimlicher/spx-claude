@@ -11,21 +11,21 @@ Execute these phases IN ORDER. ABORT immediately if any required document is mis
 
 ## Phase 0: Locate Work Item
 
-**Goal**: Find exact path to work item in `specs/work/`
+**Goal**: Find exact path to work item in `spx/`
 
 **Input formats accepted**:
 
-- Full path: `capability-10_cli/feature-20_commands/story-30_build`
-- Story name only: `story-30_build`
+- Full path: `10-cli.capability/20-commands.feature/30-build.story`
+- Story name only: `30-build.story`
 - Natural language: "build command story"
 
 **Actions**:
 
 ```bash
 # Search for work item (try multiple patterns)
-Glob: "specs/work/**/story-{NN}_{slug}/"
-Glob: "specs/work/**/feature-{NN}_{slug}/"
-Glob: "specs/work/**/capability-{NN}_{slug}/"
+Glob: "spx/**/*-{slug}.story/"
+Glob: "spx/**/*-{slug}.feature/"
+Glob: "spx/**/*-{slug}.capability/"
 
 # Extract work item details
 # Determine level: CAPABILITY, FEATURE, or STORY
@@ -37,8 +37,8 @@ Glob: "specs/work/**/capability-{NN}_{slug}/"
 **Output**:
 
 ```
-✓ Work Item Located
-  Path: specs/work/doing/capability-10_cli/feature-20_commands/story-30_build
+Work Item Located
+  Path: spx/10-cli.capability/20-commands.feature/30-build.story
   Level: STORY
   BSP: 30
   Slug: build
@@ -52,34 +52,34 @@ Glob: "specs/work/**/capability-{NN}_{slug}/"
 
 **Required Documents**:
 
-- `specs/CLAUDE.md` ✅ MUST EXIST
-- `specs/decisions/adr-*.md` ⚠️ May not exist for new projects
+- `spx/CLAUDE.md` MUST EXIST
+- `spx/NN-*.adr.md` May not exist for new projects
 
 **Actions**:
 
 ```bash
 # Read project guide
-Read: specs/CLAUDE.md
+Read: spx/CLAUDE.md
 
 # Find and read all product ADRs
-Glob: "specs/decisions/adr-*.md"
+Glob: "spx/*-*.adr.md"
 # For each ADR found:
 Read: [ADR path]
 ```
 
-**Abort if**: `specs/CLAUDE.md` missing
+**Abort if**: `spx/CLAUDE.md` missing
 
 **Strict Mode Check**: None (product ADRs are truly optional)
 
 **Output**:
 
 ```
-✓ Product Context Loaded
-  - specs/CLAUDE.md
+Product Context Loaded
+  - spx/CLAUDE.md
   - Product ADRs: 3
-    • [Type Safety](../decisions/adr-21_type-safety.md)
-    • [Testing Strategy](../decisions/adr-37_testing-strategy.md)
-    • [CLI Framework](../decisions/adr-54_cli-framework.md)
+    - [Type Safety](21-type-safety.adr.md)
+    - [Testing Strategy](37-testing-strategy.adr.md)
+    - [CLI Framework](54-cli-framework.adr.md)
 ```
 
 ---
@@ -90,9 +90,9 @@ Read: [ADR path]
 
 **Required Documents**:
 
-- `{capability-path}/{slug}.capability.md` ✅ MUST EXIST
-- `{capability-path}/*.prd.md` ⚠️ OPTIONAL (read if present)
-- `{capability-path}/decisions/adr-*.md` ⚠️ May not exist
+- `{capability-path}/{slug}.capability.md` MUST EXIST
+- `{capability-path}/*.prd.md` OPTIONAL (read if present)
+- `{capability-path}/*-*.adr.md` May not exist
 
 **Actions**:
 
@@ -109,15 +109,15 @@ Read: [PRD path]
 # If not found:
 # Continue without PRD (it's optional)
 
-# Read capability ADRs
-Glob: "{capability-path}/decisions/adr-*.md"
+# Read capability ADRs (interleaved)
+Glob: "{capability-path}/*-*.adr.md"
 # For each ADR found:
 Read: [ADR path]
 ```
 
 **Abort if**:
 
-- Capability spec missing (but PRD exists → offer to create spec from PRD)
+- Capability spec missing (but PRD exists -> offer to create spec from PRD)
 - Multiple capability specs found (ambiguous)
 
 **Offer to create spec if**:
@@ -128,27 +128,26 @@ Read: [ADR path]
 **Output**:
 
 ```
-✓ Capability Context Loaded: capability-10_cli
+Capability Context Loaded: 10-cli.capability
   - cli.capability.md
   - command-architecture.prd.md (optional, found)
   - Capability ADRs: 2
-    • [Commander Pattern](decisions/adr-21_commander-pattern.md)
-    • [Config Loading](decisions/adr-37_config-loading.md)
+    - [Commander Pattern](21-commander-pattern.adr.md)
+    - [Config Loading](37-config-loading.adr.md)
 ```
 
 ---
 
 ## Phase 3: Feature Context
 
-**Goal**: Load feature specification, technical requirements, and decisions
+**Goal**: Load feature specification and decisions
 
 **Skip if**: Working on capability-level (no parent feature)
 
 **Required Documents**:
 
-- `{feature-path}/{slug}.feature.md` ✅ MUST EXIST
-- `{feature-path}/*.trd.md` ⚠️ OPTIONAL (read if present)
-- `{feature-path}/decisions/adr-*.md` ⚠️ May not exist
+- `{feature-path}/{slug}.feature.md` MUST EXIST
+- `{feature-path}/*-*.adr.md` May not exist
 
 **Actions**:
 
@@ -158,37 +157,26 @@ Glob: "{feature-path}/*.feature.md"
 # Verify exactly one file found
 Read: {feature-path}/{slug}.feature.md
 
-# Read TRD if present (optional enrichment)
-Glob: "{feature-path}/*.trd.md"
-# If found:
-Read: [TRD path]
-# If not found:
-# Continue without TRD (it's optional)
-
-# Read feature ADRs
-Glob: "{feature-path}/decisions/adr-*.md"
+# Read feature ADRs (interleaved)
+Glob: "{feature-path}/*-*.adr.md"
 # For each ADR found:
 Read: [ADR path]
 ```
 
 **Abort if**:
 
-- Feature spec missing (but TRD exists → offer to create spec from TRD)
+- Feature spec missing
 - Multiple feature specs found (ambiguous)
 
-**Offer to create spec if**:
-
-- Feature spec missing BUT TRD exists at this level
-- Prompt: "Found TRD but no feature.md - create spec from it?"
+**Note**: Technical details belong in feature.md. No separate TRD documents.
 
 **Output**:
 
 ```
-✓ Feature Context Loaded: feature-20_commands
+Feature Context Loaded: 20-commands.feature
   - commands.feature.md
-  - command-framework.trd.md (optional, found)
   - Feature ADRs: 1
-    • [Subcommand Structure](decisions/adr-21_subcommand-structure.md)
+    - [Subcommand Structure](21-subcommand-structure.adr.md)
 ```
 
 ---
@@ -201,8 +189,9 @@ Read: [ADR path]
 
 **Required Documents**:
 
-- `{story-path}/{slug}.story.md` ✅ MUST EXIST
-- `{story-path}/tests/` directory ⚠️ Should exist for IN_PROGRESS status
+- `{story-path}/{slug}.story.md` MUST EXIST
+- `{story-path}/tests/` directory Should exist for in-progress work
+- `{story-path}/pass.csv` Test verification ledger (may not exist yet)
 
 **Actions**:
 
@@ -215,7 +204,6 @@ Read: {story-path}/{slug}.story.md
 # Check status using CLI (preferred method)
 spx spec status --format json
 # Or check specific work item status in the output
-# Status values: OPEN, IN_PROGRESS, DONE
 ```
 
 **Abort if**:
@@ -225,14 +213,14 @@ spx spec status --format json
 
 **Warning if**:
 
-- Working on DONE story (status = DONE)
+- Working on completed story (all tests in pass.csv passing)
 
 **Output**:
 
 ```
-✓ Story Context Loaded: story-30_build
+Story Context Loaded: 30-build.story
   - build.story.md
-  - Status: IN_PROGRESS (from `spx spec status`)
+  - pass.csv: 3 tests passing
 ```
 
 ---
@@ -249,39 +237,38 @@ spx spec status --format json
 ## Work Item
 
 - **Level**: Story
-- **Path**: specs/work/doing/capability-10_cli/feature-20_commands/story-30_build
-- **Status**: IN_PROGRESS
+- **Path**: spx/10-cli.capability/20-commands.feature/30-build.story
 - **BSP**: 30 (story), 20 (feature), 10 (capability)
 
 ## Documents Loaded
 
 ### Product Level
 
-- **Guide**: specs/CLAUDE.md
+- **Guide**: spx/CLAUDE.md
 - **ADRs**: 3 documents
-  - [Type Safety](../decisions/adr-21_type-safety.md)
-  - [Testing Strategy](../decisions/adr-37_testing-strategy.md)
-  - [CLI Framework](../decisions/adr-54_cli-framework.md)
+  - [Type Safety](21-type-safety.adr.md)
+  - [Testing Strategy](37-testing-strategy.adr.md)
+  - [CLI Framework](54-cli-framework.adr.md)
 
 ### Capability Level: cli
 
-- **Spec**: capability-10_cli/cli.capability.md
-- **PRD**: capability-10_cli/command-architecture.prd.md
+- **Spec**: 10-cli.capability/cli.capability.md
+- **PRD**: 10-cli.capability/command-architecture.prd.md
 - **ADRs**: 2 documents
-  - [Commander Pattern](decisions/adr-21_commander-pattern.md)
-  - [Config Loading](decisions/adr-37_config-loading.md)
+  - [Commander Pattern](21-commander-pattern.adr.md)
+  - [Config Loading](37-config-loading.adr.md)
 
 ### Feature Level: commands
 
-- **Spec**: feature-20_commands/commands.feature.md
-- **TRD**: feature-20_commands/command-framework.trd.md
+- **Spec**: 20-commands.feature/commands.feature.md
 - **ADRs**: 1 document
-  - [Subcommand Structure](decisions/adr-21_subcommand-structure.md)
+  - [Subcommand Structure](21-subcommand-structure.adr.md)
 
 ### Story Level: build
 
-- **Spec**: story-30_build/build.story.md
+- **Spec**: 30-build.story/build.story.md
 - **Tests**: tests/ directory exists
+- **Pass Ledger**: pass.csv (3 tests passing)
 
 ## Constraints Summary
 
@@ -292,7 +279,7 @@ spx spec status --format json
 - Feature-scoped: 1
 - Story-specific: 0 (stories inherit parent ADRs)
 
-**Test Graduation Path**: `specs/work/doing/.../story-30_build/tests/` → `tests/unit/`
+**Test Location**: `spx/.../30-build.story/tests/`
 
 ## Hierarchy Chain
 ```
@@ -305,9 +292,9 @@ Product (spx-claude)
 ```
 ## Ready for Implementation
 
-✅ All required documents verified and read
-✅ Complete hierarchical context loaded
-✅ All architectural constraints understood
+All required documents verified and read
+Complete hierarchical context loaded
+All architectural constraints understood
 
 You may now proceed with implementation.
 ```

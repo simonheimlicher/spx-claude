@@ -4,28 +4,28 @@ The PRD template is provided by the `/managing-specs` skill `<requirement_templa
 **Always read the template before writing a PRD.** It contains complete section structure, field descriptions, and examples.
 </overview>
 
-<key_differences_from_trd>
-**PRDs focus on USER VALUE, TRDs focus on TECHNICAL SOLUTION:**
+<prd_focus>
+**PRDs focus on USER VALUE:**
 
-| Aspect         | PRD                                   | TRD                               |
-| -------------- | ------------------------------------- | --------------------------------- |
-| Problem        | User pain and customer journey        | Technical limitation              |
-| Outcome        | Measurable business metrics           | Technical capability              |
-| Guarantees     | User capabilities (UC1, UC2...)       | Technical behaviors (G1, G2...)   |
-| Tests          | Acceptance tests (Gherkin + E2E code) | BDD scenarios at L1/L2/L3         |
-| Scope          | Product features included/excluded    | Technical architecture components |
-| Infrastructure | In dependencies, not explicit         | Explicit L2/L3 documentation      |
-| Open Decisions | Product trade-offs + ADR triggers     | Technical risks + infrastructure  |
-| Delivery       | Phased rollout + feature flags        | Work item decomposition           |
+| Aspect         | What PRDs Document                    |
+| -------------- | ------------------------------------- |
+| Problem        | User pain and customer journey        |
+| Outcome        | Measurable business metrics           |
+| Guarantees     | User capabilities (UC1, UC2...)       |
+| Tests          | Acceptance tests (Gherkin + E2E code) |
+| Scope          | Product features included/excluded    |
+| Open Decisions | Product trade-offs + ADR triggers     |
 
-</key_differences_from_trd>
+**Note**: Technical details belong in feature.md specs, not separate documents.
+
+</prd_focus>
 
 <file_locations>
 **PRD can exist at three levels:**
 
-- **Project**: `specs/{backlog,doing}/[Name].prd.md`
-- **Capability**: `specs/{backlog,doing}/capability-NN_{name}/[Name].prd.md`
-- **Feature**: `specs/{backlog,doing}/capability-NN_{name}/feature-NN_{name}/[Name].prd.md`
+- **Product**: `spx/{product-name}.prd.md`
+- **Capability**: `spx/NN-{slug}.capability/{topic}.prd.md`
+- **Feature**: `spx/.../NN-{slug}.feature/{topic}.prd.md`
 
 </file_locations>
 

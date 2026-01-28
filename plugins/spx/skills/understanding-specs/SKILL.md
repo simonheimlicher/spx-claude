@@ -1,6 +1,6 @@
 ---
 name: understanding-specs
-description: Read all specs for a story, feature, or capability including PRDs, TRDs, and ADRs. Use when starting implementation, checking progress, or asked to "read the spec".
+description: Read all specs for a story, feature, or capability including PRDs and ADRs. Use when starting implementation, checking progress, or asked to "read the spec".
 allowed-tools: Read, Glob, Grep
 ---
 
@@ -24,7 +24,7 @@ Use this path to access skill files:
 
 - Every work item requires its spec file (`.capability.md`, `.feature.md`, `.story.md`)
 - Missing spec file = ABORT immediately with clear error
-- PRD/TRD are optional enrichment - read if present, offer to create spec from them if spec is missing
+- PRD is optional enrichment - read if present, offer to create spec from it if spec is missing
 - Read order: Product → Capability → Feature → Story (top-down)
 - All ADRs at all levels must be read and understood
 - This skill runs BEFORE any implementation work begins
@@ -32,7 +32,7 @@ Use this path to access skill files:
 </essential_principles>
 
 <objective>
-Verify and load complete hierarchical context for a work item by reading all specification documents from product level down to the target work item. Fails fast with actionable errors when required documents are missing. Ensures implementation skills have complete context including all constraints (ADRs), requirements (PRD/TRD), and specifications before starting work.
+Verify and load complete hierarchical context for a work item by reading all specification documents from product level down to the target work item. Fails fast with actionable errors when required documents are missing. Ensures implementation skills have complete context including all constraints (ADRs), requirements (PRD), and specifications before starting work.
 </objective>
 
 <quick_start>
@@ -40,22 +40,22 @@ Invoke with **FULL work item path**:
 
 ```bash
 # ALWAYS use full path (REQUIRED)
-/understanding-specs capability-10_cli/feature-20_commands/story-30_build
+/understanding-specs 10-cli.capability/20-commands.feature/30-build.story
 ```
 
 **🚨 NEVER use bare story/feature numbers** - BSP numbers are sibling-unique, not globally unique:
 
 ```bash
 # ❌ WRONG: Ambiguous - which story-30?
-/understanding-specs story-30_build
+/understanding-specs 30-build.story
 
 # ✅ CORRECT: Unambiguous full path
-/understanding-specs capability-10_cli/feature-20_commands/story-30_build
+/understanding-specs 10-cli.capability/20-commands.feature/30-build.story
 ```
 
 The skill will:
 
-1. Locate the work item in `specs/work/`
+1. Locate the work item in `spx/`
 2. Read all documents from product level down to target
 3. Fail immediately if any required document is missing
 4. Output structured context summary when complete
@@ -65,14 +65,14 @@ The skill will:
 <intake>
 Provide the **FULL work item path** you're working on:
 
-- **Full path** (REQUIRED): `capability-NN_slug/feature-NN_slug/story-NN_slug`
+- **Full path** (REQUIRED): `NN-slug.capability/NN-slug.feature/NN-slug.story`
 
 **🚨 BSP numbers are sibling-unique, not globally unique.**
 
 | ❌ WRONG (Ambiguous)   | ✅ CORRECT (Unambiguous)                               |
 | ---------------------- | ------------------------------------------------------ |
-| "story-30_build"       | "capability-10_cli/feature-20_commands/story-30_build" |
-| "implement feature-20" | "implement capability-10_cli/feature-20_commands"      |
+| "30-build.story"       | "10-cli.capability/20-commands.feature/30-build.story" |
+| "implement feature-20" | "implement 10-cli.capability/20-commands.feature"      |
 
 The skill will locate and verify all documents in the hierarchy.
 </intake>
@@ -104,14 +104,13 @@ Detailed patterns and error handling:
 <success_criteria>
 Context ingestion succeeds when:
 
-- [ ] Work item located in `specs/work/`
-- [ ] Product guide (`specs/CLAUDE.md`) read
+- [ ] Work item located in `spx/`
+- [ ] Product guide (`spx/CLAUDE.md`) read
 - [ ] All product ADRs read
 - [ ] Capability spec exists and read
-- [ ] Capability PRD/TRD read if present (optional enrichment)
+- [ ] Capability PRD read if present (optional enrichment)
 - [ ] All capability ADRs read
 - [ ] Feature spec exists and read (if working on feature/story)
-- [ ] Feature PRD/TRD read if present (optional enrichment)
 - [ ] All feature ADRs read
 - [ ] Story spec exists and read (if working on story)
 - [ ] Structured context summary generated with document count and ADR list

@@ -6,17 +6,17 @@ Error handling and remediation guidance when required documents are missing.
 
 ABORT immediately when ANY of these conditions are met:
 
-1. **Work item not found**: Cannot locate work item in `specs/work/`
-2. **Product guide missing**: `specs/CLAUDE.md` does not exist
-3. **Spec file missing**: Work item spec file (`.capability.md`, `.feature.md`, `.story.md`) missing AND no PRD/TRD to create it from
+1. **Work item not found**: Cannot locate work item in `spx/`
+2. **Product guide missing**: `spx/CLAUDE.md` does not exist
+3. **Spec file missing**: Work item spec file (`.capability.md`, `.feature.md`, `.story.md`) missing AND no PRD to create it from
 4. **Multiple specs found**: Ambiguous - multiple spec files at same level
 
-**Note**: PRD/TRD are optional. Missing PRD/TRD does NOT trigger abort.
+**Note**: PRD is optional. Missing PRD does NOT trigger abort.
 
 ## Abort Message Format
 
 ```markdown
-❌ CONTEXT INGESTION FAILED
+CONTEXT INGESTION FAILED
 
 **Phase**: [Phase name and number]
 **Missing Document**: [Document type]
@@ -36,17 +36,17 @@ ABORT immediately when ANY of these conditions are met:
 **Trigger**: Phase 0 - Cannot locate work item
 
 ```markdown
-❌ CONTEXT INGESTION FAILED
+CONTEXT INGESTION FAILED
 
 **Phase**: Phase 0 - Locate Work Item
 **Missing Document**: Work item directory
-**Expected Pattern**: specs/work/**/story-30_build/
-**Reason\*\*: Cannot proceed without identifying the work item location
+**Expected Pattern**: spx/**/30-build.story/
+**Reason**: Cannot proceed without identifying the work item location
 
 **Remediation**:
 
-1. Verify the work item exists: `ls -R specs/work/`
-2. Check work item naming follows pattern: {level}-{BSP}\_{slug}
+1. Verify the work item exists: `ls -R spx/`
+2. Check work item naming follows pattern: NN-{slug}.{type}/
 3. If work item doesn't exist, create it first
 4. Re-run `/understanding-specs` with correct work item identifier
 
@@ -55,20 +55,20 @@ ABORT immediately when ANY of these conditions are met:
 
 ### 2. Product Guide Missing
 
-**Trigger**: Phase 1 - `specs/CLAUDE.md` not found
+**Trigger**: Phase 1 - `spx/CLAUDE.md` not found
 
 ```markdown
-❌ CONTEXT INGESTION FAILED
+CONTEXT INGESTION FAILED
 
 **Phase**: Phase 1 - Product-Wide Context
 **Missing Document**: Product guide
-**Expected Path**: specs/CLAUDE.md
+**Expected Path**: spx/CLAUDE.md
 **Reason**: Product guide is required for all projects (defines structure and navigation)
 
 **Remediation**:
 
-1. Invoke `/managing-specs` skill to create specs/ structure
-2. Or manually create `specs/CLAUDE.md` with project structure documentation
+1. Invoke `/managing-specs` skill to create spx/ structure
+2. Or manually create `spx/CLAUDE.md` with project structure documentation
 3. Re-run `/understanding-specs` to verify
 
 **Cannot proceed with implementation until product guide exists.**
@@ -79,17 +79,17 @@ ABORT immediately when ANY of these conditions are met:
 **Trigger**: Phase 2 - Capability spec file not found
 
 ```markdown
-❌ CONTEXT INGESTION FAILED
+CONTEXT INGESTION FAILED
 
 **Phase**: Phase 2 - Capability Context
 **Missing Document**: Capability specification
-**Expected Path**: specs/work/doing/capability-10_cli/cli.capability.md
+**Expected Path**: spx/10-cli.capability/cli.capability.md
 **Reason**: Capability spec defines E2E scenario and is required
 
 **Remediation**:
 
 1. Create capability spec file at expected path
-2. Use template from `/managing-specs` skill: `templates/work-items/capability-name.capability.md`
+2. Use template from `/managing-specs` skill: `templates/outcomes/capability-name.capability.md`
 3. Fill in functional requirements and acceptance criteria
 4. Re-run `/understanding-specs` to verify
 
@@ -103,19 +103,19 @@ ABORT immediately when ANY of these conditions are met:
 **This is an OFFER scenario, not an ABORT scenario.**
 
 ```markdown
-⚠️ SPEC FILE MISSING - OFFER TO CREATE
+SPEC FILE MISSING - OFFER TO CREATE
 
 **Phase**: Phase 2 - Capability Context
 **Missing Document**: Capability specification
-**Expected Path**: specs/work/doing/capability-10_cli/cli.capability.md
-**Available Source**: specs/work/doing/capability-10_cli/command-architecture.prd.md
+**Expected Path**: spx/10-cli.capability/cli.capability.md
+**Available Source**: spx/10-cli.capability/command-architecture.prd.md
 
 **Found PRD but no capability.md - create spec from it?**
 
 If user accepts:
 
 1. Read the PRD to understand requirements
-2. Use `/managing-specs` template: `templates/work-items/capability-name.capability.md`
+2. Use `/managing-specs` template: `templates/outcomes/capability-name.capability.md`
 3. Create capability spec derived from PRD requirements
 4. Continue with context ingestion
 
@@ -129,93 +129,65 @@ If user declines:
 **Trigger**: Phase 3 - Feature spec file not found
 
 ```markdown
-❌ CONTEXT INGESTION FAILED
+CONTEXT INGESTION FAILED
 
 **Phase**: Phase 3 - Feature Context
 **Missing Document**: Feature specification
-**Expected Path**: specs/work/doing/.../feature-20_commands/commands.feature.md
+**Expected Path**: spx/.../20-commands.feature/commands.feature.md
 **Reason**: Feature spec defines integration scenario and is required
 
 **Remediation**:
 
 1. Create feature spec file at expected path
-2. Use template from `/managing-specs` skill: `templates/work-items/feature-name.feature.md`
+2. Use template from `/managing-specs` skill: `templates/outcomes/feature-name.feature.md`
 3. Fill in functional requirements and acceptance criteria
 4. Re-run `/understanding-specs` to verify
 
 **Cannot proceed with implementation until feature spec exists.**
 ```
 
-### 6. Feature Spec Missing (with TRD available)
-
-**Trigger**: Phase 3 - Feature spec not found BUT TRD exists
-
-**This is an OFFER scenario, not an ABORT scenario.**
-
-```markdown
-⚠️ SPEC FILE MISSING - OFFER TO CREATE
-
-**Phase**: Phase 3 - Feature Context
-**Missing Document**: Feature specification
-**Expected Path**: specs/work/doing/.../feature-20_commands/commands.feature.md
-**Available Source**: specs/work/doing/.../feature-20_commands/command-framework.trd.md
-
-**Found TRD but no feature.md - create spec from it?**
-
-If user accepts:
-
-1. Read the TRD to understand technical requirements
-2. Use `/managing-specs` template: `templates/work-items/feature-name.feature.md`
-3. Create feature spec derived from TRD requirements
-4. Continue with context ingestion
-
-If user declines:
-
-1. ABORT - cannot proceed without spec file
-```
-
-### 7. Story Spec Missing
+### 6. Story Spec Missing
 
 **Trigger**: Phase 4 - Story spec file not found
 
 ```markdown
-❌ CONTEXT INGESTION FAILED
+CONTEXT INGESTION FAILED
 
 **Phase**: Phase 4 - Story Context
 **Missing Document**: Story specification
-**Expected Path**: specs/work/doing/.../story-30_build/build.story.md
+**Expected Path**: spx/.../30-build.story/build.story.md
 **Reason**: Story spec defines atomic implementation unit and is required
 
 **Remediation**:
 
 1. Create story spec file at expected path
-2. Use template from `/managing-specs` skill: `templates/work-items/story-name.story.md`
+2. Use template from `/managing-specs` skill: `templates/outcomes/story-name.story.md`
 3. Fill in functional requirements and acceptance criteria
 4. Re-run `/understanding-specs` to verify
 
 **Cannot proceed with implementation until story spec exists.**
 ```
 
-### 8. Multiple Spec Files Found (Ambiguous)
+### 7. Multiple Spec Files Found (Ambiguous)
 
 **Trigger**: Any phase - Multiple spec files at same level
 
 ```markdown
-❌ CONTEXT INGESTION FAILED
+CONTEXT INGESTION FAILED
 
 **Phase**: Phase 2 - Capability Context
 **Problem**: Multiple spec files found
 **Found Files**:
 
-- specs/work/doing/capability-10_cli/cli.capability.md
-- specs/work/doing/capability-10_cli/old-cli.capability.md
+- spx/10-cli.capability/cli.capability.md
+- spx/10-cli.capability/old-cli.capability.md
   **Reason**: Ambiguous - cannot determine which spec file is current
 
 **Remediation**:
 
 1. Remove or rename old/duplicate spec files
-2. Keep only ONE spec file per work item: {slug}.{level}.md
-3. Archive old versions outside specs/ if needed
+2. Keep only ONE spec file per work item: {slug}.{type}.md
+3. Archive old versions outside spx/ if needed
 4. Re-run `/understanding-specs` to verify
 
 **Cannot proceed with implementation until ambiguity is resolved.**
@@ -225,20 +197,20 @@ If user declines:
 
 These scenarios generate warnings but don't abort:
 
-### Working on DONE Story
+### Working on Completed Work Item
 
 ```markdown
-⚠️ WARNING: Working on completed story
+WARNING: Working on completed work item
 
-**Story**: story-30_build
-**Status**: DONE (DONE.md exists)
-**Risk**: This story is marked complete. Changes may require regression testing.
+**Story**: 30-build.story
+**Status**: All tests in pass.csv passing
+**Risk**: This story is complete. Changes may require re-stamping.
 
 **Recommendations**:
 
 1. If this is new work, create a new story instead
 2. If fixing a bug, create a new bug-fix story
-3. If truly modifying this story, understand you're changing completed work
+3. If truly modifying this story, understand you'll need to re-stamp pass.csv
 
 Proceeding with context ingestion...
 ```
@@ -246,16 +218,16 @@ Proceeding with context ingestion...
 ### No Product ADRs
 
 ```markdown
-✓ Product Context Loaded
+Product Context Loaded
 
-- specs/CLAUDE.md
+- spx/CLAUDE.md
 - Product ADRs: 0 (none found - acceptable for new projects)
 ```
 
 ### No Capability/Feature ADRs
 
 ```markdown
-✓ Capability Context Loaded: capability-10_cli
+Capability Context Loaded: 10-cli.capability
 
 - cli.capability.md
 - command-architecture.prd.md
@@ -269,24 +241,24 @@ When all documents exist:
 ```markdown
 # CONTEXT INGESTION COMPLETE
 
-✅ All required documents verified and read
-✅ Complete hierarchical context loaded
-✅ All architectural constraints understood
+All required documents verified and read
+Complete hierarchical context loaded
+All architectural constraints understood
 
 You may now proceed with implementation.
 ```
 
-## PRD/TRD Handling
+## PRD Handling
 
-**PRD and TRD are optional enrichment documents.**
+**PRD is an optional enrichment document.**
 
-- Missing PRD/TRD does NOT cause abort
-- If PRD/TRD exists, read it for additional context
-- If spec file is missing but PRD/TRD exists at that level, offer to create spec from it
+- Missing PRD does NOT cause abort
+- If PRD exists, read it for additional context
+- If spec file is missing but PRD exists at that level, offer to create spec from it
 
 **Offer-to-create workflow**:
 
-1. Detect missing spec file with available PRD/TRD
-2. Prompt user: "Found [PRD/TRD] but no [spec].md - create spec from it?"
+1. Detect missing spec file with available PRD
+2. Prompt user: "Found PRD but no [spec].md - create spec from it?"
 3. If accepted: Create spec using template and requirements document
 4. If declined: Abort with spec missing error

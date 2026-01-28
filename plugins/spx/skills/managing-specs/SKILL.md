@@ -1,20 +1,20 @@
 ---
 name: managing-specs
-description: Create and manage specs including capabilities, features, stories, PRDs, TRDs, and ADRs. Use when creating a feature, creating a story, adding specs, or setting up spec structure.
+description: Create and manage spx/ specs including capabilities, features, stories, PRDs, and ADRs. Use when creating a feature, creating a story, adding specs, or setting up spec structure.
 ---
 
 <objective>
-Single source of truth for specs/ directory structure and all document templates. Enables creation of requirements (PRD/TRD), decisions (ADR), and work items (capability/feature/story) with consistent structure across all products using the SPX framework.
+Single source of truth for spx/ directory structure and all document templates. Enables creation of requirements (PRD), decisions (ADR), and work items (capability/feature/story) with consistent structure across all products using the SPX framework.
 </objective>
 
 <quick_start>
 Different use cases read different sections:
 
 - **Template access** → Read `<accessing_templates>` FIRST to understand where templates are located
-- **Structure definition** → Read `<structure_definition>` for specs/ directory hierarchy, BSP numbering, test graduation
+- **Structure definition** → Read `<structure_definition>` for spx/ directory hierarchy, BSP numbering, test graduation
 - **ADR templates** → Read `<adr_templates>` for Architectural Decision Record patterns
-- **PRD/TRD templates** → Read `<requirement_templates>` for Product and Technical Requirements
-- **Work item templates** → Read `<work_item_templates>` for capability, feature, story, and DONE.md patterns
+- **PRD templates** → Read `<requirement_templates>` for Product Requirements
+- **Work item templates** → Read `<work_item_templates>` for capability, feature, and story patterns
 
 Use progressive disclosure - read only what you need.
 </quick_start>
@@ -43,10 +43,10 @@ Use this exact path for all file access. Throughout this documentation, `${SKILL
 .claude/plugins/cache/{marketplace-name}/{plugin-name}/{version}/skills/managing-specs/
 ```
 
-**Example**: For spx-claude marketplace, spx plugin version 0.1.0:
+**Example**: For spx-claude marketplace, spx plugin version 0.1.2:
 
 ```
-${SKILL_DIR} = .claude/plugins/cache/spx-claude/specs/0.3.3/skills/managing-specs/
+${SKILL_DIR} = .claude/plugins/cache/spx-claude/spx/0.1.2/skills/managing-specs/
 ```
 
 </skill_directory_structure>
@@ -59,16 +59,14 @@ All templates are under `${SKILL_DIR}/templates/`:
 ${SKILL_DIR}/
 ├── SKILL.md                                    # This file
 └── templates/
+    ├── product/
+    │   └── product.prd.md
     ├── decisions/
     │   └── architectural-decision.adr.md
-    ├── requirements/
-    │   ├── product-change.prd.md
-    │   └── technical-change.trd.md
-    └── work-items/
+    └── outcomes/
         ├── capability-name.capability.md
         ├── feature-name.feature.md
-        ├── story-name.story.md
-        └── DONE.md
+        └── story-name.story.md
 ```
 
 </template_organization>
@@ -82,10 +80,10 @@ ${SKILL_DIR}/
 Read: ${SKILL_DIR}/templates/{category}/{template-name}
 
 # Example: Read feature template
-Read: ${SKILL_DIR}/templates/work-items/feature-name.feature.md
+Read: ${SKILL_DIR}/templates/outcomes/feature-name.feature.md
 
-# With actual path (example for spx-claude marketplace, version 0.3.3)
-Read: .claude/plugins/cache/spx-claude/specs/0.3.3/skills/managing-specs/templates/work-items/feature-name.feature.md
+# With actual path (example for spx-claude marketplace, version 0.1.2)
+Read: .claude/plugins/cache/spx-claude/spx/0.1.2/skills/managing-specs/templates/outcomes/feature-name.feature.md
 ```
 
 </how_to_read_templates>
@@ -106,12 +104,12 @@ If you cannot find a template:
 <structure_definition>
 
 <overview>
-The specs/ directory follows the SPX framework structure defined in `structure.yaml`.
+The spx/ directory follows the CODE framework structure.
 </overview>
 
 <three_phase_transformation>
 
-1. **Requirements (PRD/TRD)** - Capture vision without implementation constraints
+1. **Requirements (PRD)** - Capture product vision without implementation constraints
 2. **Decisions (ADR)** - Constrain architecture with explicit trade-offs
 3. **Work Items (Capability/Feature/Story)** - Sized, testable implementation containers
 
@@ -150,7 +148,7 @@ spx/
 
 - **Feature**: Integration scenario with specific functionality
   - Tests graduate to `tests/integration/`
-  - May have optional TRD as catalyst/enrichment
+  - Technical details documented in feature.md (no separate TRD)
   - Contains stories
 
 - **Story**: Unit-tested atomic implementation
@@ -162,11 +160,10 @@ spx/
 
 <key_principles>
 
-- **PRD OR TRD** at same scope, never both
 - **Requirements immutable** - code adapts to requirements, not vice versa
 - **BSP numbering**: Two-digit (10-99), lower number = must complete first
 - **BSP numbers are SIBLING-UNIQUE**: Numbers are only unique among siblings, not globally (see `<bsp_sibling_uniqueness>` below)
-- **Test graduation**: `specs/.../tests/` → `tests/{unit,integration,e2e}/`
+- **Test graduation**: `spx/.../tests/` → `tests/{unit,integration,e2e}/`
 - **Status rules** (use CLI, do NOT check manually):
   - `spx spec status --format table` - View project status
   - `spx spec next` - Get next work item (respects BSP ordering)
@@ -582,12 +579,12 @@ Type system: [Type Safety](../../../21-type-safety.adr.md)
 <requirement_templates>
 
 <overview>
-Templates for Product Requirements (PRD) and Technical Requirements (TRD).
+Templates for Product Requirements (PRD).
 </overview>
 
 <prd_template>
 
-**Location**: `${SKILL_DIR}/templates/requirements/product-change.prd.md`
+**Location**: `${SKILL_DIR}/templates/product/product.prd.md`
 
 **Purpose**: Product requirements - user value, customer journey, measurable outcomes
 
@@ -595,7 +592,7 @@ Templates for Product Requirements (PRD) and Technical Requirements (TRD).
 
 ```bash
 # Read PRD template
-Read: ${SKILL_DIR}/templates/requirements/product-change.prd.md
+Read: ${SKILL_DIR}/templates/product/product.prd.md
 
 # Adapt for product change
 - Define user value proposition
@@ -606,41 +603,16 @@ Read: ${SKILL_DIR}/templates/requirements/product-change.prd.md
 
 **Placement**:
 
-- Product-wide: `specs/{product-name}.prd.md`
-- Capability catalyst: `specs/work/doing/capability-NN/{topic}.prd.md`
+- Product-wide: `spx/{product-name}.prd.md`
+- Capability catalyst: `spx/NN-{slug}.capability/{topic}.prd.md`
 
 </prd_template>
 
-<trd_template>
-
-**Location**: `${SKILL_DIR}/templates/requirements/technical-change.trd.md`
-
-**Purpose**: Technical requirements - system architecture, validation strategy, test infrastructure
-
-**Usage**:
-
-```bash
-# Read TRD template
-Read: ${SKILL_DIR}/templates/requirements/technical-change.trd.md
-
-# Adapt for technical change
-- Specify technical architecture
-- Define testing strategy (Level 1/2/3)
-- Document validation approach
-- Identify infrastructure needs
-```
-
-**Placement**:
-
-- Feature catalyst: `specs/work/doing/.../feature-NN/{topic}.trd.md`
-
-</trd_template>
-
 <requirements_rules>
 
-- **PRD OR TRD** at same scope, never both
 - **Immutable**: Code adapts to requirements, not vice versa
-- **Optional catalyst**: PRD/TRD may exist as enrichment; spec file is always required
+- **Optional catalyst**: PRD may exist as enrichment; spec file is always required
+- **No TRDs**: Technical details belong in feature.md, not separate documents
 
 </requirements_rules>
 
@@ -649,16 +621,15 @@ Read: ${SKILL_DIR}/templates/requirements/technical-change.trd.md
 <work_item_templates>
 
 <overview>
-Templates for capabilities, features, stories, and completion evidence.
+Templates for capabilities, features, and stories.
 </overview>
 
 <template_locations>
 
 ```
-${SKILL_DIR}/templates/work-items/capability-name.capability.md
-${SKILL_DIR}/templates/work-items/feature-name.feature.md
-${SKILL_DIR}/templates/work-items/story-name.story.md
-${SKILL_DIR}/templates/work-items/DONE.md
+${SKILL_DIR}/templates/outcomes/capability-name.capability.md
+${SKILL_DIR}/templates/outcomes/feature-name.feature.md
+${SKILL_DIR}/templates/outcomes/story-name.story.md
 ```
 
 </template_locations>
@@ -667,28 +638,22 @@ ${SKILL_DIR}/templates/work-items/DONE.md
 
 ```bash
 # For capability
-Read: ${SKILL_DIR}/templates/work-items/capability-name.capability.md
+Read: ${SKILL_DIR}/templates/outcomes/capability-name.capability.md
 Adapt: Replace {slug} with kebab-case name
        Fill functional requirements
        Add user value context
 
 # For feature
-Read: ${SKILL_DIR}/templates/work-items/feature-name.feature.md
+Read: ${SKILL_DIR}/templates/outcomes/feature-name.feature.md
 Adapt: Replace {slug} with kebab-case name
        Specify integration scope
        Define component interactions
 
 # For story
-Read: ${SKILL_DIR}/templates/work-items/story-name.story.md
+Read: ${SKILL_DIR}/templates/outcomes/story-name.story.md
 Adapt: Replace {slug} with kebab-case name
        Detail atomic implementation
        List specific functions/classes
-
-# For completion
-Read: ${SKILL_DIR}/templates/work-items/DONE.md
-Adapt: List graduated tests by level
-       Document verification steps
-       Include evidence of completion
 ```
 
 </usage_pattern>
@@ -713,9 +678,9 @@ Examples:
 
 When work is complete, tests graduate:
 
-- Capability tests: `specs/.../tests/` → `tests/e2e/`
-- Feature tests: `specs/.../tests/` → `tests/integration/`
-- Story tests: `specs/.../tests/` → `tests/unit/`
+- Capability tests: `spx/.../tests/` → `tests/e2e/`
+- Feature tests: `spx/.../tests/` → `tests/integration/`
+- Story tests: `spx/.../tests/` → `tests/unit/`
 
 DONE.md documents this graduation and provides verification evidence.
 

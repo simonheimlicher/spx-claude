@@ -9,7 +9,7 @@
 > - Triggers ADR creation for technical decisions; if ADRs reveal scope too large → split into multiple PRDs
 > - Spawns work items (features/stories) AFTER scope validated and ADRs created
 > - No size constraints, no state tracking (OPEN/IN PROGRESS/DONE)
-> - Can exist at: project level (`specs/work/{backlog,doing}/[Name].prd.md`), capability level (`.../capability/[Name].prd.md`) or feature level (`.../feature/[Name].prd.md`)
+> - Can exist at: product level (`spx/{product-name}.prd.md`), capability level (`spx/NN-{slug}.capability/{topic}.prd.md`) or feature level (`.../NN-{slug}.feature/{topic}.prd.md`)
 >
 > **Core Principle**: Requirements describe WHAT should exist (the ideal solution), NOT WHEN it gets implemented. Use "Out of scope" for boundaries, NOT "Defer to Phase 2" or "MVP excludes...". Implementation timing belongs in work items (capability/feature/story breakdown), NOT in requirements.
 

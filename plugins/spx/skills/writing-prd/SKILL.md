@@ -72,7 +72,7 @@ Create complete, testable Product Requirements Documents that serve as authorita
 <context_reading_protocol>
 **Before asking questions, read project context:**
 
-1. Read `specs/CLAUDE.md` for project structure
+1. Read `spx/CLAUDE.md` for project structure
 2. Determine PRD location (project, capability, or feature level)
 3. Read existing PRDs to understand product direction
 4. Read related capabilities/features if adding to existing structure
@@ -215,7 +215,7 @@ Domain knowledge in `references/`:
 | Reference                   | Purpose                                    |
 | --------------------------- | ------------------------------------------ |
 | prd-template-guide.md       | Complete PRD template with annotations     |
-| testing-methodology.md      | Same as TRD: three-tier testing rules      |
+| testing-methodology.md      | Three-tier testing rules                   |
 | acceptance-test-patterns.md | Gherkin and E2E test best practices        |
 | measurable-outcomes.md      | Quantifying user value and product success |
 
