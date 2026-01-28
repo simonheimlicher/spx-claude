@@ -24,7 +24,7 @@ Use this path to access skill files:
 
 **User value is first-class:** Measurable outcomes and user capabilities must be clear before technical implementation.
 
-**Three-tier testing methodology:**
+**Three-level testing methodology:**
 
 - **Level 1 (Unit)**: Pure logic, dependency injection, no external systems
 - **Level 2 (Integration)**: Real infrastructure via documented test harnesses
@@ -215,7 +215,7 @@ Domain knowledge in `references/`:
 | Reference                   | Purpose                                    |
 | --------------------------- | ------------------------------------------ |
 | prd-template-guide.md       | Complete PRD template with annotations     |
-| testing-methodology.md      | Three-tier testing rules                   |
+| testing-methodology.md      | Three-level testing rules                  |
 | acceptance-test-patterns.md | Gherkin and E2E test best practices        |
 | measurable-outcomes.md      | Quantifying user value and product success |
 

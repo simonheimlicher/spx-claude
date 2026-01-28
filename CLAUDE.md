@@ -240,7 +240,7 @@ Frontend design and coding skills and commands.
 
 ## Test Plugin (`/testing`)
 
-The test plugin provides BDD testing methodology with three-tier testing:
+The test plugin provides BDD testing methodology with three-level testing:
 
 | Level          | Question                               | Requirements                     |
 | -------------- | -------------------------------------- | -------------------------------- |

@@ -1,6 +1,6 @@
 ---
 name: testing-typescript
-description: Write tests for TypeScript code with three tiers (Unit/Integration/E2E). Use when testing TypeScript or writing TypeScript tests.
+description: Write tests for TypeScript code with three levels (Unit/Integration/E2E). Use when testing TypeScript or writing TypeScript tests.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 

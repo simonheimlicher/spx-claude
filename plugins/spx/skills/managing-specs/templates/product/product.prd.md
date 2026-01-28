@@ -31,7 +31,7 @@ A PRD is ready for implementation when all sections below contain complete infor
 
 ## Testing Methodology
 
-This PRD follows the three-tier testing methodology for acceptance validation:
+This PRD follows the three-level testing methodology for acceptance validation:
 
 - **Level 1 (Unit)**: Component logic with dependency injection. No external systems.
 - **Level 2 (Integration)**: Real infrastructure via test harnesses. No mocking.

@@ -95,10 +95,15 @@ State is derived from pass.csv content:
      b. MOVE ADRs from `decisions/` to container root with new naming:
    - From: `decisions/adr-21_type-safety.md`
    - To: `21-type-safety.adr.md`
-     c. **If DONE.md exists, parse it to extract test file paths**:
-   - Look for paths like `tests/unit/*.test.ts`, `tests/integration/*.test.ts`
+     c. **Find test files for this container**:
+   - **Primary**: Parse DONE.md for explicit paths (`tests/unit/*.test.ts`, etc.)
    - Check "Test Coverage" table, "Verification Command", or "Files Modified" sections
-   - If no explicit paths, report as issue - need manual identification
+   - **Fallback**: If no explicit paths in DONE.md, search by slug pattern:
+     ```bash
+     # Search for tests matching the story/feature slug
+     find tests/{unit,integration,e2e} -name "*{slug}*" -type f
+     ```
+   - Report in summary which method found the tests (explicit vs fallback)
      d. **MOVE test files INTO the container's `tests/` directory**:
    - Preserve level in filename suffix
    - From: `tests/unit/foo.test.ts` → To: `spx/.../tests/foo.unit.test.ts`
@@ -116,10 +121,10 @@ State is derived from pass.csv content:
 </workflow>
 
 <constraints>
-- MOVE (not copy) all files - specs, tests, ADRs
+- MOVE all files - specs, ADRs, and tests (except shared tests which are COPIED)
 - Convert directory names: `{type}-{BSP}_{slug}` → `{BSP}-{slug}.{type}`
 - Preserve test level in filename suffix (unit/integration/e2e)
-- If a test file is referenced by multiple DONE.md files, report as issue (needs manual resolution)
+- If a test file is referenced by multiple containers, COPY to each container (not move)
 - ALWAYS preserve the BSP numbers from source directories
 - ALWAYS use `{slug}.{type}.md` naming for spec files
 - ADRs interleaved in containers with new naming: `NN-{slug}.adr.md`
@@ -154,9 +159,16 @@ When complete, report:
 
 ### Test Files Moved (Co-located)
 
-| Old Path                 | New Path                         |
-| ------------------------ | -------------------------------- |
-| `tests/unit/foo.test.ts` | `spx/.../tests/foo.unit.test.ts` |
+| Old Path                 | New Path                         | Found Via |
+| ------------------------ | -------------------------------- | --------- |
+| `tests/unit/foo.test.ts` | `spx/.../tests/foo.unit.test.ts` | DONE.md   |
+| `tests/unit/bar.test.ts` | `spx/.../tests/bar.unit.test.ts` | fallback  |
+
+### Shared Test Files (Copied)
+
+| Source Path                 | Copied To                                          |
+| --------------------------- | -------------------------------------------------- |
+| `tests/unit/shared.test.ts` | `spx/.../story-a/tests/`, `spx/.../story-b/tests/` |
 
 ### Files Created
 

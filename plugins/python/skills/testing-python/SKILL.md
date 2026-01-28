@@ -1,6 +1,6 @@
 ---
 name: testing-python
-description: Write tests for Python code with three tiers (Unit/Integration/E2E). Use when testing Python or writing Python tests.
+description: Write tests for Python code with three levels (Unit/Integration/E2E). Use when testing Python or writing Python tests.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 

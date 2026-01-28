@@ -54,7 +54,7 @@ Credit: `/handoff` is inspired by [TÂCHES Claude Code Resources](https://github
 
 ### test
 
-BDD testing methodology with three-tier testing (Unit, Integration, E2E).
+BDD testing methodology with three-level testing (Unit, Integration, E2E).
 
 | Type  | Name       | Purpose                         |
 | ----- | ---------- | ------------------------------- |

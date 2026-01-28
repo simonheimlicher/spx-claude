@@ -30,7 +30,7 @@ specifications, tests, and architectural decisions.
 | ---------- | ------------------------------------------------------ |
 | core       | Productivity skills: commits, handoffs, skill creation |
 | specs      | Spec management: PRDs, TRDs, ADRs, work items          |
-| test       | Testing methodology: three-tier BDD testing            |
+| test       | Testing methodology: three-level BDD testing           |
 | python     | Python development: coding, reviewing, testing         |
 | typescript | TypeScript development: coding, reviewing, testing     |
 | frontend   | Frontend design: UI/UX patterns                        |
