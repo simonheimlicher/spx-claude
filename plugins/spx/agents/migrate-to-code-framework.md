@@ -115,6 +115,21 @@ Use `/managing-specs` skill to get the templates.
 - ADRs are taken out of decisions directory and interleaved in containers with new naming: `NN-{slug}.adr.md`
 - Product PRD stays at spx/ root; capability-level PRD files (`.../{slug}.prd.md`) merge into the sibling `{slug}.capability.md` file. Use `/managing-specs` skill to get the templates.
 
+**CRITICAL - Test level preservation:**
+
+- NEVER change the test level suffix. If a file is `*.integration.test.ts`, it MUST stay `*.integration.test.ts` (just moved to new location).
+- Only ADD a level suffix if the original filename had none:
+  - `foo.test.ts` → `foo.unit.test.ts` (add suffix)
+  - `foo.integration.test.ts` → `foo.integration.test.ts` (preserve exactly)
+  - `foo.e2e.test.ts` → `foo.e2e.test.ts` (preserve exactly)
+- Do NOT invent rules about which test levels are "allowed" at which container level. Any test level can exist at any level (story, feature, or capability).
+
+**CRITICAL - No external documentation:**
+
+- Do NOT read or apply rules from `docs/`, `CLAUDE.md`, or other documentation files.
+- ONLY follow the instructions in THIS agent definition.
+- The CODE framework rules are defined HERE, not elsewhere.
+
 </constraints>
 
 <output_format>
