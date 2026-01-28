@@ -43,7 +43,7 @@ Use this exact path for all file access. Throughout this documentation, `${SKILL
 .claude/plugins/cache/{marketplace-name}/{plugin-name}/{version}/skills/managing-specs/
 ```
 
-**Example**: For spx-claude marketplace, specs plugin version 0.3.3:
+**Example**: For spx-claude marketplace, spx plugin version 0.1.0:
 
 ```
 ${SKILL_DIR} = .claude/plugins/cache/spx-claude/specs/0.3.3/skills/managing-specs/

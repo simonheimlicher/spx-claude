@@ -38,7 +38,7 @@ Hierarchical context ingestion that enables Claude implementation skills to veri
 
 **Included:**
 
-- understanding-specs skill in specs plugin
+- understanding-specs skill in spx plugin
 - Context loading integration in TypeScript skills (testing, coding, reviewing, architecting)
 - Context loading integration in Python skills (testing, coding, reviewing, architecting)
 - Abort protocol with clear error messages and remediation
@@ -101,7 +101,7 @@ Scenario: Multiple skills integrate context verification
 
 ## System Integration
 
-This capability integrates with the specs plugin and all language-specific plugins (TypeScript, Python). It ensures that any implementation skill has complete specification context before starting work, preventing partial implementations due to missing documentation.
+This capability integrates with the spx plugin and all language-specific plugins (TypeScript, Python). It ensures that any implementation skill has complete specification context before starting work, preventing partial implementations due to missing documentation.
 
 **Integration points:**
 

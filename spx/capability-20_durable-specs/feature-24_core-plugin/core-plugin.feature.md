@@ -32,7 +32,7 @@ Working on: specs/work/doing/capability-10/feature-10/story-10/
 
 ```markdown
 Working on: spx/capability-10/feature-10/story-10/
-Status: See status.yaml (fail: 2 tests remaining)
+Status: See status.yaml (failed: 2 tests remaining)
 ```
 
 ### Work Item Discovery
@@ -41,7 +41,7 @@ If pickup needs to find next work item:
 
 **Before:** Scan `specs/work/backlog/` for OPEN items
 
-**After:** Scan `spx/` for containers where `status.yaml` is missing or has non-empty `fail:` list
+**After:** Scan `spx/` for containers where `status.yaml` is missing or has non-empty `failed:` list
 
 ## Tests
 

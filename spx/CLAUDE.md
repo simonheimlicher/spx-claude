@@ -37,7 +37,7 @@ spx/
 
 1. **Durable map**: Specs stay in place. Nothing moves because work is "done."
 2. **Co-location**: Tests live with their spec in `tests/`. No graduation.
-3. **Status via YAML**: `status.yaml` records test results. Empty `fail:` = outcome achieved.
+3. **Status via YAML**: `status.yaml` records test results. Empty `failed:` = outcome achieved.
 4. **No TRDs**: Technical details belong in `feature.md`, not separate files.
 
 ---
@@ -46,19 +46,20 @@ spx/
 
 Read `status.yaml` to determine work state:
 
-| State                | Condition           |
-| -------------------- | ------------------- |
-| **Spec only**        | No `status.yaml`    |
-| **In progress**      | `fail:` has entries |
-| **Outcome achieved** | `fail: []` (empty)  |
+| State                | Condition             |
+| -------------------- | --------------------- |
+| **Spec only**        | No `status.yaml`      |
+| **In progress**      | `failed:` has entries |
+| **Outcome achieved** | `failed: []` (empty)  |
 
 ```yaml
 # Example status.yaml
-spec_commit: abc123
-ran: 2025-01-27T10:30:00Z
-pass:
+spec_blob: a3f2b7c... # git hash-object spec-file.md
+run: 2025-01-27T10:30:00Z
+ratio: 1.0 # pass ratio (0.0 to 1.0)
+tests:
   - tests/parsing.unit.test.ts
-fail: []
+failed: [] # empty = all tests pass
 ```
 
 ---

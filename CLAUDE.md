@@ -312,9 +312,9 @@ Complete Python development workflow with testing, implementation, and review.
 - Behavior testing, not implementation testing
 - Tests at appropriate levels (Unit/Integration/E2E)
 
-## Specs Plugin
+## SPX Plugin
 
-Requirements documentation and specification skills.
+Spec-driven development skills.
 
 ### Skills
 
@@ -457,7 +457,7 @@ description: Generate descriptive commit messages by analyzing git diffs. Use wh
 
 ### Examples from this marketplace
 
-**Specs Plugin skills (differentiating similar skills):**
+**SPX Plugin skills (differentiating similar skills):**
 
 ```yaml
 # ✅ Good: natural language, clear triggers
@@ -742,9 +742,9 @@ spx-claude/
 │   │   │   └── plugin.json       # Version: 0.x.x
 │   │   └── commands/
 │   │       └── autopython.md
-│   ├── specs/
+│   ├── spx/
 │   │   ├── .claude-plugin/
-│   │   │   └── plugin.json       # Version: 0.3.0
+│   │   │   └── plugin.json       # Version: 0.1.0
 │   │   └── skills/
 │   │       ├── managing-specs/
 │   │       ├── understanding-specs/

@@ -1,7 +1,7 @@
 {
-  "name": "specs",
-  "version": "0.4.7",
-  "description": "Requirements documentation and specification skills",
+  "name": "spx",
+  "version": "0.1.0",
+  "description": "Spec-driven development: PRDs, ADRs, capabilities, features, stories",
   "author": {
     "name": "Simon Heimlicher"
   },
@@ -11,8 +11,8 @@
     "requirements",
     "specifications",
     "prd",
-    "trd",
     "adr",
-    "spec-driven"
+    "spec-driven",
+    "durable-specs"
   ]
 }

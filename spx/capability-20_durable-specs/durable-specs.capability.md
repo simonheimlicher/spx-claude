@@ -25,7 +25,7 @@ Migrate all plugins from the current `specs/work/backlog|doing|done/` structure 
 
 | Plugin     | Skills/Commands Affected                                                              |
 | ---------- | ------------------------------------------------------------------------------------- |
-| specs      | managing-specs, understanding-specs, writing-prd (drop writing-trd)                   |
+| spx        | managing-specs, understanding-specs, writing-prd (drop writing-trd)                   |
 | python     | coding-python, reviewing-python, testing-python, orchestrating-python                 |
 | typescript | coding-typescript, reviewing-typescript, testing-typescript, orchestrating-typescript |
 | test       | testing (foundational skill)                                                          |

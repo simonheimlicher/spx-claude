@@ -1,8 +1,8 @@
-# Feature: Specs Plugin Migration
+# Feature: SPX Plugin Migration
 
 ## Observable Outcome
 
-The specs plugin skills work with the CODE structure: `spx/` root, `status.yaml` for state, no TRDs, co-located tests.
+The spx plugin skills work with the CODE structure: `spx/` root, `status.yaml` for state, no TRDs, co-located tests.
 
 ## Skills to Update
 
@@ -49,5 +49,5 @@ The specs plugin skills work with the CODE structure: `spx/` root, `status.yaml`
 - [ ] understanding-specs traverses `spx/` hierarchy
 - [ ] writing-prd outputs to `spx/`
 - [ ] writing-trd skill deleted
-- [ ] No TRD references in any specs plugin skill
+- [ ] No TRD references in any spx plugin skill
 - [ ] `status.yaml` documented and used for state

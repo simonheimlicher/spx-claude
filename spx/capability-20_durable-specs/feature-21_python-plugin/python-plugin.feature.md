@@ -50,7 +50,7 @@ spx/.../feature-10/tests/validation.integration.test.py
 
 **Before:** Check for `DONE.md` or directory location (`doing/` vs `done/`)
 
-**After:** Read `status.yaml` - `fail: []` means outcome achieved
+**After:** Read `status.yaml` - `failed: []` means outcome achieved
 
 ## Tests
 

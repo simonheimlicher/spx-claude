@@ -20,7 +20,7 @@ claude plugin install core@spx-claude
 claude plugin install test@spx-claude
 claude plugin install typescript@spx-claude
 claude plugin install python@spx-claude
-claude plugin install specs@spx-claude
+claude plugin install spx@spx-claude
 ```
 
 Now slash commands like `/commit`, `/handoff`, `/pickup` and skills like `/testing-typescript` are available in all your projects.
@@ -86,9 +86,9 @@ Complete Python development workflow.
 | Skill   | `/architecting-python`           | ADR producer with testing strategy |
 | Skill   | `/reviewing-python-architecture` | ADR validator                      |
 
-### specs
+### spx
 
-Requirements documentation and specification skills.
+Spec-driven development skills.
 
 | Type  | Name                   | Purpose                            |
 | ----- | ---------------------- | ---------------------------------- |

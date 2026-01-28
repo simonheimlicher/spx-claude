@@ -46,7 +46,7 @@ Tests stay with their spec. No graduation.
 
 **Before:** "Tests must pass before graduation"
 
-**After:** "Test results recorded in `status.yaml`. Empty `fail:` list = outcome achieved"
+**After:** "Test results recorded in `status.yaml`. Empty `failed:` list = outcome achieved"
 
 ## Tests
 
