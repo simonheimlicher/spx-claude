@@ -2,7 +2,7 @@
 
 ## Relevant ADRs
 
-- [Orchestrator Pattern](../../../../decisions/adr-24_orchestrator-pattern.md) - Skills stay independent; orchestrators coordinate
+- [ADR-24](../../../../adr-24_orchestrator-pattern.md) - Skills stay independent; orchestrators coordinate
 
 ## Problem
 
@@ -25,15 +25,11 @@ After this story:
 ### FR1: Remove duplicate testing content
 
 ```gherkin
-GIVEN auto-typescript SKILL.md has <testing_emphasis> section (lines 133-173)
+GIVEN auto-typescript SKILL.md has <testing_emphasis> section
 WHEN applying ADR-24 orchestrator pattern
 THEN <testing_emphasis> section is deleted
-AND Step 2 (Design Tests) adds reference: "See `/testing-typescript` for complete methodology"
+AND Step 2 (Design Tests) adds reference: "See /testing-typescript for complete methodology"
 ```
-
-#### Files modified
-
-1. `plugins/typescript/skills/auto-typescript/SKILL.md` [modify]: Delete lines 133-173, add reference
 
 ### FR2: Standardize skill invocation syntax
 
@@ -43,10 +39,6 @@ WHEN standardizing per Claude Code conventions
 THEN all invocations use `/skill-name` format (no plugin prefix)
 ```
 
-#### Files modified
-
-1. `plugins/typescript/skills/auto-typescript/SKILL.md` [modify]: Update lines 41, 49, 77, 95, 98, 118-121, 125-128
-
 ### FR3: Add error recovery guidance
 
 ```gherkin
@@ -54,10 +46,6 @@ GIVEN line 46 says "STOP. Create missing specs before proceeding."
 WHEN improving error recovery
 THEN line 46 references `/managing-specs` skill for creating missing specifications
 ```
-
-#### Files modified
-
-1. `plugins/typescript/skills/auto-typescript/SKILL.md` [modify]: Update line 46
 
 ### FR4: Simplify success criteria
 
@@ -71,13 +59,15 @@ THEN success criteria focuses only on orchestration:
 AND implementation quality concerns are delegated to reviewing-typescript
 ```
 
-#### Files modified
+## Tests
 
-1. `plugins/typescript/skills/auto-typescript/SKILL.md` [modify]: Update <success_criteria> section
+- [Unit: No testing_emphasis section](tests/no-testing-emphasis.unit.test.ts)
+- [Unit: Uses /skill-name syntax](tests/skill-syntax.unit.test.ts)
+- [Unit: Success criteria is orchestration-only](tests/success-criteria.unit.test.ts)
 
 ## Completion Criteria
 
-- [ ] `<testing_emphasis>` section (lines 133-173) deleted
+- [ ] `<testing_emphasis>` section deleted
 - [ ] All skill references use `/skill-name` format
 - [ ] Error recovery references `/managing-specs`
 - [ ] Success criteria focuses on orchestration completeness only

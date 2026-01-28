@@ -93,8 +93,7 @@ Requirements documentation and specification skills.
 | Type  | Name                   | Purpose                            |
 | ----- | ---------------------- | ---------------------------------- |
 | Skill | `/writing-prd`         | Write product requirements         |
-| Skill | `/writing-trd`         | Write technical requirements       |
-| Skill | `/managing-specs`      | Set up specs directory structure   |
+| Skill | `/managing-specs`      | Manage specs structure and ADRs    |
 | Skill | `/understanding-specs` | Load context before implementation |
 
 ### frontend

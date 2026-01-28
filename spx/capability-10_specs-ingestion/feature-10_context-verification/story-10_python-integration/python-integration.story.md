@@ -55,68 +55,17 @@ This story stays at Level 1 because:
 
 If verification requires actual skill invocation, that's a feature-level concern (Level 2 or Level 3).
 
-## Unit Tests (Level 1)
+## Tests
 
-```typescript
-// tests/unit/skills/python-integration.test.ts
-import { readFileSync } from "fs";
-import { describe, expect, it } from "vitest";
-
-describe("Python Skills Context Loading", () => {
-  /**
-   * Level 1: Documentation structure tests
-   */
-
-  it("GIVEN coding-python skill WHEN reading file THEN context_loading section exists", () => {
-    // Given
-    const skillPath = "plugins/python/skills/coding-python/SKILL.md";
-    const content = readFileSync(skillPath, "utf-8");
-
-    // When: Search for context_loading section
-    const hasContextLoading = content.includes("<context_loading>");
-
-    // Then: Section exists
-    expect(hasContextLoading).toBe(true);
-  });
-
-  it("GIVEN context_loading section WHEN validating content THEN includes required elements", () => {
-    // Given
-    const skillPath = "plugins/python/skills/coding-python/SKILL.md";
-    const content = readFileSync(skillPath, "utf-8");
-
-    // Extract context_loading section
-    const sectionMatch = content.match(/<context_loading>([\s\S]*?)<\/context_loading>/);
-    expect(sectionMatch).not.toBeNull();
-
-    const sectionContent = sectionMatch![1];
-
-    // Then: Required elements present
-    expect(sectionContent).toContain("/understanding-specs");
-    expect(sectionContent).toContain("ABORT");
-    expect(sectionContent).toContain("ADR");
-    expect(sectionContent).toContain("specs-based work item");
-  });
-
-  it("GIVEN reviewing-python skill WHEN reading file THEN context_loading section exists", () => {
-    // Given
-    const skillPath = "plugins/python/skills/reviewing-python/SKILL.md";
-    const content = readFileSync(skillPath, "utf-8");
-
-    // When: Search for context_loading section
-    const hasContextLoading = content.includes("<context_loading>");
-
-    // Then: Section exists
-    expect(hasContextLoading).toBe(true);
-  });
-});
-```
+- [Unit: coding-python has context_loading](tests/coding-python-context.unit.test.ts)
+- [Unit: reviewing-python has context_loading](tests/reviewing-python-context.unit.test.ts)
 
 ## Architectural Requirements
 
 ### Relevant ADRs
 
-1. `specs/decisions/` - Product-wide ADRs (if any exist)
-2. `specs/work/doing/capability-10_specs-ingestion/decisions/` - Capability-specific decisions (if created)
+1. `spx/` - Product-wide ADRs (if any exist)
+2. `spx/capability-10_specs-ingestion/` - Capability-specific decisions (if created)
 
 ## Quality Requirements
 

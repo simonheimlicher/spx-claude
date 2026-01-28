@@ -19,6 +19,11 @@ This capability covers refactoring work that:
 - Standardizes structure across plugins
 - Does NOT add new functionality (that's a feature, not refactoring)
 
+## Tests
+
+- [E2E: All plugins pass validation](tests/plugin-validation.e2e.test.ts)
+- [E2E: All skills follow ADR patterns](tests/adr-compliance.e2e.test.ts)
+
 ## Completion Criteria
 
 - [ ] All identified refactoring stories complete

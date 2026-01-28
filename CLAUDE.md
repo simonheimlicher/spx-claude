@@ -4,7 +4,7 @@ Claude Code plugin marketplace, based on the spec-driven development framework [
 
 ## Marketplace Is a Product
 
-We develop the “features” of this market place like a software product. We are currently starting out from scratch, so there is not yet much to be found, but as we progress, everything will be in `specs` and `docs`.
+We develop the "features" of this market place like a software product. We are currently starting out from scratch, so there is not yet much to be found, but as we progress, everything will be in `spx/` (specs as durable map).
 
 ## Always use `AskUserQuestion` Tool
 
@@ -251,8 +251,8 @@ The test plugin provides BDD testing methodology with three-tier testing:
 **Core rules:**
 
 - No mocking - use dependency injection at Level 1, real dependencies at Level 2+
-- Progress tests (may fail) go in `specs/.../tests/`
-- Regression tests (must pass) go in `test/` or `tests/`
+- Tests co-located with specs in `spx/.../tests/` with suffix naming (`*.unit.test.ts`)
+- Test level in filename: `*.unit.test.ts`, `*.integration.test.ts`, `*.e2e.test.ts`
 
 ## TypeScript Plugin
 
@@ -318,21 +318,19 @@ Requirements documentation and specification skills.
 
 ### Skills
 
-| Skill                  | Purpose                                                                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------------------------- |
-| `/writing-prd`         | Systematic PRD creation with user value proposition, measurable outcomes, and acceptance criteria       |
-| `/writing-trd`         | Systematic TRD creation with testing methodology, validation strategy, and infrastructure documentation |
-| `/managing-specs`      | Create and manage specs: capabilities, features, stories, PRDs, TRDs, ADRs                              |
-| `/understanding-specs` | Hierarchical context ingestion protocol that verifies all specification documents before implementation |
+| Skill                  | Purpose                                                              |
+| ---------------------- | -------------------------------------------------------------------- |
+| `/writing-prd`         | Write PRDs documenting what users need and why                       |
+| `/managing-specs`      | Create and manage specs: capabilities, features, stories, PRDs, ADRs |
+| `/understanding-specs` | Read all specs before starting work to load requirements and context |
 
 ### Core Principles
 
-- Testing is first-class: Validation strategy documented before implementation
-- Three-tier testing: Level 1 (Unit) → Level 2 (Integration) → Level 3 (E2E)
-- No mocking: Dependency injection + real infrastructure
-- Infrastructure explicit: Test harnesses and credentials documented or tracked as gaps
-- User confirmation required: Problem understanding and measurable outcomes
-- Quantified value: Measurable outcomes with X% improvement targets
+- Specs are a durable map - nothing moves because work is "done"
+- Status tracked via `status.yaml`, not directory location
+- Tests co-located with specs in `spx/.../tests/`
+- No TRDs - technical details belong in `feature.md` itself
+- No test graduation - tests stay with their spec
 
 ## Discovering Other Installed Skills
 
@@ -353,7 +351,7 @@ Certain skills must be invoked **automatically** when specific conditions are me
    - **Non-negotiable**: Do NOT read story/feature/capability files directly without invoking this skill
 
 2. **Invoke `/managing-specs`** when creating specs or work items
-   - **Trigger**: User requests creating capability, feature, story, PRD, TRD, or ADR
+   - **Trigger**: User requests creating capability, feature, story, PRD, or ADR
    - **Purpose**: Access templates from skill's `templates/` directory, understand BSP numbering, structure guidance
    - **Example**: User says "create the feature" or "create the story" → STOP and invoke `/managing-specs` to read template
    - **Critical**: Templates are in `.claude/plugins/cache/.../managing-specs/templates/`, NOT in the project
@@ -367,7 +365,7 @@ Certain skills must be invoked **automatically** when specific conditions are me
 - Create work items with incorrect BSP numbering
 - Generate requirements documents with wrong structure
 
-See [specs/CLAUDE.md](specs/CLAUDE.md) for complete triggering rules and decision tree.
+See [spx/CLAUDE.md](spx/CLAUDE.md) for complete triggering rules and decision tree.
 
 ## Naming Skills
 
@@ -466,11 +464,8 @@ description: Generate descriptive commit messages by analyzing git diffs. Use wh
 name: writing-prd
 description: Write PRDs documenting what users need and why. Use when writing PRDs or product requirements.
 
-name: writing-trd
-description: Write TRDs documenting how to build and test it. Use when writing TRDs or technical requirements.
-
 name: managing-specs
-description: Create and manage specs: capabilities, features, stories, PRDs, TRDs, ADRs. Use when creating a feature, creating a story, or setting up spec structure.
+description: Create and manage specs: capabilities, features, stories, PRDs, ADRs. Use when creating a feature, creating a story, or setting up spec structure.
 
   name: understanding-specs
   description: Read all specs for a story, feature, or capability before starting work. Use when starting implementation to load requirements and context.
@@ -671,7 +666,7 @@ Error: Bash command permission check failed for pattern "!find .spx/sessions -ma
 **ALWAYS write to project directories:**
 
 - `plugins/` - Plugin code, skills, commands, templates
-- `specs/` - Work items, requirements, decisions (see [specs/CLAUDE.md](specs/CLAUDE.md))
+- `spx/` - Specs as durable map (see [spx/CLAUDE.md](spx/CLAUDE.md))
 - `.spx/` - Tool operational files (sessions, cache) - gitignored
 - Project root - Package files, config files
 
@@ -753,21 +748,21 @@ spx-claude/
 │   │   └── skills/
 │   │       ├── managing-specs/
 │   │       ├── understanding-specs/
-│   │       ├── writing-prd/
-│   │       └── writing-trd/
+│   │       └── writing-prd/
 │   ├── typescript/
 │   │   └── .claude-plugin/
 │   │       └── plugin.json       # Version: 0.x.x
 │   └── test/
 │       └── .claude-plugin/
 │           └── plugin.json       # Version: 0.x.x
-├── specs/                         # Spec-driven development
+├── spx/                           # Specs as durable map (CODE model)
 │   ├── CLAUDE.md                 # Specs directory guide
-│   ├── decisions/                 # Product-wide ADRs
-│   └── work/
-│       ├── backlog/              # Future work
-│       ├── doing/                 # Active work
-│       └── done/                  # Completed work
+│   ├── spx-claude.prd.md         # Product requirements
+│   ├── adr-NN_*.md               # Product-wide ADRs
+│   └── capability-NN_*/          # Capabilities with co-located tests
+│       ├── *.capability.md
+│       ├── status.yaml
+│       └── tests/
 └── CLAUDE.md                      # This file
 ```
 
