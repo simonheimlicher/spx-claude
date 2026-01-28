@@ -11,7 +11,7 @@ Autonomous Python implementation orchestrator. Implements stories in a feature o
 **NO MOCKING. BEHAVIOR TESTING. CONSTANTS PATTERN. FULL BSP PATHS. FOLLOW THE STRICT SEQUENCE.**
 
 - **Strict Sequence of Skills:** Follow the workflow sequence **exactly** - no skipping steps
-- **Full BSP Paths ALWAYS:** BSP numbers are sibling-unique, not globally unique. ALWAYS use full paths like `capability-21/feature-54/story-54`, never bare numbers like `story-54`
+- **Full BSP Paths ALWAYS:** BSP numbers are sibling-unique, not globally unique. ALWAYS use full paths like `21-core-cli.capability/54-commands.feature/54-something.story`, never bare names like `54-something.story`
 - **Behavior-Driven Development:** Tests are written first to verify **behavior**, never implementation, then code is written to (i) validate that the tests are appropriate and (ii) pass them. Finally code and tests are refactored until they pass reviewing skills without reservation
 - **Do Not Repeat Yourself (DRY):** Do not use any literal string multiple times. Define **constants in the implementation,** then check for constants in tests (not literal strings)
 - **Mandatory Review Quality Gate:** Each story and its tests must pass review before proceeding to the next
@@ -106,23 +106,22 @@ Continue until all stories in the feature are implemented and approved.
 
 **Step 7: Feature-Level Tests**
 
-1. **Read the feature spec** to find `## Feature Integration Tests (Level 2)` section
-2. **Check for specified tests** (FI1, FI2, etc.)
+1. **Read the feature spec** to find `## Outcomes` section with Test Files tables
+2. **Check for integration tests** (Level 2 harness references)
 3. **If Level 2 tests are specified:**
-   - Implement each test following the spec's pseudocode
-   - Tests go in `tests/integration/{capability}/{feature}/`
+   - Implement each test following the spec's Gherkin
+   - Tests go in the feature's `tests/` directory with `.integration.test.py` suffix
    - Use real infrastructure via test harnesses (no mocking)
-   - Run tests to verify they pass: `uv run --extra dev pytest tests/integration/ -v`
-4. **If no Level 2 tests specified:** Document why in feature DONE.md (e.g., "Level 1 sufficient—no external integrations")
+   - Run tests: `uv run --extra dev pytest spx/{capability}/{feature}/tests/ -v`
+4. **If no Level 2 tests specified:** Feature uses Level 1 only (documented in Test Strategy section)
 
-**Step 8: Feature DONE.md**
+**Step 8: Stamp Feature pass.csv**
 
-Create `DONE.md` in the feature's spec directory:
+Run `spx test --stamp` to update the feature's pass.csv:
 
-- Document all graduated Level 1 tests (from stories)
-- Document all graduated Level 2 tests (from this step)
-- Verify all story DONE.md files exist
-- Include test run output showing all feature tests pass
+- Validates all tests in `spx/{capability}/{feature}/tests/` pass
+- Records `spec_blob` and `test_blob` SHAs
+- Verifies child story pass.csv files are current
 
 **Step 9: Next Feature**
 Return to Part A, Step 1 with the first story of the next feature.
@@ -137,23 +136,23 @@ Continue until all features in the capability are implemented.
 
 **Step 10: Capability-Level Tests**
 
-1. **Read the capability spec** to find `## Capability E2E Tests (Level 3)` section
-2. **Check for specified tests** (E2E1, E2E2, etc.)
+1. **Read the capability spec** to find `## Outcomes` section with Test Files tables
+2. **Check for E2E tests** (Level 3 harness references)
 3. **If Level 3 tests are specified:**
-   - Implement each test following the spec's pseudocode
-   - Tests go in `tests/e2e/{capability}/`
+   - Implement each test following the spec's Gherkin
+   - Tests go in the capability's `tests/` directory with `.e2e.test.py` suffix
    - Use real credentials and services (full user workflows)
-   - Run tests to verify they pass: `uv run --extra dev pytest tests/e2e/ -v`
-4. **If no Level 3 tests specified:** Document why in capability DONE.md (e.g., "Level 2 sufficient—no external services")
+   - Run tests: `uv run --extra dev pytest spx/{capability}/tests/ -v`
+4. **If no Level 3 tests specified:** Capability uses Level 1-2 only (documented in Test Strategy section)
 
-**Step 11: Capability DONE.md**
+**Step 11: Stamp Capability pass.csv**
 
-Create `DONE.md` in the capability's spec directory:
+Run `spx test --stamp` to update the capability's pass.csv:
 
-- Document all graduated tests across all levels
-- Verify all feature DONE.md files exist
-- Include test run output showing all capability tests pass
-- Summary of delivered value
+- Validates all tests in `spx/{capability}/tests/` pass
+- Records `spec_blob` and `test_blob` SHAs
+- Verifies child feature pass.csv files are current
+- Capability is complete when pass.csv is valid and all children are passing
 
 </workflow>
 
@@ -171,10 +170,10 @@ Create `DONE.md` in the capability's spec directory:
 
 ```text
 # ✅ CORRECT: Full path
-/understanding-specs capability-21/feature-54/story-54
+/understanding-specs 21-core-cli.capability/54-commands.feature/54-run.story
 
-# ❌ WRONG: Bare story number (ambiguous)
-/understanding-specs story-54
+# ❌ WRONG: Bare story name (ambiguous)
+/understanding-specs 54-run.story
 ```
 
 </skill_invocations>
@@ -183,29 +182,26 @@ Create `DONE.md` in the capability's spec directory:
 **Track progress through the capability (ALWAYS use full paths):**
 
 ```text
-Capability: capability-21_core-cli
-├── Feature: capability-21/feature-54_commands
-│   ├── [✓] capability-21/feature-54/story-10_init - DONE.md ✓
-│   ├── [✓] capability-21/feature-54/story-20_build - DONE.md ✓
-│   ├── [→] capability-21/feature-54/story-30_run - In Progress (Step 3)
-│   └── [ ] capability-21/feature-54/story-40_test - Pending
-│   └── [L2] Feature Integration Tests - Pending (after all stories)
-│   └── [ ] Feature DONE.md - Pending
-├── Feature: capability-21/feature-65_config
-│   └── [ ] (stories pending)
-│   └── [L2] Feature Integration Tests - Pending
-│   └── [ ] Feature DONE.md - Pending
-└── [L3] Capability E2E Tests - Pending (after all features)
-└── [ ] Capability DONE.md - Pending
+21-core-cli.capability/
+├── 54-commands.feature/
+│   ├── 10-init.story/     [pass.csv ✓] All tests passing
+│   ├── 20-build.story/    [pass.csv ✓] All tests passing
+│   ├── 30-run.story/      [→] In Progress (Step 3)
+│   └── 40-test.story/     [pending] Not started
+│   └── pass.csv           [pending] Stamp after all stories pass
+├── 65-config.feature/
+│   └── (stories pending)
+│   └── pass.csv           [pending]
+└── pass.csv               [pending] Stamp after all features pass
 ```
 
 **Legend:**
 
-- `[✓]` = Complete with DONE.md
+- `[pass.csv ✓]` = All tests passing, pass.csv valid
 - `[→]` = In progress
-- `[ ]` = Pending
-- `[L2]` = Level 2 integration tests (feature-level)
-- `[L3]` = Level 3 E2E tests (capability-level)
+- `[pending]` = Not started or tests not passing
+- Tests live in each container's `tests/` directory
+- Level indicated by test filename suffix (`.unit.test.py`, `.integration.test.py`, `.e2e.test.py`)
 
 Update this tracking as you complete each work item.
 
@@ -216,25 +212,23 @@ Update this tracking as you complete each work item.
 ## Story Complete
 
 - [ ] Story passed approval by `/reviewing-python`
-- [ ] Story Level 1 tests graduated to `tests/unit/`
-- [ ] Story DONE.md created
+- [ ] Tests co-located in `spx/{capability}/{feature}/{story}/tests/`
+- [ ] `spx test --stamp` generates valid pass.csv
 
 ## Feature Complete
 
-- [ ] All stories in the feature have DONE.md
-- [ ] Feature Level 2 tests implemented (if specified in feature spec)
-- [ ] Feature Level 2 tests graduated to `tests/integration/`
-- [ ] Feature DONE.md created
-- [ ] All tests pass (`uv run --extra dev pytest tests/ -v`)
+- [ ] All child story pass.csv files are valid
+- [ ] Feature-level integration tests implemented (if specified in spec)
+- [ ] `spx test --stamp` generates valid feature pass.csv
+- [ ] All tests pass (`uv run --extra dev pytest spx/{capability}/{feature}/ -v`)
 - [ ] Type checking passes (`uv run --extra dev mypy src/`)
 - [ ] Linting passes (`uv run --extra dev ruff check src/`)
 
 ## Capability Complete
 
-- [ ] All features in the capability have DONE.md
-- [ ] Capability Level 3 tests implemented (if specified in capability spec)
-- [ ] Capability Level 3 tests graduated to `tests/e2e/`
-- [ ] Capability DONE.md created
+- [ ] All child feature pass.csv files are valid
+- [ ] Capability-level E2E tests implemented (if specified in spec)
+- [ ] `spx test --stamp` generates valid capability pass.csv
 - [ ] All tests pass at all levels
 
 Implementation quality (no mocking, constants pattern) is verified by `/reviewing-python`.

@@ -437,7 +437,7 @@ from .position import Position  # Part of "parser" package
 
 ```python
 # ❌ REJECT: Deep relative to test infrastructure
-# File: specs/work/doing/capability-21/feature-54/story-54/tests/test_validate.py
+# File: spx/21-core-cli.capability/54-commands.feature/54-run.story/tests/test_validate.py
 from .......tests.helpers import create_tree
 
 # ✅ ACCEPT: Absolute import (requires proper packaging)
@@ -495,7 +495,7 @@ from ...src.myproject.services import UserService
 from myproject.services import UserService
 from tests.fixtures import create_user
 
-# File: specs/work/doing/story-42/tests/test_feature.py
+# File: spx/21-core-cli.capability/54-commands.feature/42-run.story/tests/test_feature.py
 # ❌ REJECT: Deep relative to test infrastructure
 from .......tests.helpers import fixture
 
@@ -632,79 +632,82 @@ Based on your findings, determine the verdict:
 
 ---
 
-### Phase 6: Graduation (APPROVED Only)
+### Phase 6: Stamp pass.csv (APPROVED Only)
 
 > **Write access is earned by passing review.** This phase only runs on APPROVED.
 
-When all checks pass, graduate tests from the work item to the production test suite.
+When all checks pass, stamp the pass.csv to record the verified state.
 
-#### 6.1 Identify Graduation Targets
+#### 6.1 Identify Test Location
 
-Locate tests in the work item directory:
-
-```bash
-# Find tests in specs/doing/.../story-XX/tests/
-find specs/ -path "*/tests/*.py" -name "test_*.py"
-```
-
-Map test types to destinations:
-
-| Test Type                | Source Pattern             | Destination          |
-| ------------------------ | -------------------------- | -------------------- |
-| Unit tests               | `test_*.py` (no fixtures)  | `tests/unit/`        |
-| Integration tests        | Uses database/API fixtures | `tests/integration/` |
-| E2E tests                | Full system tests          | `tests/e2e/`         |
-| Infrastructure-dependent | `@pytest.mark.vm_required` | `tests/integration/` |
-
-#### 6.2 Move Tests
-
-**Use `git mv` for committed files, `mv` otherwise.** This preserves git history.
-
-> **WARNING: You do NOT have permission to use `rm`.** You cannot delete files to clean up after a copy. You MUST use move semantics (`git mv` or `mv`) to avoid creating duplicates. Think before you act — there is no undo.
+Tests are co-located with specs in the CODE framework:
 
 ```bash
-# Check if file is tracked by git
-git ls-files --error-unmatch specs/doing/.../story-XX/tests/test_feature.py
-
-# If tracked (exit 0): use git mv
-git mv specs/doing/.../story-XX/tests/test_feature.py tests/unit/test_feature.py
-
-# If untracked (exit 1): use mv
-mv specs/doing/.../story-XX/tests/test_feature.py tests/unit/test_feature.py
+# Tests live in the container's tests/ directory
+spx/{capability}/{feature}/{story}/tests/*.py
 ```
 
-**Important**: If import paths need updating, edit the moved files to fix them.
+Test level is indicated by filename suffix:
 
-#### 6.3 Verify Graduated Tests Pass
+| Test Level  | Filename Pattern        | Example                   |
+| ----------- | ----------------------- | ------------------------- |
+| Unit        | `*.unit.test.py`        | `parsing.unit.test.py`    |
+| Integration | `*.integration.test.py` | `cli.integration.test.py` |
+| E2E         | `*.e2e.test.py`         | `workflow.e2e.test.py`    |
 
-Run the graduated tests in their new location:
+#### 6.2 Run Tests and Stamp
+
+Run `spx test --stamp` to validate tests and generate pass.csv:
 
 ```bash
-uv run --extra dev pytest tests/unit/test_feature.py -v
+# Stamp the work item's pass.csv
+spx test --stamp spx/{capability}/{feature}/{story}
 ```
 
-**If graduated tests fail**: The verdict becomes REJECTED with reason "Graduation failed - tests don't pass in new location."
+The command:
+
+1. Runs all tests in `tests/` directory
+2. Records `spec_blob` SHA of the spec file
+3. Records `test_blob` SHA for each passing test
+4. Generates `pass.csv` with timestamps
+
+#### 6.3 Verify pass.csv Is Valid
+
+```bash
+# Check pass.csv was created/updated
+cat spx/{capability}/{feature}/{story}/pass.csv
+```
+
+**If stamp fails**: The verdict becomes REJECTED with reason "Tests don't pass - cannot stamp pass.csv."
 
 ---
 
-### Phase 7: Create DONE.md (APPROVED Only)
+### Phase 7: Report Completion (APPROVED Only)
 
-Create completion evidence in the work item's `tests/` subdirectory (same location where tests were before graduation).
+After stamping pass.csv, report completion to the orchestrator.
 
-#### 7.1 Write DONE.md
+#### 7.1 Verify pass.csv Contents
 
-Create `specs/doing/.../story-XX/tests/DONE.md`:
+Check the pass.csv shows all tests passing:
+
+```csv
+# spec_blob,{sha}
+# run,{timestamp}
+test_file,test_blob,pass_time
+parsing.unit.test.py,{sha},{timestamp}
+cli.integration.test.py,{sha},{timestamp}
+```
+
+#### 7.2 Final Output
+
+Report completion:
 
 ```markdown
-# Completion Evidence: {story-name}
+## Review Complete: {work-item}
 
-## Review Summary
+### Verdict: APPROVED
 
-**Verdict**: APPROVED
-**Date**: {YYYY-MM-DD}
-**Reviewer**: python-reviewer
-
-## Verification Results
+### Verification Results
 
 | Tool    | Status | Details                      |
 | ------- | ------ | ---------------------------- |
@@ -713,50 +716,28 @@ Create `specs/doing/.../story-XX/tests/DONE.md`:
 | Semgrep | PASS   | 0 findings                   |
 | pytest  | PASS   | {X}/{X} tests, {Y}% coverage |
 
-## Graduated Tests
+### pass.csv Stamped
 
-| Requirement | Test Location                              |
-| ----------- | ------------------------------------------ |
-| {FR1}       | `tests/unit/test_xxx.py::test_name`        |
-| {FR2}       | `tests/integration/test_yyy.py::test_name` |
+| Container                             | Tests Passing |
+| ------------------------------------- | ------------- |
+| `spx/{capability}/{feature}/{story}/` | {X}/{X}       |
 
-## Verification Command
+### Verification Command
 
 \`\`\`bash
-uv run --extra dev pytest tests/ -v --cov={source}
+spx test --stamp spx/{capability}/{feature}/{story}
 \`\`\`
-```
-
-#### 7.2 Final Output
-
-After creating DONE.md, report completion:
-
-```markdown
-## Review Complete: {work-item}
-
-### Verdict: APPROVED
-
-### Graduation
-
-| Action          | Details                                  |
-| --------------- | ---------------------------------------- |
-| Tests graduated | {list of test files moved}               |
-| DONE.md created | `specs/doing/.../story-XX/tests/DONE.md` |
-
-### Verification
-
-All graduated tests pass in their new location.
 
 ### Work Item Status
 
-This work item is now DONE.
+This work item is complete. pass.csv is valid.
 ```
 
 ---
 
 ### Phase 8: Commit (APPROVED Only)
 
-After creating DONE.md, commit the completed work item. **This is the reviewer's responsibility** — committing is the seal of approval.
+After stamping pass.csv, commit the completed work item. **This is the reviewer's responsibility** — committing is the seal of approval.
 
 **Follow the `committing-changes` skill** for core commit protocol (selective staging, verification, Conventional Commits format).
 
@@ -768,11 +749,11 @@ When committing as part of review approval, apply these additional guidelines:
 
 Stage **only** files from the approved work item:
 
-| Category            | Example Paths                            |
-| ------------------- | ---------------------------------------- |
-| Implementation      | `src/{modified files for this story}`    |
-| Graduated tests     | `tests/unit/`, `tests/integration/`      |
-| Completion evidence | `specs/doing/.../story-XX/tests/DONE.md` |
+| Category       | Example Paths                                   |
+| -------------- | ----------------------------------------------- |
+| Implementation | `src/{modified files for this story}`           |
+| Tests          | `spx/{capability}/{feature}/{story}/tests/*.py` |
+| Pass ledger    | `spx/{capability}/{feature}/{story}/pass.csv`   |
 
 **Exclude**: Unrelated files, experimental code, files from other work items.
 
@@ -784,7 +765,7 @@ Include work item reference in footer:
 feat({scope}): implement {story-slug}
 
 - {brief description of what was implemented}
-- Tests graduated to tests/{location}/
+- Tests co-located in spx/{path}/tests/
 
 Refs: {capability}/{feature}/{story}
 ```
@@ -798,9 +779,9 @@ After successful commit:
 
 Commit: {commit_hash}
 Files committed: {count}
-Tests graduated: {list}
+pass.csv stamped: spx/{capability}/{feature}/{story}/pass.csv
 
-Work item is DONE.
+Work item is complete.
 ```
 
 ---
@@ -831,9 +812,9 @@ When verdict is **REJECTED** or **CONDITIONAL**, provide actionable feedback to 
 2. Run verification tools before resubmitting
 3. Submit for re-review
 
-### No Report File Created
+### No pass.csv Stamped
 
-Reports are only created on APPROVED (as DONE.md). Fix issues and resubmit.
+pass.csv is only stamped on APPROVED. Fix issues and resubmit.
 ```
 
 ---
@@ -842,12 +823,12 @@ Reports are only created on APPROVED (as DONE.md). Fix issues and resubmit.
 
 Use one of four verdicts:
 
-| Verdict         | When to Use                                                                      | Next Step                                          |
-| --------------- | -------------------------------------------------------------------------------- | -------------------------------------------------- |
-| **APPROVED**    | All checks pass, no issues found                                                 | Graduate tests, create DONE.md, work item complete |
-| **CONDITIONAL** | Only false-positive violations that require `# noqa` comments with justification | Coder adds noqa comments, then re-review           |
-| **REJECTED**    | Real bugs, security issues, test failures, or design problems                    | Coder fixes issues, then re-review                 |
-| **BLOCKED**     | Infrastructure cannot be provisioned; review environment issue, not code defect  | Fix environment, then re-run review                |
+| Verdict         | When to Use                                                                      | Next Step                                  |
+| --------------- | -------------------------------------------------------------------------------- | ------------------------------------------ |
+| **APPROVED**    | All checks pass, no issues found                                                 | Stamp pass.csv, commit, work item complete |
+| **CONDITIONAL** | Only false-positive violations that require `# noqa` comments with justification | Coder adds noqa comments, then re-review   |
+| **REJECTED**    | Real bugs, security issues, test failures, or design problems                    | Coder fixes issues, then re-review         |
+| **BLOCKED**     | Infrastructure cannot be provisioned; review environment issue, not code defect  | Fix environment, then re-run review        |
 
 ### APPROVED Criteria
 

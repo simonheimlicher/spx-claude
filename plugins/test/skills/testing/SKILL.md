@@ -318,18 +318,24 @@ Reproducible via seed. Escalate from debuggable loops to comprehensive propertie
 
 ---
 
-## Progress Tests vs Regression Tests
+## Test Location in CODE Framework
 
-| Location                                | Name             | May Fail? | Purpose                          |
-| --------------------------------------- | ---------------- | --------- | -------------------------------- |
-| `specs/.../tests/`                      | Progress tests   | YES       | TDD red-green during development |
-| `tests/{level}/{capability}/{feature}/` | Regression tests | NO        | Protect working functionality    |
+Tests are **co-located** with specs in the `spx/` tree:
 
-**The invariant**: The regression test suite MUST ALWAYS PASS.
+| Location                                   | State       | May Fail? | Purpose                          |
+| ------------------------------------------ | ----------- | --------- | -------------------------------- |
+| `spx/{container}/tests/` (not in pass.csv) | In progress | YES       | TDD red-green during development |
+| `spx/{container}/tests/` (in pass.csv)     | Validated   | NO        | Protect working functionality    |
 
-**Graduation**: When a story is complete, tests graduate from `specs/work/doing/{capability}/{feature}/{story}/tests/` to `tests/{level}/{capability}/{feature}/`.
+**The invariant**: Tests listed in `pass.csv` MUST ALWAYS PASS (precommit validates this).
 
-Stories are ephemeral—they disappear as a directory level, becoming test files within the feature.
+**No graduation**: Tests stay where they are. The `pass.csv` file tracks which tests have passed. Test level is indicated by filename suffix:
+
+- `*.unit.test.{ts,py}` - Level 1
+- `*.integration.test.{ts,py}` - Level 2
+- `*.e2e.test.{ts,py}` - Level 3
+
+Stories persist as containers in the tree. Completion is tracked by `pass.csv`, not by moving files.
 
 ---
 

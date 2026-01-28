@@ -44,13 +44,13 @@ If you're creating ADRs for a spec-driven work item (story/feature/capability), 
 
 1. **Invoke `specs:understanding-specs`** with the work item identifier
 2. **Verify all parent ADRs are loaded** - Must understand and honor all architectural decisions in hierarchy
-3. **Verify TRD exists** - Features have TRDs that document technical requirements
+3. **Read the feature spec** - Requirements, Test Strategy, and Outcomes sections
 
 **The `specs:understanding-specs` skill provides:**
 
 - Complete ADR hierarchy (product/capability/feature decisions)
-- TRD with technical requirements and validation strategy
-- Story/feature/capability spec with acceptance criteria
+- Feature spec with requirements, test strategy, and outcomes
+- Story/feature/capability spec with Gherkin acceptance criteria
 
 **ADR creation requirements:**
 
@@ -59,24 +59,24 @@ If you're creating ADRs for a spec-driven work item (story/feature/capability), 
 - Must include testing strategy with level assignments
 - Must document trade-offs and consequences
 
-**If NOT working on specs-based work item**: Proceed directly with ADR creation using provided technical requirements.
+**If NOT working on specs-based work item**: Proceed directly with ADR creation using provided requirements.
 </context_loading>
 
 <input_context>
 Before creating ADRs, you must understand:
 
-**1. Technical Requirements Document (TRD)**
+**1. Feature Specification**
 
-- Functional requirements (what the system must do)
-- Non-functional requirements (performance, security, etc.)
-- System design overview
-- Interfaces and contracts
+- Functional requirements in `## Requirements` section
+- Test strategy in `## Test Strategy` section
+- Outcomes with Gherkin in `## Outcomes` section
+- Architectural constraints from parent ADRs
 
 **2. Project Context**
 
 Read these files to understand project structure and workflow:
 
-- `specs/CLAUDE.md` - Project navigation, work item status, BSP dependencies
+- `spx/CLAUDE.md` - Project navigation, work item status, BSP dependencies
 
 For testing methodology, invoke the `/testing-typescript` skill
 
@@ -84,19 +84,19 @@ For testing methodology, invoke the `/testing-typescript` skill
 
 Read existing ADRs to ensure consistency:
 
-- `specs/decisions/` - Project-level ADRs
-- Any capability/feature-level ADRs
+- `spx/{NN}-{slug}.adr.md` - Product-level ADRs (interleaved at root)
+- ADRs interleaved within capability/feature containers
 
 </input_context>
 
 <adr_scope>
 You produce ADRs. The scope depends on what you're deciding:
 
-| Decision Scope      | ADR Location                                              | Example                              |
-| ------------------- | --------------------------------------------------------- | ------------------------------------ |
-| Project-wide        | `specs/decisions/adr-{NN}_{slug}.md`                      | "Use Zod for all data validation"    |
-| Capability-specific | `specs/doing/capability-NN/decisions/adr-{NN}_{slug}.md`  | "CLI command structure"              |
-| Feature-specific    | `specs/doing/.../feature-NN/decisions/adr-{NN}_{slug}.md` | "Use execa for subprocess execution" |
+| Decision Scope      | ADR Location                                     | Example                              |
+| ------------------- | ------------------------------------------------ | ------------------------------------ |
+| Product-wide        | `spx/{NN}-{slug}.adr.md`                         | "Use Zod for all data validation"    |
+| Capability-specific | `spx/{NN}-{slug}.capability/{NN}-{slug}.adr.md`  | "CLI command structure"              |
+| Feature-specific    | `spx/.../{NN}-{slug}.feature/{NN}-{slug}.adr.md` | "Use execa for subprocess execution" |
 
 **ADR Numbering:**
 
@@ -123,13 +123,13 @@ Execute these phases IN ORDER.
 
 **Phase 0: Read Context**
 
-1. Read the TRD completely
+1. Read the feature spec completely (requirements, test strategy, outcomes)
 2. Read project context:
-   - `specs/CLAUDE.md` - Project structure, navigation, work item management
+   - `spx/CLAUDE.md` - Project structure, navigation, work item management
 3. Invoke `/testing-typescript` to understand testing methodology
 4. Read existing ADRs for consistency:
-   - `specs/decisions/` - Project-level ADRs
-   - Any capability/feature-level ADRs in their respective `decisions/` directories
+   - `spx/{NN}-{slug}.adr.md` - Product-level ADRs
+   - ADRs interleaved within capability/feature containers
 5. Read `/managing-specs` skill `<adr_templates>` section for ADR template
 
 **Phase 1: Identify Decisions Needed**
@@ -241,15 +241,15 @@ When you complete ADR creation, provide:
 
 ### ADRs Written
 
-| ADR                                                                               | Scope         | Decision Summary                 |
-| --------------------------------------------------------------------------------- | ------------- | -------------------------------- |
-| [Type Safety](specs/decisions/adr-21_type-safety.md)                              | Project       | Use strict TS, Zod at boundaries |
-| [CLI Structure](specs/work/doing/capability-32/decisions/adr-21_cli-structure.md) | Capability-32 | Commander.js with subcommands    |
+| ADR                                                            | Scope         | Decision Summary                 |
+| -------------------------------------------------------------- | ------------- | -------------------------------- |
+| [Type Safety](spx/21-type-safety.adr.md)                       | Product       | Use strict TS, Zod at boundaries |
+| [CLI Structure](spx/32-cli.capability/21-cli-structure.adr.md) | Capability-32 | Commander.js with subcommands    |
 
 ### Key Constraints
 
-1. {constraint from [Type Safety](specs/decisions/adr-21_type-safety.md)}
-2. {constraint from [CLI Structure](specs/work/doing/capability-32/decisions/adr-21_cli-structure.md)}
+1. {constraint from [Type Safety](spx/21-type-safety.adr.md)}
+2. {constraint from [CLI Structure](spx/32-cli.capability/21-cli-structure.adr.md)}
 
 ### Testing Strategy Summary
 

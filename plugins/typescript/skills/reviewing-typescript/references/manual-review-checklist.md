@@ -97,7 +97,7 @@ import { Token } from "./token"; // ./token.ts is in same directory
 
 ```typescript
 // ❌ REJECT: test helpers are stable infrastructure
-// File: specs/work/doing/capability-21/feature-54/story-54/tests/validate.test.ts
+// File: spx/21-core-cli.capability/54-commands.feature/54-run.story/tests/validate.test.ts
 import { helper } from "../../../../../../tests/helpers/tree-builder";
 
 // ✅ ACCEPT: Use path alias for stable locations
@@ -155,7 +155,7 @@ import { createFixture } from "../../helpers/fixtures";
 import { UserService } from "@/services/user";
 import { createFixture } from "@test/helpers/fixtures";
 
-// File: specs/work/doing/story-42/tests/feature.test.ts
+// File: spx/21-core-cli.capability/54-commands.feature/42-run.story/tests/feature.test.ts
 // ❌ REJECT: Deep relative to shared test helpers
 import { helper } from "../../../../../../tests/helpers/tree-builder";
 

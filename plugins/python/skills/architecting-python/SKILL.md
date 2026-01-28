@@ -94,7 +94,7 @@ Coder
 Code Reviewer
     │
     ├── rejects code that violates ADRs
-    ├── on APPROVED: graduates tests, creates DONE.md
+    ├── on APPROVED: stamps pass.csv via `spx test --stamp`
     └── ABORTS if ADR itself is flawed
 ```
 
@@ -127,7 +127,7 @@ When a downstream skill must abort, it provides this structured message:
 
 ### ADR Reference
 
-`specs/decisions/adr-{NNN}_{slug}.md` or capability/feature path
+`spx/{NN}-{slug}.adr.md` or interleaved within capability/feature container
 
 ### What Was Attempted
 
@@ -152,24 +152,24 @@ Re-evaluation by python-architect required before proceeding.
 
 ---
 
-## Input: TRD and Project Context
+## Input: Spec and Project Context
 
 Before creating ADRs, you must understand:
 
-### 1. Technical Requirements Document
+### 1. Feature Specification
 
-Read the TRD to understand:
+Read the feature spec to understand:
 
-- Functional requirements (what the system must do)
-- Non-functional requirements (performance, security, etc.)
-- System design overview
-- Interfaces and contracts
+- Functional requirements in `## Requirements` section
+- Test strategy in `## Test Strategy` section
+- Outcomes with Gherkin in `## Outcomes` section
+- Architectural constraints from parent ADRs
 
 ### 2. Project Context
 
 Read the project's methodology:
 
-- `specs/CLAUDE.md` - Project navigation, work item status, BSP dependencies
+- `spx/CLAUDE.md` - Project navigation, work item status, BSP dependencies
 
 For testing methodology, invoke the `/testing-python` skill
 
@@ -177,8 +177,8 @@ For testing methodology, invoke the `/testing-python` skill
 
 Read existing ADRs to ensure consistency:
 
-- `specs/decisions/` - Project-level ADRs
-- Any capability/feature-level ADRs
+- `spx/{NN}-{slug}.adr.md` - Product-level ADRs (interleaved at root)
+- ADRs interleaved within capability/feature containers
 
 ---
 
@@ -186,11 +186,11 @@ Read existing ADRs to ensure consistency:
 
 You produce ADRs. The scope depends on what you're deciding:
 
-| Decision Scope      | ADR Location                                              | Example                                |
-| ------------------- | --------------------------------------------------------- | -------------------------------------- |
-| Project-wide        | `specs/decisions/adr-{NN}_{slug}.md`                      | "Use Pydantic for all data validation" |
-| Capability-specific | `specs/doing/capability-NN/decisions/adr-{NN}_{slug}.md`  | "Clone tree approach for snapshots"    |
-| Feature-specific    | `specs/doing/.../feature-NN/decisions/adr-{NN}_{slug}.md` | "Use rclone sync with --checksum"      |
+| Decision Scope      | ADR Location                                     | Example                                |
+| ------------------- | ------------------------------------------------ | -------------------------------------- |
+| Product-wide        | `spx/{NN}-{slug}.adr.md`                         | "Use Pydantic for all data validation" |
+| Capability-specific | `spx/{NN}-{slug}.capability/{NN}-{slug}.adr.md`  | "Clone tree approach for snapshots"    |
+| Feature-specific    | `spx/.../{NN}-{slug}.feature/{NN}-{slug}.adr.md` | "Use rclone sync with --checksum"      |
 
 ### ADR Numbering
 
@@ -218,13 +218,13 @@ Execute these phases IN ORDER.
 
 ### Phase 0: Read Context
 
-1. **Read the TRD** completely
+1. **Read the feature spec** completely (requirements, test strategy, outcomes)
 2. **Read project context**:
-   - `specs/CLAUDE.md` - Project structure, navigation, work item management
+   - `spx/CLAUDE.md` - Project structure, navigation, work item management
 3. **Consult `/testing-python` skill** - Get level definitions and principles
 4. **Read existing ADRs** for consistency:
-   - `specs/decisions/` - Project-level ADRs
-   - Any capability/feature-level ADRs in their respective `decisions/` directories
+   - `spx/{NN}-{slug}.adr.md` - Product-level ADRs
+   - ADRs interleaved within capability/feature containers
 5. **Read `/managing-specs` skill `<adr_templates>` section for ADR template**
 
 ### Phase 1: Identify Decisions Needed
@@ -479,27 +479,27 @@ See the `/testing-python` skill for details.
 
 ### ADRs Written
 
-| ADR                                                                         | Scope         | Decision Summary                        |
-| --------------------------------------------------------------------------- | ------------- | --------------------------------------- |
-| [Type Safety](specs/decisions/adr-21_type-safety.md)                        | Project       | Use strict Mypy, Pydantic at boundaries |
-| [Clone Tree](specs/work/doing/capability-10/decisions/adr-21_clone-tree.md) | Capability-10 | Clone-based snapshot traversal          |
+| ADR                                                            | Scope         | Decision Summary                        |
+| -------------------------------------------------------------- | ------------- | --------------------------------------- |
+| [Type Safety](spx/21-type-safety.adr.md)                       | Product       | Use strict Mypy, Pydantic at boundaries |
+| [Clone Tree](spx/10-snapshots.capability/21-clone-tree.adr.md) | Capability-10 | Clone-based snapshot traversal          |
 
 ### Key Constraints for Downstream Skills
 
 1. **coding-python must**:
-   - {constraint from [Type Safety](specs/decisions/adr-21_type-safety.md)}
-   - {constraint from [Clone Tree](specs/work/doing/capability-10/decisions/adr-21_clone-tree.md)}
+   - {constraint from [Type Safety](spx/21-type-safety.adr.md)}
+   - {constraint from [Clone Tree](spx/10-snapshots.capability/21-clone-tree.adr.md)}
 
 2. **reviewing-python must verify**:
-   - {verification from [Type Safety](specs/decisions/adr-21_type-safety.md)}
-   - {verification from [Clone Tree](specs/work/doing/capability-10/decisions/adr-21_clone-tree.md)}
+   - {verification from [Type Safety](spx/21-type-safety.adr.md)}
+   - {verification from [Clone Tree](spx/10-snapshots.capability/21-clone-tree.adr.md)}
 
 ### Abort Conditions
 
 If any of these assumptions fail, downstream skills must ABORT:
 
-1. {assumption from [Type Safety](specs/decisions/adr-21_type-safety.md)}
-2. {assumption from [Clone Tree](specs/work/doing/capability-10/decisions/adr-21_clone-tree.md)}
+1. {assumption from [Type Safety](spx/21-type-safety.adr.md)}
+2. {assumption from [Clone Tree](spx/10-snapshots.capability/21-clone-tree.adr.md)}
 
 ### Ready for Implementation
 

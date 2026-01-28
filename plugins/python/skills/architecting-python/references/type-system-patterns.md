@@ -79,7 +79,7 @@ def parse_legacy_config(config: Any) -> AppConfig:
     """Parse config from untyped legacy library.
 
     Note: 'config' is Any because legacy_lib has no type stubs.
-    See [Type Safety Justification](../../decisions/adr-54_type-safety-justification.md) for details.
+    See [Type Safety Justification](54-type-safety-justification.adr.md) for details.
     """
     ...
 ```

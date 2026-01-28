@@ -36,7 +36,7 @@ Use this path to access skill files:
 | -------- | ------------------------- | ----------------------------------------------------- |
 | 1        | `docs/`, `README.md`      | Project architecture, design decisions, intended APIs |
 | 2        | `CLAUDE.md`               | Project-specific rules for Claude                     |
-| 3        | ADRs, TRDs, specs         | Documented decisions and requirements                 |
+| 3        | ADRs, specs               | Documented decisions and requirements                 |
 | 4        | This skill (`SKILL.md`)   | Generic TypeScript best practices                     |
 | 5        | Existing code (reference) | Evidence of implementation, NOT authority             |
 
@@ -170,7 +170,7 @@ it("GIVEN valid args WHEN running THEN returns success", async () => {
 **The `specs:understanding-specs` skill ensures:**
 
 - All specification documents exist (capability/feature/story specs)
-- All requirements documents exist (PRD/TRD at appropriate levels)
+- All requirements documents exist (PRD at product level)
 - All architectural decisions (ADRs) are read and understood
 - Complete hierarchical context is loaded (Product → Capability → Feature → Story)
 
@@ -178,10 +178,10 @@ it("GIVEN valid args WHEN running THEN returns success", async () => {
 
 ```bash
 # By work item path
-specs:understanding-specs capability-10_cli/feature-20_commands/story-30_build
+specs:understanding-specs 10-cli.capability/20-commands.feature/30-build.story
 
 # By story name
-specs:understanding-specs story-30_build
+specs:understanding-specs 30-build.story
 ```
 
 **If `specs:understanding-specs` returns an error**: The error message will specify which document is missing and how to create it. Create the missing document before proceeding with implementation.
@@ -194,7 +194,7 @@ You operate in one of two modes depending on your input:
 
 | Input                            | Mode               | Workflow                      |
 | -------------------------------- | ------------------ | ----------------------------- |
-| Spec (TRD, ADR, design doc)      | **Implementation** | `workflows/implementation.md` |
+| Spec (ADR, feature spec)         | **Implementation** | `workflows/implementation.md` |
 | Rejection feedback from reviewer | **Remediation**    | `workflows/remediation.md`    |
 
 Determine your mode from the input, then follow the appropriate workflow.
