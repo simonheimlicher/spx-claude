@@ -1,6 +1,6 @@
 {
   "name": "spx",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Spec-driven development: PRDs, ADRs, capabilities, features, stories",
   "author": {
     "name": "Simon Heimlicher"
@@ -8,8 +8,9 @@
   "repository": "https://github.com/simonheimlicher/spx-claude",
   "license": "MIT",
   "keywords": [
-    "requirements",
-    "specifications",
+    "spx",
+    "specs",
+    "code-framework",
     "prd",
     "adr",
     "spec-driven",
