@@ -1,20 +1,20 @@
 ---
 name: managing-specs
-description: Create and manage spx/ specs including capabilities, features, stories, PRDs, and ADRs. Use when creating a feature, creating a story, adding specs, or setting up spec structure.
+description: Create and manage specs including capabilities, features, stories, PRDs, TRDs, and ADRs. Use when creating a feature, creating a story, adding specs, or setting up spec structure.
 ---
 
 <objective>
-Single source of truth for spx/ directory structure and all document templates. Enables creation of requirements (PRD), decisions (ADR), and work items (capability/feature/story) with consistent structure across all products using the SPX framework.
+Single source of truth for specs/ directory structure and all document templates. Enables creation of requirements (PRD/TRD), decisions (ADR), and work items (capability/feature/story) with consistent structure across all products using the SPX framework.
 </objective>
 
 <quick_start>
 Different use cases read different sections:
 
 - **Template access** → Read `<accessing_templates>` FIRST to understand where templates are located
-- **Structure definition** → Read `<structure_definition>` for spx/ directory hierarchy, BSP numbering, test co-location
+- **Structure definition** → Read `<structure_definition>` for specs/ directory hierarchy, BSP numbering, test graduation
 - **ADR templates** → Read `<adr_templates>` for Architectural Decision Record patterns
-- **PRD templates** → Read `<requirement_templates>` for Product Requirements
-- **Work item templates** → Read `<work_item_templates>` for capability, feature, and story patterns
+- **PRD/TRD templates** → Read `<requirement_templates>` for Product and Technical Requirements
+- **Work item templates** → Read `<work_item_templates>` for capability, feature, story, and DONE.md patterns
 
 Use progressive disclosure - read only what you need.
 </quick_start>
@@ -43,10 +43,10 @@ Use this exact path for all file access. Throughout this documentation, `${SKILL
 .claude/plugins/cache/{marketplace-name}/{plugin-name}/{version}/skills/managing-specs/
 ```
 
-**Example**: For spx-claude marketplace, spx plugin version 0.1.2:
+**Example**: For spx-claude marketplace, specs plugin version 0.3.3:
 
 ```
-${SKILL_DIR} = .claude/plugins/cache/spx-claude/spx/0.1.2/skills/managing-specs/
+${SKILL_DIR} = .claude/plugins/cache/spx-claude/specs/0.3.3/skills/managing-specs/
 ```
 
 </skill_directory_structure>
@@ -59,14 +59,16 @@ All templates are under `${SKILL_DIR}/templates/`:
 ${SKILL_DIR}/
 ├── SKILL.md                                    # This file
 └── templates/
-    ├── product/
-    │   └── product.prd.md
     ├── decisions/
     │   └── architectural-decision.adr.md
-    └── outcomes/
+    ├── requirements/
+    │   ├── product-change.prd.md
+    │   └── technical-change.trd.md
+    └── work-items/
         ├── capability-name.capability.md
         ├── feature-name.feature.md
-        └── story-name.story.md
+        ├── story-name.story.md
+        └── DONE.md
 ```
 
 </template_organization>
@@ -80,25 +82,36 @@ ${SKILL_DIR}/
 Read: ${SKILL_DIR}/templates/{category}/{template-name}
 
 # Example: Read feature template
-Read: ${SKILL_DIR}/templates/outcomes/feature-name.feature.md
+Read: ${SKILL_DIR}/templates/work-items/feature-name.feature.md
 
-# With actual path (example for spx-claude marketplace, version 0.1.2)
-Read: .claude/plugins/cache/spx-claude/spx/0.1.2/skills/managing-specs/templates/outcomes/feature-name.feature.md
+# With actual path (example for spx-claude marketplace, version 0.3.3)
+Read: .claude/plugins/cache/spx-claude/specs/0.3.3/skills/managing-specs/templates/work-items/feature-name.feature.md
 ```
 
 </how_to_read_templates>
+
+<troubleshooting>
+
+If you cannot find a template:
+
+1. ✅ Verify you're using the skill's base directory, NOT the project directory
+2. ✅ Ensure path starts with `${SKILL_DIR}/templates/...` or `.claude/plugins/cache/...`
+3. ✅ Use Glob to discover: `Glob: .claude/plugins/cache/**/managing-specs/templates/**/*.md`
+4. ❌ Do NOT look for templates in the user's project (e.g., `specs/templates/`)
+
+</troubleshooting>
 
 </accessing_templates>
 
 <structure_definition>
 
 <overview>
-The spx/ directory follows the CODE framework structure.
+The specs/ directory follows the SPX framework structure defined in `structure.yaml`.
 </overview>
 
 <three_phase_transformation>
 
-1. **Requirements (PRD)** - Capture product vision without implementation constraints
+1. **Requirements (PRD/TRD)** - Capture vision without implementation constraints
 2. **Decisions (ADR)** - Constrain architecture with explicit trade-offs
 3. **Work Items (Capability/Feature/Story)** - Sized, testable implementation containers
 
@@ -107,23 +120,29 @@ The spx/ directory follows the CODE framework structure.
 <directory_structure>
 
 ```
-spx/
-├── {product-name}.prd.md             # Product requirements
-├── NN-{slug}.adr.md                  # Product-wide ADRs (interleaved)
-└── NN-{slug}.capability/
-    ├── {slug}.capability.md
-    ├── pass.csv                       # Test verification ledger
-    ├── tests/
-    ├── NN-{slug}.adr.md              # Capability-scoped ADRs (interleaved)
-    └── NN-{slug}.feature/
-        ├── {slug}.feature.md
-        ├── pass.csv
-        ├── tests/
-        ├── NN-{slug}.adr.md          # Feature-scoped ADRs (interleaved)
-        └── NN-{slug}.story/
-            ├── {slug}.story.md
-            ├── pass.csv
-            └── tests/
+specs/
+├── [product-name].prd.md          # Product-wide PRD
+├── decisions/                      # Product-wide ADRs (optional)
+│   └── adr-NN_{slug}.md
+└── work/
+    ├── backlog/
+    ├── doing/
+    │   └── capability-NN_{slug}/
+    │       ├── {slug}.capability.md
+    │       ├── {slug}.prd.md       # Optional capability-scoped PRD from which the capability work item (`{slug}.capability.md`) is derived
+    │       ├── {slug}.prd.md       # Optional capability-scoped TRD from which capability-scoped ADRs are derived
+    │       ├── decisions/           # Capability-scoped ADRs
+    │       ├── tests/
+    │       └── feature-NN_{slug}/
+    │           ├── {slug}.prd.md   # Optional capability-scoped PRD from which the feature spec in `{slug}.feature.md` is derived
+    │           ├── {slug}.trd.md   # Optional capability-scoped TRD from which the feature-scoped ADRs are derived
+    │           ├── {slug}.feature.md
+    │           ├── decisions/       # Feature-scoped ADRs
+    │           ├── tests/
+    │           └── story-NN_{slug}/
+    │               ├── {slug}.story.md
+    │               └── tests/
+    └── done/
 ```
 
 </directory_structure>
@@ -131,17 +150,17 @@ spx/
 <work_item_hierarchy>
 
 - **Capability**: E2E scenario with product-wide impact
-  - Tests co-located in `spx/NN-{slug}.capability/tests/` with `.e2e.test.*` suffix
+  - Tests graduate to `tests/e2e/`
   - May have optional PRD as catalyst/enrichment
   - Contains features
 
 - **Feature**: Integration scenario with specific functionality
-  - Tests co-located in `spx/.../NN-{slug}.feature/tests/` with `.integration.test.*` suffix
-  - Technical details documented in feature.md (no separate TRD)
+  - Tests graduate to `tests/integration/`
+  - May have optional TRD as catalyst/enrichment
   - Contains stories
 
 - **Story**: Unit-tested atomic implementation
-  - Tests co-located in `spx/.../NN-{slug}.story/tests/` with `.unit.test.*` suffix
+  - Tests graduate to `tests/unit/`
   - No children
   - Atomic implementation unit
 
@@ -149,48 +168,49 @@ spx/
 
 <key_principles>
 
+- **PRD OR TRD** at same scope, never both
 - **Requirements immutable** - code adapts to requirements, not vice versa
-- **BSP numbering**: Binary Space Partitioning encodes dependency order—lower BSP items are dependencies that higher-BSP items may rely on; same BSP means independent
-- **Full paths required**: BSP numbers repeat at different levels (see `<bsp_full_paths>` below)
-- **Test co-location**: Tests stay in `spx/.../tests/` permanently (no graduation)
+- **BSP numbering**: Two-digit (10-99), lower number = must complete first
+- **BSP numbers are SIBLING-UNIQUE**: Numbers are only unique among siblings, not globally (see `<bsp_sibling_uniqueness>` below)
+- **Test graduation**: `specs/.../tests/` → `tests/{unit,integration,e2e}/`
 - **Status rules** (use CLI, do NOT check manually):
   - `spx spec status --format table` - View project status
   - `spx spec next` - Get next work item (respects BSP ordering)
 
 </key_principles>
 
-<bsp_full_paths>
+<bsp_sibling_uniqueness>
 
-**🚨 CRITICAL: BSP numbers repeat at different levels—always use full paths.**
+**🚨 CRITICAL: BSP numbers are ONLY unique among siblings at the same level.**
 
 ```text
-21-foo.capability/21-bar.feature/54-baz.story/  ← One story-54
-21-foo.capability/37-qux.feature/54-baz.story/  ← DIFFERENT story-54
-37-other.capability/21-bar.feature/54-baz.story/  ← DIFFERENT story-54
+capability-21/feature-01/story-54  ← One story-54
+capability-22/feature-01/story-54  ← DIFFERENT story-54
+capability-21/feature-02/story-54  ← DIFFERENT story-54
 ```
 
 **ALWAYS use the FULL PATH when referencing work items:**
 
-| ❌ WRONG (Ambiguous)     | ✅ CORRECT (Unambiguous)                                  |
-| ------------------------ | --------------------------------------------------------- |
-| "story-54"               | "21-foo.capability/21-bar.feature/54-baz.story/"          |
-| "implement feature-21"   | "implement 21-foo.capability/21-bar.feature/"             |
-| "Continue with story-54" | "Continue 21-foo.capability/21-bar.feature/54-baz.story/" |
+| ❌ WRONG (Ambiguous)     | ✅ CORRECT (Unambiguous)                     |
+| ------------------------ | -------------------------------------------- |
+| "story-54"               | "capability-21/feature-54/story-54"          |
+| "implement feature-01"   | "implement capability-21/feature-01"         |
+| "Continue with story-54" | "Continue capability-21/feature-54/story-54" |
 
 **Why this matters:**
 
-- BSP numbers encode dependency order within each level, not global uniqueness
 - Different capabilities can have identically-numbered features
 - Different features can have identically-numbered stories
+- "story-54" could refer to dozens of different stories across the codebase
 - Without the full path, agents will access the WRONG work item
 
 **When communicating about work items:**
 
 1. Always include the full hierarchy path
 2. Never use bare numbers like "story-54" without context
-3. When in doubt, use the absolute path from `spx/`
+3. When in doubt, use the absolute path from `specs/work/`
 
-</bsp_full_paths>
+</bsp_sibling_uniqueness>
 
 </structure_definition>
 
@@ -223,17 +243,17 @@ Status values:
 
 <bsp_dependency_order>
 
-> **Lower BSP = dependency.** Higher-BSP items may rely on lower-BSP items.
+> **Lower BSP number = must complete FIRST.**
 >
-> Check dependencies before working on an item—lower-numbered items in the same scope may need to be done first.
+> You CANNOT work on item N until ALL items with numbers < N are DONE.
 
 This applies at every level:
 
-| If you see...                              | It means...                              |
-| ------------------------------------------ | ---------------------------------------- |
-| `48-foo.feature/` before `87-bar.feature/` | 48-foo MUST be DONE before 87-bar starts |
-| `21-foo.story/` before `32-bar.story/`     | 21-foo MUST be DONE before 32-bar starts |
-| `48-foo [OPEN]`, `87-bar [IN_PROGRESS]`    | **BUG**: Dependency violation            |
+| If you see...                                   | It means...                                      |
+| ----------------------------------------------- | ------------------------------------------------ |
+| `feature-48` before `feature-87`                | feature-48 MUST be DONE before feature-87 starts |
+| `story-21` before `story-32`                    | story-21 MUST be DONE before story-32 starts     |
+| `feature-48 [OPEN]`, `feature-87 [IN_PROGRESS]` | **BUG**: Dependency violation                    |
 
 </bsp_dependency_order>
 
@@ -248,11 +268,11 @@ This applies at every level:
 **Example**:
 
 ```text
-48-test-harness.feature/ [OPEN]        ← Was added after 87 but blocks it
-87-e2e-workflow.feature/ [IN_PROGRESS] ← Was already started, then dependency discovered
+feature-48_test-harness [OPEN]        ← Was added after feature-87 but blocks it
+feature-87_e2e-workflow [IN_PROGRESS] ← Was already started, then dependency discovered
 ```
 
-**Next work item**: `48-test-harness.feature/` → its first OPEN story.
+**Next work item**: `feature-48_test-harness` → its first OPEN story.
 
 </finding_next_work_item>
 
@@ -278,8 +298,8 @@ Use position **21** (leaves room for ~10 items before/after):
 
 ```
 # First feature in a new capability
-21-foo.capability/
-└── 21-first-feature.feature/
+capability-21_foo/
+└── feature-21_first-feature/
 ```
 
 </case_1_first_item>
@@ -289,12 +309,12 @@ Use position **21** (leaves room for ~10 items before/after):
 Use midpoint: `new = floor((left + right) / 2)`
 
 ```
-# Insert between 21 and 54
+# Insert between feature-21 and feature-54
 new = floor((21 + 54) / 2) = 37
 
-21-first.feature/
-37-inserted.feature/    ← NEW
-54-second.feature/
+feature-21_first/
+feature-37_inserted/    ← NEW
+feature-54_second/
 ```
 
 </case_2_insert_between>
@@ -304,12 +324,12 @@ new = floor((21 + 54) / 2) = 37
 Use midpoint to upper bound: `new = floor((last + 99) / 2)`
 
 ```
-# Append after 54
+# Append after feature-54
 new = floor((54 + 99) / 2) = 76
 
-21-first.feature/
-54-second.feature/
-76-appended.feature/    ← NEW
+feature-21_first/
+feature-54_second/
+feature-76_appended/    ← NEW
 ```
 
 </case_3_append_after>
@@ -321,13 +341,14 @@ new = floor((54 + 99) / 2) = 76
 <creating_work_items>
 Every work item needs:
 
-1. **Directory**: `NN-{slug}.{type}/` (e.g., `21-auth.capability/`)
-2. **Spec file**: `{slug}.{type}.md` (e.g., `auth.capability.md`)
+1. **Directory**: `NN_{slug}/`
+2. **Definition file**: `{slug}.{capability|feature|story}.md`
 3. **Tests directory**: `tests/` (create when starting work)
 
 Optional:
 
-- **Decision Records**: `NN-{slug}.adr.md` (interleaved with work items)
+- **Requirements document**: `{topic}.prd.md` or `{topic}.trd.md`
+- **Decision Records**: `decisions/adr-NNN_{slug}.md`
 
 </creating_work_items>
 
@@ -370,11 +391,11 @@ Read: ${SKILL_DIR}/templates/decisions/architectural-decision.adr.md
 
 <scope_levels>
 
-ADRs are interleaved with work items at any level:
+ADRs can exist at three levels:
 
-- **Product**: `spx/NN-{slug}.adr.md`
-- **Capability**: `spx/NN-{slug}.capability/NN-{slug}.adr.md`
-- **Feature**: `spx/.../NN-{slug}.feature/NN-{slug}.adr.md`
+- **Project**: `specs/decisions/adr-NN_{slug}.md`
+- **Capability**: `specs/work/doing/capability-NN/decisions/adr-NN_{slug}.md`
+- **Feature**: `specs/work/doing/.../feature-NN/decisions/adr-NN_{slug}.md`
 
 Stories inherit decisions from parent feature/capability.
 
@@ -382,7 +403,7 @@ Stories inherit decisions from parent feature/capability.
 
 <naming_convention>
 
-Format: `NN-{slug}.adr.md`
+Format: `adr-{NN}_{slug}.md`
 
 - NN: BSP number in range [10, 99]
 - slug: Kebab-case description (e.g., `use-postgresql-for-persistence`)
@@ -391,7 +412,7 @@ Format: `NN-{slug}.adr.md`
 
 <bsp_numbering_for_adrs>
 
-**Lower BSP = dependency.** Higher-BSP ADRs may rely on lower-BSP decisions.
+**Lower BSP number = must decide first (within scope).**
 
 ADRs follow the same BSP numbering as work items:
 
@@ -400,7 +421,7 @@ ADRs follow the same BSP numbering as work items:
 Use position **21** (leaves room for ~10 items before/after):
 
 ```
-21-first-decision.adr.md
+decisions/adr-21_first-decision.md
 ```
 
 </creating_first_adr>
@@ -410,12 +431,12 @@ Use position **21** (leaves room for ~10 items before/after):
 Use midpoint: `new = floor((left + right) / 2)`
 
 ```
-# Insert between 21 and 54
+# Insert between adr-21 and adr-54
 new = floor((21 + 54) / 2) = 37
 
-21-type-safety.adr.md
-37-inserted-decision.adr.md    ← NEW
-54-cli-framework.adr.md
+decisions/adr-21_type-safety.md
+decisions/adr-37_inserted-decision.md    ← NEW
+decisions/adr-54_cli-framework.md
 ```
 
 </inserting_between_adrs>
@@ -425,12 +446,12 @@ new = floor((21 + 54) / 2) = 37
 Use midpoint to upper bound: `new = floor((last + 99) / 2)`
 
 ```
-# Append after 54
+# Append after adr-54
 new = floor((54 + 99) / 2) = 76
 
-21-type-safety.adr.md
-54-cli-framework.adr.md
-76-appended-decision.adr.md    ← NEW
+decisions/adr-21_type-safety.md
+decisions/adr-54_cli-framework.md
+decisions/adr-76_appended-decision.md    ← NEW
 ```
 
 </appending_after_last>
@@ -441,13 +462,13 @@ new = floor((54 + 99) / 2) = 76
 
 **Scope boundaries**: ADRs are scoped to product/capability/feature.
 
-**Within scope**: Lower BSP = dependency that higher-BSP items may rely on.
+**Within scope**: Lower BSP = must decide first.
 
 | If you see...             | It means...                              |
 | ------------------------- | ---------------------------------------- |
-| `21-type-safety.adr.md`   | Foundational decision, others may depend |
-| `37-validation.adr.md`    | May depend on 21                         |
-| `54-cli-framework.adr.md` | May depend on both 21 and 37             |
+| `adr-21_type-safety.md`   | Foundational decision, must decide first |
+| `adr-37_validation.md`    | Depends on adr-21, must come after       |
+| `adr-54_cli-framework.md` | May depend on both adr-21 and adr-37     |
 
 **Cross-scope dependencies**: Must be documented explicitly in the ADR content.
 
@@ -480,16 +501,16 @@ new = floor((54 + 99) / 2) = 76
 **Solution**:
 
 - Header: `# ADR: Foo` (document type prefix, no number)
-- References: `[Foo](37-foo.adr.md)` (markdown link with path)
+- References: `[Foo](decisions/adr-37_foo.md)` (markdown link with path)
 - Filenames can be renamed, slugs stay stable, markdown links update automatically
 
 </why_no_numbers_in_content>
 
 <why_markdown_links_only>
 
-**Problem**: Plain text references like "ADR-23" or even `` `23-foo.adr.md` `` break when files are renumbered.
+**Problem**: Plain text references like "ADR-23" or even `` `adr-23_foo.md` `` break when files are renumbered.
 
-**Solution**: Markdown links `[Decision Title](NN-slug.adr.md)`:
+**Solution**: Markdown links `[Decision Title](relative/path/to/adr-NN_slug.md)`:
 
 - Modern editors update links automatically on file rename
 - Links are clickable for navigation
@@ -511,7 +532,7 @@ new = floor((54 + 99) / 2) = 76
 <within_same_directory>
 
 ```markdown
-See [Type Safety](21-type-safety.adr.md) for validation approach.
+See [Type Safety](adr-21_type-safety.md) for validation approach.
 ```
 
 </within_same_directory>
@@ -521,11 +542,11 @@ See [Type Safety](21-type-safety.adr.md) for validation approach.
 ```markdown
 <!-- Feature ADR referencing capability ADR -->
 
-This decision builds on [Config Loading](../21-config-loading.adr.md).
+This decision builds on [Config Loading](../../decisions/adr-21_config-loading.md).
 
 <!-- Story referencing feature ADR -->
 
-Implementation follows [CLI Structure](../21-cli-structure.adr.md).
+Implementation follows [CLI Structure](../../decisions/adr-21_cli-structure.md).
 ```
 
 </from_child_to_parent_scope>
@@ -535,11 +556,11 @@ Implementation follows [CLI Structure](../21-cli-structure.adr.md).
 ```markdown
 <!-- From story to capability ADR -->
 
-Architectural constraints: [Commander Pattern](../../21-commander-pattern.adr.md)
+Architectural constraints: [Commander Pattern](../../decisions/adr-21_commander-pattern.md)
 
 <!-- From feature to product ADR -->
 
-Type system: [Type Safety](../../../21-type-safety.adr.md)
+Type system: [Type Safety](../../../../decisions/adr-21_type-safety.md)
 ```
 
 </from_work_item_to_adr>
@@ -549,7 +570,7 @@ Type system: [Type Safety](../../../21-type-safety.adr.md)
 <never_use_these_formats>
 
 ❌ Plain text reference: "See ADR-21"
-❌ Code-only reference: `` `21-type-safety.adr.md` ``
+❌ Code-only reference: `` `adr-21_type-safety.md` ``
 ❌ Number-only reference: "ADR 21 specifies..."
 
 </never_use_these_formats>
@@ -568,12 +589,12 @@ Type system: [Type Safety](../../../21-type-safety.adr.md)
 <requirement_templates>
 
 <overview>
-Templates for Product Requirements (PRD).
+Templates for Product Requirements (PRD) and Technical Requirements (TRD).
 </overview>
 
 <prd_template>
 
-**Location**: `${SKILL_DIR}/templates/product/product.prd.md`
+**Location**: `${SKILL_DIR}/templates/requirements/product-change.prd.md`
 
 **Purpose**: Product requirements - user value, customer journey, measurable outcomes
 
@@ -581,7 +602,7 @@ Templates for Product Requirements (PRD).
 
 ```bash
 # Read PRD template
-Read: ${SKILL_DIR}/templates/product/product.prd.md
+Read: ${SKILL_DIR}/templates/requirements/product-change.prd.md
 
 # Adapt for product change
 - Define user value proposition
@@ -592,16 +613,41 @@ Read: ${SKILL_DIR}/templates/product/product.prd.md
 
 **Placement**:
 
-- Product-wide: `spx/{product-name}.prd.md`
-- Capability catalyst: `spx/NN-{slug}.capability/{topic}.prd.md`
+- Product-wide: `specs/{product-name}.prd.md`
+- Capability catalyst: `specs/work/doing/capability-NN/{topic}.prd.md`
 
 </prd_template>
 
+<trd_template>
+
+**Location**: `${SKILL_DIR}/templates/requirements/technical-change.trd.md`
+
+**Purpose**: Technical requirements - system architecture, validation strategy, test infrastructure
+
+**Usage**:
+
+```bash
+# Read TRD template
+Read: ${SKILL_DIR}/templates/requirements/technical-change.trd.md
+
+# Adapt for technical change
+- Specify technical architecture
+- Define testing strategy (Level 1/2/3)
+- Document validation approach
+- Identify infrastructure needs
+```
+
+**Placement**:
+
+- Feature catalyst: `specs/work/doing/.../feature-NN/{topic}.trd.md`
+
+</trd_template>
+
 <requirements_rules>
 
+- **PRD OR TRD** at same scope, never both
 - **Immutable**: Code adapts to requirements, not vice versa
-- **Optional catalyst**: PRD may exist as enrichment; spec file is always required
-- **No TRDs**: Technical details belong in feature.md, not separate documents
+- **Optional catalyst**: PRD/TRD may exist as enrichment; spec file is always required
 
 </requirements_rules>
 
@@ -610,15 +656,16 @@ Read: ${SKILL_DIR}/templates/product/product.prd.md
 <work_item_templates>
 
 <overview>
-Templates for capabilities, features, and stories.
+Templates for capabilities, features, stories, and completion evidence.
 </overview>
 
 <template_locations>
 
 ```
-${SKILL_DIR}/templates/outcomes/capability-name.capability.md
-${SKILL_DIR}/templates/outcomes/feature-name.feature.md
-${SKILL_DIR}/templates/outcomes/story-name.story.md
+${SKILL_DIR}/templates/work-items/capability-name.capability.md
+${SKILL_DIR}/templates/work-items/feature-name.feature.md
+${SKILL_DIR}/templates/work-items/story-name.story.md
+${SKILL_DIR}/templates/work-items/DONE.md
 ```
 
 </template_locations>
@@ -627,22 +674,28 @@ ${SKILL_DIR}/templates/outcomes/story-name.story.md
 
 ```bash
 # For capability
-Read: ${SKILL_DIR}/templates/outcomes/capability-name.capability.md
+Read: ${SKILL_DIR}/templates/work-items/capability-name.capability.md
 Adapt: Replace {slug} with kebab-case name
        Fill functional requirements
        Add user value context
 
 # For feature
-Read: ${SKILL_DIR}/templates/outcomes/feature-name.feature.md
+Read: ${SKILL_DIR}/templates/work-items/feature-name.feature.md
 Adapt: Replace {slug} with kebab-case name
        Specify integration scope
        Define component interactions
 
 # For story
-Read: ${SKILL_DIR}/templates/outcomes/story-name.story.md
+Read: ${SKILL_DIR}/templates/work-items/story-name.story.md
 Adapt: Replace {slug} with kebab-case name
        Detail atomic implementation
        List specific functions/classes
+
+# For completion
+Read: ${SKILL_DIR}/templates/work-items/DONE.md
+Adapt: List graduated tests by level
+       Document verification steps
+       Include evidence of completion
 ```
 
 </usage_pattern>
@@ -652,28 +705,28 @@ Adapt: Replace {slug} with kebab-case name
 Work items follow this pattern:
 
 ```
-spx/{BSP}-{slug}.{type}/{slug}.{type}.md
+specs/work/{backlog|doing|done}/{level}-{bsp}_{slug}/{slug}.{level}.md
 ```
 
 Examples:
 
-- `spx/21-core-cli.capability/core-cli.capability.md`
-- `spx/21-core-cli.capability/10-init.feature/init.feature.md`
-- `spx/21-core-cli.capability/15-init.feature/87-parse-flags.story/parse-flags.story.md`
+- `specs/work/doing/capability-21_core-cli/core-cli.capability.md`
+- `specs/work/doing/capability-21_core-cli/feature-10_init/init.feature.md`
+- `specs/work/doing/capability-21_core-cli/feature-15_init/story-87_parse-flags/parse-flags.story.md`
 
 </file_placement>
 
-<test_verification>
+<test_graduation>
 
-Tests stay co-located with their specs permanently. Test level is indicated by filename suffix:
+When work is complete, tests graduate:
 
-- Capability tests: `spx/NN-{slug}.capability/tests/*.e2e.test.*`
-- Feature tests: `spx/.../NN-{slug}.feature/tests/*.integration.test.*`
-- Story tests: `spx/.../NN-{slug}.story/tests/*.unit.test.*`
+- Capability tests: `specs/.../tests/` → `tests/e2e/`
+- Feature tests: `specs/.../tests/` → `tests/integration/`
+- Story tests: `specs/.../tests/` → `tests/unit/`
 
-The `pass.csv` ledger documents test verification and provides completion evidence.
+DONE.md documents this graduation and provides verification evidence.
 
-</test_verification>
+</test_graduation>
 
 </work_item_templates>
 
@@ -685,7 +738,7 @@ Skill is working correctly when:
 - [ ] Other skills can successfully read templates from appropriate sections
 - [ ] Progressive disclosure guides readers to relevant sections
 - [ ] ADR, requirement, and work item patterns are clearly documented
-- [ ] Test co-location paths are correctly specified for each level
+- [ ] Test graduation paths are correctly specified for each level
 - [ ] BSP numbering uses consistent two-digit format (10-99)
 
 </success_criteria>

@@ -312,17 +312,30 @@ Complete Python development workflow with testing, implementation, and review.
 - Behavior testing, not implementation testing
 - Tests at appropriate levels (Unit/Integration/E2E)
 
-## SPX Plugin
+## Specs Plugin (Legacy)
 
-Spec-driven development skills.
+Legacy `specs/` directory support. Use for projects that haven't migrated to CODE framework.
 
 ### Skills
 
-| Skill                  | Purpose                                                              |
-| ---------------------- | -------------------------------------------------------------------- |
-| `/writing-prd`         | Write PRDs documenting what users need and why                       |
-| `/managing-specs`      | Create and manage specs: capabilities, features, stories, PRDs, ADRs |
-| `/understanding-specs` | Read all specs before starting work to load requirements and context |
+| Skill                  | Purpose                                                                    |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `/writing-prd`         | Write PRDs documenting what users need and why                             |
+| `/writing-trd`         | Write TRDs for technical implementation details                            |
+| `/managing-specs`      | Create and manage specs: capabilities, features, stories, PRDs, TRDs, ADRs |
+| `/understanding-specs` | Read all specs before starting work to load requirements and context       |
+
+## SPX Plugin (CODE Framework)
+
+Spec-driven development with CODE (Customer Outcome Driven Engineering) framework.
+
+### Skills
+
+| Skill                | Purpose                                                              |
+| -------------------- | -------------------------------------------------------------------- |
+| `/writing-prd`       | Write PRDs documenting what users need and why                       |
+| `/managing-spx`      | Create and manage spx/ specs: capabilities, features, stories, ADRs  |
+| `/understanding-spx` | Read all specs before starting work to load requirements and context |
 
 ### Core Principles
 
@@ -332,6 +345,15 @@ Spec-driven development skills.
 - No TRDs - technical details belong in `feature.md` itself
 - No test graduation - tests stay with their spec
 
+### Disambiguation: specs/ vs spx/
+
+| Directory | System         | Skills                                              |
+| --------- | -------------- | --------------------------------------------------- |
+| `specs/`  | Legacy         | `specs:understanding-specs`, `specs:managing-specs` |
+| `spx/`    | CODE framework | `spx:understanding-spx`, `spx:managing-spx`         |
+
+If both directories exist, ask the user which system to use.
+
 ## Discovering Other Installed Skills
 
 Search for `SKILL.md` in `.claude/plugins/cache/{marketplace-name}/{plugin-name}/`
@@ -340,32 +362,45 @@ Search for `SKILL.md` in `.claude/plugins/cache/{marketplace-name}/{plugin-name}
 
 Certain skills must be invoked **automatically** when specific conditions are met, without waiting for explicit user request.
 
-### Specs Skills (Mandatory Autonomous Triggering)
+### Step 1: Determine Which System
+
+**FIRST**, check which directory exists:
+
+| Directory | System         | Use Skills From |
+| --------- | -------------- | --------------- |
+| `spx/`    | CODE framework | `spx` plugin    |
+| `specs/`  | Legacy         | `specs` plugin  |
+
+If both exist, ask the user which system to use.
+
+### Step 2: Invoke the Appropriate Skills
 
 **BEFORE implementing any work item** (capability/feature/story), you MUST:
 
-1. **Invoke `/understanding-specs`** on the work item file
+1. **Invoke understanding skill** on the work item file
+   - **SPX**: `/spx:understanding-spx` | **Legacy**: `/specs:understanding-specs`
    - **Trigger**: User requests implementation of a work item
    - **Purpose**: Load complete context hierarchy (requirements → decisions → work item)
-   - **Example**: User says "implement story-21" → STOP and invoke `/understanding-specs` FIRST, then proceed
+   - **Example**: User says "implement story-21" → STOP and invoke understanding skill FIRST
    - **Non-negotiable**: Do NOT read story/feature/capability files directly without invoking this skill
 
-2. **Invoke `/managing-specs`** when creating specs or work items
+2. **Invoke managing skill** when creating specs or work items
+   - **SPX**: `/spx:managing-spx` | **Legacy**: `/specs:managing-specs`
    - **Trigger**: User requests creating capability, feature, story, PRD, or ADR
-   - **Purpose**: Access templates from skill's `templates/` directory, understand BSP numbering, structure guidance
-   - **Example**: User says "create the feature" or "create the story" → STOP and invoke `/managing-specs` to read template
-   - **Critical**: Templates are in `.claude/plugins/cache/.../managing-specs/templates/`, NOT in the project
+   - **Purpose**: Access templates from skill's `templates/` directory, understand BSP numbering
+   - **Example**: User says "create the feature" → STOP and invoke managing skill to read template
+   - **Critical**: Templates are in `.claude/plugins/cache/.../templates/`, NOT in the project
 
-**Pattern**: Specs skills are preparatory and blocking. You MUST invoke them BEFORE writing code or documents. Do NOT proceed without skill invocation.
+**Pattern**: These skills are preparatory and blocking. You MUST invoke them BEFORE writing code or documents.
 
 **Rationale**: Without these skills, you will:
 
-- Miss requirements and violate ADRs (without `/understanding-specs`)
-- Search for templates that don't exist in the project (without `/managing-specs`)
+- Miss requirements and violate ADRs
+- Search for templates that don't exist in the project
 - Create work items with incorrect BSP numbering
 - Generate requirements documents with wrong structure
 
-See [spx/CLAUDE.md](spx/CLAUDE.md) for complete triggering rules and decision tree.
+See [spx/CLAUDE.md](spx/CLAUDE.md) for CODE framework rules, [specs/CLAUDE.md](specs/CLAUDE.md) for legacy rules.
 
 ## Naming Skills
 
@@ -749,10 +784,16 @@ spx-claude/
 │   │   │   └── auto-python.md
 │   │   └── skills/
 │   │       └── (6 skills)
-│   ├── spx/                      # Version: 0.1.8
+│   ├── specs/                    # Version: 0.4.7 (legacy)
 │   │   └── skills/
 │   │       ├── managing-specs/
 │   │       ├── understanding-specs/
+│   │       ├── writing-prd/
+│   │       └── writing-trd/
+│   ├── spx/                      # Version: 0.1.8 (CODE framework)
+│   │   └── skills/
+│   │       ├── managing-spx/
+│   │       ├── understanding-spx/
 │   │       └── writing-prd/
 │   ├── test/                     # Version: 0.1.1
 │   │   └── skills/

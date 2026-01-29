@@ -1,6 +1,33 @@
-# spx/ Directory Guide
+# spx/ Directory Guide (CODE Framework)
 
-This guide explains WHEN to invoke specs skills. It is a **router** that tells you which skill to use. The skills themselves contain the HOW (detailed procedures, templates, structure definitions).
+This guide explains WHEN to invoke spx skills. It is a **router** that tells you which skill to use. The skills themselves contain the HOW (detailed procedures, templates, structure definitions).
+
+---
+
+## 🚨 DISAMBIGUATION: spx/ vs specs/
+
+**Before proceeding, determine which system this project uses:**
+
+| Directory | System         | Skills to Use                                       |
+| --------- | -------------- | --------------------------------------------------- |
+| `spx/`    | CODE framework | `spx:understanding-spx`, `spx:managing-spx`         |
+| `specs/`  | Legacy         | `specs:understanding-specs`, `specs:managing-specs` |
+
+**If BOTH directories exist**: Ask the user which system they want to work with.
+
+**If `specs/` exists**: Read `specs/CLAUDE.md` for legacy system guidance.
+
+**Fully qualified skill names** (required when both plugins are installed):
+
+```bash
+# CODE framework spx/ projects
+/spx:understanding-spx
+/spx:managing-spx
+
+# Legacy specs/ projects
+/specs:understanding-specs
+/specs:managing-specs
+```
 
 ---
 
@@ -87,7 +114,7 @@ tests/cli.integration.test.ts,b4e8d9a,pass,2025-01-27T10:30:00Z
 
 ## When to Invoke Skills
 
-### Before Implementing ANY Work Item → `/understanding-specs`
+### Before Implementing ANY Work Item → `/spx:understanding-spx`
 
 **BLOCKING REQUIREMENT**
 
@@ -99,7 +126,7 @@ tests/cli.integration.test.ts,b4e8d9a,pass,2025-01-27T10:30:00Z
 
 **What it does**: Loads complete context hierarchy (PRD → ADRs → capability → feature → story).
 
-### When Creating/Organizing Specs → `/managing-specs`
+### When Creating/Organizing Specs → `/spx:managing-spx`
 
 **BLOCKING REQUIREMENT**
 
@@ -115,12 +142,12 @@ tests/cli.integration.test.ts,b4e8d9a,pass,2025-01-27T10:30:00Z
 
 ## Quick Reference: Skill Selection
 
-| User Says...         | Invoke                 | Do NOT                 |
-| -------------------- | ---------------------- | ---------------------- |
-| "Implement story-21" | `/understanding-specs` | Read story.md directly |
-| "Create a PRD"       | `/managing-specs`      | Search for templates   |
-| "What's next?"       | `/managing-specs`      | Grep for work items    |
-| "Create a feature"   | `/managing-specs`      | Calculate BSP yourself |
+| User Says...         | Invoke                   | Do NOT                 |
+| -------------------- | ------------------------ | ---------------------- |
+| "Implement story-21" | `/spx:understanding-spx` | Read story.md directly |
+| "Create a PRD"       | `/spx:managing-spx`      | Search for templates   |
+| "What's next?"       | `/spx:managing-spx`      | Grep for work items    |
+| "Create a feature"   | `/spx:managing-spx`      | Calculate BSP yourself |
 
 ---
 

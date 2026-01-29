@@ -43,9 +43,14 @@
       "description": "Python engineering: /testing-python, /coding-python, /reviewing-python, /architecting-python, /reviewing-python-architecture"
     },
     {
+      "name": "specs",
+      "source": "./plugins/specs",
+      "description": "Legacy specs/ projects: /writing-prd, /writing-trd, /managing-specs, /understanding-specs"
+    },
+    {
       "name": "spx",
       "source": "./plugins/spx",
-      "description": "Spec-driven development: /writing-prd, /managing-specs, /understanding-specs"
+      "description": "CODE framework (spx/): /writing-prd, /managing-spx, /understanding-spx"
     }
   ]
 }

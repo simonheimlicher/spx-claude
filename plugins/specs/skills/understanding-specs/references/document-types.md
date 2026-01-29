@@ -1,0 +1,164 @@
+# Document Types and Requirements
+
+Complete reference of all document types in the spec-driven development hierarchy and their requirements.
+
+## Work Item Hierarchy
+
+```
+Product
+└── Capability (E2E level)
+    ├── {slug}.capability.md     ✅ REQUIRED
+    ├── {topic}.prd.md           ⚠️ OPTIONAL (enrichment)
+    ├── decisions/
+    │   └── adr-NNN_{slug}.md    ⚠️ OPTIONAL
+    ├── tests/                   ⚠️ OPTIONAL (for progress tests)
+    └── Feature (Integration level)
+        ├── {slug}.feature.md    ✅ REQUIRED
+        ├── {topic}.trd.md       ⚠️ OPTIONAL (enrichment)
+        ├── decisions/
+        │   └── adr-NNN_{slug}.md ⚠️ OPTIONAL
+        ├── tests/               ⚠️ OPTIONAL (for progress tests)
+        └── Story (Unit level)
+            ├── {slug}.story.md  ✅ REQUIRED
+            └── tests/           ⚠️ OPTIONAL (determines status)
+```
+
+## Document Types
+
+### Product-Level Documents
+
+**Location**: `specs/`
+
+| Document      | Pattern                 | Required? | Purpose                              |
+| ------------- | ----------------------- | --------- | ------------------------------------ |
+| Project Guide | `CLAUDE.md`             | ✅ YES    | Project structure and navigation     |
+| Product ADRs  | `decisions/adr-*.md`    | ⚠️ NO      | Product-wide architectural decisions |
+| Product PRD   | `{product-name}.prd.md` | ⚠️ NO      | Optional product-wide requirements   |
+
+### Capability-Level Documents
+
+**Location**: `specs/work/{status}/capability-NN_{slug}/`
+
+| Document        | Pattern                  | Required?                | Purpose                          |
+| --------------- | ------------------------ | ------------------------ | -------------------------------- |
+| Capability Spec | `{slug}.capability.md`   | ✅ YES                   | E2E scenario definition          |
+| PRD             | `{topic}.prd.md`         | ⚠️ NO (optional)          | Product requirements catalyst    |
+| Capability ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Capability-scoped decisions      |
+| Tests           | `tests/`                 | ⚠️ NO (determines status) | Progress tests before graduation |
+
+**Note**: PRD is optional enrichment. If PRD exists but spec is missing, offer to create spec from PRD.
+
+### Feature-Level Documents
+
+**Location**: `specs/work/{status}/capability-NN_{slug}/feature-NN_{slug}/`
+
+| Document     | Pattern                  | Required?                | Purpose                          |
+| ------------ | ------------------------ | ------------------------ | -------------------------------- |
+| Feature Spec | `{slug}.feature.md`      | ✅ YES                   | Integration scenario definition  |
+| TRD          | `{topic}.trd.md`         | ⚠️ NO (optional)          | Technical requirements catalyst  |
+| Feature ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Feature-scoped decisions         |
+| Tests        | `tests/`                 | ⚠️ NO (determines status) | Progress tests before graduation |
+
+**Note**: TRD is optional enrichment. If TRD exists but spec is missing, offer to create spec from TRD.
+
+### Story-Level Documents
+
+**Location**: `specs/work/{status}/.../story-NN_{slug}/`
+
+| Document   | Pattern           | Required?                | Purpose                          |
+| ---------- | ----------------- | ------------------------ | -------------------------------- |
+| Story Spec | `{slug}.story.md` | ✅ YES                   | Atomic implementation definition |
+| Tests      | `tests/`          | ⚠️ NO (determines status) | Progress tests before graduation |
+| Completion | `tests/DONE.md`   | ⚠️ NO (signals DONE)      | Evidence of completion           |
+
+**Note**: Stories do NOT have their own ADRs. They inherit decisions from parent feature/capability.
+
+## Document Content Requirements
+
+### Specification Files (.capability.md, .feature.md, .story.md)
+
+**Must contain**:
+
+- **Functional Requirements**: What the work item delivers
+- **Acceptance Criteria**: How to know it's complete
+- **Dependencies**: BSP dependencies on other work items
+
+**May contain**:
+
+- **Context**: Background and rationale
+- **Implementation Notes**: Guidance for implementers
+
+### Requirements Documents (PRD/TRD)
+
+**PRD (Product Requirements Document)**:
+
+- User value proposition
+- Customer journey
+- Measurable outcomes (X% improvement targets)
+- Acceptance tests (BDD scenarios)
+
+**TRD (Technical Requirements Document)**:
+
+- System architecture
+- Validation strategy with test levels
+- Test infrastructure requirements
+- BDD scenarios at appropriate levels
+- Infrastructure gaps (if any)
+
+### Architectural Decision Records (ADR)
+
+**Must contain**:
+
+- **Context**: Why this decision is needed
+- **Decision**: What is being decided
+- **Consequences**: Trade-offs and implications
+- **Compliance**: How adherence will be verified
+- **Testing Strategy**: Test levels for components
+
+## PRD/TRD as Optional Enrichment
+
+PRD and TRD documents are **optional** at all levels. The spec file (`.capability.md`, `.feature.md`, `.story.md`) is the only required document for each work item.
+
+**When PRD/TRD exists without spec file:**
+
+If a PRD or TRD exists at a level but the corresponding spec file is missing, offer to create the spec from the requirements document. This handles cases where work was initiated from a requirements document but the spec wasn't yet created.
+
+## Status Determination
+
+**Use CLI commands to check status (do NOT manually inspect directories):**
+
+```bash
+# View project status
+spx spec status --format table
+
+# Get next work item (respects BSP ordering)
+spx spec next
+```
+
+Status values: OPEN, IN_PROGRESS, DONE
+
+## Test Graduation Paths
+
+Tests migrate from progress location to regression location when work item is DONE:
+
+| Level      | Progress Location                | Regression Location  |
+| ---------- | -------------------------------- | -------------------- |
+| Capability | `specs/.../capability-NN/tests/` | `tests/e2e/`         |
+| Feature    | `specs/.../feature-NN/tests/`    | `tests/integration/` |
+| Story      | `specs/.../story-NN/tests/`      | `tests/unit/`        |
+
+## BSP Numbering
+
+**BSP** (Backlog Sequencing Priority): Two-digit numbers (10-99)
+
+**Rules**:
+
+- Lower number = must complete first
+- Used for dependency ordering at all levels
+- Gaps allowed (10, 20, 30... or 11, 12, 13...)
+- Never reuse numbers
+
+**Examples**:
+
+- `capability-10_core-cli` must complete before `capability-20_advanced-features`
+- `story-30_build` must complete before `story-40_test`
