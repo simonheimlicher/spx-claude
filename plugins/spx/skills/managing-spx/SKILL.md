@@ -662,7 +662,6 @@ The `pass.csv` ledger documents test verification and provides completion eviden
 Skill is working correctly when:
 
 - [ ] Templates exist and are readable in `templates/` subdirectories
-- [ ] structure.yaml is valid YAML and defines complete hierarchy
 - [ ] Other skills can successfully read templates from appropriate sections
 - [ ] Progressive disclosure guides readers to relevant sections
 - [ ] ADR, requirement, and work item patterns are clearly documented
