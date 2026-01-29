@@ -88,13 +88,82 @@ Before implementing, verify ADRs exist for the work item's scope:
 
 ---
 
-## MANDATORY: Consult python-test First
+## MANDATORY: Code Patterns
+
+These patterns are enforced by the reviewer. Violations will be REJECTED.
+
+### Constants
+
+All literal values (strings, numbers) must be module-level constants:
+
+```python
+# ❌ REJECTED: Magic values inline
+def validate_score(score: int) -> bool:
+    return 0 <= score <= 100
+
+
+# ✅ REQUIRED: Named constants
+MIN_SCORE = 0
+MAX_SCORE = 100
+
+
+def validate_score(score: int) -> bool:
+    return MIN_SCORE <= score <= MAX_SCORE
+```
+
+**Share constants between code and tests** — tests import from the module under test:
+
+```python
+# src/scoring.py
+MIN_SCORE = 0
+MAX_SCORE = 100
+
+# tests/test_scoring.py
+from src.scoring import MIN_SCORE, MAX_SCORE
+
+
+def test_rejects_below_minimum():
+    assert not validate_score(MIN_SCORE - 1)
+```
+
+### Dependency Injection
+
+External dependencies must be injected, not imported directly:
+
+```python
+# ❌ REJECTED: Direct import
+import subprocess
+
+
+def sync_files(src: str, dest: str) -> bool:
+    result = subprocess.run(["rsync", src, dest])
+    return result.returncode == 0
+
+
+# ✅ REQUIRED: Dependency injection
+from dataclasses import dataclass
+from typing import Callable
+
+
+@dataclass
+class SyncDeps:
+    run_command: Callable[[list[str]], tuple[int, str, str]]
+
+
+def sync_files(src: str, dest: str, deps: SyncDeps) -> bool:
+    returncode, _, _ = deps.run_command(["rsync", src, dest])
+    return returncode == 0
+```
+
+---
+
+## MANDATORY: Consult testing-python First
 
 Before writing any test, you MUST:
 
 1. **Check the ADR** for the Testing Strategy section and assigned levels
 2. **Read** the `/testing-python` skill for the assigned level patterns
-3. **Use dependency injection** instead of mocking (see patterns below)
+3. **Use dependency injection** instead of mocking (see patterns above)
 4. **Test behavior** — observable outcomes, not implementation details
 5. **Justify escalation** — if you need a higher level than ADR specifies, document why
 

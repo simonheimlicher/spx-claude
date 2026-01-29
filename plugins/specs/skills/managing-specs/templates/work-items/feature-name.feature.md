@@ -1,62 +1,56 @@
 # Feature: [Feature Name]
 
-## Observable Outcome
+## Purpose
 
-[Specific, measurable change that this feature creates in the user's or system's world]
+[What this feature delivers and why it matters to the capability.]
 
-## Testing Strategy
+## Requirements
 
-> Features require **Level 1 + Level 2** to prove the feature works with real tools.
-> See [testing standards](/docs/testing/standards.md) for level definitions.
+[Prose description of functional and quality requirements. Constraints and invariants that tests must verify.]
 
-### Level Assignment
+## Test Strategy
 
-| Component        | Level | Justification                     |
-| ---------------- | ----- | --------------------------------- |
-| [Logic/parsing]  | 1     | Pure function, can verify with DI |
-| [Tool execution] | 2     | Needs real binary (Hugo/Caddy)    |
+| Component        | Level | Harness       | Rationale                         |
+| ---------------- | ----- | ------------- | --------------------------------- |
+| [Logic/parsing]  | 1     | -             | Pure function, can verify with DI |
+| [Tool execution] | 2     | [harness-ref] | Needs real binary                 |
 
 ### Escalation Rationale
 
-- **1 → 2**: [What confidence does Level 2 add? e.g., "Unit tests prove our command-building logic, but Level 2 verifies Hugo accepts the commands"]
+- **1 → 2**: [What confidence does Level 2 add that Level 1 cannot provide?]
 
-## Feature Integration Tests (Level 2)
+## Outcomes
 
-These tests verify that **real tools work together** as expected.
+### 1. [Primary integration scenario]
 
-### FI1: [Primary integration test]
-
-```typescript
-// tests/[feature-name].integration.test.ts (co-located in this feature's tests/)
-import { hugoAvailable } from "./conftest";
-
-describe.skipIf(!hugoAvailable())("Feature: [Name]", () => {
-  it("GIVEN [real environment] WHEN [feature action] THEN [integrated behavior verified]", async () => {
-    // Given: [Real binaries, temp directories]
-    // When: [Feature execution with real tools]
-    // Then: [Observable outcome verified]
-  });
-});
+```gherkin
+GIVEN [real environment with tools]
+WHEN [feature action]
+THEN [integrated behavior verified]
 ```
 
-### FI2: [Error handling integration test]
+| File                                                   | Level | Harness                                                                       |
+| ------------------------------------------------------ | ----- | ----------------------------------------------------------------------------- |
+| [{slug}.integration](tests/{slug}.integration.test.ts) | 2     | [harness-name](specs/work/doing/capability-NN/feature-NN_test-infrastructure) |
 
-```typescript
-describe.skipIf(!hugoAvailable())("Feature: [Name] - Error Handling", () => {
-  it("GIVEN [error condition] WHEN [feature action] THEN [graceful failure]", async () => {
-    // ...
-  });
-});
+---
+
+### 2. [Error handling scenario]
+
+```gherkin
+GIVEN [error condition]
+WHEN [feature action]
+THEN [graceful failure with clear message]
 ```
 
-## Capability Contribution
+| File                                                                 | Level | Harness                                                                       |
+| -------------------------------------------------------------------- | ----- | ----------------------------------------------------------------------------- |
+| [{slug}-errors.integration](tests/{slug}-errors.integration.test.ts) | 2     | [harness-name](specs/work/doing/capability-NN/feature-NN_test-infrastructure) |
 
-[How this feature contributes to parent capability success and integration points with other capability features]
+---
 
-## Completion Criteria
+## Architectural Constraints
 
-- [ ] All Level 1 tests pass (via story completion)
-- [ ] All Level 2 integration tests pass
-- [ ] Escalation rationale documented
-
-**Note**: To see current stories in this feature, use `ls` or `find` to list story directories (e.g., `story-*`) within the feature's directory.
+| ADR                                     | Constraint                         |
+| --------------------------------------- | ---------------------------------- |
+| [adr-NN_name](decisions/adr-NN_name.md) | [What constraint this ADR imposes] |

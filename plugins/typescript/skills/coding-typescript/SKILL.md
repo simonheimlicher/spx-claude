@@ -29,6 +29,73 @@ Use this path to access skill files:
 
 </essential_principles>
 
+<mandatory_code_patterns>
+These patterns are enforced by the reviewer. Violations will be REJECTED.
+
+### Constants
+
+All literal values (strings, numbers) must be module-level constants:
+
+```typescript
+// ❌ REJECTED: Magic values inline
+function validateScore(score: number): boolean {
+  return score >= 0 && score <= 100;
+}
+
+// ✅ REQUIRED: Named constants
+const MIN_SCORE = 0;
+const MAX_SCORE = 100;
+
+function validateScore(score: number): boolean {
+  return score >= MIN_SCORE && score <= MAX_SCORE;
+}
+```
+
+**Share constants between code and tests** — tests import from the module under test:
+
+```typescript
+// src/scoring.ts
+export const MIN_SCORE = 0;
+export const MAX_SCORE = 100;
+
+// tests/scoring.test.ts
+import { MIN_SCORE, validateScore } from "../src/scoring";
+
+it("rejects below minimum", () => {
+  expect(validateScore(MIN_SCORE - 1)).toBe(false);
+});
+```
+
+### Dependency Injection
+
+External dependencies must be injected, not imported directly:
+
+```typescript
+// ❌ REJECTED: Direct import
+import { execa } from "execa";
+
+async function syncFiles(src: string, dest: string): Promise<boolean> {
+  const result = await execa("rsync", [src, dest]);
+  return result.exitCode === 0;
+}
+
+// ✅ REQUIRED: Dependency injection
+interface SyncDeps {
+  execa: typeof execa;
+}
+
+async function syncFiles(
+  src: string,
+  dest: string,
+  deps: SyncDeps,
+): Promise<boolean> {
+  const result = await deps.execa("rsync", [src, dest]);
+  return result.exitCode === 0;
+}
+```
+
+</mandatory_code_patterns>
+
 <hierarchy_of_authority>
 **Where to look for guidance, in order of precedence:**
 

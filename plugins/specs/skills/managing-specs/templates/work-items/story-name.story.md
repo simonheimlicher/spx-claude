@@ -1,128 +1,78 @@
 # Story: [Story Name]
 
-## Functional Requirements
+## Purpose
 
-### FR1: [Behavioral requirement]
+[What this story delivers and why it matters.]
 
-```gherkin
-GIVEN [context/precondition]
-WHEN [action/event]
-THEN [expected outcome/behavior]
-```
+## Outcomes
 
-#### Files created/modified
-
-1. `src/config/loader.ts` [modify]: Add config merging logic
-2. `src/runners/lhci.ts` [new]: LHCI runner implementation
-
-### FR2: [Additional functional requirement if needed]
+### 1. [Outcome name]
 
 ```gherkin
-GIVEN [context/precondition]
-WHEN [action/event]
-THEN [expected outcome/behavior]
+GIVEN [precondition]
+WHEN [action]
+THEN [expected result]
+AND [additional assertion]
 ```
 
-#### Files created/modified
+#### Test Files
 
-1. `src/cli.ts` [modify]: Add CLI command handling
+| File                                     | Level | Harness |
+| ---------------------------------------- | ----- | ------- |
+| [{slug}.unit](tests/{slug}.unit.test.ts) | 1     | -       |
 
-## Testing Strategy
+#### Analysis
 
-> Stories require **Level 1** to prove core logic works.
-> See [testing standards](/docs/testing/standards.md) for level definitions.
+*Implementation may diverge as understanding deepens.*
 
-### Level Assignment
+| File               | Intent         |
+| ------------------ | -------------- |
+| `src/path/file.ts` | [What changes] |
+| `src/path/new.ts`  | [What it does] |
 
-| Component            | Level | Justification                   |
-| -------------------- | ----- | ------------------------------- |
-| Command building     | 1     | Pure function, no external deps |
-| Config parsing       | 1     | Pure function with Zod          |
-| Error message format | 1     | Pure function                   |
+| Constant                            | Intent                    |
+| ----------------------------------- | ------------------------- |
+| `src/path/constants.ts::CONST_NAME` | [Why using existing]      |
+| `src/path/constants.ts::NEW_CONST`  | [Why new constant needed] |
 
-### When to Escalate
+| Config Parameter | Test Values      | Expected Behavior   |
+| ---------------- | ---------------- | ------------------- |
+| `ENV_VAR`        | `unset`, `value` | [Behavior for each] |
 
-This story stays at Level 1 because:
+---
 
-- [Reason why Level 2 is not needed, e.g., "We're testing command construction, not Hugo execution"]
+### 2. [Second outcome if needed]
 
-If you find yourself needing real binaries, consider:
-
-1. Is this actually a feature-level concern? → Move test to feature
-2. Can DI provide sufficient confidence? → Keep at Level 1
-
-## Unit Tests (Level 1)
-
-```typescript
-// tests/{file}.unit.test.ts (co-located in this story's tests/)
-import { describe, expect, it, vi } from "vitest";
-import { createTestConfig } from "../../fixtures/factories";
-
-describe("[Module/Function]", () => {
-  /**
-   * Level 1: Pure function tests with DI
-   */
-
-  it("GIVEN [precondition] WHEN [action] THEN [outcome]", () => {
-    // Given
-    const input = createTestConfig({
-      /* overrides */
-    });
-
-    // When
-    const result = functionUnderTest(input);
-
-    // Then
-    expect(result).toEqual(expectedOutput);
-  });
-
-  it("GIVEN [error condition] WHEN [action] THEN [descriptive error]", async () => {
-    // Given
-    const mockDeps = {
-      execa: vi.fn().mockRejectedValue(new Error("command not found")),
-    };
-
-    // When/Then
-    await expect(functionUnderTest(input, mockDeps)).rejects.toThrow("Hugo is not installed");
-  });
-});
+```gherkin
+GIVEN [precondition]
+WHEN [action]
+THEN [expected result]
 ```
 
-## Architectural Requirements
+#### Test Files
 
-### Relevant ADRs
+| File                                                   | Level | Harness                                                                       |
+| ------------------------------------------------------ | ----- | ----------------------------------------------------------------------------- |
+| [{slug}.integration](tests/{slug}.integration.test.ts) | 2     | [harness-name](specs/work/doing/capability-NN/feature-NN_test-infrastructure) |
 
-1. [Hugolit Architecture](../../../decisions/adr-21_hugolit-architecture.md) - Overall architecture decisions
-2. Capability-specific decisions: See `specs/doing/capability-NN_{slug}/decisions/` (if applicable)
+#### Analysis
 
-## Quality Requirements
+*Implementation may diverge as understanding deepens.*
 
-### QR1: Type Safety
+| File               | Intent         |
+| ------------------ | -------------- |
+| `src/path/file.ts` | [What changes] |
 
-**Requirement:** All functions must have TypeScript type annotations
-**Target:** 100% type coverage
-**Validation:** `npm run typecheck` passes with no errors
+| Constant                          | Intent |
+| --------------------------------- | ------ |
+| `src/path/constants.ts::EXISTING` | [Why]  |
 
-### QR2: Error Handling
+*No configuration for this outcome.*
 
-**Requirement:** All external tool failures must be caught and reported with actionable messages
-**Target:** Zero unhandled rejections
-**Validation:** Unit tests verify error paths with DI
+---
 
-### QR3: Dependency Injection
+## Architectural Constraints
 
-**Requirement:** External dependencies must be injectable for testing
-**Target:** No `vi.mock()` in unit tests
-**Validation:** All tests use DI pattern
-
-## Completion Criteria
-
-- [ ] All Level 1 unit tests pass
-- [ ] No mocking of external systems (DI used instead)
-- [ ] Test data uses factories, not hardcoded values
-- [ ] BDD structure (GIVEN/WHEN/THEN) in all tests
-
-## Documentation
-
-1. `README.md` (update if user-facing changes)
-2. JSDoc comments on public APIs
+| ADR                                     | Constraint                         |
+| --------------------------------------- | ---------------------------------- |
+| [adr-NN_name](decisions/adr-NN_name.md) | [What constraint this ADR imposes] |

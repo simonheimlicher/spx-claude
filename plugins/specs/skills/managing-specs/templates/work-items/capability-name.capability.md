@@ -1,67 +1,64 @@
 # Capability: [Capability Name]
 
-## Success Metric
+## Purpose
 
-**Quantitative Target:**
+[What this capability delivers and why it matters to users.]
+
+## Success Metric
 
 - **Baseline**: [Current measurable state]
 - **Target**: [Expected improvement]
 - **Measurement**: [How progress will be tracked]
 
-## Testing Strategy
+## Requirements
 
-> Capabilities require **all three levels** to prove end-to-end value delivery.
-> See [testing standards](/docs/testing/standards.md) for level definitions.
+[Prose description of functional and quality requirements. Constraints and invariants that tests must verify.]
 
-### Level Assignment
+## Test Strategy
 
-| Component       | Level | Justification                          |
-| --------------- | ----- | -------------------------------------- |
-| [Component 1]   | 1     | [Why this level is minimum sufficient] |
-| [Component 2]   | 2     | [Why this level is minimum sufficient] |
-| [Full workflow] | 3     | [Why E2E verification is needed]       |
+| Component       | Level | Harness       | Rationale                              |
+| --------------- | ----- | ------------- | -------------------------------------- |
+| [Component 1]   | 1     | -             | [Why this level is minimum sufficient] |
+| [Component 2]   | 2     | [harness-ref] | [Why this level is minimum sufficient] |
+| [Full workflow] | 3     | e2e-harness   | [Why E2E verification is needed]       |
 
 ### Escalation Rationale
 
 - **1 → 2**: [What confidence does Level 2 add that Level 1 cannot provide?]
 - **2 → 3**: [What confidence does Level 3 add that Level 2 cannot provide?]
 
-## Capability E2E Tests (Level 3)
+## Outcomes
 
-These tests verify the **complete user journey** delivers value.
+### 1. [Primary user journey]
 
-### E2E1: [Primary user journey test]
-
-```typescript
-// tests/[capability-name].e2e.test.ts (co-located in this capability's tests/)
-describe("Capability: [Name]", () => {
-  it("GIVEN [preconditions] WHEN [user action] THEN [value delivered]", async () => {
-    // Given: [Full environment setup]
-    // When: [Complete workflow execution]
-    // Then: [Value verification]
-  });
-});
+```gherkin
+GIVEN [full environment with real services]
+WHEN [complete user workflow]
+THEN [value delivered to user]
 ```
 
-### E2E2: [Alternative scenario if needed]
+| File                                   | Level | Harness                                                                          |
+| -------------------------------------- | ----- | -------------------------------------------------------------------------------- |
+| [{slug}.e2e](tests/{slug}.e2e.test.ts) | 3     | [e2e-harness](specs/work/doing/capability-NN_test-infrastructure/feature-NN_e2e) |
 
-```typescript
-describe("Capability: [Name]", () => {
-  it("GIVEN [alternative scenario] WHEN [action] THEN [expected behavior]", async () => {
-    // ...
-  });
-});
+---
+
+### 2. [Alternative scenario]
+
+```gherkin
+GIVEN [alternative preconditions]
+WHEN [user action]
+THEN [expected behavior]
 ```
 
-## System Integration
+| File                                           | Level | Harness                                                                          |
+| ---------------------------------------------- | ----- | -------------------------------------------------------------------------------- |
+| [{slug}-alt.e2e](tests/{slug}-alt.e2e.test.ts) | 3     | [e2e-harness](specs/work/doing/capability-NN_test-infrastructure/feature-NN_e2e) |
 
-[How this capability integrates with the overall system and coordination with other capabilities]
+---
 
-## Completion Criteria
+## Architectural Constraints
 
-- [ ] All Level 1 tests pass (via feature/story completion)
-- [ ] All Level 2 tests pass (via feature completion)
-- [ ] All Level 3 E2E tests pass
-- [ ] Success metric achieved
-
-**Note**: To see current features in this capability, use `ls` or `find` to list feature directories (e.g., `feature-*`) within this capability's folder.
+| ADR                                     | Constraint                         |
+| --------------------------------------- | ---------------------------------- |
+| [adr-NN_name](decisions/adr-NN_name.md) | [What constraint this ADR imposes] |
