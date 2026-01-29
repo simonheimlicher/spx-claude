@@ -2,23 +2,23 @@
 
 ## Observable Outcome
 
-The spx plugin skills work with the CODE structure: `spx/` root, `status.yaml` for state, no TRDs, co-located tests.
+The spx plugin skills work with the CODE structure: `spx/` root, `pass.csv` for state, no TRDs, co-located tests.
 
 ## Skills to Update
 
-| Skill               | Changes Required                                                                                                  |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| managing-specs      | Update paths from `specs/work/` to `spx/`, remove TRD templates, add `status.yaml` creation, update BSP discovery |
-| understanding-specs | Update hierarchy traversal to `spx/`, remove TRD verification, add `status.yaml` reading                          |
-| writing-prd         | Update output paths to `spx/`, no other changes                                                                   |
-| writing-trd         | **DELETE** - TRDs no longer exist in CODE                                                                         |
+| Skill               | Changes Required                                                                                               |
+| ------------------- | -------------------------------------------------------------------------------------------------------------- |
+| managing-specs      | Update paths from `specs/work/` to `spx/`, remove TRD templates, add `pass.csv` creation, update BSP discovery |
+| understanding-specs | Update hierarchy traversal to `spx/`, remove TRD verification, add `pass.csv` reading                          |
+| writing-prd         | Update output paths to `spx/`, no other changes                                                                |
+| writing-trd         | **DELETE** - TRDs no longer exist in CODE                                                                      |
 
 ## Key Changes
 
 ### managing-specs
 
 1. **Path changes**: All references to `specs/work/backlog|doing|done/` become flat `spx/` paths
-2. **Status tracking**: Replace `DONE.md` with `status.yaml` creation/updates
+2. **Status tracking**: Replace `DONE.md` with `pass.csv` creation/updates
 3. **Templates**: Remove TRD template, update capability/feature/story templates
 4. **BSP discovery**: Update to find work items in flat `spx/` structure
 
@@ -26,7 +26,7 @@ The spx plugin skills work with the CODE structure: `spx/` root, `status.yaml` f
 
 1. **Hierarchy loading**: Update to traverse `spx/capability-NN/feature-NN/story-NN/`
 2. **Document verification**: Remove TRD from required documents list
-3. **Status reading**: Parse `status.yaml` to determine work item state
+3. **Status reading**: Parse `pass.csv` to determine work item state
 
 ### writing-prd
 
@@ -50,4 +50,4 @@ The spx plugin skills work with the CODE structure: `spx/` root, `status.yaml` f
 - [ ] writing-prd outputs to `spx/`
 - [ ] writing-trd skill deleted
 - [ ] No TRD references in any spx plugin skill
-- [ ] `status.yaml` documented and used for state
+- [ ] `pass.csv` documented and used for state

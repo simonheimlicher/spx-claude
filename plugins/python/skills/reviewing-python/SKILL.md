@@ -657,11 +657,11 @@ Test level is indicated by filename suffix:
 
 #### 6.2 Run Tests and Stamp
 
-Run `spx test --stamp` to validate tests and generate pass.csv:
+Run `spx spec test --stamp` to validate tests and generate pass.csv:
 
 ```bash
 # Stamp the work item's pass.csv
-spx test --stamp spx/{capability}/{feature}/{story}
+spx spec test --stamp spx/{capability}/{feature}/{story}
 ```
 
 The command:
@@ -725,7 +725,7 @@ Report completion:
 ### Verification Command
 
 \`\`\`bash
-spx test --stamp spx/{capability}/{feature}/{story}
+spx spec test --stamp spx/{capability}/{feature}/{story}
 \`\`\`
 
 ### Work Item Status

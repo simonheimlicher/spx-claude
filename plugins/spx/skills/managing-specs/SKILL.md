@@ -150,8 +150,8 @@ spx/
 <key_principles>
 
 - **Requirements immutable** - code adapts to requirements, not vice versa
-- **BSP numbering**: Two-digit (10-99), lower number = must complete first
-- **BSP numbers are SIBLING-UNIQUE**: Numbers are only unique among siblings, not globally (see `<bsp_sibling_uniqueness>` below)
+- **BSP numbering**: Binary Space Partitioning encodes dependency order—lower BSP items are dependencies that higher-BSP items may rely on; same BSP means independent
+- **Full paths required**: BSP numbers repeat at different levels (see `<bsp_full_paths>` below)
 - **Test co-location**: Tests stay in `spx/.../tests/` permanently (no graduation)
 - **Status rules** (use CLI, do NOT check manually):
   - `spx spec status --format table` - View project status
@@ -159,9 +159,9 @@ spx/
 
 </key_principles>
 
-<bsp_sibling_uniqueness>
+<bsp_full_paths>
 
-**🚨 CRITICAL: BSP numbers are ONLY unique among siblings at the same level.**
+**🚨 CRITICAL: BSP numbers repeat at different levels—always use full paths.**
 
 ```text
 21-foo.capability/21-bar.feature/54-baz.story/  ← One story-54
@@ -179,9 +179,9 @@ spx/
 
 **Why this matters:**
 
+- BSP numbers encode dependency order within each level, not global uniqueness
 - Different capabilities can have identically-numbered features
 - Different features can have identically-numbered stories
-- "story-54" could refer to dozens of different stories across the codebase
 - Without the full path, agents will access the WRONG work item
 
 **When communicating about work items:**
@@ -190,7 +190,7 @@ spx/
 2. Never use bare numbers like "story-54" without context
 3. When in doubt, use the absolute path from `spx/`
 
-</bsp_sibling_uniqueness>
+</bsp_full_paths>
 
 </structure_definition>
 
@@ -223,9 +223,9 @@ Status values:
 
 <bsp_dependency_order>
 
-> **Lower BSP number = must complete FIRST.**
+> **Lower BSP = dependency.** Higher-BSP items may rely on lower-BSP items.
 >
-> You CANNOT work on item N until ALL items with numbers < N are DONE.
+> Check dependencies before working on an item—lower-numbered items in the same scope may need to be done first.
 
 This applies at every level:
 
@@ -391,7 +391,7 @@ Format: `NN-{slug}.adr.md`
 
 <bsp_numbering_for_adrs>
 
-**Lower BSP number = must decide first (within scope).**
+**Lower BSP = dependency.** Higher-BSP ADRs may rely on lower-BSP decisions.
 
 ADRs follow the same BSP numbering as work items:
 
@@ -441,12 +441,12 @@ new = floor((54 + 99) / 2) = 76
 
 **Scope boundaries**: ADRs are scoped to product/capability/feature.
 
-**Within scope**: Lower BSP = must decide first.
+**Within scope**: Lower BSP = dependency that higher-BSP items may rely on.
 
 | If you see...             | It means...                              |
 | ------------------------- | ---------------------------------------- |
-| `21-type-safety.adr.md`   | Foundational decision, must decide first |
-| `37-validation.adr.md`    | Depends on 21, must come after           |
+| `21-type-safety.adr.md`   | Foundational decision, others may depend |
+| `37-validation.adr.md`    | May depend on 21                         |
 | `54-cli-framework.adr.md` | May depend on both 21 and 37             |
 
 **Cross-scope dependencies**: Must be documented explicitly in the ADR content.

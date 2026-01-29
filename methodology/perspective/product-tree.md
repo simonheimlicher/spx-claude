@@ -45,13 +45,13 @@ The `NN` in `NN-slug.capability/`, `NN-slug.feature/`, `NN-slug.story/` isn't ar
 
 ### The Rules
 
-| Rule                   | Value                              |
-| ---------------------- | ---------------------------------- |
-| Range                  | [10, 99] (two digits)              |
-| Meaning                | Lower number = must complete first |
-| First item             | Start at 21 (room for ~10 before)  |
-| Insert between X and Y | `floor((X + Y) / 2)`               |
-| Append after X         | `floor((X + 99) / 2)`              |
+| Rule                   | Value                                          |
+| ---------------------- | ---------------------------------------------- |
+| Range                  | [10, 99] (two digits)                          |
+| Meaning                | Lower BSP = dependency, same BSP = independent |
+| First item             | Start at 21 (room for ~10 before)              |
+| Insert between X and Y | `floor((X + Y) / 2)`                           |
+| Append after X         | `floor((X + 99) / 2)`                          |
 
 ### Why BSP?
 
@@ -85,11 +85,11 @@ Items with the **same BSP number** can be worked on in parallel—they all depen
 This extends to capabilities:
 
 ```
-21-test-harness.capability/      ← Infrastructure (must complete first)
-37-users.capability/             ← Functional (parallel)
-37-billing.capability/           ← Functional (parallel)
-37-reports.capability/           ← Functional (parallel)
-54-linter.capability/            ← Improvement (after all functional)
+21-test-harness.capability/      ← Infrastructure (dependency for others)
+37-users.capability/             ← Functional (independent of each other)
+37-billing.capability/           ← Functional (independent of each other)
+37-reports.capability/           ← Functional (independent of each other)
+54-linter.capability/            ← Improvement (depends on functional work)
 ```
 
 ### Strategic Insertion
@@ -104,8 +104,8 @@ BSP enables two critical patterns:
 This means the same concept can appear at different BSP numbers:
 
 ```
-21-auth.capability/       ← Core auth (must complete first)
-54-auth.capability/       ← Auth improvements (after other features work)
+21-auth.capability/       ← Core auth (dependency for others)
+54-auth.capability/       ← Auth improvements (depends on other features)
 ```
 
 ### Unified Number Space: BSP First, Type Last
@@ -171,7 +171,7 @@ spx/
 ├── product.prd.md                        # The trunk: what is this product?
 ├── 21-core-decision.adr.md               # Product-level ADR
 │
-├── 21-test-harness.capability/           # Infrastructure (must complete first)
+├── 21-test-harness.capability/           # Infrastructure (dependency for others)
 │   ├── test-harness.capability.md
 │   ├── pass.csv
 │   └── tests/
@@ -232,13 +232,13 @@ spx/
 
 States must communicate **what needs to happen**, not just describe the situation. Poetry in philosophy, precision in indicators.
 
-| State         | Meaning                            | Required Action          |
-| ------------- | ---------------------------------- | ------------------------ |
-| **Unknown**   | Test Files links don't resolve     | Write tests              |
-| **Pending**   | Tests exist, not all passing       | Fix code or fix tests    |
-| **Stale**     | Spec or test blob changed          | Re-stamp with `spx test` |
-| **Passing**   | All tests pass, blobs unchanged    | None—potential realized  |
-| **Regressed** | Was passing, now fails, blobs same | Investigate and fix      |
+| State         | Meaning                            | Required Action               |
+| ------------- | ---------------------------------- | ----------------------------- |
+| **Unknown**   | Test Files links don't resolve     | Write tests                   |
+| **Pending**   | Tests exist, not all passing       | Fix code or fix tests         |
+| **Stale**     | Spec or test blob changed          | Re-stamp with `spx spec test` |
+| **Passing**   | All tests pass, blobs unchanged    | None—potential realized       |
+| **Regressed** | Was passing, now fails, blobs same | Investigate and fix           |
 
 ### Why Not "Aspiration" and "Realized"?
 

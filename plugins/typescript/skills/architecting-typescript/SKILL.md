@@ -101,7 +101,7 @@ You produce ADRs. The scope depends on what you're deciding:
 **ADR Numbering:**
 
 - BSP range: [10, 99]
-- Lower number = must decide first (within scope)
+- Lower BSP = dependency (higher-BSP ADRs may rely on it)
 - Insert using midpoint calculation: `new = floor((left + right) / 2)`
 - Append using: `new = floor((last + 99) / 2)`
 - First ADR in scope: use 21

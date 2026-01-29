@@ -6,20 +6,20 @@ Migrate all plugins from the current `specs/work/backlog|doing|done/` structure 
 
 ## Success Metric
 
-- **Baseline**: Plugins reference `specs/work/` paths, use test graduation, lack `status.yaml` awareness
-- **Target**: All plugins reference `spx/` paths, use co-located tests, understand `status.yaml`
+- **Baseline**: Plugins reference `specs/work/` paths, use test graduation, lack `pass.csv` awareness
+- **Target**: All plugins reference `spx/` paths, use co-located tests, understand `pass.csv`
 - **Measurement**: All plugin skills/commands pass validation with new structure
 
 ## Key Changes from Current to CODE
 
-| Aspect         | Current                           | CODE                               |
-| -------------- | --------------------------------- | ---------------------------------- |
-| Root directory | `specs/`                          | `spx/`                             |
-| Work state     | `backlog/doing/done/` directories | `status.yaml` per container        |
-| Test location  | Graduate to `tests/unit           | integration                        |
-| Test naming    | Directory-based (`tests/unit/`)   | Suffix-based (`*.unit.test.ts`)    |
-| TRDs           | Separate `*.trd.md` files         | Dropped (content in feature.md)    |
-| Status         | `DONE.md` marker files            | `status.yaml` with pass/fail lists |
+| Aspect         | Current                           | CODE                            |
+| -------------- | --------------------------------- | ------------------------------- |
+| Root directory | `specs/`                          | `spx/`                          |
+| Work state     | `backlog/doing/done/` directories | `pass.csv` per container        |
+| Test location  | Graduate to `tests/unit           | integration                     |
+| Test naming    | Directory-based (`tests/unit/`)   | Suffix-based (`*.unit.test.ts`) |
+| TRDs           | Separate `*.trd.md` files         | Dropped (content in feature.md) |
+| Status         | `DONE.md` marker files            | `pass.csv` with pass/fail lists |
 
 ## Plugins to Update
 
@@ -42,5 +42,5 @@ Migrate all plugins from the current `specs/work/backlog|doing|done/` structure 
 - [ ] Test instructions use co-located `tests/` with suffix naming
 - [ ] No references to test graduation
 - [ ] No references to TRDs
-- [ ] `status.yaml` documented as status mechanism
+- [ ] `pass.csv` documented as status mechanism
 - [ ] All features complete

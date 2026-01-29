@@ -142,16 +142,17 @@ Tests are co-located with their specs in `spx/.../tests/`. The `pass.csv` ledger
 
 ## BSP Numbering
 
-**BSP** (Build Sequence Position): Two-digit numbers (10-99) with `-` separator
+**Binary Space Partitioning (BSP)** encodes dependency order: lower BSP items are dependencies that higher-BSP items may rely on; same BSP means independent. Two-digit numbers (10-99) with `-` separator.
 
 **Rules**:
 
-- Lower number = must complete first
+- Lower BSP = dependency (others may rely on it)
+- Same BSP = independent, can work in parallel
 - Hyphen (`-`) separates BSP from slug: `NN-{slug}.{type}/`
 - Use `@` for recursive insertion when no integer space: `20@54-audit.capability/`
 - Never rename existing numbers—insert between them
 
 **Examples**:
 
-- `10-core-cli.capability/` must complete before `20-advanced-features.capability/`
-- `30-build.story/` must complete before `40-test.story/`
+- `20-advanced-features.capability/` may depend on `10-core-cli.capability/`
+- `40-test.story/` may depend on `30-build.story/`

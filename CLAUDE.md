@@ -327,7 +327,7 @@ Spec-driven development skills.
 ### Core Principles
 
 - Specs are a durable map - nothing moves because work is "done"
-- Status tracked via `status.yaml`, not directory location
+- Status tracked via `pass.csv`, not directory location
 - Tests co-located with specs in `spx/.../tests/`
 - No TRDs - technical details belong in `feature.md` itself
 - No test graduation - tests stay with their spec
@@ -724,44 +724,51 @@ spx-claude/
 │   └── marketplace.json          # Marketplace catalog
 ├── .spx/                          # Tool operational (gitignored)
 │   └── sessions/                  # Session handoffs
-│       ├── TODO_*.md             # Available for /pickup
-│       └── DOING_*.md            # Currently claimed
+│       ├── todo/                 # Available for /pickup
+│       ├── doing/                # Currently claimed
+│       └── archive/              # Completed sessions
 ├── plugins/
-│   ├── claude/
-│   │   ├── .claude-plugin/
-│   │   │   └── plugin.json       # Version: 0.4.0
+│   ├── claude/                   # Version: 0.0.3
+│   │   └── skills/
+│   │       └── creating-skills/
+│   ├── code/                     # Version: 0.0.3
+│   │   └── skills/
+│   │       └── coding-autonomously/
+│   ├── core/                     # Version: 0.4.21
 │   │   ├── commands/
 │   │   │   ├── commit.md
 │   │   │   ├── handoff.md
 │   │   │   └── pickup.md
 │   │   └── skills/
-│   │       ├── committing-changes/
-│   │       └── creating-skills/
-│   ├── python/
-│   │   ├── .claude-plugin/
-│   │   │   └── plugin.json       # Version: 0.x.x
-│   │   └── commands/
-│   │       └── autopython.md
-│   ├── spx/
-│   │   ├── .claude-plugin/
-│   │   │   └── plugin.json       # Version: 0.1.0
+│   │       └── committing-changes/
+│   ├── frontend/                 # Version: 0.0.1
+│   │   └── skills/
+│   │       └── designing-frontend/
+│   ├── python/                   # Version: 0.3.5
+│   │   ├── commands/
+│   │   │   └── auto-python.md
+│   │   └── skills/
+│   │       └── (6 skills)
+│   ├── spx/                      # Version: 0.1.8
 │   │   └── skills/
 │   │       ├── managing-specs/
 │   │       ├── understanding-specs/
 │   │       └── writing-prd/
-│   ├── typescript/
-│   │   └── .claude-plugin/
-│   │       └── plugin.json       # Version: 0.x.x
-│   └── test/
-│       └── .claude-plugin/
-│           └── plugin.json       # Version: 0.x.x
+│   ├── test/                     # Version: 0.1.1
+│   │   └── skills/
+│   │       └── testing/
+│   └── typescript/               # Version: 0.6.5
+│       ├── commands/
+│       │   └── auto-typescript.md
+│       └── skills/
+│           └── (6 skills)
 ├── spx/                           # Specs as durable map (CODE model)
 │   ├── CLAUDE.md                 # Specs directory guide
 │   ├── spx-claude.prd.md         # Product requirements
-│   ├── adr-NN_*.md               # Product-wide ADRs
-│   └── capability-NN_*/          # Capabilities with co-located tests
-│       ├── *.capability.md
-│       ├── status.yaml
+│   ├── NN-{slug}.adr.md          # Product-wide ADRs (interleaved)
+│   └── NN-{slug}.capability/     # Capabilities with co-located tests
+│       ├── {slug}.capability.md
+│       ├── pass.csv              # Test verification ledger
 │       └── tests/
 └── CLAUDE.md                      # This file
 ```

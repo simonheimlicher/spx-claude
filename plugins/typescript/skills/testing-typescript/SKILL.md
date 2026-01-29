@@ -78,7 +78,7 @@ timestamp,test_file,blob_sha,result
 
 1. Write failing test in `spx/.../tests/` (RED)
 2. Implement code until test passes (GREEN)
-3. Run `spx test --stamp` to record pass in `pass.csv`
+3. Run `spx spec test --stamp` to record pass in `pass.csv`
 
 **The Rule:**
 
@@ -92,7 +92,7 @@ timestamp,test_file,blob_sha,result
 ```
 Am I implementing new functionality?
 ├── YES → Write test in spx/.../tests/ with appropriate suffix
-│         Run `spx test --stamp` when passing
+│         Run `spx spec test --stamp` when passing
 └── NO  → Modify existing test in spx/.../tests/
           Ensure pass.csv is updated
 ```

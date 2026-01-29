@@ -32,7 +32,7 @@ ignore = [
   "S106", # Allow hardcoded passwords in function args
 ]
 "spx/*" = [
-  "S101", # Allow assert in spx tests
+  "S101", # Allow assert in spx spec tests
 ]
 "**/conftest.py" = [
   "S101", # Allow assert in conftest

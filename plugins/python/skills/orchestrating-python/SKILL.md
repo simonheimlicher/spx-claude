@@ -117,7 +117,7 @@ Continue until all stories in the feature are implemented and approved.
 
 **Step 8: Stamp Feature pass.csv**
 
-Run `spx test --stamp` to update the feature's pass.csv:
+Run `spx spec test --stamp` to update the feature's pass.csv:
 
 - Validates all tests in `spx/{capability}/{feature}/tests/` pass
 - Records `spec_blob` and `test_blob` SHAs
@@ -147,7 +147,7 @@ Continue until all features in the capability are implemented.
 
 **Step 11: Stamp Capability pass.csv**
 
-Run `spx test --stamp` to update the capability's pass.csv:
+Run `spx spec test --stamp` to update the capability's pass.csv:
 
 - Validates all tests in `spx/{capability}/tests/` pass
 - Records `spec_blob` and `test_blob` SHAs
@@ -213,13 +213,13 @@ Update this tracking as you complete each work item.
 
 - [ ] Story passed approval by `/reviewing-python`
 - [ ] Tests co-located in `spx/{capability}/{feature}/{story}/tests/`
-- [ ] `spx test --stamp` generates valid pass.csv
+- [ ] `spx spec test --stamp` generates valid pass.csv
 
 ## Feature Complete
 
 - [ ] All child story pass.csv files are valid
 - [ ] Feature-level integration tests implemented (if specified in spec)
-- [ ] `spx test --stamp` generates valid feature pass.csv
+- [ ] `spx spec test --stamp` generates valid feature pass.csv
 - [ ] All tests pass (`uv run --extra dev pytest spx/{capability}/{feature}/ -v`)
 - [ ] Type checking passes (`uv run --extra dev mypy src/`)
 - [ ] Linting passes (`uv run --extra dev ruff check src/`)
@@ -228,7 +228,7 @@ Update this tracking as you complete each work item.
 
 - [ ] All child feature pass.csv files are valid
 - [ ] Capability-level E2E tests implemented (if specified in spec)
-- [ ] `spx test --stamp` generates valid capability pass.csv
+- [ ] `spx spec test --stamp` generates valid capability pass.csv
 - [ ] All tests pass at all levels
 
 Implementation quality (no mocking, constants pattern) is verified by `/reviewing-python`.
