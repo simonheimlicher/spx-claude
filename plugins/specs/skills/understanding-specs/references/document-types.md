@@ -11,13 +11,13 @@ Product
     ├── {topic}.prd.md           ⚠️ OPTIONAL (enrichment)
     ├── decisions/
     │   └── adr-NNN_{slug}.md    ⚠️ OPTIONAL
-    ├── tests/                   ⚠️ OPTIONAL (for progress tests)
+    ├── tests/                   ⚠️ OPTIONAL (co-located, permanent home)
     └── Feature (Integration level)
         ├── {slug}.feature.md    ✅ REQUIRED
         ├── {topic}.trd.md       ⚠️ OPTIONAL (enrichment)
         ├── decisions/
         │   └── adr-NNN_{slug}.md ⚠️ OPTIONAL
-        ├── tests/               ⚠️ OPTIONAL (for progress tests)
+        ├── tests/               ⚠️ OPTIONAL (co-located, permanent home)
         └── Story (Unit level)
             ├── {slug}.story.md  ✅ REQUIRED
             └── tests/           ⚠️ OPTIONAL (determines status)
@@ -44,7 +44,7 @@ Product
 | Capability Spec | `{slug}.capability.md`   | ✅ YES                   | E2E scenario definition          |
 | PRD             | `{topic}.prd.md`         | ⚠️ NO (optional)          | Product requirements catalyst    |
 | Capability ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Capability-scoped decisions      |
-| Tests           | `tests/`                 | ⚠️ NO (determines status) | Progress tests before graduation |
+| Tests           | `tests/`                 | ⚠️ NO (determines status) | Co-located E2E tests (permanent) |
 
 **Note**: PRD is optional enrichment. If PRD exists but spec is missing, offer to create spec from PRD.
 
@@ -52,12 +52,12 @@ Product
 
 **Location**: `specs/work/{status}/capability-NN_{slug}/feature-NN_{slug}/`
 
-| Document     | Pattern                  | Required?                | Purpose                          |
-| ------------ | ------------------------ | ------------------------ | -------------------------------- |
-| Feature Spec | `{slug}.feature.md`      | ✅ YES                   | Integration scenario definition  |
-| TRD          | `{topic}.trd.md`         | ⚠️ NO (optional)          | Technical requirements catalyst  |
-| Feature ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Feature-scoped decisions         |
-| Tests        | `tests/`                 | ⚠️ NO (determines status) | Progress tests before graduation |
+| Document     | Pattern                  | Required?                | Purpose                                  |
+| ------------ | ------------------------ | ------------------------ | ---------------------------------------- |
+| Feature Spec | `{slug}.feature.md`      | ✅ YES                   | Integration scenario definition          |
+| TRD          | `{topic}.trd.md`         | ⚠️ NO (optional)          | Technical requirements catalyst          |
+| Feature ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Feature-scoped decisions                 |
+| Tests        | `tests/`                 | ⚠️ NO (determines status) | Co-located integration tests (permanent) |
 
 **Note**: TRD is optional enrichment. If TRD exists but spec is missing, offer to create spec from TRD.
 
@@ -65,11 +65,11 @@ Product
 
 **Location**: `specs/work/{status}/.../story-NN_{slug}/`
 
-| Document   | Pattern           | Required?                | Purpose                          |
-| ---------- | ----------------- | ------------------------ | -------------------------------- |
-| Story Spec | `{slug}.story.md` | ✅ YES                   | Atomic implementation definition |
-| Tests      | `tests/`          | ⚠️ NO (determines status) | Progress tests before graduation |
-| Completion | `tests/DONE.md`   | ⚠️ NO (signals DONE)      | Evidence of completion           |
+| Document   | Pattern           | Required?                | Purpose                           |
+| ---------- | ----------------- | ------------------------ | --------------------------------- |
+| Story Spec | `{slug}.story.md` | ✅ YES                   | Atomic implementation definition  |
+| Tests      | `tests/`          | ⚠️ NO (determines status) | Co-located unit tests (permanent) |
+| Completion | `tests/DONE.md`   | ⚠️ NO (signals DONE)      | Evidence of completion            |
 
 **Note**: Stories do NOT have their own ADRs. They inherit decisions from parent feature/capability.
 
@@ -137,15 +137,15 @@ spx spec next
 
 Status values: OPEN, IN_PROGRESS, DONE
 
-## Test Graduation Paths
+## Test Co-Location
 
-Tests migrate from progress location to regression location when work item is DONE:
+Tests stay co-located with their work item permanently (no graduation):
 
-| Level      | Progress Location                | Regression Location  |
-| ---------- | -------------------------------- | -------------------- |
-| Capability | `specs/.../capability-NN/tests/` | `tests/e2e/`         |
-| Feature    | `specs/.../feature-NN/tests/`    | `tests/integration/` |
-| Story      | `specs/.../story-NN/tests/`      | `tests/unit/`        |
+| Level      | Test Location                    | Test Type   |
+| ---------- | -------------------------------- | ----------- |
+| Capability | `specs/.../capability-NN/tests/` | E2E         |
+| Feature    | `specs/.../feature-NN/tests/`    | Integration |
+| Story      | `specs/.../story-NN/tests/`      | Unit        |
 
 ## BSP Numbering
 

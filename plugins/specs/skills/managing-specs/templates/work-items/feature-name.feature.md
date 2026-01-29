@@ -27,7 +27,7 @@ These tests verify that **real tools work together** as expected.
 ### FI1: [Primary integration test]
 
 ```typescript
-// tests/integration/[feature-name].integration.test.ts
+// tests/[feature-name].integration.test.ts (co-located in this feature's tests/)
 import { hugoAvailable } from "./conftest";
 
 describe.skipIf(!hugoAvailable())("Feature: [Name]", () => {

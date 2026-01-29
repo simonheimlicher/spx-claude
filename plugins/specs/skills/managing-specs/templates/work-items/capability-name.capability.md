@@ -33,7 +33,7 @@ These tests verify the **complete user journey** delivers value.
 ### E2E1: [Primary user journey test]
 
 ```typescript
-// tests/e2e/[capability-name].e2e.test.ts
+// tests/[capability-name].e2e.test.ts (co-located in this capability's tests/)
 describe("Capability: [Name]", () => {
   it("GIVEN [preconditions] WHEN [user action] THEN [value delivered]", async () => {
     // Given: [Full environment setup]

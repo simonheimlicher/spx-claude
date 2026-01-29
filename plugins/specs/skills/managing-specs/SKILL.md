@@ -106,7 +106,7 @@ If you cannot find a template:
 <structure_definition>
 
 <overview>
-The specs/ directory follows the SPX framework structure defined in `structure.yaml`.
+The specs/ directory follows the SPX framework structure.
 </overview>
 
 <three_phase_transformation>
@@ -150,17 +150,17 @@ specs/
 <work_item_hierarchy>
 
 - **Capability**: E2E scenario with product-wide impact
-  - Tests graduate to `tests/e2e/`
+  - Tests co-located in `specs/.../capability-NN/tests/` (E2E level)
   - May have optional PRD as catalyst/enrichment
   - Contains features
 
 - **Feature**: Integration scenario with specific functionality
-  - Tests graduate to `tests/integration/`
+  - Tests co-located in `specs/.../feature-NN/tests/` (Integration level)
   - May have optional TRD as catalyst/enrichment
   - Contains stories
 
 - **Story**: Unit-tested atomic implementation
-  - Tests graduate to `tests/unit/`
+  - Tests co-located in `specs/.../story-NN/tests/` (Unit level)
   - No children
   - Atomic implementation unit
 
@@ -172,7 +172,7 @@ specs/
 - **Requirements immutable** - code adapts to requirements, not vice versa
 - **BSP numbering**: Two-digit (10-99), lower number = must complete first
 - **BSP numbers are SIBLING-UNIQUE**: Numbers are only unique among siblings, not globally (see `<bsp_sibling_uniqueness>` below)
-- **Test graduation**: `specs/.../tests/` → `tests/{unit,integration,e2e}/`
+- **Tests co-located**: Tests stay in `specs/.../tests/` permanently (no graduation)
 - **Status rules** (use CLI, do NOT check manually):
   - `spx spec status --format table` - View project status
   - `spx spec next` - Get next work item (respects BSP ordering)
@@ -716,17 +716,17 @@ Examples:
 
 </file_placement>
 
-<test_graduation>
+<test_co_location>
 
-When work is complete, tests graduate:
+Tests stay co-located with their work item permanently:
 
-- Capability tests: `specs/.../tests/` → `tests/e2e/`
-- Feature tests: `specs/.../tests/` → `tests/integration/`
-- Story tests: `specs/.../tests/` → `tests/unit/`
+- Capability tests: `specs/.../capability-NN/tests/*.e2e.test.ts`
+- Feature tests: `specs/.../feature-NN/tests/*.integration.test.ts`
+- Story tests: `specs/.../story-NN/tests/*.unit.test.ts`
 
-DONE.md documents this graduation and provides verification evidence.
+DONE.md documents test verification and provides completion evidence.
 
-</test_graduation>
+</test_co_location>
 
 </work_item_templates>
 
@@ -734,11 +734,10 @@ DONE.md documents this graduation and provides verification evidence.
 Skill is working correctly when:
 
 - [ ] Templates exist and are readable in `templates/` subdirectories
-- [ ] structure.yaml is valid YAML and defines complete hierarchy
 - [ ] Other skills can successfully read templates from appropriate sections
 - [ ] Progressive disclosure guides readers to relevant sections
 - [ ] ADR, requirement, and work item patterns are clearly documented
-- [ ] Test graduation paths are correctly specified for each level
+- [ ] Test co-location paths are correctly specified for each level
 - [ ] BSP numbering uses consistent two-digit format (10-99)
 
 </success_criteria>

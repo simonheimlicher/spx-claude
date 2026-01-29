@@ -54,7 +54,7 @@ If you find yourself needing real binaries, consider:
 ## Unit Tests (Level 1)
 
 ```typescript
-// tests/unit/{module}/{file}.test.ts
+// tests/{file}.unit.test.ts (co-located in this story's tests/)
 import { describe, expect, it, vi } from "vitest";
 import { createTestConfig } from "../../fixtures/factories";
 

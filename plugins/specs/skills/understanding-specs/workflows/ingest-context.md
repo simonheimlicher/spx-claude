@@ -292,7 +292,7 @@ spx spec status --format json
 - Feature-scoped: 1
 - Story-specific: 0 (stories inherit parent ADRs)
 
-**Test Graduation Path**: `specs/work/doing/.../story-30_build/tests/` → `tests/unit/`
+**Test Location**: `specs/work/doing/.../story-30_build/tests/` (co-located, permanent)
 
 ## Hierarchy Chain
 ```

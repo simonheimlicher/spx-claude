@@ -17,15 +17,15 @@ This file marks the work item as complete and provides evidence that all require
 | 2     | Features     | ✓      | [N] tests  |
 | 3     | Capabilities | ✓      | [N] tests  |
 
-## Graduated Tests
+## Verified Tests
 
-Tests that prove functional requirements are met. These have been moved from work-item scope to the production test suite.
+Tests that prove functional requirements are met. Tests remain co-located with this work item.
 
-| Requirement                       | Test Location                                      | Level |
-| --------------------------------- | -------------------------------------------------- | ----- |
-| [Requirement text from work item] | `tests/unit/config/loader.test.ts::test_name`      | 1     |
-| [Requirement text from work item] | `tests/integration/hugo.integration.test.ts::name` | 2     |
-| [Requirement text from work item] | `tests/e2e/cli.e2e.test.ts::test_name`             | 3     |
+| Requirement                       | Test Location                          | Level |
+| --------------------------------- | -------------------------------------- | ----- |
+| [Requirement text from work item] | `tests/loader.unit.test.ts::test_name` | 1     |
+| [Requirement text from work item] | `tests/hugo.integration.test.ts::name` | 2     |
+| [Requirement text from work item] | `tests/cli.e2e.test.ts::test_name`     | 3     |
 
 ### For Features and Capabilities
 
@@ -69,12 +69,12 @@ Evidence that coding standards and ADR requirements are met.
 ## Test Run Output
 
 ```bash
-$ npm test
+$ npm test -- specs/work/doing/.../tests/
 
- ✓ tests/unit/config/loader.test.ts (5 tests)
- ✓ tests/unit/runners/lhci.test.ts (3 tests)
- ✓ tests/integration/hugo.integration.test.ts (2 tests)
- ✓ tests/e2e/cli.e2e.test.ts (2 tests)
+ ✓ tests/loader.unit.test.ts (5 tests)
+ ✓ tests/lhci.unit.test.ts (3 tests)
+ ✓ tests/hugo.integration.test.ts (2 tests)
+ ✓ tests/cli.e2e.test.ts (2 tests)
 
 Test Files  4 passed (4)
 Tests       12 passed (12)
