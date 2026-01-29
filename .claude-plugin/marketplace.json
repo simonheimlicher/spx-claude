@@ -45,7 +45,7 @@
     {
       "name": "specs",
       "source": "./plugins/specs",
-      "description": "Legacy specs/ projects: /writing-prd, /writing-trd, /managing-specs, /understanding-specs"
+      "description": "Legacy specs/ projects: /managing-specs, /understanding-specs"
     },
     {
       "name": "spx",
