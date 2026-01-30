@@ -226,7 +226,7 @@ Before writing any code:
 
 For each function/class to implement:
 
-1. **Create test file** if it doesn't exist: `tests/test_{module}.py`
+1. **Create test file** in the location specified by the project's CLAUDE.md or ADRs
 2. **Write test cases** following debuggability progression
 3. **Run tests** to confirm they fail (red phase)
 
@@ -331,25 +331,70 @@ from myproject.lib.logging import Logger
 **Fix import issues with proper packaging:**
 
 ```bash
-# Install project in editable mode
-uv pip install -e .
-# or
-pip install -e .
+# Install project in editable mode (includes dev dependencies)
+uv pip install -e ".[dev]"
 ```
+
+**NEVER use path hacks for imports:**
+
+```python
+# ❌ FORBIDDEN: Path manipulation
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+# ❌ FORBIDDEN: Relative path traversal for infrastructure
+from .....tests.helpers import create_fixture
+
+# ✅ REQUIRED: Proper packaging
+from myproject_testing.fixtures import create_fixture  # Installed package
+```
+
+If tests can't import shared fixtures/harnesses, the project needs a `{project}_testing/` package. See the `/architecting-python` skill for the pattern.
 
 ### Phase 3: Self-Verification
 
-Before declaring completion, run ALL verification tools:
+Before declaring completion, verify the test environment and run ALL verification tools.
+
+#### Step 1: Verify Test Environment (CRITICAL)
+
+```bash
+# Check pytest is from project venv, NOT system
+uv run which pytest
+# Expected: /path/to/project/.venv/bin/pytest
+# If shows /opt/homebrew/bin/pytest or similar → WRONG, fix first
+
+# If wrong, install dev dependencies:
+uv pip install -e ".[dev]"
+
+# Verify again
+uv run which pytest  # Must show .venv/bin/pytest
+```
+
+**Why this matters**: System pytest uses a different Python without your project's dependencies. Tests will fail with confusing "ModuleNotFoundError" even when packages are installed.
+
+#### Step 2: Verify Test Utilities Importable
+
+If project has `{project}_testing/` package:
+
+```bash
+uv run python -c "from {project}_testing.fixtures import ...; print('OK')"
+```
+
+If this fails, check `pyproject.toml` has both packages and re-run `uv pip install -e ".[dev]"`.
+
+#### Step 3: Run Verification Tools
 
 ```bash
 # Type checking
-uv run --extra dev mypy {source_dir}
+uv run mypy {source_dir}
 
 # Linting
-uv run --extra dev ruff check {source_dir}
+uv run ruff check {source_dir}
 
-# Tests
-uv run --extra dev pytest tests/ -v --cov={source_dir}
+# Tests (use project's test command if available)
+just check  # or: uv run pytest {test_dirs} --ignore=legacy/
 ```
 
 **Expected**: All pass. Coverage ≥80% for new code.

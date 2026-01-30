@@ -560,6 +560,40 @@ Use Pydantic or dataclass with validation for all configuration.
 | Config merging | 1 (Unit) | Pure function with typed inputs |
 ```
 
+### Pattern: Test Infrastructure
+
+When project has co-located tests (specs/.../tests/) alongside regression tests:
+
+```markdown
+## Decision
+
+Test utilities are packaged as `{project}_testing/` and installed via editable install.
+
+### Implementation Constraints
+
+1. Test utilities (fixtures, harnesses) live in `{project}_testing/`, NOT `tests/`
+2. `pyproject.toml` includes both packages: `packages = ["{project}", "{project}_testing"]`
+3. pytest config uses `--import-mode=importlib` for multiple test directories
+4. `pythonpath = ["."]` in pytest config
+5. Dev dependencies installed via `uv pip install -e ".[dev]"`
+
+### Testing Strategy
+
+| Component      | Level           | Justification                 |
+| -------------- | --------------- | ----------------------------- |
+| Test fixtures  | 1 (Unit)        | Pure data/factory functions   |
+| Test harnesses | 2 (Integration) | May invoke real CLI/processes |
+
+### Environment Verification
+
+Before running any tests:
+
+1. Verify `uv run which pytest` points to project venv
+2. Verify test utilities importable: `from {project}_testing.fixtures import ...`
+```
+
+See `references/test-infrastructure-patterns.md` for full patterns.
+
 ### Pattern: CLI Structure
 
 When defining CLI architecture:
@@ -592,6 +626,7 @@ Use click or argparse with subcommand pattern.
 - `references/architecture-patterns.md` - DDD, hexagonal, DI patterns
 - `references/security-patterns.md` - Security-by-design patterns
 - `references/testability-patterns.md` - Designing for testability
+- `references/test-infrastructure-patterns.md` - Test packaging, pytest config, environment verification
 
 For methodology, use the `spx` CLI (`spx spec status`, `spx spec next`).
 

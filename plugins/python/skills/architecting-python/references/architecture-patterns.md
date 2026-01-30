@@ -423,14 +423,23 @@ project/
 │       ├── adapters/       # External integrations
 │       ├── ports/          # Interfaces
 │       └── main.py         # Entry point
+├── mypackage_testing/      # Test utilities (fixtures, harnesses) - INSTALLABLE
+│   ├── __init__.py
+│   ├── fixtures/           # Test data factories
+│   └── harnesses/          # Test infrastructure (CLI harness, etc.)
 ├── tests/                  # Graduated regression tests
 │   ├── unit/
 │   ├── integration/
 │   └── e2e/
 └── spx/                    # Specs as durable map (CODE framework)
     ├── CLAUDE.md           # Navigation and work item management
-    └── NN-{slug}.capability/  # Capabilities with co-located tests
+    └── NN-{slug}.capability/
+        └── NN-{slug}.feature/
+            └── NN-{slug}.story/
+                └── tests/  # Co-located tests for this story
 ```
+
+**Key**: Test utilities in `mypackage_testing/` are installed via `uv pip install -e ".[dev]"`. Progress tests in `specs/.../tests/` import from `mypackage_testing.fixtures`. See `test-infrastructure-patterns.md`.
 
 ---
 
