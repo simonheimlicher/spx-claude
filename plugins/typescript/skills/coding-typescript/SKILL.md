@@ -58,8 +58,8 @@ function validateScore(score: number): boolean {
 export const MIN_SCORE = 0;
 export const MAX_SCORE = 100;
 
-// tests/scoring.test.ts
-import { MIN_SCORE, validateScore } from "../src/scoring";
+// spx/.../tests/scoring.unit.test.ts
+import { MIN_SCORE, validateScore } from "@/scoring";
 
 it("rejects below minimum", () => {
   expect(validateScore(MIN_SCORE - 1)).toBe(false);
@@ -142,15 +142,15 @@ Read: existing files in the same directory you'll write to
 
 ### What to Discover
 
-| Question                        | How to Find                                 |
-| ------------------------------- | ------------------------------------------- |
-| What libraries are available?   | `package.json` → dependencies               |
-| How does this project handle X? | `Grep` for similar patterns                 |
-| What utilities already exist?   | `Glob` for `**/utils/**`, `**/helpers/**`   |
-| What's the naming convention?   | Read 3-5 files in the target directory      |
-| What error classes exist?       | `Grep` for `extends Error`                  |
-| What logging pattern is used?   | `Grep` for `logger`, `console.log`, `debug` |
-| How are configs structured?     | `Glob` for `**/*.config.*`, `**/config/**`  |
+| Question                        | How to Find                                                                    |
+| ------------------------------- | ------------------------------------------------------------------------------ |
+| What libraries are available?   | `package.json` → dependencies                                                  |
+| How does this project handle X? | `Grep` for similar patterns                                                    |
+| What utilities already exist?   | `Glob` for `**/utils/**`, `**/helpers/**`, `**/fixtures/**`, `**/harnesses/**` |
+| What's the naming convention?   | Read 3-5 files in the target directory                                         |
+| What error classes exist?       | `Grep` for `extends Error`                                                     |
+| What logging pattern is used?   | `Grep` for `logger`, `console.log`, `debug`                                    |
+| How are configs structured?     | `Glob` for `**/*.config.*`, `**/config/**`                                     |
 
 ### Discovery Anti-Patterns
 
@@ -341,7 +341,7 @@ import { Config } from "../../../shared/config";
 // RIGHT: Configure path aliases in tsconfig.json
 import { Logger } from "@lib/logging";
 import { Config } from "@shared/config";
-import { helper } from "@test/helpers/tree-builder";
+import { helper } from "@testing/helpers/tree-builder";
 ```
 
 **Depth Rules:**
@@ -358,7 +358,7 @@ import { helper } from "@test/helpers/tree-builder";
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@test/*": ["tests/*"],
+      "@testing/*": ["tests/*"],
       "@lib/*": ["lib/*"]
     }
   }

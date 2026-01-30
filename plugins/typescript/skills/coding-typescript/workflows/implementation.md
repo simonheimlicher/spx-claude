@@ -75,14 +75,16 @@ src/
 ├── errors.ts            # Custom error classes
 └── types.ts             # Type definitions
 
-test/
+tests/
 ├── fixtures/
 │   ├── values.ts        # Shared test values
 │   └── factories.ts     # Test data factories
-├── unit/
-│   └── core.test.ts     # Unit tests
-└── integration/
-    └── core.test.ts     # Integration tests
+└── harness/
+    └── index.ts         # Test harnesses
+
+spx/{capability}/{feature}/tests/   # Co-located tests (CODE framework)
+├── core.unit.test.ts               # Level 1
+└── core.integration.test.ts        # Level 2
 ```
 
 ### Code Standards

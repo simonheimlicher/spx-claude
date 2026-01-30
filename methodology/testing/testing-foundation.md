@@ -496,18 +496,20 @@ Randomized data generation with seeding for reproducibility. Always derive seed 
 
 ---
 
-## Progress Tests vs Regression Tests
+## Co-located Tests (CODE Framework)
 
-| Location                                | Name             | May Fail? | Purpose                          |
-| --------------------------------------- | ---------------- | --------- | -------------------------------- |
-| `specs/.../tests/`                      | Progress tests   | YES       | TDD red-green during development |
-| `tests/{level}/{capability}/{feature}/` | Regression tests | NO        | Protect working functionality    |
+Tests stay with their specs permanently. No graduation.
 
-**The invariant**: The regression test suite MUST ALWAYS PASS.
+| Location                     | Level indicated by    | Purpose                       |
+| ---------------------------- | --------------------- | ----------------------------- |
+| `spx/.../tests/`             | Filename suffix       | All tests, co-located         |
+| `*.unit.test.{ts,py}`        | Level 1 (Unit)        | Pure logic, DI                |
+| `*.integration.test.{ts,py}` | Level 2 (Integration) | Real dependencies via harness |
+| `*.e2e.test.{ts,py}`         | Level 3 (E2E)         | Full system with credentials  |
 
-**Graduation**: When a story is complete, its tests graduate from `specs/work/doing/{capability}/{feature}/{story}/tests/` to `tests/{level}/{capability}/{feature}/`.
+**The invariant**: All tests in `spx/.../tests/` MUST ALWAYS PASS. The `pass.csv` file tracks verification.
 
-Stories are ephemeral work items—they disappear as a directory level, becoming test files or describe blocks within the feature.
+**No graduation**: Tests remain co-located with their specs. Story tests become part of the feature's test suite, organized by filename rather than directory.
 
 ---
 

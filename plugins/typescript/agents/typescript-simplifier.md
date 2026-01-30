@@ -21,7 +21,7 @@ MUST run tests and confirm they pass AFTER making changes.
 MUST preserve exact functionality - all tests must pass after refinement.
 MUST preserve dependency injection patterns - NEVER remove injected parameters or consolidate them in ways that break testability.
 MUST preserve type safety - NEVER remove type guards, generic constraints, strict types, or explicit annotations.
-MUST honor path alias rules - NEVER introduce imports with 2+ levels of `../` to stable locations (use `@/`, `@test/`, `@lib/`).
+MUST honor path alias rules - NEVER introduce imports with 2+ levels of `../` to stable locations (use `@/`, `@testing/`, `@lib/`).
 MUST follow project standards from CLAUDE.md when present.
 MUST verify refactored code would pass `/reviewing-typescript` checklist.
 

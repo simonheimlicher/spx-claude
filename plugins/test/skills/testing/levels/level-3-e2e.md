@@ -36,7 +36,7 @@ Please provide this information before I proceed with Level 3 tests.
 ### Pattern: Environment Variables with Documentation
 
 ```typescript
-// test/e2e/credentials.ts
+// spx/.../tests/credentials.e2e.spec.ts
 
 /**
  * Level 3 tests require these environment variables.
@@ -100,7 +100,7 @@ export { loadCredentials, requireCredentials };
 ### Pattern: Skip If Credentials Missing
 
 ```typescript
-// test/e2e/lhci.test.ts
+// spx/.../tests/lhci.e2e.test.ts
 import { beforeAll, describe, test } from "vitest";
 import { loadCredentials } from "./credentials";
 
@@ -156,7 +156,7 @@ DATABASE_URL=         # Get from 1Password: "Staging DB Connection"
 Test the CLI exactly as a user would invoke it.
 
 ```typescript
-// test/e2e/cli.test.ts
+// spx/.../tests/cli.e2e.test.ts
 import { execa } from "execa";
 import { requireCredentials } from "./credentials";
 
@@ -339,7 +339,7 @@ export default defineConfig({
 ### Playwright Page Object Pattern
 
 ```typescript
-// test/e2e/pages/login-page.ts
+// spx/.../tests/login-page.e2e.spec.ts
 import { expect, Locator, Page } from "@playwright/test";
 
 type LoginPageDeps = {
@@ -379,7 +379,7 @@ export { createLoginPage };
 ### Playwright Auth Fixture
 
 ```typescript
-// test/e2e/fixtures.ts
+// spx/.../tests/fixtures.e2e.spec.ts
 import { expect, test as base } from "@playwright/test";
 import { createLoginPage } from "./pages/login-page";
 
@@ -428,7 +428,7 @@ export { expect, hasTestCredentials, test };
 ### Full Workflow Tests
 
 ```typescript
-// test/e2e/audit-workflow.test.ts
+// spx/.../tests/audit-workflow.e2e.test.ts
 import { expect, hasTestCredentials, test } from "./fixtures";
 import { createAuditPage } from "./pages/audit-page";
 import { createDashboardPage } from "./pages/dashboard-page";
@@ -482,7 +482,7 @@ test.describe("Audit Workflow", () => {
 Test MCP servers by acting as a client.
 
 ```typescript
-// test/e2e/mcp-server.test.ts
+// spx/.../tests/mcp-server.e2e.test.ts
 import { ChildProcess, spawn } from "child_process";
 import { requireCredentials } from "./credentials";
 
@@ -629,7 +629,7 @@ describe("MCP Server E2E", () => {
 Ensure E2E tests don't affect other tests or pollute shared environments.
 
 ```typescript
-// test/e2e/isolation.ts
+// spx/.../tests/isolation.e2e.spec.ts
 import { randomBytes } from "crypto";
 
 /**
@@ -668,7 +668,7 @@ test("creates user successfully", async ({ page }) => {
 ### Cleanup Pattern
 
 ```typescript
-// test/e2e/setup.ts
+// spx/.../tests/setup.e2e.spec.ts
 import { FullConfig } from "@playwright/test";
 
 async function globalTeardown(config: FullConfig) {
@@ -779,7 +779,7 @@ beforeAll(async () => {
 ### 2. Check Third-Party Status
 
 ```typescript
-// test/e2e/health-checks.test.ts
+// spx/.../tests/health-checks.e2e.test.ts
 test.describe("Health Checks", () => {
   test("LHCI server is reachable", async () => {
     const response = await fetch(process.env.LHCI_SERVER_URL + "/healthcheck");

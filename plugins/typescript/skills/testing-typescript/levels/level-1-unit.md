@@ -115,7 +115,7 @@ export async function runLhci(
 Create **real implementations**, not mocks:
 
 ```typescript
-// test/unit/test-implementations.ts
+// spx/.../tests/test-implementations.unit.test.ts
 
 /**
  * Real test implementation for execa - has actual logic.
@@ -208,7 +208,7 @@ export function createTestDeps(
 ### Level 1 Tests
 
 ```typescript
-// test/unit/runners/lhci.test.ts
+// spx/.../tests/lhci.unit.test.ts
 import { buildLhciCommand, runLhci } from "@/runners/lhci";
 import { describe, expect, it } from "vitest";
 import { createTestConfig } from "../../fixtures/factories";
@@ -344,7 +344,7 @@ export function validateConfig(config: unknown): Config {
 ```
 
 ```typescript
-// test/unit/config/schema.test.ts
+// spx/.../tests/schema.unit.test.ts
 import { configSchema, validateConfig } from "@/config/schema";
 import { describe, expect, it } from "vitest";
 
@@ -415,7 +415,7 @@ export function parseExecaError(error: unknown): AppError {
 ```
 
 ```typescript
-// test/unit/errors.test.ts
+// spx/.../tests/errors.unit.test.ts
 import { AppError, parseExecaError } from "@/errors";
 import { describe, expect, it } from "vitest";
 
@@ -454,7 +454,7 @@ describe("parseExecaError", () => {
 Temp directories are ephemeral and reentrant—they're Level 1.
 
 ```typescript
-// test/unit/hugo/build.test.ts
+// spx/.../tests/build.unit.test.ts
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";

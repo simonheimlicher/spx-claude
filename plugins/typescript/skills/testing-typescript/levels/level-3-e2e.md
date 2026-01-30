@@ -72,18 +72,27 @@ beforeAll(() => {
 
 ---
 
-## File Location & Naming
+## File Location & Naming (CODE Framework)
+
+Tests are co-located with specs in `spx/`. Level is indicated by suffix naming:
 
 ```
-test/
-├── unit/                    # Level 1
-├── integration/             # Level 2
-└── e2e/                     # Level 3
-    ├── cli.e2e.test.ts
-    ├── audit.e2e.test.ts
-    └── fixtures/
-        └── sample-hugo-site/
+spx/{capability}/{feature}/
+├── {feature}.md                 # Feature spec
+└── tests/
+    ├── core.unit.test.ts        # Level 1 (Vitest)
+    ├── core.integration.test.ts # Level 2 (Vitest)
+    ├── cli.e2e.test.ts          # Level 3, non-browser (Vitest)
+    └── login.e2e.spec.ts        # Level 3, browser (Playwright)
+
+tests/fixtures/                  # Shared fixtures (project root)
+└── sample-hugo-site/
 ```
+
+**E2E suffix distinction:**
+
+- `*.e2e.test.ts` - Non-browser E2E (CLI, API, health checks) → Vitest
+- `*.e2e.spec.ts` - Browser-based E2E → Playwright
 
 ---
 
@@ -92,7 +101,7 @@ test/
 ### Chrome/Lighthouse Availability
 
 ```typescript
-// test/e2e/conftest.ts
+// spx/.../tests/conftest.ts
 import { execaSync } from "execa";
 
 export function chromeAvailable(): boolean {
@@ -118,7 +127,7 @@ export function lhciAvailable(): boolean {
 ### Skip Markers for CI
 
 ```typescript
-// test/e2e/cli.e2e.test.ts
+// spx/.../tests/cli.e2e.test.ts
 import { describe, expect, it } from "vitest";
 import { chromeAvailable } from "./conftest";
 
@@ -134,7 +143,7 @@ describe.skipIf(!chromeAvailable())("Lighthouse E2E", () => {
 ### Pattern: Testing CLI Help Output
 
 ```typescript
-// test/e2e/cli.e2e.test.ts
+// spx/.../tests/cli.e2e.test.ts
 import { execa } from "execa";
 import { describe, expect, it } from "vitest";
 
@@ -169,7 +178,7 @@ describe("CLI E2E", () => {
 ### Pattern: Testing Full Audit Workflow
 
 ```typescript
-// test/e2e/audit.e2e.test.ts
+// spx/.../tests/audit.e2e.test.ts
 import { execa, type ExecaChildProcess } from "execa";
 import * as fs from "fs";
 import getPort from "get-port";
@@ -234,7 +243,7 @@ describe.skipIf(!canRunFullE2E)("Full Audit E2E", () => {
 ### Pattern: Testing Report Generation
 
 ```typescript
-// test/e2e/reports.e2e.test.ts
+// spx/.../tests/reports.e2e.test.ts
 import { execa } from "execa";
 import * as fs from "fs";
 import * as os from "os";
@@ -280,7 +289,7 @@ describe.skipIf(!chromeAvailable())("Report Generation E2E", () => {
 ### Pattern: Testing Error Handling
 
 ```typescript
-// test/e2e/errors.e2e.test.ts
+// spx/.../tests/errors.e2e.test.ts
 import { execa } from "execa";
 import { describe, expect, it } from "vitest";
 

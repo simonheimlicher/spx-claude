@@ -281,24 +281,16 @@ def test_full_sync_workflow(dropbox_test_folder, dropbox_config):
 ## pytest Configuration
 
 ```python
-# conftest.py
-def pytest_configure(config):
-    config.addinivalue_line("markers", "integration: requires test harness")
-    config.addinivalue_line("markers", "e2e: requires credentials")
-
-
 # pyproject.toml
 [tool.pytest.ini_options]
-markers = [
-    "integration: requires test harness (Docker, real binaries)",
-    "e2e: requires credentials and external services",
-]
-testpaths = ["tests"]
+testpaths = ["spx"]
+python_files = ["*.test.py"]
 
-# Run by level:
-# pytest -m "not integration and not e2e"  # Level 1 only
-# pytest -m "integration"                   # Level 2
-# pytest -m "e2e"                           # Level 3
+# Run by level (path-based, no markers needed):
+# pytest spx/ -k "unit"         # Level 1 only
+# pytest spx/ -k "integration"  # Level 2
+# pytest spx/ -k "e2e"          # Level 3
+# pytest spx/                   # All tests
 ```
 
 ---
@@ -361,31 +353,61 @@ def test_files_synced():
 
 ---
 
-## Test Infrastructure Paths
+## Test Organization (CODE Framework)
 
-Test infrastructure lives alongside tests:
+Tests are co-located with specs in `spx/`. Level is indicated by suffix naming:
 
 ```
-tests/
-├── harness/                 # Active code for tests
+spx/
+└── {capability}/
+    └── {feature}/
+        ├── {feature}.md           # Feature spec
+        └── tests/
+            ├── {name}.unit.test.py        # Level 1 (pytest)
+            ├── {name}.integration.test.py # Level 2 (pytest)
+            ├── {name}.e2e.test.py          # Level 3, non-browser (pytest)
+            └── {name}.e2e.spec.py          # Level 3, browser (Playwright)
+```
+
+**E2E suffix distinction:**
+
+- `*.e2e.test.py` - Non-browser E2E (CLI, API) → runs with pytest
+- `*.e2e.spec.py` - Browser-based E2E → runs with Playwright
+
+**Run by path** - no markers needed:
+
+```bash
+pytest spx/ -k "unit"         # All unit tests
+pytest spx/ -k "integration"  # All integration tests
+pytest spx/ -k "e2e" --ignore="*.spec.py"  # Non-browser E2E
+npx playwright test spx/      # Browser E2E (finds *.spec.py)
+```
+
+### Shared Test Infrastructure
+
+Shared harnesses and fixtures live in an installable `{project}_testing/` package:
+
+```
+myproject_testing/          # INSTALLABLE via uv pip install -e ".[dev]"
+├── __init__.py
+├── harnesses/              # Active code for tests
 │   ├── __init__.py
-│   ├── context.py           # Test environment context manager (withTestEnv)
-│   ├── postgres.py          # PostgreSQL harness
-│   ├── docker.py            # Generic Docker harness
-│   └── factories.py         # Seeded data factories
-├── fixtures/                # Static test data
-│   ├── sample-config.json
-│   └── values.py            # TYPICAL, EDGES collections
-├── unit/
-│   └── {capability}/
-│       └── {feature}/
-├── integration/
-│   └── {capability}/
-│       └── {feature}/
-└── e2e/
-    └── {capability}/
-        └── {feature}/
+│   ├── context.py          # Test environment context manager
+│   ├── postgres.py         # PostgreSQL harness
+│   ├── docker.py           # Generic Docker harness
+│   └── factories.py        # Seeded data factories
+└── fixtures/               # Static test data
+    ├── sample_config.json
+    └── values.py           # TYPICAL, EDGES collections
 ```
 
-**harness/** = Code that runs (context managers, harnesses, factories)
+**harnesses/** = Code that runs (context managers, harnesses, factories)
 **fixtures/** = Data that's read (JSON files, sample configs, test values)
+
+Import in co-located tests:
+
+```python
+# In spx/{capability}/{feature}/tests/sync.unit.test.py
+from myproject_testing.harnesses.factories import SyncResultFactory
+from myproject_testing.fixtures.values import TYPICAL_PATHS
+```

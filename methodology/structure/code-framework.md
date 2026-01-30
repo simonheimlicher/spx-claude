@@ -284,7 +284,7 @@ The `tests/` prefix is never stored in `pass.csv`.
 ```ts
 // vitest.config.ts
 export default {
-  include: ["spx/**/tests/**/*.test.ts"],
+  include: ["spx/**/tests/*.test.ts"],
 };
 ```
 

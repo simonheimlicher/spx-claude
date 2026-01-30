@@ -80,7 +80,7 @@ Read ALL code under review. Check each item:
 - [ ] No deep relative imports (2+ levels of `../`)
 - [ ] Imports to stable locations use path aliases, not relative paths
 - [ ] Module-internal files may use `./` or `../` (1 level max)
-- [ ] Test files use `@test/` alias for shared test infrastructure
+- [ ] Test files use `@testing/` alias for shared test infrastructure
 
 ### Module-Internal vs. Infrastructure
 
@@ -101,7 +101,7 @@ import { Token } from "./token"; // ./token.ts is in same directory
 import { helper } from "../../../../../../tests/helpers/tree-builder";
 
 // ✅ ACCEPT: Use path alias for stable locations
-import { helper } from "@test/helpers/tree-builder";
+import { helper } from "@testing/helpers/tree-builder";
 ```
 
 ### Depth Rules (Strict)
@@ -132,13 +132,11 @@ import { Position } from "./position"; // ✅ Same AST module
 import { createTestDb } from "../../../../../../tests/helpers/db";
 import { Logger } from "../../../../lib/logging";
 import { Config } from "../../../shared/config";
-import { mockServer } from "../../../test-utils/server";
 
 // ✅ ACCEPT: Use configured path aliases
 import { Logger } from "@lib/logging";
 import { Config } from "@shared/config";
-import { createTestDb } from "@test/helpers/db";
-import { mockServer } from "@test/utils/server";
+import { createTestDb } from "@testing/helpers/db";
 ```
 
 ### Examples: Test Files (Special Attention)
@@ -153,14 +151,14 @@ import { createFixture } from "../../helpers/fixtures";
 
 // ✅ ACCEPT: Path aliases make intent clear
 import { UserService } from "@/services/user";
-import { createFixture } from "@test/helpers/fixtures";
+import { createFixture } from "@testing/helpers/fixtures";
 
 // File: spx/21-core-cli.capability/54-commands.feature/42-run.story/tests/feature.test.ts
 // ❌ REJECT: Deep relative to shared test helpers
 import { helper } from "../../../../../../tests/helpers/tree-builder";
 
 // ✅ ACCEPT: Alias for test infrastructure
-import { helper } from "@test/helpers/tree-builder";
+import { helper } from "@testing/helpers/tree-builder";
 ```
 
 ### Examples: Monorepo Packages
@@ -186,7 +184,7 @@ When you reject code for deep imports, guide the developer to configure aliases:
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@test/*": ["tests/*"],
+      "@testing/*": ["tests/*"],
       "@lib/*": ["lib/*"],
       "@shared/*": ["shared/*"]
     }

@@ -121,7 +121,7 @@ function parseArgs(argv: string[]): LhciOptions {
   return args;
 }
 
-// test/unit/args.test.ts
+// spx/.../tests/args.unit.test.ts
 describe("parseArgs", () => {
   test("parses --url flag", () => {
     const result = parseArgs(["--url", "http://localhost:3000"]);
@@ -180,7 +180,7 @@ function buildHugoCommand(options: HugoBuildOptions): string[] {
   return args;
 }
 
-// test/unit/hugo-command.test.ts
+// spx/.../tests/hugo-command.unit.test.ts
 describe("buildHugoCommand", () => {
   test("includes required source flag", () => {
     const cmd = buildHugoCommand({ source: "/site" });
@@ -243,7 +243,7 @@ function parseConfig(raw: unknown): { ok: true; config: Config } | { ok: false; 
   return { ok: false, errors };
 }
 
-// test/unit/config.test.ts
+// spx/.../tests/config.unit.test.ts
 describe("parseConfig", () => {
   test("parses valid minimal config", () => {
     const result = parseConfig({
@@ -346,7 +346,7 @@ function validateRunAuditInput(input: unknown): RunAuditInput | null {
   };
 }
 
-// test/unit/mcp-tools.test.ts
+// spx/.../tests/mcp-tools.unit.test.ts
 describe("validateRunAuditInput", () => {
   test("accepts valid input with urls only", () => {
     const result = validateRunAuditInput({ urls: ["/", "/about/"] });
@@ -424,7 +424,7 @@ async function analyzeResults(results: AuditResult[], deps: AnalyzerDeps): Promi
   };
 }
 
-// test/unit/analyzer.test.ts
+// spx/.../tests/analyzer.unit.test.ts
 describe("analyzeResults", () => {
   const defaultDeps: AnalyzerDeps = {
     getThresholds: async () => ({ performance: 90, accessibility: 100 }),
@@ -494,7 +494,7 @@ describe("analyzeResults", () => {
 Temp directories are **not** external dependencies—they're part of the runtime. Use them freely at Level 1.
 
 ```typescript
-// test/unit/config-file.test.ts
+// spx/.../tests/config-file.unit.test.ts
 import { mkdtemp, rm, writeFile } from "fs/promises";
 import { tmpdir } from "os";
 import { join } from "path";
@@ -638,7 +638,7 @@ async function executeAudit(input: AuditInput, deps: AuditDeps): Promise<{ ok: t
   }
 }
 
-// test/unit/audit.test.ts
+// spx/.../tests/audit.unit.test.ts
 describe("validateAuditInput", () => {
   test("accepts valid URL", () => {
     const result = validateAuditInput({ url: "https://example.com" });
@@ -715,7 +715,7 @@ function formatValidationErrors(errors: ValidationError[]): string {
   return `Validation failed:\n${lines.join("\n")}`;
 }
 
-// test/unit/error-format.test.ts
+// spx/.../tests/error-format.unit.test.ts
 describe("formatValidationErrors", () => {
   test("returns empty string for no errors", () => {
     expect(formatValidationErrors([])).toBe("");
@@ -763,7 +763,7 @@ describe("formatValidationErrors", () => {
 Generate test data programmatically. Never use arbitrary literals.
 
 ```typescript
-// test/factories.ts
+// spx/{capability}/.../testsfactories.ts
 let idCounter = 0;
 
 function createAuditResult(overrides: Partial<AuditResult> = {}): AuditResult {

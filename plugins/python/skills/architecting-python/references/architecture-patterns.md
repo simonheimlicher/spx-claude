@@ -427,19 +427,17 @@ project/
 │   ├── __init__.py
 │   ├── fixtures/           # Test data factories
 │   └── harnesses/          # Test infrastructure (CLI harness, etc.)
-├── tests/                  # Graduated regression tests
-│   ├── unit/
-│   ├── integration/
-│   └── e2e/
 └── spx/                    # Specs as durable map (CODE framework)
     ├── CLAUDE.md           # Navigation and work item management
     └── NN-{slug}.capability/
         └── NN-{slug}.feature/
-            └── NN-{slug}.story/
-                └── tests/  # Co-located tests for this story
+            └── tests/      # Co-located tests with suffix naming
+                ├── foo.unit.test.py
+                ├── bar.integration.test.py
+                └── baz.e2e.test.py
 ```
 
-**Key**: Test utilities in `mypackage_testing/` are installed via `uv pip install -e ".[dev]"`. Progress tests in `specs/.../tests/` import from `mypackage_testing.fixtures`. See `test-infrastructure-patterns.md`.
+**Key**: Test utilities in `mypackage_testing/` are installed via `uv pip install -e ".[dev]"`. Co-located tests in `spx/.../tests/` import from `mypackage_testing.fixtures`. See `test-infrastructure-patterns.md`.
 
 ---
 

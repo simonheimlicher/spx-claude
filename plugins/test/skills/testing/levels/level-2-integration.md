@@ -48,7 +48,7 @@ Please provide this information or point me to existing test infrastructure.
 ## Pattern: Harness Directory Structure
 
 ```
-test/
+testing/
 ├── harnesses/
 │   ├── index.ts              # Re-exports all harnesses
 │   ├── postgres.ts           # Postgres container harness
@@ -61,11 +61,12 @@ test/
 │   │   └── content/
 │   ├── seed-data.sql         # Database seed data
 │   └── test-config.yaml      # Test configuration
-├── integration/
-│   ├── database.test.ts
-│   ├── hugo-build.test.ts
-│   └── caddy-server.test.ts
 └── setup.ts                  # Global test setup
+
+spx/{capability}/{feature}/tests/   # Co-located tests (CODE framework)
+├── database.integration.test.ts
+├── hugo-build.integration.test.ts
+└── caddy-server.integration.test.ts
 ```
 
 ---
@@ -73,7 +74,7 @@ test/
 ## Pattern: Hugo Binary Harness
 
 ```typescript
-// test/harnesses/hugo.ts
+// testing/harnesses/hugo.ts
 import { execa, ExecaReturnValue } from "execa";
 import { cp, mkdtemp, rm } from "fs/promises";
 import { tmpdir } from "os";
@@ -177,10 +178,10 @@ export { createHugoHarness, verifyHugoInstalled };
 ### Using the Hugo Harness
 
 ```typescript
-// test/integration/hugo-build.test.ts
+// spx/{capability}/.../tests/hugo-build.integration.test.ts
+import { createHugoHarness } from "@testing/harnesses/hugo";
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
-import { createHugoHarness } from "../harnesses/hugo";
 
 describe("Hugo Build Integration", () => {
   test("builds minimal site successfully", async () => {
@@ -235,7 +236,7 @@ describe("Hugo Build Integration", () => {
 ## Pattern: Caddy Server Harness
 
 ```typescript
-// test/harnesses/caddy.ts
+// testing/harnesses/caddy.ts
 import { execa, ExecaChildProcess } from "execa";
 import { mkdtemp, rm, writeFile } from "fs/promises";
 import getPort from "get-port";
@@ -334,9 +335,9 @@ export { createCaddyHarness, verifyCaddyInstalled };
 ### Using the Caddy Harness
 
 ```typescript
-// test/integration/caddy-server.test.ts
-import { createCaddyHarness } from "../harnesses/caddy";
-import { createHugoHarness } from "../harnesses/hugo";
+// spx/{capability}/.../tests/caddy-server.integration.test.ts
+import { createCaddyHarness } from "@testing/harnesses/caddy";
+import { createHugoHarness } from "@testing/harnesses/hugo";
 
 describe("Caddy Server Integration", () => {
   test("serves Hugo-built site", async () => {
@@ -386,7 +387,7 @@ describe("Caddy Server Integration", () => {
 ## Pattern: Database Harness (PostgreSQL)
 
 ```typescript
-// test/harnesses/postgres.ts
+// testing/harnesses/postgres.ts
 import { execa } from "execa";
 import { readFile } from "fs/promises";
 import { Pool } from "pg";
@@ -455,8 +456,8 @@ export { createPostgresHarness, TEST_DB_CONFIG };
 ### Using the Postgres Harness
 
 ```typescript
-// test/integration/database.test.ts
-import { createPostgresHarness } from "../harnesses/postgres";
+// spx/{capability}/.../tests/database.integration.test.ts
+import { createPostgresHarness } from "@testing/harnesses/postgres";
 
 describe("User Repository Integration", () => {
   let db: Awaited<ReturnType<typeof createPostgresHarness>>;
@@ -672,7 +673,7 @@ def test_with_fixture(hugo):
 Test that your HTTP client code works with real HTTP responses.
 
 ```typescript
-// test/harnesses/http-server.ts
+// testing/harnesses/http-server.ts
 import getPort from "get-port";
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 
@@ -764,9 +765,9 @@ export { createHttpServerHarness };
 ### Using the HTTP Harness
 
 ```typescript
-// test/integration/api-client.test.ts
-import { createApiClient } from "../../src/api/client";
-import { createHttpServerHarness } from "../harnesses/http-server";
+// spx/{capability}/.../tests/api-client.integration.test.ts
+import { createApiClient } from "@/api/client";
+import { createHttpServerHarness } from "@testing/harnesses/http-server";
 
 describe("API Client Integration", () => {
   let server: Awaited<ReturnType<typeof createHttpServerHarness>>;
@@ -833,7 +834,7 @@ describe("API Client Integration", () => {
 ## Pattern: Vitest Setup for Integration Tests
 
 ```typescript
-// test/setup.ts
+// spx/{capability}/.../testssetup.ts
 import { afterAll, beforeAll } from "vitest";
 
 // Environment check - fail fast if dependencies aren't available

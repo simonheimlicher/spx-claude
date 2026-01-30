@@ -331,9 +331,12 @@ Tests are **co-located** with specs in the `spx/` tree:
 
 **No graduation**: Tests stay where they are. The `pass.csv` file tracks which tests have passed. Test level is indicated by filename suffix:
 
-- `*.unit.test.{ts,py}` - Level 1
-- `*.integration.test.{ts,py}` - Level 2
-- `*.e2e.test.{ts,py}` - Level 3
+- `*.unit.test.{ts,py}` - Level 1 (Vitest/pytest)
+- `*.integration.test.{ts,py}` - Level 2 (Vitest/pytest)
+- `*.e2e.test.{ts,py}` - Level 3, non-browser (Vitest/pytest)
+- `*.e2e.spec.{ts,py}` - Level 3, browser-based (Playwright)
+
+**Runner separation**: Vitest/pytest find `*.test.*` files, Playwright finds `*.spec.*` files. No config needed.
 
 Stories persist as containers in the tree. Completion is tracked by `pass.csv`, not by moving files.
 

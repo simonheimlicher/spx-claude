@@ -47,15 +47,15 @@ When reviewing tests, you MUST verify:
 
 ### Rejection Criteria for Tests
 
-| Violation                   | Example                        | Verdict  |
-| --------------------------- | ------------------------------ | -------- |
-| Uses mocking                | `@patch("subprocess.run")`     | REJECTED |
-| Tests implementation        | `mock.assert_called_with(...)` | REJECTED |
-| Wrong level                 | Unit test for Dropbox OAuth    | REJECTED |
-| No escalation justification | Level 3 without explanation    | REJECTED |
-| Arbitrary test data         | `"test@example.com"` hardcoded | REJECTED |
-| Deep relative import        | `from .....tests.helpers`      | REJECTED |
-| sys.path manipulation       | `sys.path.insert(0, ...)`      | REJECTED |
+| Violation                   | Example                               | Verdict  |
+| --------------------------- | ------------------------------------- | -------- |
+| Uses mocking                | `@patch("subprocess.run")`            | REJECTED |
+| Tests implementation        | `mock.assert_called_with(...)`        | REJECTED |
+| Wrong level                 | Unit test for Dropbox OAuth           | REJECTED |
+| No escalation justification | Level 3 without explanation           | REJECTED |
+| Arbitrary test data         | `"test@example.com"` hardcoded        | REJECTED |
+| Deep relative import        | `from .....myproject_testin/ghelpers` | REJECTED |
+| sys.path manipulation       | `sys.path.insert(0, ...)`             | REJECTED |
 
 ### What to Look For
 
@@ -129,7 +129,7 @@ grep -rn --include="*.py" 'sys\.path\.(insert\|append)' src/ tests/
 
 ```text
 src/myproject/commands/sync.py:5:from ...shared.config import Config
-tests/unit/test_parser.py:3:from .....tests.helpers import fixture
+tests/unit/test_parser.py:3:from .....myproject_testing/helpers import fixture
 ```
 
 **For each match, determine:**
@@ -441,7 +441,7 @@ from .position import Position  # Part of "parser" package
 from .......tests.helpers import create_tree
 
 # ✅ ACCEPT: Absolute import (requires proper packaging)
-from tests.helpers import create_tree
+from myproject_testing.helpers import create_tree
 
 # or if tests installed as package:
 from myproject_tests.helpers import create_tree
@@ -477,7 +477,7 @@ from ....lib.logging import Logger
 from ...shared.config import Config
 
 # ✅ ACCEPT: Use absolute imports with proper packaging
-from tests.helpers.db import create_test_db
+from myproject_testing.helpers.db import create_test_db
 from myproject.lib.logging import Logger
 from myproject.shared.config import Config
 ```
@@ -493,14 +493,14 @@ from ...src.myproject.services import UserService
 
 # ✅ ACCEPT: Absolute imports (package installed)
 from myproject.services import UserService
-from tests.fixtures import create_user
+from myproject_testing.fixtures import create_user
 
 # File: spx/21-core-cli.capability/54-commands.feature/42-run.story/tests/test_feature.py
 # ❌ REJECT: Deep relative to test infrastructure
 from .......tests.helpers import fixture
 
 # ✅ ACCEPT: Absolute import
-from tests.helpers import fixture
+from myproject_testing.helpers import fixture
 ```
 
 ##### Required Project Setup

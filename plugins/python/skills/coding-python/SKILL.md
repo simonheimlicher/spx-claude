@@ -307,7 +307,7 @@ Before writing any import, ask: *"Is this a module-internal file (same package, 
 
 ```python
 # WRONG: Deep relative imports to infrastructure — will REJECT in review
-from .....tests.helpers import create_fixture
+from .....tests.harnesses import create_fixture
 from ...shared.config import Config
 from ....lib.logging import Logger
 
@@ -317,7 +317,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 # RIGHT: Use absolute imports with proper packaging
-from tests.helpers import create_fixture
+from myproject_testing.harnesses import create_fixture
 from myproject.shared.config import Config
 from myproject.lib.logging import Logger
 ```
@@ -345,7 +345,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 # ❌ FORBIDDEN: Relative path traversal for infrastructure
-from .....tests.helpers import create_fixture
+from .....tests.harnesses import create_fixture
 
 # ✅ REQUIRED: Proper packaging
 from myproject_testing.fixtures import create_fixture  # Installed package

@@ -59,11 +59,16 @@ Tests live alongside their specs in `spx/.../tests/` directories. Test level is 
 
 **Test Location in CODE Framework:**
 
-| Container  | Test Location                      | Filename Suffix         |
-| ---------- | ---------------------------------- | ----------------------- |
-| Story      | `spx/.../NN-{slug}.story/tests/`   | `*.unit.test.ts`        |
-| Feature    | `spx/.../NN-{slug}.feature/tests/` | `*.integration.test.ts` |
-| Capability | `spx/NN-{slug}.capability/tests/`  | `*.e2e.test.ts`         |
+| Container  | Test Location                      | Filename Suffix                    |
+| ---------- | ---------------------------------- | ---------------------------------- |
+| Story      | `spx/.../NN-{slug}.story/tests/`   | `*.unit.test.ts`                   |
+| Feature    | `spx/.../NN-{slug}.feature/tests/` | `*.integration.test.ts`            |
+| Capability | `spx/NN-{slug}.capability/tests/`  | `*.e2e.test.ts` or `*.e2e.spec.ts` |
+
+**E2E suffix distinction:**
+
+- `*.e2e.test.ts` - Non-browser E2E (CLI, API) → runs with Vitest
+- `*.e2e.spec.ts` - Browser-based E2E → runs with Playwright
 
 **Test Verification Ledger (pass.csv):**
 
@@ -450,7 +455,33 @@ Detailed patterns and examples for each level:
 </level_references>
 
 <test_infrastructure_paths>
-Test infrastructure lives alongside tests:
+
+## Test Organization (CODE Framework)
+
+Tests are co-located with specs in `spx/`. Level is indicated by suffix naming:
+
+```
+spx/
+└── {capability}/
+    └── {feature}/
+        ├── {feature}.md              # Feature spec
+        └── tests/
+            ├── {name}.unit.test.ts        # Level 1 (Vitest)
+            ├── {name}.integration.test.ts # Level 2 (Vitest)
+            ├── {name}.e2e.test.ts          # Level 3, non-browser (Vitest)
+            └── {name}.e2e.spec.ts          # Level 3, browser (Playwright)
+```
+
+**Run by runner** - each finds its own files:
+
+```bash
+vitest spx/                    # Runs *.test.ts (unit, integration, non-browser e2e)
+npx playwright test spx/       # Runs *.spec.ts (browser e2e)
+```
+
+### Shared Test Infrastructure
+
+Shared harnesses and fixtures live in project root:
 
 ```
 tests/
@@ -460,22 +491,21 @@ tests/
 │   ├── postgres.ts          # PostgreSQL harness
 │   ├── docker.ts            # Generic Docker harness
 │   └── factories.ts         # Seeded data factories
-├── fixtures/                # Static test data
-│   ├── sample-config.json
-│   └── values.ts            # TYPICAL, EDGES collections
-├── unit/
-│   └── {capability}/
-│       └── {feature}/
-├── integration/
-│   └── {capability}/
-│       └── {feature}/
-└── e2e/
-    └── {capability}/
-        └── {feature}/
+└── fixtures/                # Static test data
+    ├── sample-config.json
+    └── values.ts            # TYPICAL, EDGES collections
 ```
 
 **harness/** = Code that runs (context managers, harnesses, factories)
 **fixtures/** = Data that's read (JSON files, sample configs, test values)
+
+Import in co-located tests:
+
+```typescript
+// In spx/{capability}/{feature}/tests/sync.unit.test.ts
+import { TYPICAL_PATHS } from "@testing/fixtures/values";
+import { SyncResultFactory } from "@testing/harness/factories";
+```
 
 </test_infrastructure_paths>
 

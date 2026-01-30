@@ -190,13 +190,15 @@ Status values: OPEN, IN_PROGRESS, DONE
 
 **Finding Next Work Item**: Run `spx spec next` or invoke `/specs:managing-specs`. Do NOT manually check for `DONE.md` files or inspect `tests/` directories yourself.
 
-**Test Graduation**:
+**Co-located Tests**:
 
-- Story tests: `specs/.../tests/` → `tests/unit/`
-- Feature tests: `specs/.../tests/` → `tests/integration/`
-- Capability tests: `specs/.../tests/` → `tests/e2e/`
+Tests live with their specs and use suffix naming to indicate level:
 
-**Critical Rule**: Never write tests directly in `tests/` — this breaks CI until implementation is complete. Always write in `specs/.../tests/` first, then graduate upon completion.
+- `specs/.../tests/*.unit.test.{ts,py}` - Unit tests (Level 1)
+- `specs/.../tests/*.integration.test.{ts,py}` - Integration tests (Level 2)
+- `specs/.../tests/*.e2e.test.{ts,py}` - E2E tests (Level 3)
+
+Tests stay co-located permanently. No graduation to `tests/` directory.
 
 ---
 

@@ -60,20 +60,21 @@ A test harness is the infrastructure that lets you run tests against a real depe
 
 ---
 
-## File Location & Naming
+## File Location & Naming (CODE Framework)
+
+Tests are co-located with specs in `spx/`. Level is indicated by suffix naming:
 
 ```
-test/
-├── unit/                    # Level 1
-│   └── runners/
-│       └── lhci.test.ts
-├── integration/             # Level 2
-│   ├── hugo.integration.test.ts
-│   ├── caddy.integration.test.ts
-│   └── fixtures/
-│       └── sample-hugo-site/
-└── e2e/                     # Level 3+
-    └── lhci.e2e.test.ts
+spx/{capability}/{feature}/
+├── {feature}.md                      # Feature spec
+└── tests/
+    ├── lhci.unit.test.ts            # Level 1
+    ├── hugo.integration.test.ts      # Level 2
+    ├── caddy.integration.test.ts     # Level 2
+    └── lhci.e2e.test.ts              # Level 3
+
+tests/fixtures/                       # Shared fixtures (project root)
+└── sample-hugo-site/
 ```
 
 ---
@@ -108,7 +109,7 @@ title = 'Test Site'
 ### Skip Markers for CI
 
 ```typescript
-// test/integration/conftest.ts
+// spx/.../tests/conftest.ts
 import { execaSync } from "execa";
 
 export function hugoAvailable(): boolean {
@@ -131,7 +132,7 @@ export function caddyAvailable(): boolean {
 ```
 
 ```typescript
-// test/integration/hugo.integration.test.ts
+// spx/.../tests/hugo.integration.test.ts
 import { beforeAll, describe, expect, it } from "vitest";
 import { hugoAvailable } from "./conftest";
 
@@ -147,7 +148,7 @@ describe.skipIf(!hugoAvailable())("Hugo Integration", () => {
 ### Pattern: Testing Real Hugo Builds
 
 ```typescript
-// test/integration/hugo.integration.test.ts
+// spx/.../tests/hugo.integration.test.ts
 import { execa } from "execa";
 import * as fs from "fs";
 import * as os from "os";
@@ -206,7 +207,7 @@ describe.skipIf(!hugoAvailable())("Hugo Build Integration", () => {
 ### Pattern: Testing Real Caddy Server
 
 ```typescript
-// test/integration/caddy.integration.test.ts
+// spx/.../tests/caddy.integration.test.ts
 import { execa, type ExecaChildProcess } from "execa";
 import * as fs from "fs";
 import getPort from "get-port";
@@ -293,7 +294,7 @@ describe.skipIf(!caddyAvailable())("Caddy Server Integration", () => {
 ### Pattern: Testing Error Conditions
 
 ```typescript
-// test/integration/hugo-errors.integration.test.ts
+// spx/.../tests/hugo-errors.integration.test.ts
 import { execa } from "execa";
 import * as path from "path";
 import { describe, expect, it } from "vitest";
@@ -328,7 +329,7 @@ describe.skipIf(!hugoAvailable())("Hugo Error Handling", () => {
 ### Pattern: Testing Unicode and Special Paths
 
 ```typescript
-// test/integration/unicode.integration.test.ts
+// spx/.../tests/unicode.integration.test.ts
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";

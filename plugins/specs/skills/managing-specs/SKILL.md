@@ -11,7 +11,7 @@ Single source of truth for specs/ directory structure and all document templates
 Different use cases read different sections:
 
 - **Template access** → Read `<accessing_templates>` FIRST to understand where templates are located
-- **Structure definition** → Read `<structure_definition>` for specs/ directory hierarchy, BSP numbering, test graduation
+- **Structure definition** → Read `<structure_definition>` for specs/ directory hierarchy, BSP numbering, co-located tests
 - **ADR templates** → Read `<adr_templates>` for Architectural Decision Record patterns
 - **PRD/TRD templates** → Read `<requirement_templates>` for Product and Technical Requirements
 - **Work item templates** → Read `<work_item_templates>` for capability, feature, story, and DONE.md patterns
@@ -693,7 +693,7 @@ Adapt: Replace {slug} with kebab-case name
 
 # For completion
 Read: ${SKILL_DIR}/templates/work-items/DONE.md
-Adapt: List graduated tests by level
+Adapt: List co-located tests by level
        Document verification steps
        Include evidence of completion
 ```
