@@ -2,7 +2,7 @@
 
 > **APPROVED Only**: Committing is the reviewer's seal of approval.
 
-After stamping pass.csv, commit the completed work item.
+After committing outcomes, commit the completed work item.
 
 **Follow the `committing-changes` skill** for core commit protocol (selective staging, verification, Conventional Commits format).
 
@@ -18,7 +18,7 @@ Stage **only** files from the approved work item:
 | ------------------- | ----------------------------------------- |
 | Implementation      | `src/{modified files for this story}`     |
 | Co-located tests    | `spx/.../NN-{slug}.story/tests/*.test.ts` |
-| Verification ledger | `spx/.../NN-{slug}.story/pass.csv`        |
+| Verification ledger | `spx/.../NN-{slug}.story/outcomes.yaml`   |
 
 **Exclude**: Unrelated files, experimental code, files from other work items.
 
@@ -30,7 +30,7 @@ Include work item reference in footer:
 feat({scope}): implement {story-slug}
 
 - {brief description of what was implemented}
-- Tests verified in pass.csv
+- Tests verified in outcomes.yaml
 
 Refs: {capability}/{feature}/{story}
 ```
@@ -44,7 +44,7 @@ After successful commit:
 
 Commit: {commit_hash}
 Files committed: {count}
-Tests verified: {list from pass.csv}
+Tests verified: {list from outcomes.yaml}
 
 Work item is DONE.
 ```

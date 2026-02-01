@@ -2,9 +2,9 @@
 
 > **Write access is earned by passing review.** This phase only runs on APPROVED.
 
-## Phase 6: Stamp pass.csv
+## Phase 6: Commit Outcome
 
-When all checks pass, record test verification in the work item's `pass.csv` ledger.
+When all checks pass, record test verification in the work item's `outcomes.yaml` ledger.
 
 ### 6.1 Identify Test Files
 
@@ -32,37 +32,39 @@ npx vitest run spx/.../NN-{slug}.story/tests/
 
 **If tests fail**: The verdict becomes REJECTED with reason "Tests don't pass."
 
-### 6.3 Update pass.csv
+### 6.3 Commit Outcomes
 
-Record each passing test in the work item's `pass.csv`:
+Commit the test outcomes to the work item's outcome ledger:
 
 ```bash
-# Get blob SHA for test file
-git hash-object spx/.../tests/feature.unit.test.ts
-
-# Append to pass.csv
-echo "$(date -u +%Y-%m-%dT%H:%M:%SZ),feature.unit.test.ts,{blob_sha},PASS" >> spx/.../pass.csv
+spx spx commit spx/.../NN-{slug}.story
 ```
 
-Format: `timestamp,test_file,blob_sha,result`
+This generates `outcomes.yaml` with all passing tests.
 
 ## Phase 7: Verification Summary
 
 Create verification summary in the work item's test output.
 
-### 7.1 Verify pass.csv
+### 7.1 Verify outcomes.yaml
 
-Ensure pass.csv contains entries for all required tests:
+Ensure outcomes.yaml contains entries for all required tests:
 
-```csv
-timestamp,test_file,blob_sha,result
-2024-01-15T10:30:00Z,feature.unit.test.ts,a1b2c3d,PASS
-2024-01-15T10:30:05Z,edge-cases.unit.test.ts,e4f5g6h,PASS
+```yaml
+spec_blob: a1b2c3d...
+committed_at: 2024-01-15T10:30:00Z
+tests:
+  - file: feature.unit.test.ts
+    blob: a1b2c3d
+    passed_at: 2024-01-15T10:30:00Z
+  - file: edge-cases.unit.test.ts
+    blob: e4f5g6h
+    passed_at: 2024-01-15T10:30:05Z
 ```
 
 ### 7.2 Final Output
 
-After updating pass.csv, report completion:
+After updating outcomes.yaml, report completion:
 
 ```markdown
 ## Review Complete: {work-item}
@@ -78,7 +80,7 @@ After updating pass.csv, report completion:
 | Semgrep | PASS   | 0 findings                   |
 | vitest  | PASS   | {X}/{X} tests, {Y}% coverage |
 
-### Tests Verified (pass.csv)
+### Tests Verified (outcomes.yaml)
 
 | Requirement | Test File                 | Blob SHA |
 | ----------- | ------------------------- | -------- |

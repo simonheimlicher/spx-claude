@@ -94,7 +94,7 @@ Coder
 Code Reviewer
     │
     ├── rejects code that violates ADRs
-    ├── on APPROVED: stamps pass.csv via `spx spec test --stamp`
+    ├── on APPROVED: commits outcomes via `spx spx commit`
     └── ABORTS if ADR itself is flawed
 ```
 

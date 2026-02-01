@@ -203,14 +203,14 @@ These scenarios generate warnings but don't abort:
 WARNING: Working on completed work item
 
 **Story**: 30-build.story
-**Status**: All tests in pass.csv passing
-**Risk**: This story is complete. Changes may require re-stamping.
+**Status**: All tests in outcomes.yaml passing
+**Risk**: This story is complete. Changes may require re-committing outcomes.
 
 **Recommendations**:
 
 1. If this is new work, create a new story instead
 2. If fixing a bug, create a new bug-fix story
-3. If truly modifying this story, understand you'll need to re-stamp pass.csv
+3. If truly modifying this story, understand you'll need to re-commit outcomes
 
 Proceeding with context ingestion...
 ```

@@ -31,7 +31,7 @@ Each story follows this cycle:
                    │                                 │
                    │                                 ▼
                    │    ┌────────────────────────────────────────────────────────────────────┐
-                   │    │ - Records test verification in pass.csv ledger                     │
+                   │    │ - Records test verification in outcomes.yaml ledger                     │
                    │    │ - Commits changes                                                  │
                    │    └────────────────────────────────────────────────────────────────────┘
                    │

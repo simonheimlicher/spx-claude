@@ -93,17 +93,17 @@ spx/
 ├── NN-{slug}.adr.md                  # Product-wide ADRs (interleaved)
 └── NN-{slug}.capability/
     ├── {slug}.capability.md
-    ├── pass.csv                       # Test verification ledger
+    ├── outcomes.yaml                       # Test verification ledger
     ├── tests/
     ├── NN-{slug}.adr.md              # Capability-scoped ADRs (interleaved)
     └── NN-{slug}.feature/
         ├── {slug}.feature.md
-        ├── pass.csv
+        ├── outcomes.yaml
         ├── tests/
         ├── NN-{slug}.adr.md          # Feature-scoped ADRs (interleaved)
         └── NN-{slug}.story/
             ├── {slug}.story.md
-            ├── pass.csv
+            ├── outcomes.yaml
             └── tests/
 ```
 
@@ -652,7 +652,7 @@ Tests stay co-located with their specs permanently. Test level is indicated by f
 - Feature tests: `spx/.../NN-{slug}.feature/tests/*.integration.test.*`
 - Story tests: `spx/.../NN-{slug}.story/tests/*.unit.test.*`
 
-The `pass.csv` ledger documents test verification and provides completion evidence.
+The `outcomes.yaml` ledger documents test verification and provides completion evidence.
 
 </test_verification>
 

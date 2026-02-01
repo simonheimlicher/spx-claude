@@ -32,7 +32,7 @@ Working on: specs/work/doing/capability-10/feature-10/story-10/
 
 ```markdown
 Working on: spx/capability-10/feature-10/story-10/
-Status: See pass.csv (failed: 2 tests remaining)
+Status: See outcomes.yaml (failed: 2 tests remaining)
 ```
 
 ### Work Item Discovery
@@ -41,16 +41,16 @@ If pickup needs to find next work item:
 
 **Before:** Scan `specs/work/backlog/` for OPEN items
 
-**After:** Scan `spx/` for containers where `pass.csv` is missing or has non-empty `failed:` list
+**After:** Scan `spx/` for containers where `outcomes.yaml` is missing or has non-empty `failed:` list
 
 ## Tests
 
 - [Integration: Handoff references spx/ paths](tests/handoff-spx-paths.integration.test.ts)
-- [Integration: Pickup discovers work from pass.csv](tests/pickup-status-discovery.integration.test.ts)
+- [Integration: Pickup discovers work from outcomes.yaml](tests/pickup-status-discovery.integration.test.ts)
 
 ## Completion Criteria
 
 - [ ] Handoff documents use `spx/` paths
-- [ ] Pickup understands `pass.csv` for work state
+- [ ] Pickup understands `outcomes.yaml` for work state
 - [ ] No references to `specs/work/backlog|doing|done/`
 - [ ] Session directory (`.spx/sessions/`) unchanged

@@ -115,13 +115,13 @@ Continue until all stories in the feature are implemented and approved.
    - Run tests: `uv run --extra dev pytest spx/{capability}/{feature}/tests/ -v`
 4. **If no Level 2 tests specified:** Feature uses Level 1 only (documented in Test Strategy section)
 
-**Step 8: Stamp Feature pass.csv**
+**Step 8: Commit Feature Outcomes**
 
-Run `spx spec test --stamp` to update the feature's pass.csv:
+Run `spx spx commit` to update the feature's outcomes.yaml:
 
 - Validates all tests in `spx/{capability}/{feature}/tests/` pass
 - Records `spec_blob` and `test_blob` SHAs
-- Verifies child story pass.csv files are current
+- Verifies child story outcomes.yaml files are current
 
 **Step 9: Next Feature**
 Return to Part A, Step 1 with the first story of the next feature.
@@ -145,14 +145,14 @@ Continue until all features in the capability are implemented.
    - Run tests: `uv run --extra dev pytest spx/{capability}/tests/ -v`
 4. **If no Level 3 tests specified:** Capability uses Level 1-2 only (documented in Test Strategy section)
 
-**Step 11: Stamp Capability pass.csv**
+**Step 11: Commit Capability Outcomes**
 
-Run `spx spec test --stamp` to update the capability's pass.csv:
+Run `spx spx commit` to update the capability's outcomes.yaml:
 
 - Validates all tests in `spx/{capability}/tests/` pass
 - Records `spec_blob` and `test_blob` SHAs
-- Verifies child feature pass.csv files are current
-- Capability is complete when pass.csv is valid and all children are passing
+- Verifies child feature outcomes.yaml files are current
+- Capability is complete when outcomes.yaml is valid and all children are passing
 
 </workflow>
 
@@ -184,20 +184,20 @@ Run `spx spec test --stamp` to update the capability's pass.csv:
 ```text
 21-core-cli.capability/
 ├── 54-commands.feature/
-│   ├── 10-init.story/     [pass.csv ✓] All tests passing
-│   ├── 20-build.story/    [pass.csv ✓] All tests passing
+│   ├── 10-init.story/     [outcomes.yaml ✓] All tests passing
+│   ├── 20-build.story/    [outcomes.yaml ✓] All tests passing
 │   ├── 30-run.story/      [→] In Progress (Step 3)
 │   └── 40-test.story/     [pending] Not started
-│   └── pass.csv           [pending] Stamp after all stories pass
+│   └── outcomes.yaml           [pending] Commit after all stories pass
 ├── 65-config.feature/
 │   └── (stories pending)
-│   └── pass.csv           [pending]
-└── pass.csv               [pending] Stamp after all features pass
+│   └── outcomes.yaml           [pending]
+└── outcomes.yaml               [pending] Commit after all features pass
 ```
 
 **Legend:**
 
-- `[pass.csv ✓]` = All tests passing, pass.csv valid
+- `[outcomes.yaml ✓]` = All tests passing, outcomes.yaml valid
 - `[→]` = In progress
 - `[pending]` = Not started or tests not passing
 - Tests live in each container's `tests/` directory
@@ -213,22 +213,22 @@ Update this tracking as you complete each work item.
 
 - [ ] Story passed approval by `/reviewing-python`
 - [ ] Tests co-located in `spx/{capability}/{feature}/{story}/tests/`
-- [ ] `spx spec test --stamp` generates valid pass.csv
+- [ ] `spx spx commit` generates valid outcomes.yaml
 
 ## Feature Complete
 
-- [ ] All child story pass.csv files are valid
+- [ ] All child story outcomes.yaml files are valid
 - [ ] Feature-level integration tests implemented (if specified in spec)
-- [ ] `spx spec test --stamp` generates valid feature pass.csv
+- [ ] `spx spx commit` generates valid feature outcomes.yaml
 - [ ] All tests pass (`uv run --extra dev pytest spx/{capability}/{feature}/ -v`)
 - [ ] Type checking passes (`uv run --extra dev mypy src/`)
 - [ ] Linting passes (`uv run --extra dev ruff check src/`)
 
 ## Capability Complete
 
-- [ ] All child feature pass.csv files are valid
+- [ ] All child feature outcomes.yaml files are valid
 - [ ] Capability-level E2E tests implemented (if specified in spec)
-- [ ] `spx spec test --stamp` generates valid capability pass.csv
+- [ ] `spx spx commit` generates valid capability outcomes.yaml
 - [ ] All tests pass at all levels
 
 Implementation quality (no mocking, constants pattern) is verified by `/reviewing-python`.

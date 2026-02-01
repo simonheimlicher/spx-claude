@@ -94,7 +94,7 @@ If you're reviewing code for a spec-driven work item (story/feature/capability),
 
 | Verdict         | Criteria                                                   | Next Phase          |
 | --------------- | ---------------------------------------------------------- | ------------------- |
-| **APPROVED**    | All checks pass, no issues                                 | Stamp pass.csv      |
+| **APPROVED**    | All checks pass, no issues                                 | Commit outcome      |
 | **CONDITIONAL** | Only false-positive violations needing disable comments    | Coder adds comments |
 | **REJECTED**    | Real bugs, security issues, test failures, design problems | Coder fixes issues  |
 | **BLOCKED**     | Infrastructure cannot be provisioned                       | Fix environment     |
@@ -150,7 +150,7 @@ Execute these phases IN ORDER. Do not skip phases.
 | Workflow                             | Purpose                               |
 | ------------------------------------ | ------------------------------------- |
 | `workflows/review-protocol.md`       | Static analysis, tests, manual review |
-| `workflows/verification-protocol.md` | Verify tests pass, stamp pass.csv     |
+| `workflows/verification-protocol.md` | Verify tests pass, commit outcomes    |
 | `workflows/commit-protocol.md`       | Stage and commit approved work        |
 
 </workflows_index>
@@ -209,7 +209,7 @@ Review is complete when:
 - [ ] All tests executed with coverage measured
 - [ ] Manual review checklist completed
 - [ ] Verdict determined and documented
-- [ ] If APPROVED: tests verified, pass.csv stamped, changes committed
+- [ ] If APPROVED: tests verified, outcomes committed, changes committed
 - [ ] If REJECTED: actionable feedback provided with file:line references
 
 *Your job is to protect the codebase from defects. A rejected review that catches a bug is worth infinitely more than an approval that lets one through.*

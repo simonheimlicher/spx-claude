@@ -2,7 +2,7 @@
 
 ## Observable Outcome
 
-TypeScript plugin skills work with CODE structure: reference `spx/` paths, use co-located tests with suffix naming, understand `pass.csv`.
+TypeScript plugin skills work with CODE structure: reference `spx/` paths, use co-located tests with suffix naming, understand `outcomes.yaml`.
 
 ## Skills to Update
 
@@ -12,7 +12,7 @@ TypeScript plugin skills work with CODE structure: reference `spx/` paths, use c
 | reviewing-typescript     | Update spec references to `spx/`, review co-located tests              |
 | testing-typescript       | Update test paths from `tests/unit/` to `spx/.../tests/*.unit.test.ts` |
 | architecting-typescript  | Update ADR output to `spx/` hierarchy                                  |
-| orchestrating-typescript | Update workflow to use `spx/` paths, `pass.csv` for progress           |
+| orchestrating-typescript | Update workflow to use `spx/` paths, `outcomes.yaml` for progress      |
 
 ## Key Changes
 
@@ -75,6 +75,6 @@ export default {
 - [ ] All skills reference `spx/` not `specs/work/`
 - [ ] Test output uses co-located `tests/` with `*.unit.test.ts` naming
 - [ ] No references to test graduation
-- [ ] `pass.csv` used for work state determination
+- [ ] `outcomes.yaml` used for work state determination
 - [ ] No TRD references
 - [ ] vitest.config.ts example updated

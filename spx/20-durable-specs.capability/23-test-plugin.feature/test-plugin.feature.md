@@ -46,18 +46,18 @@ Tests stay with their spec. No graduation.
 
 **Before:** "Tests must pass before graduation"
 
-**After:** "Test results recorded in `pass.csv`. Empty `failed:` list = outcome achieved"
+**After:** "Test results recorded in `outcomes.yaml`. Empty `failed:` list = outcome achieved"
 
 ## Tests
 
 - [Integration: No graduation references](tests/no-graduation.integration.test.ts)
 - [Integration: Documents suffix naming](tests/suffix-naming.integration.test.ts)
-- [Integration: Documents pass.csv](tests/status-yaml.integration.test.ts)
+- [Integration: Documents outcomes.yaml](tests/status-yaml.integration.test.ts)
 
 ## Completion Criteria
 
 - [ ] No test graduation references
 - [ ] Documents co-located tests in `spx/.../tests/`
 - [ ] Documents suffix naming convention
-- [ ] Documents `pass.csv` for test results
+- [ ] Documents `outcomes.yaml` for test results
 - [ ] Language-specific testing skills updated to reference this

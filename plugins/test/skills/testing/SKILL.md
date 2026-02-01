@@ -322,14 +322,14 @@ Reproducible via seed. Escalate from debuggable loops to comprehensive propertie
 
 Tests are **co-located** with specs in the `spx/` tree:
 
-| Location                                   | State       | May Fail? | Purpose                          |
-| ------------------------------------------ | ----------- | --------- | -------------------------------- |
-| `spx/{container}/tests/` (not in pass.csv) | In progress | YES       | TDD red-green during development |
-| `spx/{container}/tests/` (in pass.csv)     | Validated   | NO        | Protect working functionality    |
+| Location                                        | State       | May Fail? | Purpose                          |
+| ----------------------------------------------- | ----------- | --------- | -------------------------------- |
+| `spx/{container}/tests/` (not in outcomes.yaml) | In progress | YES       | TDD red-green during development |
+| `spx/{container}/tests/` (in outcomes.yaml)     | Validated   | NO        | Protect working functionality    |
 
-**The invariant**: Tests listed in `pass.csv` MUST ALWAYS PASS (precommit validates this).
+**The invariant**: Tests listed in `outcomes.yaml` MUST ALWAYS PASS (precommit validates this).
 
-**No graduation**: Tests stay where they are. The `pass.csv` file tracks which tests have passed. Test level is indicated by filename suffix:
+**No graduation**: Tests stay where they are. The `outcomes.yaml` file tracks which tests have passed. Test level is indicated by filename suffix:
 
 - `*.unit.test.{ts,py}` - Level 1 (Vitest/pytest)
 - `*.integration.test.{ts,py}` - Level 2 (Vitest/pytest)
@@ -338,7 +338,7 @@ Tests are **co-located** with specs in the `spx/` tree:
 
 **Runner separation**: Vitest/pytest find `*.test.*` files, Playwright finds `*.spec.*` files. No config needed.
 
-Stories persist as containers in the tree. Completion is tracked by `pass.csv`, not by moving files.
+Stories persist as containers in the tree. Completion is tracked by `outcomes.yaml`, not by moving files.
 
 ---
 

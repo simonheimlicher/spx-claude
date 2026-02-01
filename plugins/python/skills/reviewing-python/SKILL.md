@@ -21,7 +21,7 @@ Use this path to access skill files:
 
 # Python Strict Code Reviewer
 
-You are an **adversarial code reviewer**. Your role is to find flaws, not validate the coder's work. On APPROVED, you also verify tests and stamp pass.csv.
+You are an **adversarial code reviewer**. Your role is to find flaws, not validate the coder's work. On APPROVED, you also verify tests and commit to outcome ledger.
 
 ## Foundational Stance
 
@@ -622,7 +622,7 @@ Based on your findings, determine the verdict:
 
 | Verdict         | Criteria                                                   | Next Phase               |
 | --------------- | ---------------------------------------------------------- | ------------------------ |
-| **APPROVED**    | All checks pass, no issues                                 | Phase 6 (Stamp pass.csv) |
+| **APPROVED**    | All checks pass, no issues                                 | Phase 6 (Commit outcome) |
 | **CONDITIONAL** | Only false-positive violations needing `# noqa` comments   | Return to coder          |
 | **REJECTED**    | Real bugs, security issues, test failures, design problems | Return to coder          |
 | **BLOCKED**     | Infrastructure cannot be provisioned                       | Fix environment, re-run  |
@@ -632,11 +632,11 @@ Based on your findings, determine the verdict:
 
 ---
 
-### Phase 6: Stamp pass.csv (APPROVED Only)
+### Phase 6: Commit outcome (APPROVED Only)
 
 > **Write access is earned by passing review.** This phase only runs on APPROVED.
 
-When all checks pass, stamp the pass.csv to record the verified state.
+When all checks pass, commit outcomes to record the verified state.
 
 #### 6.1 Identify Test Location
 
@@ -655,13 +655,13 @@ Test level is indicated by filename suffix:
 | Integration | `*.integration.test.py` | `cli.integration.test.py` |
 | E2E         | `*.e2e.test.py`         | `workflow.e2e.test.py`    |
 
-#### 6.2 Run Tests and Stamp
+#### 6.2 Run Tests and Commit Outcome
 
-Run `spx spec test --stamp` to validate tests and generate pass.csv:
+Run `spx spx commit` to validate tests and generate outcomes.yaml:
 
 ```bash
-# Stamp the work item's pass.csv
-spx spec test --stamp spx/{capability}/{feature}/{story}
+# Commit the work item's outcomes
+spx spx commit spx/{capability}/{feature}/{story}
 ```
 
 The command:
@@ -669,33 +669,37 @@ The command:
 1. Runs all tests in `tests/` directory
 2. Records `spec_blob` SHA of the spec file
 3. Records `test_blob` SHA for each passing test
-4. Generates `pass.csv` with timestamps
+4. Generates `outcomes.yaml` with timestamps
 
-#### 6.3 Verify pass.csv Is Valid
+#### 6.3 Verify outcomes.yaml Is Valid
 
 ```bash
-# Check pass.csv was created/updated
-cat spx/{capability}/{feature}/{story}/pass.csv
+# Check outcomes.yaml was created/updated
+cat spx/{capability}/{feature}/{story}/outcomes.yaml
 ```
 
-**If stamp fails**: The verdict becomes REJECTED with reason "Tests don't pass - cannot stamp pass.csv."
+**If commit fails**: The verdict becomes REJECTED with reason "Tests don't pass - cannot commit to outcome ledger."
 
 ---
 
 ### Phase 7: Report Completion (APPROVED Only)
 
-After stamping pass.csv, report completion to the orchestrator.
+After committing to outcome ledger, report completion to the orchestrator.
 
-#### 7.1 Verify pass.csv Contents
+#### 7.1 Verify outcomes.yaml Contents
 
-Check the pass.csv shows all tests passing:
+Check the outcomes.yaml shows all tests passing:
 
-```csv
-# spec_blob,{sha}
-# run,{timestamp}
-test_file,test_blob,pass_time
-parsing.unit.test.py,{sha},{timestamp}
-cli.integration.test.py,{sha},{timestamp}
+```yaml
+spec_blob: { sha }
+committed_at: { timestamp }
+tests:
+  - file: parsing.unit.test.py
+    blob: { sha }
+    passed_at: { timestamp }
+  - file: cli.integration.test.py
+    blob: { sha }
+    passed_at: { timestamp }
 ```
 
 #### 7.2 Final Output
@@ -716,7 +720,7 @@ Report completion:
 | Semgrep | PASS   | 0 findings                   |
 | pytest  | PASS   | {X}/{X} tests, {Y}% coverage |
 
-### pass.csv Stamped
+### Outcome Committed
 
 | Container                             | Tests Passing |
 | ------------------------------------- | ------------- |
@@ -725,19 +729,19 @@ Report completion:
 ### Verification Command
 
 \`\`\`bash
-spx spec test --stamp spx/{capability}/{feature}/{story}
+spx spx commit spx/{capability}/{feature}/{story}
 \`\`\`
 
 ### Work Item Status
 
-This work item is complete. pass.csv is valid.
+This work item is complete. outcomes.yaml is valid.
 ```
 
 ---
 
 ### Phase 8: Commit (APPROVED Only)
 
-After stamping pass.csv, commit the completed work item. **This is the reviewer's responsibility** — committing is the seal of approval.
+After committing to outcome ledger, commit the completed work item. **This is the reviewer's responsibility** — committing is the seal of approval.
 
 **Follow the `committing-changes` skill** for core commit protocol (selective staging, verification, Conventional Commits format).
 
@@ -749,11 +753,11 @@ When committing as part of review approval, apply these additional guidelines:
 
 Stage **only** files from the approved work item:
 
-| Category       | Example Paths                                   |
-| -------------- | ----------------------------------------------- |
-| Implementation | `src/{modified files for this story}`           |
-| Tests          | `spx/{capability}/{feature}/{story}/tests/*.py` |
-| Pass ledger    | `spx/{capability}/{feature}/{story}/pass.csv`   |
+| Category       | Example Paths                                      |
+| -------------- | -------------------------------------------------- |
+| Implementation | `src/{modified files for this story}`              |
+| Tests          | `spx/{capability}/{feature}/{story}/tests/*.py`    |
+| Pass ledger    | `spx/{capability}/{feature}/{story}/outcomes.yaml` |
 
 **Exclude**: Unrelated files, experimental code, files from other work items.
 
@@ -779,7 +783,7 @@ After successful commit:
 
 Commit: {commit_hash}
 Files committed: {count}
-pass.csv stamped: spx/{capability}/{feature}/{story}/pass.csv
+Outcome committed: spx/{capability}/{feature}/{story}/outcomes.yaml
 
 Work item is complete.
 ```
@@ -812,9 +816,9 @@ When verdict is **REJECTED** or **CONDITIONAL**, provide actionable feedback to 
 2. Run verification tools before resubmitting
 3. Submit for re-review
 
-### No pass.csv Stamped
+### No Outcome Committed
 
-pass.csv is only stamped on APPROVED. Fix issues and resubmit.
+Outcomes are only committed on APPROVED. Fix issues and resubmit.
 ```
 
 ---
@@ -825,7 +829,7 @@ Use one of four verdicts:
 
 | Verdict         | When to Use                                                                      | Next Step                                  |
 | --------------- | -------------------------------------------------------------------------------- | ------------------------------------------ |
-| **APPROVED**    | All checks pass, no issues found                                                 | Stamp pass.csv, commit, work item complete |
+| **APPROVED**    | All checks pass, no issues found                                                 | Commit outcome, commit, work item complete |
 | **CONDITIONAL** | Only false-positive violations that require `# noqa` comments with justification | Coder adds noqa comments, then re-review   |
 | **REJECTED**    | Real bugs, security issues, test failures, or design problems                    | Coder fixes issues, then re-review         |
 | **BLOCKED**     | Infrastructure cannot be provisioned; review environment issue, not code defect  | Fix environment, then re-run review        |

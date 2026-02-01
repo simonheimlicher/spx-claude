@@ -40,4 +40,4 @@ specifications, tests, and architectural decisions.
 - All plugins follow consistent patterns
 - Skills work independently AND via orchestrators
 - Tests co-located with specs, not graduated
-- Status tracked via `pass.csv`, not directory location
+- Status tracked via `outcomes.yaml`, not directory location

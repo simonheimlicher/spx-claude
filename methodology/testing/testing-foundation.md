@@ -507,7 +507,7 @@ Tests stay with their specs permanently. No graduation.
 | `*.integration.test.{ts,py}` | Level 2 (Integration) | Real dependencies via harness |
 | `*.e2e.test.{ts,py}`         | Level 3 (E2E)         | Full system with credentials  |
 
-**The invariant**: All tests in `spx/.../tests/` MUST ALWAYS PASS. The `pass.csv` file tracks verification.
+**The invariant**: All tests in `spx/.../tests/` MUST ALWAYS PASS. The `outcomes.yaml` file tracks verification.
 
 **No graduation**: Tests remain co-located with their specs. Story tests become part of the feature's test suite, organized by filename rather than directory.
 

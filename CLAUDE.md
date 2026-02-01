@@ -340,7 +340,7 @@ Spec-driven development with CODE (Customer Outcome Driven Engineering) framewor
 ### Core Principles
 
 - Specs are a durable map - nothing moves because work is "done"
-- Status tracked via `pass.csv`, not directory location
+- Status tracked via `outcomes.yaml`, not directory location
 - Tests co-located with specs in `spx/.../tests/`
 - No TRDs - technical details belong in `feature.md` itself
 - No test graduation - tests stay with their spec
@@ -809,7 +809,7 @@ spx-claude/
 │   ├── NN-{slug}.adr.md          # Product-wide ADRs (interleaved)
 │   └── NN-{slug}.capability/     # Capabilities with co-located tests
 │       ├── {slug}.capability.md
-│       ├── pass.csv              # Test verification ledger
+│       ├── outcomes.yaml              # Test verification ledger
 │       └── tests/
 └── CLAUDE.md                      # This file
 ```

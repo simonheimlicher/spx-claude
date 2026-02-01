@@ -191,7 +191,7 @@ Feature Context Loaded: 20-commands.feature
 
 - `{story-path}/{slug}.story.md` MUST EXIST
 - `{story-path}/tests/` directory Should exist for in-progress work
-- `{story-path}/pass.csv` Test verification ledger (may not exist yet)
+- `{story-path}/outcomes.yaml` Test verification ledger (may not exist yet)
 
 **Actions**:
 
@@ -213,14 +213,14 @@ spx spec status --format json
 
 **Warning if**:
 
-- Working on completed story (all tests in pass.csv passing)
+- Working on completed story (all tests in outcomes.yaml passing)
 
 **Output**:
 
 ```
 Story Context Loaded: 30-build.story
   - build.story.md
-  - pass.csv: 3 tests passing
+  - outcomes.yaml: 3 tests passing
 ```
 
 ---
@@ -268,7 +268,7 @@ Story Context Loaded: 30-build.story
 
 - **Spec**: 30-build.story/build.story.md
 - **Tests**: tests/ directory exists
-- **Pass Ledger**: pass.csv (3 tests passing)
+- **Pass Ledger**: outcomes.yaml (3 tests passing)
 
 ## Constraints Summary
 

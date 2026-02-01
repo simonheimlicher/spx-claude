@@ -2,7 +2,7 @@
 
 ## Observable Outcome
 
-Python plugin skills work with CODE structure: reference `spx/` paths, use co-located tests with suffix naming, understand `pass.csv`.
+Python plugin skills work with CODE structure: reference `spx/` paths, use co-located tests with suffix naming, understand `outcomes.yaml`.
 
 ## Skills to Update
 
@@ -12,7 +12,7 @@ Python plugin skills work with CODE structure: reference `spx/` paths, use co-lo
 | reviewing-python     | Update spec references to `spx/`, review co-located tests              |
 | testing-python       | Update test paths from `tests/unit/` to `spx/.../tests/*.unit.test.py` |
 | architecting-python  | Update ADR output to `spx/` hierarchy                                  |
-| orchestrating-python | Update workflow to use `spx/` paths, `pass.csv` for progress           |
+| orchestrating-python | Update workflow to use `spx/` paths, `outcomes.yaml` for progress      |
 
 ## Key Changes
 
@@ -50,7 +50,7 @@ spx/.../feature-10/tests/validation.integration.test.py
 
 **Before:** Check for `DONE.md` or directory location (`doing/` vs `done/`)
 
-**After:** Read `pass.csv` - `failed: []` means outcome achieved
+**After:** Read `outcomes.yaml` - `failed: []` means outcome achieved
 
 ## Tests
 
@@ -63,5 +63,5 @@ spx/.../feature-10/tests/validation.integration.test.py
 - [ ] All skills reference `spx/` not `specs/work/`
 - [ ] Test output uses co-located `tests/` with `*.unit.test.py` naming
 - [ ] No references to test graduation
-- [ ] `pass.csv` used for work state determination
+- [ ] `outcomes.yaml` used for work state determination
 - [ ] No TRD references

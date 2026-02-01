@@ -70,36 +70,40 @@ Tests live alongside their specs in `spx/.../tests/` directories. Test level is 
 - `*.e2e.test.ts` - Non-browser E2E (CLI, API) → runs with Vitest
 - `*.e2e.spec.ts` - Browser-based E2E → runs with Playwright
 
-**Test Verification Ledger (pass.csv):**
+**Test Verification Ledger (outcomes.yaml):**
 
-Each container has a `pass.csv` that records test verification:
+Each container has an `outcomes.yaml` that records test verification:
 
-```csv
-timestamp,test_file,blob_sha,result
-2024-01-15T10:30:00Z,auth.unit.test.ts,a1b2c3d,PASS
+```yaml
+spec_blob: a1b2c3d...
+committed_at: 2024-01-15T10:30:00Z
+tests:
+  - file: auth.unit.test.ts
+    blob: a1b2c3d
+    passed_at: 2024-01-15T10:30:00Z
 ```
 
 **TDD Workflow in CODE Framework:**
 
 1. Write failing test in `spx/.../tests/` (RED)
 2. Implement code until test passes (GREEN)
-3. Run `spx spec test --stamp` to record pass in `pass.csv`
+3. Run `spx spx commit` to record pass in `outcomes.yaml`
 
 **The Rule:**
 
 > **Tests stay co-located with their specs.**
 >
 > No test graduation. Tests remain in `spx/.../tests/` permanently.
-> The `pass.csv` ledger provides verification evidence.
+> The `outcomes.yaml` ledger provides verification evidence.
 
 **Quick Decision:**
 
 ```
 Am I implementing new functionality?
 ├── YES → Write test in spx/.../tests/ with appropriate suffix
-│         Run `spx spec test --stamp` when passing
+│         Run `spx spx commit` when passing
 └── NO  → Modify existing test in spx/.../tests/
-          Ensure pass.csv is updated
+          Ensure outcomes.yaml is updated
 ```
 
 </test_location_code_framework>

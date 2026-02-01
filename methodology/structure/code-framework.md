@@ -2,7 +2,7 @@
 
 ## Rationale
 
-CODE treats specs as durable, version-controlled product structure—not "work to implement." The `spx/` tree is the always-current map of the product. Each container holds its spec, tests, and pass ledger together, so agents can discover, validate, and evolve the system with minimal guesswork. Outcomes are proven by `pass.csv` files validated at precommit and insured by CI.
+CODE treats specs as durable, version-controlled product structure—not "work to implement." The `spx/` tree is the always-current map of the product. Each container holds its spec, tests, and pass ledger together, so agents can discover, validate, and evolve the system with minimal guesswork. Outcomes are proven by `outcomes.yaml` files validated at precommit and insured by CI.
 
 **Important**: Use the `spx` CLI for all structural operations (like `gh` for GitHub).
 
@@ -20,10 +20,10 @@ CODE treats specs as durable, version-controlled product structure—not "work t
    Container type is in both directory and file names. Ordering (BSP) is in directory names only, so rebalancing never requires file renames.
 
 4. **Tests are the executable proof**
-   The spec describes intent, constraints, and strategy. Tests prove the implementation works. `pass.csv` is the machine-verifiable contract.
+   The spec describes intent, constraints, and strategy. Tests prove the implementation works. `outcomes.yaml` is the machine-verifiable contract.
 
 5. **Incomplete is valid**
-   A container with 2 of 5 tests passing is in progress, not broken. `pass.csv` lists only passing tests.
+   A container with 2 of 5 tests passing is in progress, not broken. `outcomes.yaml` lists only passing tests.
 
 6. **Blob-based staleness**
    Staleness is detected by comparing git blob SHAs, not timestamps. This is deterministic across rebases, checkouts, and touched files.
@@ -41,7 +41,7 @@ CODE treats specs as durable, version-controlled product structure—not "work t
     Harnesses are production code requiring their own specs and test coverage.
 
 11. **Higher levels unaware of lower level breakdown**
-    Features don't list story outcomes. Capabilities don't list feature outcomes. Completion bubbles up through `pass.csv`, not spec references. This prevents drift between levels.
+    Features don't list story outcomes. Capabilities don't list feature outcomes. Completion bubbles up through `outcomes.yaml`, not spec references. This prevents drift between levels.
 
 12. **Analysis sections are not contracts**
     Story specs include analysis of files, constants, and configuration to prove the agent examined the codebase. Implementation may diverge as understanding deepens—this is expected, not a failure.
@@ -63,21 +63,21 @@ spx/
     {slug}.capability.md
     NN-{slug}.feature/
       {slug}.feature.md
-      pass.csv
+      outcomes.yaml
       tests/
   NN-{slug}.capability/
     {slug}.capability.md
-    pass.csv                         # Pass ledger (may be incomplete)
+    outcomes.yaml                         # Pass ledger (may be incomplete)
     tests/
     NN-{slug}.adr.md
     NN-{slug}.feature/
       {slug}.feature.md
-      pass.csv
+      outcomes.yaml
       tests/
       NN-{slug}.adr.md
       NN-{slug}.story/
         {slug}.story.md
-        pass.csv
+        outcomes.yaml
         tests/
 ```
 
@@ -175,7 +175,7 @@ THEN [expected result]
 
 ### Rationale
 
-- **No drift** between spec prose and test ledger—`pass.csv` is the sole contract
+- **No drift** between spec prose and test ledger—`outcomes.yaml` is the sole contract
 - **Test strategy** documents approach without duplicating test logic
 - **Harness references** point to the harness spec (the durable contract), not the implementation code
 - **Prose requirements** capture intent that tests alone cannot express
@@ -252,7 +252,7 @@ AND {additional assertion}
 - **Gherkin is source of truth**—tests implement it, spec doesn't contain code
 - **Test Files table** is the contract—harness references here, not in separate sections
 - **Analysis section proves examination**—agent looked before coding, but implementation may diverge
-- **No completion criteria**—stories are atomic; pass.csv is the contract
+- **No completion criteria**—stories are atomic; outcomes.yaml is the contract
 - **No inline code**—code in specs drifts from actual implementation
 
 ---
@@ -271,13 +271,13 @@ Test level is in the filename suffix:
 
 ### Path derivation
 
-For each `test_file` in `pass.csv`, SPX derives the runnable path as:
+For each `test_file` in `outcomes.yaml`, SPX derives the runnable path as:
 
 ```
 <container>/tests/<test_file>
 ```
 
-The `tests/` prefix is never stored in `pass.csv`.
+The `tests/` prefix is never stored in `outcomes.yaml`.
 
 ### Test runner configuration
 
@@ -290,49 +290,53 @@ export default {
 
 ---
 
-## pass.csv: Test Ledger
+## Outcome Ledger (outcomes.yaml)
 
-Each container MAY have a `pass.csv` listing tests that currently pass. This is the **machine-verifiable proof** for the container.
+Each container MAY have an `outcomes.yaml` listing tests that currently pass. This is the **machine-verifiable proof** for the container.
 
 ### Format
 
-```csv
-# spec_blob,a3f2b7c...
-# run,2026-01-28T14:15:00Z
-test_file,test_blob,pass_time
-parsing.unit.test.ts,1f2e...,2026-01-27T10:30:00Z
-cli.integration.test.ts,9ac4...,2026-01-28T14:15:00Z
+```yaml
+spec_blob: a3f2b7c...
+committed_at: 2026-01-28T14:15:00Z
+tests:
+  - file: parsing.unit.test.ts
+    blob: 1f2e...
+    passed_at: 2026-01-27T10:30:00Z
+  - file: cli.integration.test.ts
+    blob: 9ac4...
+    passed_at: 2026-01-28T14:15:00Z
 ```
 
-| Field       | Description                                                 |
-| ----------- | ----------------------------------------------------------- |
-| `spec_blob` | Git blob SHA of container spec file when ledger was stamped |
-| `run`       | ISO 8601 timestamp of last stamp operation                  |
-| `test_file` | Filename relative to container's `tests/` directory         |
-| `test_blob` | Git blob SHA of test file content when it last passed       |
-| `pass_time` | ISO 8601 timestamp of when that test last passed            |
+| Field          | Description                                                    |
+| -------------- | -------------------------------------------------------------- |
+| `spec_blob`    | Git blob SHA of container spec file when outcome was committed |
+| `committed_at` | ISO 8601 timestamp of last commit operation                    |
+| `file`         | Filename relative to container's `tests/` directory            |
+| `blob`         | Git blob SHA of test file content when it last passed          |
+| `passed_at`    | ISO 8601 timestamp of when that test last passed               |
 
 ### State derivation
 
-| Condition                             | State     | Required Action               |
-| ------------------------------------- | --------- | ----------------------------- |
-| Test Files links don't resolve        | Unknown   | Write tests                   |
-| Tests exist, not all passing          | Pending   | Fix code or fix tests         |
-| Spec or test blob changed since stamp | Stale     | Re-stamp with `spx spec test` |
-| All tests pass, blobs unchanged       | Passing   | None—potential realized       |
-| Was passing, now fails, blobs same    | Regressed | Investigate and fix           |
+| Condition                              | State     | Required Action                 |
+| -------------------------------------- | --------- | ------------------------------- |
+| Test Files links don't resolve         | Unknown   | Write tests                     |
+| Tests exist, not all passing           | Pending   | Fix code or fix tests           |
+| Spec or test blob changed since commit | Stale     | Re-commit with `spx spx commit` |
+| All tests pass, blobs unchanged        | Passing   | None—potential realized         |
+| Was passing, now fails, blobs same     | Regressed | Investigate and fix             |
 
 ### Failure classification
 
-When a test in `pass.csv` fails:
+When a test in `outcomes.yaml` fails:
 
-| `spec_blob` | `test_blob`       | Diagnosis                                                     |
-| ----------- | ----------------- | ------------------------------------------------------------- |
-| Unchanged   | Unchanged         | **Regression** - implementation, dependency, or harness broke |
-| Unchanged   | Changed           | **Stale test** - test was modified, needs re-stamp            |
-| Changed     | Unchanged         | **Stale spec** - spec was modified, needs re-stamp            |
-| Changed     | Changed           | **Stale both** - spec and test modified, needs re-stamp       |
-| N/A         | Not in `pass.csv` | **In progress** - never passed, not a regression              |
+| `spec_blob` | `test_blob`            | Diagnosis                                                     |
+| ----------- | ---------------------- | ------------------------------------------------------------- |
+| Unchanged   | Unchanged              | **Regression** - implementation, dependency, or harness broke |
+| Unchanged   | Changed                | **Stale test** - test was modified, needs re-commit           |
+| Changed     | Unchanged              | **Stale spec** - spec was modified, needs re-commit           |
+| Changed     | Changed                | **Stale both** - spec and test modified, needs re-commit      |
+| N/A         | Not in `outcomes.yaml` | **In progress** - never passed, not a regression              |
 
 ### Rationale
 
@@ -344,33 +348,33 @@ When a test in `pass.csv` fails:
 
 Git is a Merkle tree: every blob is content-addressed by SHA, every tree hashes its children, every commit hashes its root tree. This provides cryptographic integrity of *content*.
 
-`pass.csv` extends Git with *test verification state*:
+`outcomes.yaml` extends Git with *test verification state*:
 
 ```text
-Git Merkle Tree                    pass.csv (verification)
-─────────────────                  ────────────────────────
+Git Merkle Tree                    outcomes.yaml (verification)
+─────────────────                  ─────────────────────────────
 spx/
 ├── auth.capability.md  ←────────  spec_blob: a3f2b7c
-├── pass.csv
+├── outcomes.yaml
 └── tests/
-    └── auth.unit.test.ts  ←─────  test_blob: 9ac4..., pass_time: ...
+    └── auth.unit.test.ts  ←─────  blob: 9ac4..., passed_at: ...
 ```
 
-Git answers "what is the content?" `pass.csv` answers "did this content pass tests, and when?"
+Git answers "what is the content?" `outcomes.yaml` answers "did this content pass tests, and when?"
 
-### Generating pass.csv
+### Generating outcomes.yaml
 
-`pass.csv` MUST be generated by `spx spec test --stamp`, never hand-edited.
+`outcomes.yaml` MUST be generated by `spx spx commit`, never hand-edited.
 
 ```bash
-spx spec test --stamp <container>
+spx spx commit <container>
 ```
 
 The command:
 
 1. Runs all tests in `tests/`
-2. Writes `pass.csv` header with current `spec_blob` and `run` timestamp
-3. Writes one row per passing test with its `test_blob` and `pass_time`
+2. Writes `outcomes.yaml` with current `spec_blob` and `committed_at` timestamp
+3. Adds each passing test with its `blob` and `passed_at`
 4. May be incomplete (only passing tests are listed)
 
 ---
@@ -383,46 +387,46 @@ For each container that has `tests/`:
 
 ### 1. Phantom check
 
-Every `test_file` in `pass.csv` must exist at runtime path `<container>/tests/<test_file>`.
+Every `test_file` in `outcomes.yaml` must exist at runtime path `<container>/tests/<test_file>`.
 
 - Missing file → **error** (phantom entry)
 
 ### 2. Regression check
 
-Run exactly the tests listed in `pass.csv` (derive paths as above).
+Run exactly the tests listed in `outcomes.yaml` (derive paths as above).
 
 If a listed test fails:
 
 - Compute current blob of that test file
 - If unchanged from `test_blob` → **Regression** (error, blocks commit)
-- If changed → **Stale** (re-stamp required)
+- If changed → **Stale** (re-commit required)
 
 ### 3. Spec staleness check
 
 Compute `spec_blob_now` from current spec file.
 
-- If `spec_blob_now != spec_blob` in header → **Stale** (re-stamp required)
+- If `spec_blob_now != spec_blob` in header → **Stale** (re-commit required)
 
 ### 4. Progress tests rule
 
-Tests in `tests/` but not in `pass.csv` are **in progress** (not an error).
+Tests in `tests/` but not in `outcomes.yaml` are **in progress** (not an error).
 
 ### What this catches
 
-| Scenario                                    | Result                     |
-| ------------------------------------------- | -------------------------- |
-| Test in `pass.csv` fails, nothing changed   | Regression - blocks commit |
-| Test in `pass.csv` fails, test file changed | Stale - re-stamp required  |
-| Spec changed since last stamp               | Stale - re-stamp required  |
-| Test file deleted but still in `pass.csv`   | Phantom - blocks commit    |
-| New test file not yet in `pass.csv`         | In progress - OK           |
+| Scenario                                         | Result                     |
+| ------------------------------------------------ | -------------------------- |
+| Test in `outcomes.yaml` fails, nothing changed   | Regression - blocks commit |
+| Test in `outcomes.yaml` fails, test file changed | Stale - re-commit required |
+| Spec changed since last commit                   | Stale - re-commit required |
+| Test file deleted but still in `outcomes.yaml`   | Phantom - blocks commit    |
+| New test file not yet in `outcomes.yaml`         | In progress - OK           |
 
 ### Flow
 
 1. **Write spec**: define intent, constraints, and test strategy
 2. **Implement**: write code and tests
-3. **Stamp**: run `spx spec test --stamp <container>` to generate `pass.csv`
-4. **Commit**: spec + implementation + tests + pass.csv together
+3. **Commit outcome**: run `spx spx commit <container>` to generate `outcomes.yaml`
+4. **Commit**: spec + implementation + tests + outcomes.yaml together
 5. **Precommit**: validates no regressions, no phantoms, no staleness
 6. **CI**: re-runs validation as insurance
 
@@ -448,13 +452,13 @@ project/
         ├── test-infrastructure.capability.md
         ├── 10-cli-harness.feature/
         │   ├── cli-harness.feature.md
-        │   ├── pass.csv
+        │   ├── outcomes.yaml
         │   └── tests/                    # Tests for the harness itself
         │       ├── setup.unit.test.ts
         │       └── isolation.integration.test.ts
         └── 20-e2e-harness.feature/
             ├── e2e-harness.feature.md
-            ├── pass.csv
+            ├── outcomes.yaml
             └── tests/
 ```
 
@@ -465,7 +469,7 @@ project/
 ### Why harnesses need specs
 
 1. **Harness bugs break all dependent tests** - high impact requires tracking
-2. **Harness refactoring needs regression protection** - `pass.csv` detects breakage
+2. **Harness refactoring needs regression protection** - `outcomes.yaml` detects breakage
 3. **Harness capabilities need documentation** - what can tests rely on?
 4. **Harness dependencies need BSP ordering** - tests depend on harness (lower BSP)
 
@@ -523,24 +527,24 @@ spx/
     test-infrastructure.capability.md
     10-cli-harness.feature/
       cli-harness.feature.md
-      pass.csv
+      outcomes.yaml
       tests/
         setup.unit.test.ts
   15-validation.capability/
     validation.capability.md
-    pass.csv
+    outcomes.yaml
     tests/
       validation.e2e.test.ts
     21-isolated-test-fixtures.adr.md
     21-testable-validation.feature/
       testable-validation.feature.md
-      pass.csv
+      outcomes.yaml
       tests/
         validation.integration.test.ts
       04-level-2-integration-only.adr.md
       47-validation-commands.story/
         validation-commands.story.md
-        pass.csv
+        outcomes.yaml
         tests/
           commands.unit.test.ts
 ```

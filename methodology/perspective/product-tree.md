@@ -23,7 +23,7 @@ CODE replaces the backlog with a **Product Tree**—a living structure where ide
 
 When you write a spec, you aren't adding to a pile. You are **creating potential energy** in the system. The spec defines a state of the world that doesn't yet exist but should. This potential wants to become real.
 
-The work of engineering is converting potential into reality. Tests are the proof that conversion happened. `pass.csv` is the ledger recording when each piece of potential became real.
+The work of engineering is converting potential into reality. Tests are the proof that conversion happened. `outcomes.yaml` is the ledger recording when each piece of potential became real.
 
 ### The Concrete Ceiling
 
@@ -173,12 +173,12 @@ spx/
 │
 ├── 21-test-harness.capability/           # Infrastructure (dependency for others)
 │   ├── test-harness.capability.md
-│   ├── pass.csv
+│   ├── outcomes.yaml
 │   └── tests/
 │
 ├── 37-users.capability/                  # Functional (parallel with billing)
 │   ├── users.capability.md
-│   ├── pass.csv
+│   ├── outcomes.yaml
 │   │
 │   ├── 10-bootstrap.feature/             # Feature before any ADR
 │   │   └── bootstrap.feature.md
@@ -187,12 +187,12 @@ spx/
 │   │
 │   ├── 22-login.feature/                 # Feature depends on ADR 21
 │   │   ├── login.feature.md
-│   │   ├── pass.csv
+│   │   ├── outcomes.yaml
 │   │   │
 │   │   ├── 21-password-hashing.adr.md        # Feature-level ADR
 │   │   ├── 22-hash-password.story/           # Story depends on ADR 21
 │   │   │   ├── hash-password.story.md
-│   │   │   ├── pass.csv
+│   │   │   ├── outcomes.yaml
 │   │   │   └── tests/
 │   │   │       └── hash-password.unit.test.ts
 │   │   │
@@ -215,7 +215,7 @@ spx/
 - Directory format: `{BSP}-{slug}.{type}/` (BSP first, then slug, type suffix)
 - Spec file format: `{slug}.{type}.md` (matches directory naming)
 - ADR format: `{BSP}-{slug}.adr.md` (flat files, interleaved with containers)
-- Status derived from `pass.csv`, not a separate status file
+- Status derived from `outcomes.yaml`, not a separate status file
 - Everything sorts by BSP number first—humans see dependency order at a glance
 
 ### Why a Tree?
@@ -232,13 +232,13 @@ spx/
 
 States must communicate **what needs to happen**, not just describe the situation. Poetry in philosophy, precision in indicators.
 
-| State         | Meaning                            | Required Action               |
-| ------------- | ---------------------------------- | ----------------------------- |
-| **Unknown**   | Test Files links don't resolve     | Write tests                   |
-| **Pending**   | Tests exist, not all passing       | Fix code or fix tests         |
-| **Stale**     | Spec or test blob changed          | Re-stamp with `spx spec test` |
-| **Passing**   | All tests pass, blobs unchanged    | None—potential realized       |
-| **Regressed** | Was passing, now fails, blobs same | Investigate and fix           |
+| State         | Meaning                            | Required Action                 |
+| ------------- | ---------------------------------- | ------------------------------- |
+| **Unknown**   | Test Files links don't resolve     | Write tests                     |
+| **Pending**   | Tests exist, not all passing       | Fix code or fix tests           |
+| **Stale**     | Spec or test blob changed          | Re-commit with `spx spx commit` |
+| **Passing**   | All tests pass, blobs unchanged    | None—potential realized         |
+| **Regressed** | Was passing, now fails, blobs same | Investigate and fix             |
 
 ### Why Not "Aspiration" and "Realized"?
 
@@ -302,7 +302,7 @@ When you create `54-export-csv.story/export-csv.story.md`, you're not adding to 
 
 ### Passing Tests = Realizing Potential
 
-When `pass.csv` records that all scenarios pass, potential has become reality. The story isn't "done" (done implies it goes away). The story is **realized**—it describes something true about the product.
+When `outcomes.yaml` records that all scenarios pass, potential has become reality. The story isn't "done" (done implies it goes away). The story is **realized**—it describes something true about the product.
 
 ### Editing a Spec = Raising the Bar
 
