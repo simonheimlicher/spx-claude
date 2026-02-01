@@ -488,8 +488,8 @@ npx playwright test spx/       # Runs *.spec.ts (browser e2e)
 Shared harnesses and fixtures live in project root:
 
 ```
-tests/
-├── harness/                 # Active code for tests
+testing/
+├── harnesses/               # Active code for tests
 │   ├── index.ts
 │   ├── context.ts           # Test environment context manager (withTestEnv)
 │   ├── postgres.ts          # PostgreSQL harness
@@ -500,7 +500,7 @@ tests/
     └── values.ts            # TYPICAL, EDGES collections
 ```
 
-**harness/** = Code that runs (context managers, harnesses, factories)
+**harnesses/** = Code that runs (context managers, harnesses, factories)
 **fixtures/** = Data that's read (JSON files, sample configs, test values)
 
 Import in co-located tests:
@@ -508,7 +508,7 @@ Import in co-located tests:
 ```typescript
 // In spx/{capability}/{feature}/tests/sync.unit.test.ts
 import { TYPICAL_PATHS } from "@testing/fixtures/values";
-import { SyncResultFactory } from "@testing/harness/factories";
+import { SyncResultFactory } from "@testing/harnesses/factories";
 ```
 
 </test_infrastructure_paths>

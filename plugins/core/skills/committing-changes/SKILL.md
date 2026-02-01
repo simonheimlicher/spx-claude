@@ -1,6 +1,6 @@
 ---
 name: committing-changes
-description: Write git commit messages following Conventional Commits. Use when committing changes, writing commit messages, staging files, or asking about commit format and conventions.
+description: Commit changes following Conventional Commits with selective staging. Use when user says "commit", "commit this", or when ready to commit after completing work.
 ---
 
 <objective>

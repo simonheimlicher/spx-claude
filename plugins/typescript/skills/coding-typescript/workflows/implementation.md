@@ -75,11 +75,11 @@ src/
 ├── errors.ts            # Custom error classes
 └── types.ts             # Type definitions
 
-tests/
+testing/
 ├── fixtures/
 │   ├── values.ts        # Shared test values
 │   └── factories.ts     # Test data factories
-└── harness/
+└── harnesses/
     └── index.ts         # Test harnesses
 
 spx/{capability}/{feature}/tests/   # Co-located tests (CODE framework)
