@@ -620,12 +620,12 @@ from lib.utils import helper  # Only works if CWD is project root
 
 Based on your findings, determine the verdict:
 
-| Verdict         | Criteria                                                   | Next Phase              |
-| --------------- | ---------------------------------------------------------- | ----------------------- |
-| **APPROVED**    | All checks pass, no issues                                 | Phase 6 (Graduation)    |
-| **CONDITIONAL** | Only false-positive violations needing `# noqa` comments   | Return to coder         |
-| **REJECTED**    | Real bugs, security issues, test failures, design problems | Return to coder         |
-| **BLOCKED**     | Infrastructure cannot be provisioned                       | Fix environment, re-run |
+| Verdict         | Criteria                                                   | Next Phase               |
+| --------------- | ---------------------------------------------------------- | ------------------------ |
+| **APPROVED**    | All checks pass, no issues                                 | Phase 6 (Stamp pass.csv) |
+| **CONDITIONAL** | Only false-positive violations needing `# noqa` comments   | Return to coder          |
+| **REJECTED**    | Real bugs, security issues, test failures, design problems | Return to coder          |
+| **BLOCKED**     | Infrastructure cannot be provisioned                       | Fix environment, re-run  |
 
 **If verdict is APPROVED**: Continue to Phase 6.
 **If verdict is NOT APPROVED**: Skip to "Rejection Feedback" section below.

@@ -94,7 +94,7 @@ If you're reviewing code for a spec-driven work item (story/feature/capability),
 
 | Verdict         | Criteria                                                   | Next Phase          |
 | --------------- | ---------------------------------------------------------- | ------------------- |
-| **APPROVED**    | All checks pass, no issues                                 | Graduation + Commit |
+| **APPROVED**    | All checks pass, no issues                                 | Stamp pass.csv      |
 | **CONDITIONAL** | Only false-positive violations needing disable comments    | Coder adds comments |
 | **REJECTED**    | Real bugs, security issues, test failures, design problems | Coder fixes issues  |
 | **BLOCKED**     | Infrastructure cannot be provisioned                       | Fix environment     |
