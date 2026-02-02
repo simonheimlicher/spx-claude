@@ -757,7 +757,7 @@ Stage **only** files from the approved work item:
 | -------------- | -------------------------------------------------- |
 | Implementation | `src/{modified files for this story}`              |
 | Tests          | `spx/{capability}/{feature}/{story}/tests/*.py`    |
-| Pass ledger    | `spx/{capability}/{feature}/{story}/outcomes.yaml` |
+| Outcome ledger | `spx/{capability}/{feature}/{story}/outcomes.yaml` |
 
 **Exclude**: Unrelated files, experimental code, files from other work items.
 

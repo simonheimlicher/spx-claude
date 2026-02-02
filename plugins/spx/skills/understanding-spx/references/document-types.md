@@ -44,7 +44,7 @@ Product
 | Capability Spec | `{slug}.capability.md` | YES           | E2E scenario definition       |
 | PRD             | `{topic}.prd.md`       | NO (optional) | Product requirements catalyst |
 | Capability ADRs | `NN-{slug}.adr.md`     | NO            | Capability-scoped decisions   |
-| Pass Ledger     | `outcomes.yaml`        | NO            | Test verification state       |
+| Outcome ledger  | `outcomes.yaml`        | NO            | Test verification state       |
 | Tests           | `tests/`               | NO            | Co-located tests              |
 
 **Note**: PRD is optional enrichment. If PRD exists but spec is missing, offer to create spec from PRD.
@@ -53,12 +53,12 @@ Product
 
 **Location**: `spx/NN-{slug}.capability/NN-{slug}.feature/`
 
-| Document     | Pattern             | Required? | Purpose                         |
-| ------------ | ------------------- | --------- | ------------------------------- |
-| Feature Spec | `{slug}.feature.md` | YES       | Integration scenario definition |
-| Feature ADRs | `NN-{slug}.adr.md`  | NO        | Feature-scoped decisions        |
-| Pass Ledger  | `outcomes.yaml`     | NO        | Test verification state         |
-| Tests        | `tests/`            | NO        | Co-located tests                |
+| Document       | Pattern             | Required? | Purpose                         |
+| -------------- | ------------------- | --------- | ------------------------------- |
+| Feature Spec   | `{slug}.feature.md` | YES       | Integration scenario definition |
+| Feature ADRs   | `NN-{slug}.adr.md`  | NO        | Feature-scoped decisions        |
+| Outcome ledger | `outcomes.yaml`     | NO        | Test verification state         |
+| Tests          | `tests/`            | NO        | Co-located tests                |
 
 **Note**: Technical details belong in feature.md, not separate TRD documents.
 
@@ -66,11 +66,11 @@ Product
 
 **Location**: `spx/.../NN-{slug}.story/`
 
-| Document    | Pattern           | Required? | Purpose                          |
-| ----------- | ----------------- | --------- | -------------------------------- |
-| Story Spec  | `{slug}.story.md` | YES       | Atomic implementation definition |
-| Pass Ledger | `outcomes.yaml`   | NO        | Test verification state          |
-| Tests       | `tests/`          | NO        | Co-located tests                 |
+| Document       | Pattern           | Required? | Purpose                          |
+| -------------- | ----------------- | --------- | -------------------------------- |
+| Story Spec     | `{slug}.story.md` | YES       | Atomic implementation definition |
+| Outcome ledger | `outcomes.yaml`   | NO        | Test verification state          |
+| Tests          | `tests/`          | NO        | Co-located tests                 |
 
 **Note**: Stories do NOT have their own ADRs. They inherit decisions from parent feature/capability.
 

@@ -268,7 +268,7 @@ Story Context Loaded: 30-build.story
 
 - **Spec**: 30-build.story/build.story.md
 - **Tests**: tests/ directory exists
-- **Pass Ledger**: outcomes.yaml (3 tests passing)
+- **Outcome ledger**: outcomes.yaml (3 tests passing)
 
 ## Constraints Summary
 
