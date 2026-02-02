@@ -3,6 +3,23 @@ name: migrating-spec-to-spx
 description: Domain knowledge for migrating capabilities from legacy specs/ to CODE spx/ structure. Use when migrating or reviewing migrations.
 ---
 
+<context>
+
+This is a **reference skill** providing domain knowledge for migration operations. It does NOT execute migrations - it provides the knowledge for agents that do.
+
+**Users should invoke**:
+
+- `spx:spec-to-spx-migrator` agent - to execute a migration
+- `spx:spec-to-spx-reviewer` agent - to verify a migration
+
+**Agents using this skill should**:
+
+- Read it fully before starting work
+- Consult it during execution when uncertain
+- Use it as the authoritative source for naming, coverage, and verification rules
+
+</context>
+
 <objective>
 
 Provide the domain knowledge needed to migrate capabilities from the legacy `specs/work/` structure to the CODE framework `spx/` structure, including naming conventions, test reverse-graduation, and coverage verification.
@@ -13,6 +30,188 @@ This skill is referenced by:
 - `spec-to-spx-reviewer` agent - verifies migrations
 
 </objective>
+
+<quick_start>
+
+## For Agents Using This Skill
+
+**If you're migrating**, read these sections in order:
+
+1. `<success_criteria>` - Know what success looks like FIRST
+2. `<verification_gates>` - Understand where to STOP and check
+3. `<failure_modes>` - Learn from past mistakes
+4. `<two_systems>` - Understand legacy vs target structure
+5. Consult other sections as needed during migration
+
+**If you're reviewing a migration**, read `<success_criteria>` and `<verification_gates>`, then verify each criterion.
+
+</quick_start>
+
+<success_criteria>
+
+## How to Recognize a Successful Migration
+
+**Read this FIRST.** A migration is successful when you can answer YES to all of these:
+
+### Per-Story Success
+
+| Criterion                       | How to Verify                                                   |
+| ------------------------------- | --------------------------------------------------------------- |
+| DONE.md exists in worktree      | `cat $WORKTREE_PATH/specs/work/done/.../story-NN/tests/DONE.md` |
+| SPX tests exist                 | `ls spx/.../NN-slug.story/tests/*.test.ts`                      |
+| SPX tests match DONE.md entries | Count tests in DONE.md table vs SPX test file                   |
+
+### Per-Feature Success
+
+| Criterion                            | How to Verify                                   |
+| ------------------------------------ | ----------------------------------------------- |
+| ALL stories in feature migrated      | Every story with DONE.md has SPX tests          |
+| Coverage parity at legacy file level | See concrete example below                      |
+| SPX-MIGRATION.md exists              | `cat spx/.../NN-slug.feature/SPX-MIGRATION.md`  |
+| Legacy tests removed                 | `git status` shows deletions, not modifications |
+
+### Per-Capability Success
+
+| Criterion             | How to Verify                                            |
+| --------------------- | -------------------------------------------------------- |
+| ALL features migrated | Every feature passes per-feature criteria                |
+| Legacy specs removed  | `ls specs/work/done/capability-NN_slug/` returns nothing |
+| Tests pass            | `pnpm test` shows 0 failures                             |
+| Validation passes     | `pnpm run validate` succeeds                             |
+
+### Concrete Coverage Verification Example
+
+For 43-status-determination.feature, success looked like:
+
+```text
+Legacy tests:
+  tests/unit/status/state.test.ts (5 tests)
+  tests/integration/status/state.integration.test.ts (19 tests)
+  Total: 24 tests
+  Coverage on src/status/state.ts: 86.3%
+
+SPX tests:
+  spx/.../21-initial-state.story/tests/state.unit.test.ts (5 tests)
+  spx/.../32-state-transitions.story/tests/state.integration.test.ts (7 tests)
+  spx/.../43-concurrent-access.story/tests/state.integration.test.ts (4 tests)
+  spx/.../54-status-edge-cases.story/tests/state.integration.test.ts (8 tests)
+  Total: 24 tests
+  Coverage on src/status/state.ts: 86.3%
+
+Verdict: ✓ Test count matches, coverage matches, migration successful
+```
+
+**If coverage differs by more than 0.5%, STOP.** Find which tests are missing.
+
+</success_criteria>
+
+<verification_gates>
+
+## Verification Gates (MUST STOP and Check)
+
+**Do NOT proceed past a gate until it passes.**
+
+### Gate 1: Before Writing Any SPX Tests
+
+- [ ] Worktree exists at `$WORKTREE_PATH`
+- [ ] `spx/` does NOT exist in worktree (confirms correct commit)
+- [ ] Can read at least one DONE.md from worktree
+
+```bash
+# Verify gate 1
+[ -d "$WORKTREE_PATH" ] && [ ! -d "$WORKTREE_PATH/spx" ] && echo "GATE 1: PASS"
+```
+
+### Gate 2: Before Removing Any Legacy Tests
+
+- [ ] ALL stories in the feature have SPX tests
+- [ ] Legacy test file sharing map is complete
+- [ ] Coverage comparison run shows parity (±0.5%)
+
+```bash
+# Verify gate 2 - coverage comparison
+pnpm vitest run tests/unit/status/state.test.ts tests/integration/status/state.integration.test.ts --coverage 2>&1 | grep "state.ts"
+pnpm vitest run spx/.../43-status-determination.feature --coverage 2>&1 | grep "state.ts"
+# Numbers must match
+```
+
+### Gate 3: Before Committing
+
+- [ ] `pnpm test` passes (0 failures)
+- [ ] `pnpm run validate` passes
+- [ ] `git status` shows only expected changes (SPX additions, legacy deletions)
+- [ ] No files deleted with `rm` (all deletions via `git rm`)
+
+```bash
+# Verify gate 3
+pnpm test && pnpm run validate && git status
+```
+
+### Gate 4: Before Creating Handoff
+
+- [ ] Current feature is FULLY migrated (not partial)
+- [ ] SPX-MIGRATION.md documents what was done
+- [ ] Commit created for completed work
+
+**Never hand off in the middle of a feature.** Either complete the feature or abandon and reset.
+
+</verification_gates>
+
+<failure_modes>
+
+## Failure Modes (Learn from Past Mistakes)
+
+These failures occurred during actual migrations. Avoid them.
+
+### Failure 1: Comparing Coverage at Wrong Granularity
+
+**What happened:** Agent compared coverage per-story, saw "39.72%" for one story and panicked.
+
+**Why it failed:** Multiple stories contribute to the same legacy test file. Story-level coverage is meaningless.
+
+**How to avoid:** ALWAYS compare at the legacy file level. If `tests/integration/status/state.integration.test.ts` has tests from stories 32, 43, and 54, compare the COMBINED coverage of all three SPX story tests against that ONE legacy file.
+
+### Failure 2: Not Reading DONE.md Files
+
+**What happened:** Agent guessed which tests belonged to which story based on file names.
+
+**Why it failed:** File names don't reliably indicate origin. Only DONE.md documents the actual mapping.
+
+**How to avoid:** ALWAYS read DONE.md from the worktree. The "Graduated Tests" table is the ONLY source of truth.
+
+### Failure 3: Trusting Previous Handoff Claims
+
+**What happened:** Agent accepted handoff claim that "coverage would drop" without verifying.
+
+**Why it failed:** The claim was based on wrong-granularity comparison (see Failure 1).
+
+**How to avoid:** Verify ALL claims from previous handoffs. Re-run coverage comparisons yourself. Trust, but verify.
+
+### Failure 4: Removing Legacy Files Too Early
+
+**What happened:** Agent removed `tests/integration/cli.test.ts` after migrating story-32, but stories 43 and 54 also used that file.
+
+**Why it failed:** Didn't build the sharing map first.
+
+**How to avoid:** Build the legacy file → stories map BEFORE starting migration. Only remove a legacy file after ALL contributing stories are migrated.
+
+### Failure 5: Using `rm` Instead of `git rm`
+
+**What happened:** Files disappeared from working directory but Git still tracked them. Caused confusion on next commit.
+
+**Why it failed:** `rm` doesn't update Git index.
+
+**How to avoid:** ALWAYS use `git rm`. This removes the file AND stages the deletion.
+
+### Failure 6: Partial Feature Handoff
+
+**What happened:** Agent migrated 2 of 4 stories, then handed off. Next agent didn't know which stories were done.
+
+**Why it failed:** Partial state is hard to communicate. SPX-MIGRATION.md wasn't updated mid-feature.
+
+**How to avoid:** Complete entire features before handoff. If you must stop mid-feature, update SPX-MIGRATION.md with explicit "Stories migrated: X, Y. Stories remaining: Z" section.
+
+</failure_modes>
 
 <two_systems>
 
