@@ -2,7 +2,7 @@
 
 ## Rationale
 
-CODE treats specs as durable, version-controlled product structure—not "work to implement." The `spx/` tree is the always-current map of the product. Each container holds its spec, tests, and pass ledger together, so agents can discover, validate, and evolve the system with minimal guesswork. Outcomes are proven by `outcomes.yaml` files validated at precommit and insured by CI.
+CODE treats specs as durable, version-controlled product structure—not "work to implement." The `spx/` tree is the always-current map of the product. Each container holds its spec, tests, and outcome ledger together, so agents can discover, validate, and evolve the system with minimal guesswork. Outcomes are proven by the outcome ledger, validated at precommit and insured by CI.
 
 **Important**: Use the `spx` CLI for all structural operations (like `gh` for GitHub).
 
@@ -14,16 +14,16 @@ CODE treats specs as durable, version-controlled product structure—not "work t
    The spec tree is the always-on system map. Nothing moves because work is "done."
 
 2. **Co-location**
-   Each container holds its spec file, tests directory, and pass ledger together. No parallel trees to synchronize.
+   Each container holds its spec file, tests directory, and outcome ledger together. No parallel trees to synchronize.
 
 3. **Type in names, order in directories**
    Container type is in both directory and file names. Ordering (BSP) is in directory names only, so rebalancing never requires file renames.
 
 4. **Tests are the executable proof**
-   The spec describes intent, constraints, and strategy. Tests prove the implementation works. `outcomes.yaml` is the machine-verifiable contract.
+   The spec describes intent, constraints, and strategy. Tests prove the implementation works. The outcome ledger is the machine-verifiable contract.
 
 5. **Incomplete is valid**
-   A container with 2 of 5 tests passing is in progress, not broken. `outcomes.yaml` lists only passing tests.
+   A container with 2 of 5 tests passing is in progress, not broken. The outcome ledger lists only passing tests.
 
 6. **Blob-based staleness**
    Staleness is detected by comparing git blob SHAs, not timestamps. This is deterministic across rebases, checkouts, and touched files.
@@ -41,7 +41,7 @@ CODE treats specs as durable, version-controlled product structure—not "work t
     Harnesses are production code requiring their own specs and test coverage.
 
 11. **Higher levels unaware of lower level breakdown**
-    Features don't list story outcomes. Capabilities don't list feature outcomes. Completion bubbles up through `outcomes.yaml`, not spec references. This prevents drift between levels.
+    Features don't list story outcomes. Capabilities don't list feature outcomes. Completion bubbles up through the outcome ledger, not spec references. This prevents drift between levels.
 
 12. **Analysis sections are not contracts**
     Story specs include analysis of files, constants, and configuration to prove the agent examined the codebase. Implementation may diverge as understanding deepens—this is expected, not a failure.
@@ -67,7 +67,7 @@ spx/
       tests/
   NN-{slug}.capability/
     {slug}.capability.md
-    outcomes.yaml                         # Pass ledger (may be incomplete)
+    outcomes.yaml                         # Outcome ledger (may be incomplete)
     tests/
     NN-{slug}.adr.md
     NN-{slug}.feature/
@@ -175,7 +175,7 @@ THEN [expected result]
 
 ### Rationale
 
-- **No drift** between spec prose and test ledger—`outcomes.yaml` is the sole contract
+- **No drift** between spec prose and outcome ledger—it is the sole contract
 - **Test strategy** documents approach without duplicating test logic
 - **Harness references** point to the harness spec (the durable contract), not the implementation code
 - **Prose requirements** capture intent that tests alone cannot express
@@ -252,7 +252,7 @@ AND {additional assertion}
 - **Gherkin is source of truth**—tests implement it, spec doesn't contain code
 - **Test Files table** is the contract—harness references here, not in separate sections
 - **Analysis section proves examination**—agent looked before coding, but implementation may diverge
-- **No completion criteria**—stories are atomic; outcomes.yaml is the contract
+- **No completion criteria**—stories are atomic; the outcome ledger is the contract
 - **No inline code**—code in specs drifts from actual implementation
 
 ---
@@ -290,92 +290,43 @@ export default {
 
 ---
 
-## Outcome Ledger (outcomes.yaml)
+## Outcome Ledger
 
-Each container MAY have an `outcomes.yaml` listing tests that currently pass. This is the **machine-verifiable proof** for the container.
+Each container MAY have an `outcomes.yaml` file listing tests that currently pass. This is the **machine-verifiable proof** for the container—the record of which potential has been realized.
 
-### Format
+### Purpose
 
-```yaml
-spec_blob: a3f2b7c...
-committed_at: 2026-01-28T14:15:00Z
-tests:
-  - file: parsing.unit.test.ts
-    blob: 1f2e...
-    passed_at: 2026-01-27T10:30:00Z
-  - file: cli.integration.test.ts
-    blob: 9ac4...
-    passed_at: 2026-01-28T14:15:00Z
-```
+The outcome ledger answers a question Git cannot: "Did this content pass tests, and when?"
 
-| Field          | Description                                                    |
-| -------------- | -------------------------------------------------------------- |
-| `spec_blob`    | Git blob SHA of container spec file when outcome was committed |
-| `committed_at` | ISO 8601 timestamp of last commit operation                    |
-| `file`         | Filename relative to container's `tests/` directory            |
-| `blob`         | Git blob SHA of test file content when it last passed          |
-| `passed_at`    | ISO 8601 timestamp of when that test last passed               |
+Git provides cryptographic integrity of content (a Merkle tree of blobs). The outcome ledger provides verification state—a separate Merkle tree tracking which tests pass and how containers relate to each other.
 
-### State derivation
+### Key Properties
 
-| Condition                              | State     | Required Action                 |
-| -------------------------------------- | --------- | ------------------------------- |
-| Test Files links don't resolve         | Unknown   | Write tests                     |
-| Tests exist, not all passing           | Pending   | Fix code or fix tests           |
-| Spec or test blob changed since commit | Stale     | Re-commit with `spx spx commit` |
-| All tests pass, blobs unchanged        | Passing   | None—potential realized         |
-| Was passing, now fails, blobs same     | Regressed | Investigate and fix             |
+- **Incomplete ledgers are valid** - A container with 2 of 5 tests passing is in progress, not broken
+- **Never hand-edited** - Generated by `spx spx claim`, verified by `spx spx verify`
+- **Tree coupling** - Parent ledgers reference child ledgers, creating a hierarchy of verification state
+- **States are derived** - Unknown, Pending, Stale, Passing, Regressed—computed from ledger contents
 
-### Failure classification
+### Container States
 
-When a test in `outcomes.yaml` fails:
+| State         | Condition                         | Required Action     |
+| ------------- | --------------------------------- | ------------------- |
+| **Unknown**   | No tests exist                    | Write tests         |
+| **Pending**   | Tests exist, not all claimed      | Fix code or claim   |
+| **Stale**     | Descendant outcomes_blob mismatch | Re-claim            |
+| **Passing**   | All tests pass, blobs match       | None                |
+| **Regressed** | Claimed test fails                | Investigate and fix |
 
-| `spec_blob` | `test_blob`            | Diagnosis                                                     |
-| ----------- | ---------------------- | ------------------------------------------------------------- |
-| Unchanged   | Unchanged              | **Regression** - implementation, dependency, or harness broke |
-| Unchanged   | Changed                | **Stale test** - test was modified, needs re-commit           |
-| Changed     | Unchanged              | **Stale spec** - spec was modified, needs re-commit           |
-| Changed     | Changed                | **Stale both** - spec and test modified, needs re-commit      |
-| N/A         | Not in `outcomes.yaml` | **In progress** - never passed, not a regression              |
-
-### Rationale
-
-- **Blob-based comparison** is deterministic across rebases, checkouts, touched files
-- **Per-test tracking** enables precise diagnosis: "this test passed 3 days ago with blob X"
-- **Incomplete ledgers are valid** - partial progress is normal, not an error state
-
-### Relationship to Git
-
-Git is a Merkle tree: every blob is content-addressed by SHA, every tree hashes its children, every commit hashes its root tree. This provides cryptographic integrity of *content*.
-
-`outcomes.yaml` extends Git with *test verification state*:
-
-```text
-Git Merkle Tree                    outcomes.yaml (verification)
-─────────────────                  ─────────────────────────────
-spx/
-├── auth.capability.md  ←────────  spec_blob: a3f2b7c
-├── outcomes.yaml
-└── tests/
-    └── auth.unit.test.ts  ←─────  blob: 9ac4..., passed_at: ...
-```
-
-Git answers "what is the content?" `outcomes.yaml` answers "did this content pass tests, and when?"
-
-### Generating outcomes.yaml
-
-`outcomes.yaml` MUST be generated by `spx spx commit`, never hand-edited.
+### Commands
 
 ```bash
-spx spx commit <container>
+spx spx test <container>     # Run tests, show results
+spx spx claim <container>    # Assert tests pass, update outcomes.yaml
+spx spx verify <container>   # Check that claims hold
+spx spx status <container>   # Show states without running tests
 ```
 
-The command:
-
-1. Runs all tests in `tests/`
-2. Writes `outcomes.yaml` with current `spec_blob` and `committed_at` timestamp
-3. Adds each passing test with its `blob` and `passed_at`
-4. May be incomplete (only passing tests are listed)
+For detailed format specification and design rationale, see [outcome-ledger.md](outcome-ledger.md)
 
 ---
 
@@ -383,52 +334,25 @@ The command:
 
 Precommit is the primary feedback loop. CI is insurance.
 
-For each container that has `tests/`:
+### What Precommit Catches
 
-### 1. Phantom check
+| Scenario                              | Result                     |
+| ------------------------------------- | -------------------------- |
+| Claimed test fails                    | Regression - blocks commit |
+| Descendant ledger blob changed        | Stale - re-claim required  |
+| Test file deleted but still in ledger | Phantom - blocks commit    |
+| New test file not yet in ledger       | In progress - OK           |
 
-Every `test_file` in `outcomes.yaml` must exist at runtime path `<container>/tests/<test_file>`.
-
-- Missing file → **error** (phantom entry)
-
-### 2. Regression check
-
-Run exactly the tests listed in `outcomes.yaml` (derive paths as above).
-
-If a listed test fails:
-
-- Compute current blob of that test file
-- If unchanged from `test_blob` → **Regression** (error, blocks commit)
-- If changed → **Stale** (re-commit required)
-
-### 3. Spec staleness check
-
-Compute `spec_blob_now` from current spec file.
-
-- If `spec_blob_now != spec_blob` in header → **Stale** (re-commit required)
-
-### 4. Progress tests rule
-
-Tests in `tests/` but not in `outcomes.yaml` are **in progress** (not an error).
-
-### What this catches
-
-| Scenario                                         | Result                     |
-| ------------------------------------------------ | -------------------------- |
-| Test in `outcomes.yaml` fails, nothing changed   | Regression - blocks commit |
-| Test in `outcomes.yaml` fails, test file changed | Stale - re-commit required |
-| Spec changed since last commit                   | Stale - re-commit required |
-| Test file deleted but still in `outcomes.yaml`   | Phantom - blocks commit    |
-| New test file not yet in `outcomes.yaml`         | In progress - OK           |
-
-### Flow
+### Development Flow
 
 1. **Write spec**: define intent, constraints, and test strategy
 2. **Implement**: write code and tests
-3. **Commit outcome**: run `spx spx commit <container>` to generate `outcomes.yaml`
+3. **Claim outcome**: run `spx spx claim <container>` to update the outcome ledger
 4. **Commit**: spec + implementation + tests + outcomes.yaml together
 5. **Precommit**: validates no regressions, no phantoms, no staleness
 6. **CI**: re-runs validation as insurance
+
+For detailed validation rules, see [outcome-ledger.md](outcome-ledger.md)
 
 ---
 
@@ -469,7 +393,7 @@ project/
 ### Why harnesses need specs
 
 1. **Harness bugs break all dependent tests** - high impact requires tracking
-2. **Harness refactoring needs regression protection** - `outcomes.yaml` detects breakage
+2. **Harness refactoring needs regression protection** - the outcome ledger detects breakage
 3. **Harness capabilities need documentation** - what can tests rely on?
 4. **Harness dependencies need BSP ordering** - tests depend on harness (lower BSP)
 
