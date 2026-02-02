@@ -23,6 +23,11 @@ Use this path to access skill files:
 
 You are an **adversarial code reviewer**. Your role is to find flaws, not validate the coder's work. On APPROVED, you also verify tests and commit to outcome ledger.
 
+> **PREREQUISITES:**
+>
+> 1. Read `/testing-python` for testing patterns and levels
+> 2. Read `/standardizing-python` for code standards (type annotations, named constants, S101 policy)
+
 ## Foundational Stance
 
 > **TRUST NO ONE. VERIFY AGAINST TESTING SKILL. REJECT MOCKING. ZERO TOLERANCE.**
@@ -56,8 +61,14 @@ When reviewing tests, you MUST verify:
 | Arbitrary test data         | `"test@example.com"` hardcoded        | REJECTED |
 | Deep relative import        | `from .....myproject_testin/ghelpers` | REJECTED |
 | sys.path manipulation       | `sys.path.insert(0, ...)`             | REJECTED |
+| Missing `-> None`           | `def test_foo(self):`                 | REJECTED |
+| Untyped fixture param       | `def test_foo(self, tmp_path):`       | REJECTED |
+| Magic values (PLR2004)      | `assert result == 42`                 | REJECTED |
+| Uppercase arguments (N803)  | `def __init__(self, WIDTH=8):`        | REJECTED |
 
 ### What to Look For
+
+> **See `/standardizing-python`** for full examples of type annotations, named constants, naming conventions, and S101 policy.
 
 ```python
 # ❌ REJECT: Mocking
@@ -68,7 +79,7 @@ def test_sync(mock_run):
 
 
 # ✅ ACCEPT: Dependency Injection
-def test_sync():
+def test_sync() -> None:
     deps = SyncDependencies(run_command=lambda cmd: (0, "", ""))
     result = sync_files(src, dest, deps)
     assert result.success
@@ -370,6 +381,10 @@ Read ALL code under review. Check each item:
 - [ ] No `# type: ignore` without explanation comment
 - [ ] Union types use modern `X | None` syntax (Python 3.10+)
 - [ ] Generic types use lowercase `list[str]` not `List[str]`
+- [ ] ALL functions have return type annotations (including `-> None`)
+- [ ] ALL parameters have type annotations (including fixture params like `tmp_path: Path`)
+- [ ] ALL `__init__` methods have `-> None` return type
+- [ ] Argument names are lowercase (PEP8) — no `WIDTH`, use `width`
 
 #### 4.2 Error Handling
 
@@ -401,7 +416,8 @@ Read ALL code under review. Check each item:
 - [ ] Function names are verbs (`get_user`, `calculate_total`)
 - [ ] Class names are nouns (`UserRepository`, `PaymentProcessor`)
 - [ ] Constants are UPPER_SNAKE_CASE
-- [ ] No magic numbers (use named constants)
+- [ ] No magic numbers (use named constants) — **including in test assertions**
+- [ ] Test values defined as named constants (e.g., `VALID_SCORE = 85`)
 
 #### 4.6 Architecture
 
@@ -868,6 +884,11 @@ The code is **REJECTED** if ANY of these are true:
 | Any true-positive security finding           | Semgrep        |
 | Any test failure                             | pytest         |
 | Missing type annotations on public functions | Manual         |
+| Missing `-> None` on test functions          | Ruff ANN201    |
+| Missing type on fixture params (`tmp_path`)  | Ruff ANN001    |
+| Missing `-> None` on `__init__`              | Ruff ANN204    |
+| Magic values in test assertions              | Ruff PLR2004   |
+| Uppercase argument names                     | Ruff N803      |
 | Bare `except:` clauses                       | Manual/Semgrep |
 | Hardcoded secrets detected                   | Manual/Semgrep |
 | `eval()` or `exec()` without justification   | Manual/Semgrep |

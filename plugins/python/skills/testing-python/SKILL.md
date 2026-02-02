@@ -6,7 +6,10 @@ allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 
 # Python Testing Patterns
 
-> **PREREQUISITE:** Read the foundational `/testing` skill first. This skill provides Python-specific implementations.
+> **PREREQUISITES:**
+>
+> 1. Read `/testing` for foundational testing principles
+> 2. Read `/standardizing-python` for code standards (type annotations, named constants, S101 policy)
 
 ## Foundational Stance
 
