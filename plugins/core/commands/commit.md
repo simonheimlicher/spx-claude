@@ -4,17 +4,12 @@ description: Commit following Conventional Commits
 argument-hint: [files-to-stage]
 ---
 
-# STOP - Invoke Skill First
-
-**Do NOT proceed manually.** Invoke the skill immediately:
-
-```
-Skill: core:committing-changes
-```
-
-## Context for the Skill
+# Commit Context
 
 **Arguments:** `$ARGUMENTS`
+
+**Current branch:**
+!`git branch --show-current`
 
 **Status:**
 !`git status --short`
@@ -28,5 +23,14 @@ Skill: core:committing-changes
 **Recent commits (for style reference):**
 !`git log --oneline -5`
 
-**Current branch:**
-!`git branch --show-current`
+---
+
+## ACTION REQUIRED
+
+**Call the Skill tool NOW** with the context above:
+
+```json
+Skill tool → { "skill": "core:committing-changes" }
+```
+
+Do NOT proceed manually. The skill contains the commit protocol.
