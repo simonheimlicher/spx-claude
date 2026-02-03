@@ -170,13 +170,14 @@ refactor(db): extract query builder module
 
 | Type         | Purpose                               | SemVer |
 | ------------ | ------------------------------------- | ------ |
-| **feat**     | New user-facing feature               | MINOR  |
+| **spec**     | Specification only                    | PATCH  |
+| **test**     | Add/modify tests                      | PATCH  |
+| **feat**     | Implementation of new functionality   | MINOR  |
+| **refactor** | Code restructure (no behavior change) | PATCH  |
 | **fix**      | Bug fix                               | PATCH  |
 | **docs**     | Documentation only                    | PATCH  |
 | **style**    | Formatting (no logic change)          | PATCH  |
-| **refactor** | Code restructure (no behavior change) | PATCH  |
 | **perf**     | Performance improvement               | PATCH  |
-| **test**     | Add/modify tests                      | PATCH  |
 | **ci**       | CI/CD changes                         | PATCH  |
 | **build**    | Build system, dependencies            | PATCH  |
 | **revert**   | Revert previous commit                | varies |
@@ -187,17 +188,13 @@ Projects may define custom types:
 
 | Type         | Domain           | Purpose                        |
 | ------------ | ---------------- | ------------------------------ |
-| **ctx**      | SPX projects     | Context/workflow documentation |
 | **draft**    | Writing projects | New or revised content         |
-| **spec**     | Documentation    | Specification changes          |
 | **research** | Academic/books   | Research notes                 |
 | **meta**     | Process docs     | Process/workflow documentation |
 
 Check project's CLAUDE.md or commit-standards.md for custom types.
 
-**Avoid**
-
-- `chore:` - Everything has purpose; use specific type instead
+**IMPORTANT:** NEVER USE `chore:`. Everything has purpose; use specific type instead
 
 </commit_types>
 
