@@ -458,7 +458,7 @@ Example:
 **Key information to extract:**
 
 1. **Tests table** - Maps requirements to test file locations
-2. **Test Level** - Determines target suffix (unit → `.unit.test.py`)
+2. **Test Level** - Determines target naming (unit → `test_*.unit.py`)
 3. **Actual location** - Where to find the test (go get it from there)
 
 </done_md_format>

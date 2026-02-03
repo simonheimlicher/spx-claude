@@ -667,9 +667,9 @@ Test level is indicated by filename suffix:
 
 | Test Level  | Filename Pattern        | Example                   |
 | ----------- | ----------------------- | ------------------------- |
-| Unit        | `*.unit.test.py`        | `parsing.unit.test.py`    |
-| Integration | `*.integration.test.py` | `cli.integration.test.py` |
-| E2E         | `*.e2e.test.py`         | `workflow.e2e.test.py`    |
+| Unit        | `test_*.unit.py`        | `test_parsing.unit.py`    |
+| Integration | `test_*.integration.py` | `test_cli.integration.py` |
+| E2E         | `test_*.e2e.py`         | `test_workflow.e2e.py`    |
 
 #### 6.2 Run Tests and Commit Outcome
 
@@ -710,10 +710,10 @@ Check the outcomes.yaml shows all tests passing:
 spec_blob: { sha }
 committed_at: { timestamp }
 tests:
-  - file: parsing.unit.test.py
+  - file: test_parsing.unit.py
     blob: { sha }
     passed_at: { timestamp }
-  - file: cli.integration.test.py
+  - file: test_cli.integration.py
     blob: { sha }
     passed_at: { timestamp }
 ```

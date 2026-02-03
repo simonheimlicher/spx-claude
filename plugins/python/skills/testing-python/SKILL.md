@@ -660,7 +660,7 @@ def test_handles_api_rate_limit(dropbox_test_folder):
 # pyproject.toml
 [tool.pytest.ini_options]
 testpaths = ["spx"]
-python_files = ["*.test.py"]
+python_files = ["test_*.py"]
 markers = [
   "integration: Level 2 tests requiring local infrastructure",
   "e2e: Level 3 tests requiring credentials and external services",
@@ -685,9 +685,9 @@ spx/
     └── {feature}/
         ├── {feature}.md                  # Feature spec
         └── tests/
-            ├── {name}.unit.test.py       # Level 1
-            ├── {name}.integration.test.py # Level 2
-            ├── {name}.e2e.test.py        # Level 3, non-browser
+            ├── test_{name}.unit.py       # Level 1
+            ├── test_{name}.integration.py # Level 2
+            ├── test_{name}.e2e.py        # Level 3, non-browser
             └── {name}.e2e.spec.py        # Level 3, browser (Playwright)
 ```
 

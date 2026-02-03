@@ -10,7 +10,7 @@ Python plugin skills work with CODE structure: reference `spx/` paths, use co-lo
 | -------------------- | ---------------------------------------------------------------------- |
 | coding-python        | Update spec references to `spx/`, test output to co-located `tests/`   |
 | reviewing-python     | Update spec references to `spx/`, review co-located tests              |
-| testing-python       | Update test paths from `tests/unit/` to `spx/.../tests/*.unit.test.py` |
+| testing-python       | Update test paths from `tests/unit/` to `spx/.../tests/test_*.unit.py` |
 | architecting-python  | Update ADR output to `spx/` hierarchy                                  |
 | orchestrating-python | Update workflow to use `spx/` paths, `outcomes.yaml` for progress      |
 
@@ -27,7 +27,7 @@ specs/work/doing/capability-10/feature-10/story-10/tests/  → tests/unit/
 **After (co-location model):**
 
 ```
-spx/capability-10/feature-10/story-10/tests/*.unit.test.py  (stays here)
+spx/capability-10/feature-10/story-10/tests/test_*.unit.py  (stays here)
 ```
 
 ### Test Naming Changes
@@ -42,8 +42,8 @@ tests/integration/feature-10/test_validation.py
 **After:**
 
 ```
-spx/.../story-10/tests/parsing.unit.test.py
-spx/.../feature-10/tests/validation.integration.test.py
+spx/.../story-10/tests/test_parsing.unit.py
+spx/.../feature-10/tests/test_validation.integration.py
 ```
 
 ### Status Changes
@@ -61,7 +61,7 @@ spx/.../feature-10/tests/validation.integration.test.py
 ## Completion Criteria
 
 - [ ] All skills reference `spx/` not `specs/work/`
-- [ ] Test output uses co-located `tests/` with `*.unit.test.py` naming
+- [ ] Test output uses co-located `tests/` with `test_*.unit.py` naming
 - [ ] No references to test graduation
 - [ ] `outcomes.yaml` used for work state determination
 - [ ] No TRD references

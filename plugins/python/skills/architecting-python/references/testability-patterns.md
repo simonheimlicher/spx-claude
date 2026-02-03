@@ -408,7 +408,7 @@ Every ADR should include a testability section:
 ### Integration Testing Strategy
 
 - `OrderService` tested with `InMemoryOrderRepository`
-- Real database tests co-located in `spx/.../tests/*.integration.test.py`
+- Real database tests co-located in `spx/.../tests/test_*.integration.py`
 
 ### Mocking Boundaries
 
