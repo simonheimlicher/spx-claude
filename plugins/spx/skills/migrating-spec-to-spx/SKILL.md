@@ -1,6 +1,6 @@
 ---
 name: migrating-spec-to-spx
-description: Domain knowledge for migrating capabilities from legacy specs/ to CODE spx/ structure. Use when migrating or reviewing migrations.
+description: Use when migrating specs to spx, reviewing migrations, understanding spec-to-spx process, or debugging migration issues.
 ---
 
 <context>
@@ -40,7 +40,7 @@ This skill is referenced by:
 1. `<success_criteria>` - Know what success looks like FIRST
 2. `<verification_gates>` - Understand where to STOP and check
 3. `<failure_modes>` - Learn from past mistakes
-4. `<two_systems>` - Understand legacy vs target structure
+4. `<legacy_system>` and `<target_system>` - Understand legacy vs target structure
 5. Consult other sections as needed during migration
 
 **If you're reviewing a migration**, read `<success_criteria>` and `<verification_gates>`, then verify each criterion.
@@ -213,7 +213,7 @@ These failures occurred during actual migrations. Avoid them.
 
 </failure_modes>
 
-<two_systems>
+<legacy_system>
 
 ## Legacy System: specs/
 
@@ -279,6 +279,10 @@ ls specs/.../tests/test_foo.py  # Found!
 5. If tests exist in BOTH locations → `specs/.../tests/` may be stale duplicates
 6. Remove from ALL original locations to avoid duplicates in final state
 
+</legacy_system>
+
+<target_system>
+
 ## Target System: spx/ (CODE Framework)
 
 ```text
@@ -311,7 +315,7 @@ spx/
 - **Naming**: `{BSP}-{slug}.{type}/` (e.g., `27-spec-domain.capability/`)
 - **No TRDs** - Technical details belong in feature.md itself
 
-</two_systems>
+</target_system>
 
 <naming_transformation>
 
@@ -678,12 +682,130 @@ A migration is complete and valid when:
 
 ### Documentation
 
-- [ ] SPX-MIGRATION.md at feature level shows:
-  - Legacy test file → contributing stories mapping
-  - Coverage comparison results
-  - Files removed
+- [ ] SPX-MIGRATION.md created at EVERY level where DONE.md existed
+- [ ] SPX-MIGRATION.md contains ALL required sections (see `<spx_migration_md>`)
 
 </valid_migration_checklist>
+
+<spx_migration_md>
+
+## SPX-MIGRATION.md: The Corrected Record
+
+**DONE.md documents what was claimed. SPX-MIGRATION.md documents what actually happened.**
+
+### Rule: Create at EVERY Level Where DONE.md Exists
+
+If DONE.md exists at a level, SPX-MIGRATION.md MUST exist at the same level:
+
+| If DONE.md exists here...               | Create SPX-MIGRATION.md here...               |
+| --------------------------------------- | --------------------------------------------- |
+| `specs/.../story-NN/tests/DONE.md`      | `spx/.../NN-slug.story/SPX-MIGRATION.md`      |
+| `specs/.../feature-NN/tests/DONE.md`    | `spx/.../NN-slug.feature/SPX-MIGRATION.md`    |
+| `specs/.../capability-NN/tests/DONE.md` | `spx/.../NN-slug.capability/SPX-MIGRATION.md` |
+
+If NO DONE.md exists at a level but tests were migrated there, create SPX-MIGRATION.md anyway.
+
+### Required Sections (ALL MANDATORY)
+
+SPX-MIGRATION.md is NOT just a changelog. It is the **corrected verification record**.
+
+```markdown
+# SPX-MIGRATION: {spx-name}
+
+## Original Completion Record
+
+**From**: `{path to original DONE.md}`
+**Verdict**: {APPROVED/etc from DONE.md}
+**Original Date**: {from DONE.md}
+**Migration Date**: {today}
+
+## Test Location Corrections
+
+DONE.md claimed tests were at locations that may not exist. This table shows:
+
+- What DONE.md claimed
+- Where tests actually were
+- Where they are now in spx/
+
+| DONE.md Claimed Location   | Actual Location Found         | SPX Location                            | Why This Level   |
+| -------------------------- | ----------------------------- | --------------------------------------- | ---------------- |
+| `tests/unit/foo.py`        | `specs/.../tests/test_foo.py` | `spx/.../tests/test_foo.unit.py`        | Pure computation |
+| `tests/integration/bar.py` | `specs/.../tests/test_bar.py` | `spx/.../tests/test_bar.integration.py` | Uses subprocess  |
+
+**"Why This Level"** must reference the testing skill's evidence table:
+
+- Level 1: Business logic, parsing, file I/O with temp dirs
+- Level 2: Database, HTTP, CLI binary behavior
+- Level 3: Full workflow, real credentials, browser
+
+## Complete Test Inventory
+
+ALL test files at this level, with test counts:
+
+| Test File                 | Test Count | Requirements Covered |
+| ------------------------- | ---------- | -------------------- |
+| `test_foo.unit.py`        | 11         | FR1, FR2, QR1        |
+| `test_bar.integration.py` | 4          | FR3, FR4             |
+
+**Total**: {N} tests
+
+## ADR Reference Updates
+
+If ANY spec file had ADR references updated:
+
+| Spec File      | Old ADR Reference             | New ADR Reference          |
+| -------------- | ----------------------------- | -------------------------- |
+| `foo.story.md` | `decisions/adr-07_tooling.md` | `21-python-tooling.adr.md` |
+
+If no ADR references were updated, state: "No ADR references required updates."
+
+## Verification
+
+\`\`\`bash
+
+# Command to verify all tests pass
+
+just test "spx/.../tests/"
+
+# Result
+
+{N} passed in {X}s
+\`\`\`
+
+## Files Removed
+
+Legacy files removed with `git rm`:
+
+- `specs/.../tests/test_foo.py`
+- `specs/.../tests/DONE.md`
+```
+
+### Failure Mode: Incomplete SPX-MIGRATION.md
+
+**What happens:** Agent creates SPX-MIGRATION.md with just "migrated tests" and no details.
+
+**Why it fails:** Next agent cannot verify:
+
+- Which tests came from where
+- Why tests are at their level
+- What ADR references changed
+- Whether all DONE.md entries are accounted for
+
+**How to avoid:** Use the template above. Every section is mandatory. If a section doesn't apply, explicitly state "N/A" or "None".
+
+### The Correction Requirement
+
+DONE.md often contains **phantom graduations** - claims that tests are in `tests/unit/...` when they're actually in `specs/.../tests/`.
+
+SPX-MIGRATION.md MUST:
+
+1. Document what DONE.md **claimed**
+2. Document what **actually existed**
+3. Document where tests are **now**
+
+This creates an audit trail that explains discrepancies.
+
+</spx_migration_md>
 
 <constraints>
 
