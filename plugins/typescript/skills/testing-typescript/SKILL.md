@@ -1,527 +1,1016 @@
 ---
 name: testing-typescript
-description: Write tests for TypeScript code with three levels (Unit/Integration/E2E). Use when testing TypeScript or writing TypeScript tests.
+description: TypeScript-specific testing patterns with type-safe test design. Use when testing TypeScript code or writing TypeScript tests.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
-<skill_relationship>
-**This skill provides TypeScript-specific testing patterns.**
+# TypeScript Testing Patterns
 
-**Required reading order:**
-
-1. **FIRST**: Invoke `/testing` skill for foundational testing principles
-2. **THEN**: Read this skill for TypeScript-specific implementations
-
-This skill assumes you understand from `/testing`:
-
-- The three testing levels (Unit/Integration/E2E)
-- No mocking principle - use dependency injection
-- Behavior vs implementation testing
-- Reality is the oracle
-- Test co-location in CODE framework
-
-**What this skill adds:** TypeScript-specific patterns, Vitest configuration, type-safe test factories, and concrete examples.
-</skill_relationship>
-
-<context_loading>
-**For spx-based work items: Load complete context before designing tests.**
-
-If you're designing tests for a spec-driven work item (story/feature/capability), ensure complete hierarchical context is loaded:
-
-1. **Invoke `spx:understanding-specs`** with the work item identifier
-2. **Verify all ADRs are loaded** - Testing decisions may be in product/capability/feature ADRs (interleaved)
-3. **Verify feature spec exists** - Features should document validation strategy and test levels
-
-**The `spx:understanding-specs` skill provides:**
-
-- Complete ADR hierarchy (product/capability/feature decisions)
-- Feature spec with validation strategy and test level assignments
-- Story/feature/capability spec with acceptance criteria
-
-**If NOT working on spx-based work item**: Proceed directly with test design using provided requirements.
-</context_loading>
-
-<essential_principles>
-**MAXIMUM CONFIDENCE. MINIMUM DEPENDENCIES. NO MOCKING. REALITY IS THE ORACLE.**
-
-- Every dependency you add must **justify itself** with confidence gained
-- If you can verify with pure functions, don't require binaries
-- If you can verify with local binaries, don't require Chrome
-- Mocking is a **confession** that your code is poorly designed
-- Reality is the only oracle that matters
-
-</essential_principles>
-
-<test_location_code_framework>
-**CRITICAL INVARIANT: Tests are co-located with specs in the CODE framework.**
-
-Tests live alongside their specs in `spx/.../tests/` directories. Test level is indicated by filename suffix, not directory location.
-
-**Test Location in CODE Framework:**
-
-| Container  | Test Location                      | Filename Suffix                    |
-| ---------- | ---------------------------------- | ---------------------------------- |
-| Story      | `spx/.../NN-{slug}.story/tests/`   | `*.unit.test.ts`                   |
-| Feature    | `spx/.../NN-{slug}.feature/tests/` | `*.integration.test.ts`            |
-| Capability | `spx/NN-{slug}.capability/tests/`  | `*.e2e.test.ts` or `*.e2e.spec.ts` |
-
-**E2E suffix distinction:**
-
-- `*.e2e.test.ts` - Non-browser E2E (CLI, API) → runs with Vitest
-- `*.e2e.spec.ts` - Browser-based E2E → runs with Playwright
-
-**Test Verification Ledger (outcomes.yaml):**
-
-Each container has an `outcomes.yaml` that records test verification:
-
-```yaml
-spec_blob: a1b2c3d...
-committed_at: 2024-01-15T10:30:00Z
-tests:
-  - file: auth.unit.test.ts
-    blob: a1b2c3d
-    passed_at: 2024-01-15T10:30:00Z
-```
-
-**TDD Workflow in CODE Framework:**
-
-1. Write failing test in `spx/.../tests/` (RED)
-2. Implement code until test passes (GREEN)
-3. Run `spx spx commit` to record pass in `outcomes.yaml`
-
-**The Rule:**
-
-> **Tests stay co-located with their specs.**
+> **PREREQUISITE: Run through the `/testing` router first.**
 >
-> No test graduation. Tests remain in `spx/.../tests/` permanently.
-> The `outcomes.yaml` ledger provides verification evidence.
+> This skill provides TypeScript-specific implementations for decisions made there. Do NOT skip the router—it determines WHAT to test and at WHAT level. This skill shows HOW to implement that decision in TypeScript.
 
-**Quick Decision:**
+---
 
-```
-Am I implementing new functionality?
-├── YES → Write test in spx/.../tests/ with appropriate suffix
-│         Run `spx spx commit` when passing
-└── NO  → Modify existing test in spx/.../tests/
-          Ensure outcomes.yaml is updated
-```
+## Router Decision → TypeScript Implementation
 
-</test_location_code_framework>
+After running through the `/testing` router, use this mapping:
 
-<core_principles>
-**1. Behavior Only**
+| Router Decision                                 | TypeScript Implementation                        |
+| ----------------------------------------------- | ------------------------------------------------ |
+| **Stage 2 → Level 1**                           | Vitest + temp dirs + type-safe DI                |
+| **Stage 2 → Level 2**                           | Vitest + harness classes + Docker                |
+| **Stage 2 → Level 3**                           | Vitest (CLI/API) or Playwright (browser)         |
+| **Stage 3A** (Pure computation)                 | Pure functions with explicit types               |
+| **Stage 3B** (Extract pure part)                | Factor into typed pure functions + thin wrappers |
+| **Stage 5 Exception 1** (Failure modes)         | Interface + stub class returning errors          |
+| **Stage 5 Exception 2** (Interaction protocols) | Spy class with typed call recording              |
+| **Stage 5 Exception 3** (Time/concurrency)      | `vi.useFakeTimers()` or injected clock           |
+| **Stage 5 Exception 4** (Safety)                | Stub class that records but doesn't execute      |
+| **Stage 5 Exception 6** (Observability)         | Spy class capturing typed request details        |
 
-Tests verify **WHAT** the system does, not **HOW** it does it.
+---
 
-```typescript
-// ❌ BAD: Testing implementation
-it("uses execa to run hugo", async () => {
-  const execaSpy = vi.spyOn(deps, "execa");
-  await buildHugo(siteDir, deps);
-  expect(execaSpy).toHaveBeenCalledWith("hugo"); // Tests HOW, not WHAT
-});
+## TypeScript Tooling by Level
 
-// ✅ GOOD: Testing behavior
-it("GIVEN site directory WHEN building THEN creates files in output", async () => {
-  const result = await buildHugo(siteDir, deps);
-  expect(result.buildDir).toBeDefined();
-  expect(deps.existsSync(result.buildDir)).toBe(true); // Tests WHAT happened
-});
-```
+| Level            | Infrastructure                                  | Speed | Framework  |
+| ---------------- | ----------------------------------------------- | ----- | ---------- |
+| 1: Unit          | Node.js stdlib + temp dirs + standard dev tools | <50ms | Vitest     |
+| 2: Integration   | Docker containers + project-specific binaries   | <1s   | Vitest     |
+| 3: E2E (CLI/API) | Network services + external APIs                | <30s  | Vitest     |
+| 3: E2E (Browser) | Chrome + real user flows                        | <30s  | Playwright |
 
-**2. Dependency Injection Over Mocking**
+**Standard dev tools** (Level 1): git, node, npm, curl—available in CI without setup.
+**Project-specific tools** (Level 2): Docker, Hugo, Caddy, PostgreSQL—require installation.
 
-Design code to accept dependencies as parameters. Then tests pass **real implementations with test-friendly behavior**—no mocking framework needed.
+---
 
-```typescript
-// ❌ BAD: Module-level mocking
-vi.mock("execa", () => ({ execa: vi.fn() }));
+## Level 1: Pure Computation (Stage 3A)
 
-it("runs hugo", async () => {
-  await buildHugo(siteDir);
-  expect(execa).toHaveBeenCalled(); // What did we prove? NOTHING.
-});
+When the router determines your code is pure computation, test it directly with full type safety.
 
-// ❌ ALSO BAD: Function-level mocking with vi.fn()
-it("runs hugo", async () => {
-  const deps = {
-    execa: vi.fn().mockResolvedValue({ exitCode: 0 }), // Still mocking!
-  };
-  await buildHugo(siteDir, deps);
-  expect(deps.execa).toHaveBeenCalled(); // Tests HOW, not WHAT
-});
-
-// ✅ GOOD: Real implementations with test-friendly behavior
-class TestExecaRunner {
-  private _exitCode = 0;
-  private _stdout = "";
-
-  simulateFailure(exitCode: number) {
-    this._exitCode = exitCode;
-  }
-
-  async run(cmd: string, args: string[]): Promise<{ exitCode: number; stdout: string }> {
-    // Real logic - can be configured for different test scenarios
-    return { exitCode: this._exitCode, stdout: this._stdout };
-  }
-}
-
-it("GIVEN valid site WHEN building THEN returns build output", async () => {
-  const execaRunner = new TestExecaRunner();
-  const deps: BuildDependencies = {
-    execa: execaRunner.run.bind(execaRunner),
-    existsSync: (path) => path.includes("public"), // Real implementation
-  };
-
-  const result = await buildHugo(siteDir, deps);
-
-  // Test BEHAVIOR (what was returned), not calls
-  expect(result.success).toBe(true);
-  expect(result.buildDir).toContain("public");
-});
-```
-
-**3. Escalation Requires Justification**
-
-Each level adds dependencies. You must **justify** the confidence gained:
-
-| Level | Dependencies Added   | Confidence Gained                                 |
-| ----- | -------------------- | ------------------------------------------------- |
-| 1 → 2 | Real binaries (Hugo) | "Unit tests pass, but does Hugo accept our args?" |
-| 2 → 3 | Chrome + network     | "Integration works, but do real audits complete?" |
-
-If you cannot articulate what confidence the next level adds, **don't escalate**.
-
-**4. No Arbitrary Test Data**
-
-All test data must be:
-
-- **Generated**: Use factories, not literals
-- **Ephemeral**: Created and destroyed within test scope
-- **Randomized**: Expose ordering assumptions
+### Pure Function Testing
 
 ```typescript
-// ❌ BAD: Arbitrary strings
-it("syncs files", async () => {
-  await runLhci({ url: "http://example.com" });
-});
+import { describe, expect, it } from "vitest";
 
-// ✅ GOOD: Generated data
-it("GIVEN config with URL set WHEN running THEN audits each URL", async () => {
-  const config = createTestConfig({
-    url_sets: { critical: ["/", "/about/"] },
+describe("buildLhciCommand", () => {
+  it("includes checksum flag when enabled", () => {
+    const cmd = buildLhciCommand({ checksum: true });
+
+    expect(cmd).toContain("--checksum");
   });
 
-  await runLhci({ set: "critical" }, config, mockDeps);
+  it("preserves unicode paths", () => {
+    const cmd = buildLhciCommand({
+      source: "/tank/фото",
+      dest: "remote:резервная",
+    });
+
+    expect(cmd).toContain("/tank/фото");
+    expect(cmd).toContain("remote:резервная");
+  });
+});
+
+describe("validateConfig", () => {
+  it("rejects empty URL sets", () => {
+    const result = validateConfig({ url_sets: {} });
+
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("url_sets");
+  });
+
+  it("accepts valid config", () => {
+    const result = validateConfig({
+      site_dir: "./site",
+      url_sets: { critical: ["/", "/about/"] },
+    });
+
+    expect(result.ok).toBe(true);
+  });
 });
 ```
 
-**5. Fast Failure**
+### Type-Safe Data Factories
 
-Tests run in order of speed and likelihood to fail:
-
-1. **Environment checks first**: Is the tool installed? Is the server running?
-2. **Simple operations before complex**: Can we parse config before running audits?
-3. **Known failure modes early**: Check the most fragile assumptions first
-
-</core_principles>
-
-<testing_levels>
-**Level 1: Unit (No External Dependencies)**
-
-- **Speed**: <50ms
-- **Infrastructure**: Standard developer CLI tools + temp fixtures
-- **Framework**: Vitest
-
-Unit testing is fast and depends only on CLI tools installed by default on modern macOS and Linux developer machines:
-
-**Standard tools (always available):**
-
-- `git`, `node`, `npm`, `npx`, `curl`, `python`
-- `cat`, `grep`, `sed`, `awk` (Unix shell tools)
-- Node.js built-ins: `fs`, `path`, `os`, `crypto`
-
-**Testing approach:**
-
-- Dependency injection with controlled implementations
-- Pure function testing
-- **CRITICAL: MUST use `os.tmpdir()` exclusively**
-- Never write outside OS-provided temporary directories
-- Fast execution thanks to SSDs
-
-The developer has bigger problems if git, node, npm, or curl are not available.
-These are NOT external dependencies - they're part of the standard developer environment.
-
-**See**: `levels/level-1-unit.md`
-
----
-
-**Level 2: Integration (Local Binaries)**
-
-- **Speed**: <1s
-- **Infrastructure**: Project-specific tools OR virtualized environments
-
-Integration testing covers two scenarios:
-
-**1. Project-specific CLI tools:**
-
-- Tools NOT installed by default: Claude Code, Hugo, Caddy, TypeScript compiler
-- Integration with tools specific to your project
-- Local execution only (no network)
-
-**2. Virtualized environments:**
-
-- Docker containers and containerized test environments
-- Creates dependencies beyond standard developer setup
-
-**See**: `levels/level-2-integration.md`
-
----
-
-**Level 3: E2E (Full Workflow)**
-
-- **Speed**: <30s
-- **Infrastructure**: External dependencies for maximum confidence
-
-Maximum confidence testing with external dependencies:
-
-- Network services (GitHub API, external repos)
-- Chrome and browser-based tools
-- Complete real-world workflows
-
-**Still respects filesystem boundaries:**
-
-- MUST use `os.tmpdir()` exclusively OR containerized environments
-- Never write to user directories or system locations
-
-**See**: `levels/level-3-e2e.md`
-</testing_levels>
-
-<test_design_protocol>
-Execute these phases IN ORDER when designing tests for a feature.
-
-**Phase 1: Identify Behaviors**
-
-List the behaviors to verify. Not implementation details—observable outcomes.
-
-```markdown
-## Behaviors to Verify
-
-1. Given a Hugo site, build creates files in temp directory
-2. Given URL set in config, audits each URL
-3. Given LHCI failure, returns non-zero exit code
-4. Given invalid config, throws descriptive error
-```
-
-**Phase 2: Assign Minimum Levels**
-
-For each behavior, determine the **minimum** level that can verify it:
-
-| Behavior                   | Minimum Level | Justification                 |
-| -------------------------- | ------------- | ----------------------------- |
-| Config parsing             | Level 1       | Pure function, can verify DI  |
-| Command building           | Level 1       | Pure function, no external    |
-| Hugo actually builds       | Level 2       | Need real Hugo binary         |
-| Caddy serves files         | Level 2       | Need real Caddy binary        |
-| Lighthouse scores returned | Level 3       | Need real Chrome + Lighthouse |
-
-**Phase 3: Design Tests Bottom-Up**
-
-Start at Level 1. Only escalate when Level 1 **cannot** verify the behavior.
+Generate test data with full type inference. Never use arbitrary literals.
 
 ```typescript
-// Level 1: Verify command building logic
-it("GIVEN checksum enabled WHEN building command THEN includes --checksum", () => {
-  const cmd = buildLhciCommand({ checksum: true });
+import { describe, expect, it } from "vitest";
 
-  expect(cmd).toContain("--checksum");
-});
+type AuditResult = {
+  id: string;
+  url: string;
+  scores: {
+    performance: number;
+    accessibility: number;
+  };
+};
 
-// Level 2: Verify Hugo accepts the command
-it("GIVEN valid site WHEN building THEN Hugo exits with 0", async () => {
-  const result = await buildHugo("test/fixtures/sample-site");
+let idCounter = 0;
 
-  expect(result.exitCode).toBe(0);
-});
+function createAuditResult(overrides: Partial<AuditResult> = {}): AuditResult {
+  return {
+    id: `audit-${++idCounter}`,
+    url: `https://example.com/page-${idCounter}`,
+    scores: {
+      performance: 90,
+      accessibility: 100,
+    },
+    ...overrides,
+  };
+}
 
-// Level 3: Verify full workflow
-it("GIVEN sample site WHEN running hugolit THEN produces reports", async () => {
-  const { exitCode, stdout } = await execa("node", ["bin/hugolit.js", "run"]);
+describe("analyzeResults", () => {
+  it("fails on low performance", () => {
+    const result = createAuditResult({
+      scores: { performance: 45, accessibility: 100 },
+    });
 
-  expect(exitCode).toBe(0);
-  expect(stdout).toContain("reports written");
+    const analysis = analyzeResults([result], { minPerformance: 90 });
+
+    expect(analysis.passed).toBe(false);
+  });
 });
 ```
 
-**Phase 4: Document Escalation Rationale**
+### Temporary Directories
 
-In the test file, document why each level is necessary:
+Temp dirs are NOT external dependencies—use them freely at Level 1.
+
+```typescript
+import { mkdtemp, rm, writeFile } from "fs/promises";
+import { tmpdir } from "os";
+import { join } from "path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+describe("loadConfig", () => {
+  let tempDir: string;
+
+  beforeEach(async () => {
+    tempDir = await mkdtemp(join(tmpdir(), "config-test-"));
+  });
+
+  afterEach(async () => {
+    await rm(tempDir, { recursive: true });
+  });
+
+  it("loads YAML config file", async () => {
+    const configPath = join(tempDir, "config.yaml");
+    await writeFile(
+      configPath,
+      `
+site_dir: ./site
+base_url: http://localhost:1313
+`,
+    );
+
+    const config = await loadConfig(configPath);
+
+    expect(config.site_dir).toBe("./site");
+    expect(config.base_url).toBe("http://localhost:1313");
+  });
+});
+```
+
+---
+
+## Level 1: Extracted Logic (Stage 3B)
+
+When the router says "extract the pure part," factor your code with explicit types.
+
+### Before: Tangled Code
+
+```typescript
+class OrderProcessor {
+  constructor(private repository: OrderRepository) {}
+
+  async process(order: Order): Promise<void> {
+    // Validation (pure) mixed with persistence (integration)
+    if (!order.items.length) {
+      throw new ValidationError("Empty order");
+    }
+    if (order.total < 0) {
+      throw new ValidationError("Negative total");
+    }
+    await this.repository.save(order);
+  }
+}
+```
+
+### After: Extracted
+
+```typescript
+// Pure computation - test at Level 1, no doubles
+type ValidationResult = { ok: true } | { ok: false; error: string };
+
+function validateOrder(order: Order): ValidationResult {
+  if (!order.items.length) {
+    return { ok: false, error: "Empty order" };
+  }
+  if (order.total < 0) {
+    return { ok: false, error: "Negative total" };
+  }
+  return { ok: true };
+}
+
+// Thin wrapper - test at Level 2 with real database
+class OrderProcessor {
+  constructor(private repository: OrderRepository) {}
+
+  async process(order: Order): Promise<void> {
+    const result = validateOrder(order);
+    if (!result.ok) {
+      throw new ValidationError(result.error);
+    }
+    await this.repository.save(order);
+  }
+}
+```
+
+Test them separately:
+
+```typescript
+// Level 1: Test validation logic exhaustively
+describe("validateOrder", () => {
+  it("rejects empty order", () => {
+    const result = validateOrder({ items: [], total: 0 });
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects negative total", () => {
+    const result = validateOrder({ items: [item], total: -10 });
+    expect(result.ok).toBe(false);
+  });
+
+  it("accepts valid order", () => {
+    const result = validateOrder({ items: [item], total: 100 });
+    expect(result.ok).toBe(true);
+  });
+});
+
+// Level 2: Test persistence with real database (see Level 2 section)
+```
+
+---
+
+## Level 1: Dependency Injection Pattern
+
+When code has dependencies but you've determined Level 1 is appropriate (via router Stage 3), use type-safe DI.
+
+```typescript
+// Define typed dependencies
+type CommandResult = { exitCode: number; stdout: string; stderr: string };
+
+type SyncDependencies = {
+  runCommand: (cmd: string, args: string[]) => Promise<CommandResult>;
+  getEnv: (key: string) => string | undefined;
+};
+
+async function syncToRemote(
+  source: string,
+  dest: string,
+  deps: SyncDependencies,
+): Promise<SyncResult> {
+  const cmd = buildCommand(source, dest);
+  const result = await deps.runCommand(cmd[0], cmd.slice(1));
+  return {
+    success: result.exitCode === 0,
+    output: result.stdout,
+  };
+}
+
+// Test with controlled implementation
+describe("syncToRemote", () => {
+  it("returns success on zero exit code", async () => {
+    const deps: SyncDependencies = {
+      runCommand: async () => ({ exitCode: 0, stdout: "Done", stderr: "" }),
+      getEnv: () => undefined,
+    };
+
+    const result = await syncToRemote("/src", "remote:dest", deps);
+
+    expect(result.success).toBe(true);
+  });
+
+  it("returns failure on non-zero exit code", async () => {
+    const deps: SyncDependencies = {
+      runCommand: async () => ({ exitCode: 1, stdout: "", stderr: "Error" }),
+      getEnv: () => undefined,
+    };
+
+    const result = await syncToRemote("/src", "remote:dest", deps);
+
+    expect(result.success).toBe(false);
+  });
+});
+```
+
+---
+
+## Exception Case Implementations (TypeScript)
+
+When the router reaches Stage 5 and an exception applies, here's how to implement each in TypeScript.
+
+### Exception 1: Failure Modes
+
+Testing retry logic, error handling, circuit breakers.
+
+```typescript
+type HttpClient = {
+  fetch(url: string): Promise<{ status: number; body: unknown }>;
+};
+
+describe("fetchWithRetry", () => {
+  it("retries on timeout", async () => {
+    let attempts = 0;
+
+    const client: HttpClient = {
+      async fetch(url) {
+        attempts++;
+        if (attempts < 3) {
+          throw new TimeoutError("Request timed out");
+        }
+        return { status: 200, body: "ok" };
+      },
+    };
+
+    const result = await fetchWithRetry("https://api.example.com", client);
+
+    expect(attempts).toBe(3);
+    expect(result.status).toBe(200);
+  });
+
+  it("stops retrying after max attempts", async () => {
+    const client: HttpClient = {
+      async fetch() {
+        throw new TimeoutError("Always fails");
+      },
+    };
+
+    await expect(
+      fetchWithRetry("https://api.example.com", client, { maxRetries: 3 }),
+    ).rejects.toThrow(TimeoutError);
+  });
+});
+
+describe("CircuitBreaker", () => {
+  it("opens after threshold failures", async () => {
+    let callCount = 0;
+
+    const client: HttpClient = {
+      async fetch() {
+        callCount++;
+        throw new Error("Connection refused");
+      },
+    };
+
+    const breaker = new CircuitBreaker(client, { threshold: 3 });
+
+    // First 3 calls go through and fail
+    for (let i = 0; i < 5; i++) {
+      try {
+        await breaker.fetch("/");
+      } catch {}
+    }
+
+    expect(callCount).toBe(3); // Circuit opened after 3
+    expect(breaker.state).toBe("open");
+  });
+});
+```
+
+### Exception 2: Interaction Protocols
+
+Testing call sequences, saga compensation, "no extra calls."
+
+```typescript
+describe("Saga", () => {
+  it("compensates in reverse order on failure", async () => {
+    const calls: string[] = [];
+
+    const steps = [
+      {
+        execute: async () => calls.push("step1-execute"),
+        compensate: async () => calls.push("step1-compensate"),
+      },
+      {
+        execute: async () => {
+          calls.push("step2-execute");
+          throw new Error("Step 2 failed");
+        },
+        compensate: async () => calls.push("step2-compensate"),
+      },
+    ];
+
+    const saga = new Saga(steps);
+
+    await expect(saga.run()).rejects.toThrow();
+
+    expect(calls).toEqual([
+      "step1-execute",
+      "step2-execute",
+      "step2-compensate",
+      "step1-compensate",
+    ]);
+  });
+});
+
+describe("CachingWrapper", () => {
+  it("does not refetch cached values", async () => {
+    let fetchCount = 0;
+
+    const client = {
+      async getUser(id: string) {
+        fetchCount++;
+        return { id, name: "Test" };
+      },
+    };
+
+    const cache = new CachingWrapper(client);
+
+    await cache.getUser("123");
+    await cache.getUser("123");
+    await cache.getUser("123");
+
+    expect(fetchCount).toBe(1);
+  });
+});
+```
+
+### Exception 3: Time and Concurrency
+
+Testing time-dependent behavior with Vitest fake timers or injected clock.
+
+```typescript
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+describe("Lease", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("renews before expiry", async () => {
+    let renewCount = 0;
+
+    const lease = new Lease({
+      ttl: 30_000,
+      renewAt: 25_000,
+      onRenew: () => renewCount++,
+    });
+
+    // Before renewal threshold
+    await vi.advanceTimersByTimeAsync(24_000);
+    expect(renewCount).toBe(0);
+
+    // After renewal threshold
+    await vi.advanceTimersByTimeAsync(2_000);
+    expect(renewCount).toBe(1);
+  });
+});
+
+// Alternative: Injected clock for more control
+type Clock = {
+  now(): number;
+};
+
+describe("TokenRefresher with injected clock", () => {
+  it("refreshes token before expiry", async () => {
+    let currentTime = 1000;
+    const clock: Clock = { now: () => currentTime };
+
+    let refreshed = false;
+    const refresher = new TokenRefresher({
+      expiresAt: 2000,
+      refreshBuffer: 100,
+      clock,
+      onRefresh: () => {
+        refreshed = true;
+      },
+    });
+
+    // Before refresh window
+    currentTime = 1899;
+    refresher.tick();
+    expect(refreshed).toBe(false);
+
+    // Inside refresh window
+    currentTime = 1901;
+    refresher.tick();
+    expect(refreshed).toBe(true);
+  });
+});
+```
+
+### Exception 4: Safety
+
+Testing destructive operations without executing them.
+
+```typescript
+type PaymentProvider = {
+  charge(amount: number, token: string): Promise<{ chargeId: string }>;
+  refund(chargeId: string, amount: number): Promise<{ refundId: string }>;
+};
+
+describe("OrderProcessor", () => {
+  it("processes refund for cancelled order", async () => {
+    const refunds: Array<{ chargeId: string; amount: number }> = [];
+
+    const payment: PaymentProvider = {
+      async charge() {
+        return { chargeId: "ch_123" };
+      },
+      async refund(chargeId, amount) {
+        refunds.push({ chargeId, amount });
+        return { refundId: "re_123" };
+      },
+    };
+
+    const processor = new OrderProcessor({ payment });
+    await processor.cancelOrder(orderWithCharge);
+
+    expect(refunds).toEqual([{ chargeId: "ch_123", amount: 99.99 }]);
+  });
+});
+
+type EmailService = {
+  send(to: string, subject: string, body: string): Promise<void>;
+};
+
+describe("OrderNotifier", () => {
+  it("sends shipping notification without real email", async () => {
+    const sentEmails: Array<{ to: string; subject: string }> = [];
+
+    const email: EmailService = {
+      async send(to, subject) {
+        sentEmails.push({ to, subject });
+      },
+    };
+
+    const notifier = new OrderNotifier({ email });
+    await notifier.notifyShipped(order);
+
+    expect(sentEmails).toHaveLength(1);
+    expect(sentEmails[0].to).toBe(order.customerEmail);
+  });
+});
+```
+
+### Exception 6: Observability
+
+Testing request details the real system can't expose.
+
+```typescript
+type HttpClient = {
+  post(url: string, options: { headers: Record<string, string>; body: unknown }): Promise<unknown>;
+};
+
+describe("PaymentClient", () => {
+  it("includes idempotency key in request", async () => {
+    const requests: Array<{ headers: Record<string, string> }> = [];
+
+    const http: HttpClient = {
+      async post(url, options) {
+        requests.push({ headers: options.headers });
+        return { id: "charge_123" };
+      },
+    };
+
+    const client = new PaymentClient({ http });
+    await client.charge(100, "tok_123");
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].headers["Idempotency-Key"]).toBeDefined();
+  });
+});
+
+type Database = {
+  query(sql: string, params: unknown[]): Promise<unknown>;
+};
+
+describe("UserRepository", () => {
+  it("batches inserts", async () => {
+    const queries: string[] = [];
+
+    const db: Database = {
+      async query(sql) {
+        queries.push(sql);
+        return { rowCount: 1 };
+      },
+    };
+
+    const repo = new UserRepository({ db });
+    await repo.bulkInsert([user1, user2, user3]);
+
+    // Should be ONE batch insert, not three
+    expect(queries).toHaveLength(1);
+    expect(queries[0]).toContain("INSERT INTO users");
+  });
+});
+```
+
+---
+
+## Level 2: Integration Patterns
+
+When the router determines Level 2 is appropriate, use real dependencies via typed harnesses.
+
+### Harness Pattern
+
+```typescript
+import { execa } from "execa";
+import { cp, mkdtemp, rm } from "fs/promises";
+import { tmpdir } from "os";
+import { join } from "path";
+
+type HugoHarness = {
+  siteDir: string;
+  outputDir: string;
+  build(args?: string[]): Promise<{ exitCode: number; stdout: string }>;
+  cleanup(): Promise<void>;
+};
+
+async function createHugoHarness(fixturePath?: string): Promise<HugoHarness> {
+  // Verify Hugo is installed
+  try {
+    await execa("hugo", ["version"]);
+  } catch {
+    throw new Error("Hugo not installed. Run: brew install hugo");
+  }
+
+  const siteDir = await mkdtemp(join(tmpdir(), "hugo-test-"));
+  const outputDir = join(siteDir, "public");
+
+  if (fixturePath) {
+    await cp(fixturePath, siteDir, { recursive: true });
+  } else {
+    await createMinimalSite(siteDir);
+  }
+
+  return {
+    siteDir,
+    outputDir,
+    async build(args = []) {
+      const result = await execa("hugo", ["--source", siteDir, ...args], {
+        reject: false,
+      });
+      return { exitCode: result.exitCode, stdout: result.stdout };
+    },
+    async cleanup() {
+      await rm(siteDir, { recursive: true, force: true });
+    },
+  };
+}
+```
+
+### Using Harnesses
+
+```typescript
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+
+describe("Hugo Integration", () => {
+  let harness: HugoHarness;
+
+  beforeAll(async () => {
+    harness = await createHugoHarness();
+  });
+
+  afterAll(async () => {
+    await harness.cleanup();
+  });
+
+  it("builds site successfully", async () => {
+    const result = await harness.build();
+
+    expect(result.exitCode).toBe(0);
+  });
+
+  it("creates index.html in output", async () => {
+    await harness.build();
+
+    const indexPath = join(harness.outputDir, "index.html");
+    expect(existsSync(indexPath)).toBe(true);
+  });
+
+  it("minifies output when flag is set", async () => {
+    const result = await harness.build(["--minify"]);
+
+    expect(result.exitCode).toBe(0);
+    // Verify minification by checking output size or content
+  });
+});
+```
+
+### Database Harness
+
+```typescript
+import { Pool } from "pg";
+
+type PostgresHarness = {
+  connectionString: string;
+  pool: Pool;
+  query<T>(sql: string, params?: unknown[]): Promise<T[]>;
+  reset(): Promise<void>;
+  cleanup(): Promise<void>;
+};
+
+async function createPostgresHarness(): Promise<PostgresHarness> {
+  const config = {
+    host: process.env.TEST_DB_HOST || "localhost",
+    port: parseInt(process.env.TEST_DB_PORT || "5432"),
+    database: "test_db",
+    user: "postgres",
+    password: "postgres",
+  };
+
+  const pool = new Pool(config);
+
+  // Verify connection
+  try {
+    await pool.query("SELECT 1");
+  } catch (error) {
+    throw new Error(
+      `Cannot connect to test database. Start it with: docker-compose up -d postgres`,
+    );
+  }
+
+  return {
+    connectionString: `postgresql://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}`,
+    pool,
+    async query<T>(sql: string, params?: unknown[]): Promise<T[]> {
+      const result = await pool.query(sql, params);
+      return result.rows as T[];
+    },
+    async reset() {
+      await pool.query("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
+    },
+    async cleanup() {
+      await pool.end();
+    },
+  };
+}
+```
+
+---
+
+## Level 3: E2E Patterns
+
+When the router determines Level 3 is required (real credentials, external services).
+
+### Credential Management
 
 ```typescript
 /**
- * Test Levels for LHCI Runner:
+ * Level 3 tests require these environment variables:
  *
- * Level 1 (Unit):
- * - Command building logic
- * - Config parsing and validation
- * - Error message formatting
- * - Median/average calculations
+ * Required:
+ *   LHCI_SERVER_URL    - LHCI server URL
+ *   LHCI_TOKEN         - LHCI build token
  *
- * Level 2 (Integration):
- * - Hugo build with real binary
- * - Caddy server management
- * - Port selection
+ * Where to find:
+ *   - 1Password: "Engineering/Test Credentials"
  *
- * Level 3 (E2E):
- * - Full LHCI audit with Chrome
- * - Lighthouse scores returned
- * - Report generation
+ * Setup:
+ *   cp .env.test.example .env.test
+ *   # Fill in values from 1Password
  */
+
+type Credentials = {
+  lhciServerUrl: string;
+  lhciToken: string;
+};
+
+function loadCredentials(): Credentials | null {
+  const lhciServerUrl = process.env.LHCI_SERVER_URL;
+  const lhciToken = process.env.LHCI_TOKEN;
+
+  if (!lhciServerUrl || !lhciToken) {
+    return null;
+  }
+
+  return { lhciServerUrl, lhciToken };
+}
+
+function requireCredentials(): Credentials {
+  const creds = loadCredentials();
+  if (!creds) {
+    throw new Error(
+      "Missing required credentials. See test file for setup instructions.",
+    );
+  }
+  return creds;
+}
 ```
 
-</test_design_protocol>
-
-<anti_patterns>
-**Anti-Pattern: Mock Everything**
+### Skip If No Credentials
 
 ```typescript
-// ❌ Mocking destroys confidence
-vi.mock("execa");
-vi.mock("fs");
-vi.mock("get-port");
+import { describe, expect, it } from "vitest";
 
-it("runs lhci", async () => {
-  await runLhci(config);
-  expect(execa).toHaveBeenCalled(); // What did we prove? NOTHING.
-});
-```
+describe("LHCI E2E", () => {
+  const credentials = loadCredentials();
 
-**Anti-Pattern: Skip Levels**
+  it.skipIf(!credentials)("uploads audit results", async () => {
+    const creds = requireCredentials();
 
-```typescript
-// ❌ Jumping to Level 3 without Level 1/2 coverage
-it("runs full lighthouse audit", async () => {
-  // This test is slow and requires Chrome
-  const result = await runLighthouse({ url: "http://localhost:1313/" });
-  // If this fails, we don't know if it's our code or Lighthouse
-});
-```
+    const result = await uploadAuditResults({
+      serverUrl: creds.lhciServerUrl,
+      token: creds.lhciToken,
+      results: testResults,
+    });
 
-**Anti-Pattern: Test Implementation Details**
-
-```typescript
-// ❌ Testing HOW, not WHAT
-it("uses execa with correct args", async () => {
-  const spy = vi.spyOn(deps, "execa");
-  await buildHugo(siteDir, deps);
-
-  expect(spy).toHaveBeenCalledWith("hugo", ["--minify"]); // Implementation detail!
-});
-
-// ✅ Test the observable behavior instead
-it("GIVEN site WHEN building THEN output is minified", async () => {
-  const result = await buildHugo(siteDir, deps);
-
-  // Verify the BEHAVIOR, not the implementation
-  expect(result.minified).toBe(true);
-});
-```
-
-**Anti-Pattern: Arbitrary Test Data**
-
-```typescript
-// ❌ Magic strings that hide assumptions
-it("syncs files", async () => {
-  await runLhci({ url: "http://localhost:1313/about/" });
-});
-
-// ✅ Generated, ephemeral data
-it("GIVEN url set WHEN running THEN audits each URL", async () => {
-  const config = createTestConfig({
-    url_sets: { critical: ["/", "/about/"] },
+    expect(result.success).toBe(true);
   });
-
-  await runLhci({ set: "critical" }, config, mockDeps);
 });
 ```
 
-</anti_patterns>
+### Playwright for Browser E2E
 
-<level_references>
-Detailed patterns and examples for each level:
+```typescript
+// spx/.../tests/checkout.e2e.spec.ts (Playwright)
+import { expect, test } from "@playwright/test";
 
-| File                            | Purpose                                      |
-| ------------------------------- | -------------------------------------------- |
-| `levels/level-1-unit.md`        | Pure functions, DI, Node.js primitives       |
-| `levels/level-2-integration.md` | Real binaries (Hugo, Caddy), local execution |
-| `levels/level-3-e2e.md`         | Full workflow, Chrome, Lighthouse            |
+test.describe("Checkout Flow", () => {
+  test("user can complete purchase", async ({ page }) => {
+    await page.goto("/products");
+    await page.click("[data-testid=\"add-to-cart\"]");
+    await page.click("[data-testid=\"checkout\"]");
 
-</level_references>
+    await page.fill("[data-testid=\"email\"]", "test@example.com");
+    await page.fill("[data-testid=\"card-number\"]", "4242424242424242");
+    await page.click("[data-testid=\"submit\"]");
 
-<test_infrastructure_paths>
+    await expect(page.locator("[data-testid=\"confirmation\"]")).toBeVisible();
+  });
+});
+```
+
+---
+
+## Vitest Configuration
+
+```typescript
+// vitest.config.ts
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    include: ["spx/**/*.test.ts"],
+    exclude: ["**/*.spec.ts"], // Playwright handles .spec.ts
+    testTimeout: 30000,
+    hookTimeout: 30000,
+  },
+});
+```
+
+```typescript
+// playwright.config.ts
+import { defineConfig } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "./spx",
+  testMatch: "**/*.e2e.spec.ts",
+  fullyParallel: true,
+  use: {
+    baseURL: process.env.TEST_BASE_URL || "http://localhost:3000",
+  },
+});
+```
+
+---
 
 ## Test Organization (CODE Framework)
 
-Tests are co-located with specs in `spx/`. Level is indicated by suffix naming:
+Tests are co-located with specs in `spx/`. Level is indicated by suffix:
 
 ```
 spx/
 └── {capability}/
     └── {feature}/
-        ├── {feature}.md              # Feature spec
+        ├── {feature}.md                  # Feature spec
         └── tests/
-            ├── {name}.unit.test.ts        # Level 1 (Vitest)
+            ├── {name}.unit.test.ts       # Level 1 (Vitest)
             ├── {name}.integration.test.ts # Level 2 (Vitest)
-            ├── {name}.e2e.test.ts          # Level 3, non-browser (Vitest)
-            └── {name}.e2e.spec.ts          # Level 3, browser (Playwright)
+            ├── {name}.e2e.test.ts        # Level 3, non-browser (Vitest)
+            └── {name}.e2e.spec.ts        # Level 3, browser (Playwright)
 ```
 
-**Run by runner** - each finds its own files:
+Run by runner:
 
 ```bash
-vitest spx/                    # Runs *.test.ts (unit, integration, non-browser e2e)
-npx playwright test spx/       # Runs *.spec.ts (browser e2e)
+vitest spx/                    # Runs *.test.ts
+npx playwright test spx/       # Runs *.spec.ts
 ```
 
 ### Shared Test Infrastructure
 
-Shared harnesses and fixtures live in project root:
-
 ```
 testing/
-├── harnesses/               # Active code for tests
+├── harnesses/
 │   ├── index.ts
-│   ├── context.ts           # Test environment context manager (withTestEnv)
-│   ├── postgres.ts          # PostgreSQL harness
-│   ├── docker.ts            # Generic Docker harness
-│   └── factories.ts         # Seeded data factories
-└── fixtures/                # Static test data
-    ├── sample-config.json
-    └── values.ts            # TYPICAL, EDGES collections
+│   ├── hugo.ts               # Hugo harness
+│   ├── postgres.ts           # PostgreSQL harness
+│   └── factories.ts          # Type-safe factories
+└── fixtures/
+    └── values.ts             # TYPICAL, EDGES collections
 ```
 
-**harnesses/** = Code that runs (context managers, harnesses, factories)
-**fixtures/** = Data that's read (JSON files, sample configs, test values)
-
-Import in co-located tests:
+Import in tests:
 
 ```typescript
-// In spx/{capability}/{feature}/tests/sync.unit.test.ts
-import { TYPICAL_PATHS } from "@testing/fixtures/values";
-import { SyncResultFactory } from "@testing/harnesses/factories";
+import { createAuditResult } from "@testing/harnesses/factories";
+import { createHugoHarness } from "@testing/harnesses/hugo";
 ```
 
-</test_infrastructure_paths>
+---
 
-<success_criteria>
-Before declaring tests complete:
+## Quick Reference
 
-- [ ] All behaviors have tests at the minimum necessary level
-- [ ] No mocking of external systems (DI instead)
-- [ ] Escalation to each level is justified in comments
-- [ ] Test data is generated, not hardcoded
-- [ ] Fast failure: environment checks run first
-- [ ] Each test verifies behavior, not implementation
+| Aspect       | Level 1                  | Level 2            | Level 3              |
+| ------------ | ------------------------ | ------------------ | -------------------- |
+| Dependencies | DI with typed interfaces | Real via harness   | Real via credentials |
+| Data         | Type-safe factories      | Fixtures + harness | Test accounts        |
+| Speed        | <50ms                    | <1s                | <30s                 |
+| CI           | Every commit             | Every commit       | Nightly/pre-release  |
 
-*Remember: A test that passes because of mocks is worse than no test at all. It gives false confidence. Reality is the only oracle.*
-</success_criteria>
+---
+
+## TypeScript-Specific Anti-Patterns
+
+### Using vi.mock() on Modules
+
+```typescript
+// ❌ WRONG: Module-level mocking
+vi.mock("execa", () => ({ execa: vi.fn() }));
+
+it("runs hugo", async () => {
+  await buildHugo(siteDir);
+  expect(execa).toHaveBeenCalled(); // Proves nothing
+});
+
+// ✅ RIGHT: Dependency injection
+type BuildDeps = {
+  runCommand: (cmd: string, args: string[]) => Promise<{ exitCode: number }>;
+};
+
+it("returns success on zero exit", async () => {
+  const deps: BuildDeps = {
+    runCommand: async () => ({ exitCode: 0 }),
+  };
+
+  const result = await buildHugo(siteDir, deps);
+
+  expect(result.success).toBe(true);
+});
+```
+
+### Using vi.fn() for Behavior Testing
+
+```typescript
+// ❌ WRONG: vi.fn() tests HOW, not WHAT
+it("calls execa with args", async () => {
+  const deps = { execa: vi.fn().mockResolvedValue({ exitCode: 0 }) };
+  await buildHugo(siteDir, deps);
+  expect(deps.execa).toHaveBeenCalledWith("hugo", ["--minify"]);
+});
+
+// ✅ RIGHT: Test observable behavior
+it("produces minified output", async () => {
+  const result = await buildHugo(siteDir, realDeps);
+  expect(result.minified).toBe(true);
+});
+```
+
+### Losing Type Safety in Tests
+
+```typescript
+// ❌ WRONG: Casting to any
+const deps = { runCommand: vi.fn() } as any;
+
+// ✅ RIGHT: Full type safety
+const deps: BuildDeps = {
+  runCommand: async () => ({ exitCode: 0 }),
+};
+```
+
+### Testing Library Behavior
+
+```typescript
+// ❌ WRONG: Testing that Zod works
+it("validates with Zod schema", () => {
+  const schema = z.object({ url: z.string().url() });
+  expect(schema.parse({ url: "http://example.com" })).toBeDefined();
+});
+
+// ✅ RIGHT: Test YOUR behavior that uses validation
+it("rejects invalid config with descriptive error", () => {
+  const result = loadConfig({ url: "not-a-url" });
+
+  expect(result.ok).toBe(false);
+  expect(result.error).toContain("url");
+});
+```

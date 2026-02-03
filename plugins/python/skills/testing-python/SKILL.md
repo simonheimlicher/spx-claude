@@ -1,85 +1,202 @@
 ---
 name: testing-python
-description: Write tests for Python code with three levels (Unit/Integration/E2E). Use when testing Python or writing Python tests.
+description: Python-specific testing patterns with dependency injection and real infrastructure. Use when testing Python code or writing Python tests.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
 # Python Testing Patterns
 
-> **PREREQUISITES:**
+> **PREREQUISITE: Run through the `/testing` router first.**
 >
-> 1. Read `/testing` for foundational testing principles
-> 2. Read `/standardizing-python` for code standards (type annotations, named constants, S101 policy)
-
-## Foundational Stance
-
-> **MAXIMUM CONFIDENCE. MINIMUM DEPENDENCIES. NO MOCKING. REALITY IS THE ORACLE.**
-
-- Every dependency you add must **justify itself** with confidence gained
-- Mocking external services is a **confession** that your code is poorly designed
-- Reality is the only oracle that matters
+> This skill provides Python-specific implementations for decisions made there. Do NOT skip the router—it determines WHAT to test and at WHAT level. This skill shows HOW to implement that decision in Python.
 
 ---
 
-## Python Tooling
+## Router Decision → Python Implementation
 
-| Level          | Infrastructure                                       | Speed  |
-| -------------- | ---------------------------------------------------- | ------ |
-| 1: Unit        | Python stdlib + Git + standard tools + temp fixtures | <100ms |
-| 2: Integration | Project-specific binaries/tools (Docker, ZFS, etc.)  | <1s    |
-| 3: E2E         | Network services + external APIs + test accounts     | <10s   |
+After running through the `/testing` router, use this mapping:
 
-**Standard dev tools** are available in CI without installation (git, cat, grep, curl, sed, awk, etc.).
-**Project-specific tools** require installation/setup (make, pip, Docker, ZFS, Hugo, etc.).
-
----
-
-## The Mocking Prohibition
-
-**THESE VIOLATIONS WILL CAUSE YOUR CODE TO BE REJECTED:**
-
-❌ `unittest.mock.patch` for external services (GitHub, Stripe, Dropbox, etc.)
-❌ `@patch("httpx.Client")` for HTTP boundaries
-❌ `respx.mock` for internet APIs
-
-### Allowed "Mocking" (Level 1 ONLY)
-
-These control YOUR code's environment, not external services:
-
-✅ `patch("time.time")` for deterministic timestamps
-✅ `patch("secrets.token_hex")` for predictable IDs
-✅ `patch("os.getenv")` for config injection
-✅ Git operations via subprocess (standard dev tool, always available)
+| Router Decision                                 | Python Implementation                          |
+| ----------------------------------------------- | ---------------------------------------------- |
+| **Stage 2 → Level 1**                           | pytest + temp dirs + dataclasses for DI        |
+| **Stage 2 → Level 2**                           | pytest fixtures + Docker/subprocess harnesses  |
+| **Stage 2 → Level 3**                           | pytest + skip decorators + credential loading  |
+| **Stage 3A** (Pure computation)                 | Pure functions, test directly                  |
+| **Stage 3B** (Extract pure part)                | Factor into pure functions + thin wrappers     |
+| **Stage 5 Exception 1** (Failure modes)         | Protocol + stub returning errors               |
+| **Stage 5 Exception 2** (Interaction protocols) | Spy class recording calls                      |
+| **Stage 5 Exception 3** (Time/concurrency)      | `patch("time.time")`, `patch("random.random")` |
+| **Stage 5 Exception 4** (Safety)                | Stub that records but doesn't execute          |
+| **Stage 5 Exception 6** (Observability)         | Spy class capturing request details            |
 
 ---
 
-## Level Decision Tree
+## Python Tooling by Level
 
-```
-What am I testing?
-│
-├─ Pure logic / data transformation
-│  └─ Level 1: DI with fake implementations
-│
-├─ External service interaction
-│  │
-│  ├─ Can service run locally? (Docker/VM)
-│  │  ├─ YES → Level 2: Real service in Docker
-│  │  └─ NO  → Level 3: Real service on internet
-│  │
-│  └─ Thinking of mocking?
-│     └─ STOP. Redesign with DI (Level 1) or use real service (Level 2/3)
+| Level          | Infrastructure                                   | Speed  |
+| -------------- | ------------------------------------------------ | ------ |
+| 1: Unit        | Python stdlib + temp dirs + standard dev tools   | <100ms |
+| 2: Integration | Docker containers + project-specific binaries    | <1s    |
+| 3: E2E         | Network services + external APIs + test accounts | <10s   |
+
+**Standard dev tools** (Level 1): git, cat, grep, curl—available in CI without setup.
+**Project-specific tools** (Level 2): Docker, PostgreSQL, Hugo, ffmpeg—require installation.
+
+---
+
+## Level 1: Pure Computation (Stage 3A)
+
+When the router determines your code is pure computation, test it directly.
+
+### Pure Function Testing
+
+```python
+def test_command_includes_checksum_flag():
+    cmd = build_rclone_command("/source", "remote:dest", checksum=True)
+    assert "--checksum" in cmd
+
+
+def test_unicode_paths_preserved():
+    cmd = build_rclone_command("/tank/фото", "remote:резервная")
+    assert "/tank/фото" in cmd
+
+
+def test_validates_empty_order():
+    result = validate_order(Order(items=[]))
+    assert result.ok is False
+    assert "empty" in result.error.lower()
 ```
 
-**SaaS APIs (GitHub, Stripe, Trakt, OpenAI):** Level 2 does NOT exist. Use Level 1 (pure DI) + Level 3 (real service).
+### Data Factories
 
-**Note:** Git is a standard dev tool (Level 1), while GitHub API is a network service (Level 3). Don't confuse local Git operations with GitHub API calls.
+Generate test data programmatically. Never use arbitrary literals.
+
+```python
+from dataclasses import dataclass, field
+from typing import Iterator
+import itertools
+
+_id_counter: Iterator[int] = itertools.count(1)
+
+
+@dataclass
+class AuditResultFactory:
+    url: str = field(default_factory=lambda: f"https://example.com/{next(_id_counter)}")
+    performance: int = 90
+    accessibility: int = 100
+
+    def build(self) -> dict:
+        return {
+            "url": self.url,
+            "scores": {
+                "performance": self.performance,
+                "accessibility": self.accessibility,
+            },
+        }
+
+
+def test_fails_on_low_performance():
+    result = AuditResultFactory(performance=45).build()
+    analysis = analyze_results([result], thresholds)
+    assert analysis.passed is False
+```
+
+### Temporary Directories
+
+Temp dirs are NOT external dependencies—use them freely at Level 1.
+
+```python
+import tempfile
+from pathlib import Path
+
+
+def test_loads_yaml_config():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        config_path = Path(tmpdir) / "config.yaml"
+        config_path.write_text("""
+site_dir: ./site
+base_url: http://localhost:1313
+""")
+
+        config = load_config(config_path)
+
+        assert config.site_dir == "./site"
+        assert config.base_url == "http://localhost:1313"
+```
 
 ---
 
-## Level 1: Unit Patterns
+## Level 1: Extracted Logic (Stage 3B)
 
-### Dependency Injection
+When the router says "extract the pure part," factor your code.
+
+### Before: Tangled Code
+
+```python
+class OrderProcessor:
+    def __init__(self, repository):
+        self.repository = repository
+
+    def process(self, order: Order) -> None:
+        # Validation (pure) mixed with persistence (integration)
+        if not order.items:
+            raise ValidationError("Empty order")
+        if order.total < 0:
+            raise ValidationError("Negative total")
+        self.repository.save(order)
+```
+
+### After: Extracted
+
+```python
+# Pure computation - test at Level 1, no doubles
+def validate_order(order: Order) -> ValidationResult:
+    if not order.items:
+        return ValidationResult(ok=False, error="Empty order")
+    if order.total < 0:
+        return ValidationResult(ok=False, error="Negative total")
+    return ValidationResult(ok=True)
+
+
+# Thin wrapper - test at Level 2 with real database
+class OrderProcessor:
+    def __init__(self, repository):
+        self.repository = repository
+
+    def process(self, order: Order) -> None:
+        result = validate_order(order)
+        if not result.ok:
+            raise ValidationError(result.error)
+        self.repository.save(order)
+```
+
+Now test them separately:
+
+```python
+# Level 1: Test validation logic exhaustively
+def test_validates_empty_order():
+    result = validate_order(Order(items=[]))
+    assert result.ok is False
+
+
+def test_validates_negative_total():
+    result = validate_order(Order(items=[item], total=-10))
+    assert result.ok is False
+
+
+def test_accepts_valid_order():
+    result = validate_order(Order(items=[item], total=100))
+    assert result.ok is True
+
+
+# Level 2: Test persistence with real database (see Level 2 section)
+```
+
+---
+
+## Level 1: Dependency Injection Pattern
+
+When code has dependencies but you've determined Level 1 is appropriate (via router Stage 3), use DI with Protocols and dataclasses.
 
 ```python
 from dataclasses import dataclass
@@ -99,7 +216,7 @@ class SyncDependencies:
 def sync_to_remote(source: str, dest: str, deps: SyncDependencies) -> SyncResult:
     cmd = build_command(source, dest)
     returncode, stdout, stderr = deps.run_command.run(cmd)
-    return SyncResult(success=returncode == 0)
+    return SyncResult(success=returncode == 0, output=stdout)
 
 
 # Test with controlled implementation
@@ -113,53 +230,241 @@ def test_sync_returns_success_on_zero_exit():
     assert result.success is True
 ```
 
-### Pure Function Testing
+---
+
+## Exception Case Implementations (Python)
+
+When the router reaches Stage 5 and an exception applies, here's how to implement each in Python.
+
+### Exception 1: Failure Modes
+
+Testing retry logic, error handling, circuit breakers.
 
 ```python
-def test_command_includes_checksum_flag():
-    cmd = build_rclone_command("/source", "remote:dest", checksum=True)
-    assert "--checksum" in cmd
+from typing import Protocol
 
 
-def test_unicode_paths_preserved():
-    cmd = build_rclone_command("/tank/фото", "remote:резервная")
-    assert "/tank/фото" in cmd
+class HttpClient(Protocol):
+    def fetch(self, url: str) -> dict: ...
+
+
+def test_retries_on_timeout():
+    attempts = 0
+
+    class TimeoutingClient:
+        def fetch(self, url: str) -> dict:
+            nonlocal attempts
+            attempts += 1
+            if attempts < 3:
+                raise TimeoutError("Request timed out")
+            return {"status": 200, "body": "ok"}
+
+    result = fetch_with_retry("https://api.example.com", TimeoutingClient())
+
+    assert attempts == 3
+    assert result["status"] == 200
+
+
+def test_circuit_breaker_opens_after_failures():
+    failure_count = 0
+
+    class FailingClient:
+        def fetch(self, url: str) -> dict:
+            nonlocal failure_count
+            failure_count += 1
+            raise ConnectionError("Connection refused")
+
+    breaker = CircuitBreaker(threshold=3)
+
+    for _ in range(5):
+        try:
+            breaker.call(lambda: FailingClient().fetch("/"))
+        except (ConnectionError, CircuitOpenError):
+            pass
+
+    # Circuit should open after 3 failures, preventing further calls
+    assert failure_count == 3
+    assert breaker.state == "open"
 ```
 
-### Data Factories
+### Exception 2: Interaction Protocols
+
+Testing call sequences, saga compensation, "no extra calls."
 
 ```python
-from dataclasses import dataclass, field
-from typing import Iterator
-import itertools
+def test_saga_compensates_in_reverse_order():
+    calls: list[str] = []
 
-_id_counter: Iterator[int] = itertools.count(1)
+    class Step1:
+        def execute(self):
+            calls.append("step1-execute")
+
+        def compensate(self):
+            calls.append("step1-compensate")
+
+    class Step2:
+        def execute(self):
+            calls.append("step2-execute")
+            raise RuntimeError("Step 2 failed")
+
+        def compensate(self):
+            calls.append("step2-compensate")
+
+    saga = Saga([Step1(), Step2()])
+
+    with pytest.raises(RuntimeError):
+        saga.run()
+
+    assert calls == [
+        "step1-execute",
+        "step2-execute",
+        "step2-compensate",
+        "step1-compensate",
+    ]
 
 
-@dataclass
-class AuditResultFactory:
-    url: str = field(default_factory=lambda: f"https://example.com/{next(_id_counter)}")
-    performance: int = 90
+def test_caches_and_does_not_refetch():
+    fetch_count = 0
 
-    def build(self) -> dict:
-        return {"url": self.url, "scores": {"performance": self.performance}}
+    class CountingClient:
+        def get_user(self, user_id: str) -> dict:
+            nonlocal fetch_count
+            fetch_count += 1
+            return {"id": user_id, "name": "Test"}
 
+    cache = CachingWrapper(CountingClient())
 
-def test_fails_on_low_performance():
-    result = AuditResultFactory(performance=45).build()
-    analysis = analyze_results([result], deps)
-    assert analysis.passed is False
+    cache.get_user("123")
+    cache.get_user("123")
+    cache.get_user("123")
+
+    assert fetch_count == 1  # Only one actual fetch
 ```
 
-**See**: `levels/level-1-unit.md`
+### Exception 3: Time and Concurrency
+
+Testing time-dependent behavior with controlled time.
+
+```python
+from unittest.mock import patch
+
+
+def test_lease_renews_before_expiry():
+    with patch("time.time") as mock_time:
+        mock_time.return_value = 1000.0
+
+        renewed = False
+
+        def on_renew():
+            nonlocal renewed
+            renewed = True
+
+        lease = Lease(ttl=30, renew_at=25, on_renew=on_renew)
+
+        # Before renewal threshold
+        mock_time.return_value = 1024.0
+        lease.tick()
+        assert renewed is False
+
+        # After renewal threshold
+        mock_time.return_value = 1026.0
+        lease.tick()
+        assert renewed is True
+
+
+def test_generates_deterministic_ids():
+    with patch("secrets.token_hex") as mock_token:
+        mock_token.return_value = "abc123"
+
+        result = create_resource("test")
+
+        assert result.id == "abc123"
+```
+
+### Exception 4: Safety
+
+Testing destructive operations without executing them.
+
+```python
+def test_processes_refund_for_cancelled_order():
+    refunds: list[dict] = []
+
+    class FakePaymentProvider:
+        def refund(self, charge_id: str, amount: float, reason: str) -> dict:
+            refunds.append({"charge_id": charge_id, "amount": amount, "reason": reason})
+            return {"refund_id": "refund_123", "status": "succeeded"}
+
+    processor = OrderProcessor(payment=FakePaymentProvider())
+    processor.cancel_order(order_with_charge)
+
+    assert refunds == [
+        {"charge_id": "ch_123", "amount": 99.99, "reason": "order_cancelled"}
+    ]
+
+
+def test_does_not_send_real_emails():
+    sent_emails: list[dict] = []
+
+    class FakeEmailService:
+        def send(self, to: str, subject: str, body: str) -> None:
+            sent_emails.append({"to": to, "subject": subject})
+
+    notifier = OrderNotifier(email=FakeEmailService())
+    notifier.notify_shipped(order)
+
+    assert len(sent_emails) == 1
+    assert sent_emails[0]["to"] == order.customer_email
+```
+
+### Exception 6: Observability
+
+Testing request details the real system can't expose.
+
+```python
+def test_includes_idempotency_key():
+    requests: list[dict] = []
+
+    class SpyHttpClient:
+        def post(self, url: str, headers: dict, body: dict) -> dict:
+            requests.append({"url": url, "headers": headers, "body": body})
+            return {"status": 200}
+
+    client = PaymentClient(http=SpyHttpClient())
+    client.charge(amount=100, card_token="tok_123")
+
+    assert len(requests) == 1
+    assert "Idempotency-Key" in requests[0]["headers"]
+    assert requests[0]["headers"]["Idempotency-Key"] is not None
+
+
+def test_batches_inserts():
+    queries: list[str] = []
+
+    class SpyDatabase:
+        def execute(self, sql: str, params: list) -> None:
+            queries.append(sql)
+
+    repo = UserRepository(db=SpyDatabase())
+    repo.bulk_insert([user1, user2, user3])
+
+    # Should be ONE batch insert, not three
+    assert len(queries) == 1
+    assert "INSERT INTO users" in queries[0]
+```
 
 ---
 
 ## Level 2: Integration Patterns
 
-### Test Harness: Docker
+When the router determines Level 2 is appropriate, use real dependencies via harnesses.
+
+### Docker Harness
 
 ```python
+import subprocess
+from dataclasses import dataclass
+
+
 @dataclass
 class PostgresHarness:
     container_name: str = "test-postgres"
@@ -186,14 +491,25 @@ class PostgresHarness:
     def stop(self) -> None:
         subprocess.run(["docker", "rm", "-f", self.container_name])
 
+    def reset(self) -> None:
+        # Truncate all tables
+        pass
+
+    def _wait_for_ready(self, timeout: int = 30) -> None:
+        # Poll until postgres accepts connections
+        pass
+
     @property
     def connection_string(self) -> str:
         return f"postgresql://postgres:test@localhost:{self.port}/postgres"
 ```
 
-### Using Harnesses with pytest
+### pytest Fixtures for Harnesses
 
 ```python
+import pytest
+
+
 @pytest.fixture(scope="module")
 def database():
     harness = PostgresHarness()
@@ -212,17 +528,72 @@ def reset_database(database):
 def test_user_repository_saves_and_retrieves(database):
     repo = UserRepository(database.connection_string)
     user = User(email="test@example.com", name="Test User")
-    repo.save(user)
 
+    repo.save(user)
     retrieved = repo.find_by_email("test@example.com")
+
+    assert retrieved is not None
     assert retrieved.name == "Test User"
+
+
+@pytest.mark.integration
+def test_enforces_unique_email_constraint(database):
+    repo = UserRepository(database.connection_string)
+    repo.save(User(email="dupe@example.com", name="First"))
+
+    with pytest.raises(IntegrityError):
+        repo.save(User(email="dupe@example.com", name="Second"))
 ```
 
-**See**: `levels/level-2-integration.md`
+### Binary Harness
+
+```python
+@dataclass
+class HugoHarness:
+    site_dir: Path
+    output_dir: Path
+    _temp_dir: tempfile.TemporaryDirectory | None = None
+
+    def build(self, args: list[str] | None = None) -> subprocess.CompletedProcess:
+        args = args or []
+        return subprocess.run(
+            [
+                "hugo",
+                "--source",
+                str(self.site_dir),
+                "--destination",
+                str(self.output_dir),
+            ]
+            + args,
+            capture_output=True,
+            text=True,
+        )
+
+    def cleanup(self) -> None:
+        if self._temp_dir:
+            self._temp_dir.cleanup()
+
+
+@pytest.fixture
+def hugo():
+    harness = create_hugo_harness()
+    yield harness
+    harness.cleanup()
+
+
+@pytest.mark.integration
+def test_builds_site_successfully(hugo):
+    result = hugo.build()
+
+    assert result.returncode == 0
+    assert (hugo.output_dir / "index.html").exists()
+```
 
 ---
 
 ## Level 3: E2E Patterns
+
+When the router determines Level 3 is required (real credentials, external services).
 
 ### Credential Management
 
@@ -246,19 +617,11 @@ def load_credentials() -> dict | None:
     return {"token": token}
 
 
-@pytest.fixture
-def dropbox_config(tmp_path) -> Path | None:
+def require_credentials() -> dict:
     creds = load_credentials()
     if not creds:
-        pytest.skip("DROPBOX_TEST_TOKEN not set")
-
-    config = tmp_path / "rclone.conf"
-    config.write_text(f"""
-[dropbox-test]
-type = dropbox
-token = {creds["token"]}
-""")
-    return config
+        raise RuntimeError("Missing required credentials.\n\n" + CREDENTIALS_DOC)
+    return creds
 ```
 
 ### Skip If No Credentials
@@ -272,145 +635,158 @@ skip_no_creds = pytest.mark.skipif(
 
 @skip_no_creds
 @pytest.mark.e2e
-def test_full_sync_workflow(dropbox_test_folder, dropbox_config):
-    result = sync_to_dropbox(local_path, dropbox_test_folder, config=dropbox_config)
-    assert result.success
-```
+def test_full_sync_workflow(dropbox_test_folder):
+    result = sync_to_dropbox(local_path, dropbox_test_folder)
 
-**See**: `levels/level-3-e2e.md`
+    assert result.success
+    assert result.files_transferred > 0
+
+
+@skip_no_creds
+@pytest.mark.e2e
+def test_handles_api_rate_limit(dropbox_test_folder):
+    # This tests real rate limiting behavior
+    results = [sync_to_dropbox(local_path, dropbox_test_folder) for _ in range(10)]
+
+    # Should handle rate limits gracefully
+    assert all(r.success for r in results)
+```
 
 ---
 
 ## pytest Configuration
 
-```python
+```toml
 # pyproject.toml
 [tool.pytest.ini_options]
 testpaths = ["spx"]
 python_files = ["*.test.py"]
+markers = [
+  "integration: Level 2 tests requiring local infrastructure",
+  "e2e: Level 3 tests requiring credentials and external services",
+]
 
-# Run by level (path-based, no markers needed):
-# pytest spx/ -k "unit"         # Level 1 only
-# pytest spx/ -k "integration"  # Level 2
-# pytest spx/ -k "e2e"          # Level 3
-# pytest spx/                   # All tests
+# Run by level:
+# pytest spx/ -k "unit"              # Level 1 only
+# pytest spx/ -k "integration"       # Level 2
+# pytest spx/ -k "e2e"               # Level 3
+# pytest spx/                        # All tests
 ```
 
 ---
 
-## Anti-Patterns
+## Test Organization (CODE Framework)
 
-### Mock Everything
+Tests are co-located with specs in `spx/`. Level is indicated by suffix:
 
-```python
-# ❌ Mocking destroys confidence
-@patch("subprocess.run")
-@patch("os.path.exists")
-def test_sync(mock_exists, mock_run):
-    mock_exists.return_value = True
-    mock_run.return_value = Mock(returncode=0)
-    result = sync_files(src, dest)
-    assert result.success  # What did we prove? NOTHING.
+```
+spx/
+└── {capability}/
+    └── {feature}/
+        ├── {feature}.md                  # Feature spec
+        └── tests/
+            ├── {name}.unit.test.py       # Level 1
+            ├── {name}.integration.test.py # Level 2
+            ├── {name}.e2e.test.py        # Level 3, non-browser
+            └── {name}.e2e.spec.py        # Level 3, browser (Playwright)
 ```
 
-### Skip Levels
+### Shared Test Infrastructure
 
-```python
-# ❌ Jumping to Level 3 without Level 1/2 coverage
-@pytest.mark.e2e
-def test_sync_to_dropbox():
-    sync_to_dropbox(local_path, "dropbox:backup")
-    # If this fails, we don't know if it's our code or Dropbox
+```
+myproject_testing/          # Installable via uv pip install -e ".[dev]"
+├── __init__.py
+├── harnesses/
+│   ├── postgres.py         # PostgreSQL harness
+│   ├── docker.py           # Generic Docker harness
+│   └── factories.py        # Data factories
+└── fixtures/
+    └── values.py           # TYPICAL, EDGES collections
 ```
 
-### Test Implementation Details
+Import in tests:
 
 ```python
-# ❌ Testing HOW, not WHAT
-def test_uses_rclone_sync_command():
-    with capture_subprocess() as captured:
-        sync_dataset(src, dest)
-    assert "rclone sync" in captured.command  # Implementation detail!
-
-
-# ✅ Test the observable behavior instead
-def test_files_synced():
-    sync_dataset(src, dest)
-    assert (dest / "file.txt").exists()
+from myproject_testing.harnesses.factories import UserFactory
+from myproject_testing.harnesses.postgres import PostgresHarness
 ```
 
 ---
 
 ## Quick Reference
 
-| Pattern      | Level 1                        | Level 2            | Level 3              |
-| ------------ | ------------------------------ | ------------------ | -------------------- |
-| Dependencies | Injected callables/dataclasses | Real via harness   | Real via credentials |
-| Data         | Factories + tmp_path           | Fixtures + harness | Test accounts        |
-| Speed        | <100ms                         | <1s                | <10s                 |
-| CI           | Every commit                   | Every commit       | Nightly/pre-release  |
+| Aspect       | Level 1                    | Level 2            | Level 3              |
+| ------------ | -------------------------- | ------------------ | -------------------- |
+| Dependencies | DI with Protocol/dataclass | Real via harness   | Real via credentials |
+| Data         | Factories + tmp_path       | Fixtures + harness | Test accounts        |
+| Speed        | <100ms                     | <1s                | <10s                 |
+| CI           | Every commit               | Every commit       | Nightly/pre-release  |
 
 ---
 
-*For foundational principles (progress vs regression tests, escalation justification), see `/testing`.*
+## Python-Specific Anti-Patterns
 
----
-
-## Test Organization (CODE Framework)
-
-Tests are co-located with specs in `spx/`. Level is indicated by suffix naming:
-
-```
-spx/
-└── {capability}/
-    └── {feature}/
-        ├── {feature}.md           # Feature spec
-        └── tests/
-            ├── {name}.unit.test.py        # Level 1 (pytest)
-            ├── {name}.integration.test.py # Level 2 (pytest)
-            ├── {name}.e2e.test.py          # Level 3, non-browser (pytest)
-            └── {name}.e2e.spec.py          # Level 3, browser (Playwright)
-```
-
-**E2E suffix distinction:**
-
-- `*.e2e.test.py` - Non-browser E2E (CLI, API) → runs with pytest
-- `*.e2e.spec.py` - Browser-based E2E → runs with Playwright
-
-**Run by path** - no markers needed:
-
-```bash
-pytest spx/ -k "unit"         # All unit tests
-pytest spx/ -k "integration"  # All integration tests
-pytest spx/ -k "e2e" --ignore="*.spec.py"  # Non-browser E2E
-npx playwright test spx/      # Browser E2E (finds *.spec.py)
-```
-
-### Shared Test Infrastructure
-
-Shared harnesses and fixtures live in an installable `{project}_testing/` package:
-
-```
-myproject_testing/          # INSTALLABLE via uv pip install -e ".[dev]"
-├── __init__.py
-├── harnesses/              # Active code for tests
-│   ├── __init__.py
-│   ├── context.py          # Test environment context manager
-│   ├── postgres.py         # PostgreSQL harness
-│   ├── docker.py           # Generic Docker harness
-│   └── factories.py        # Seeded data factories
-└── fixtures/               # Static test data
-    ├── sample_config.json
-    └── values.py           # TYPICAL, EDGES collections
-```
-
-**harnesses/** = Code that runs (context managers, harnesses, factories)
-**fixtures/** = Data that's read (JSON files, sample configs, test values)
-
-Import in co-located tests:
+### Using unittest.mock.patch on External Services
 
 ```python
-# In spx/{capability}/{feature}/tests/sync.unit.test.py
-from myproject_testing.harnesses.factories import SyncResultFactory
-from myproject_testing.fixtures.values import TYPICAL_PATHS
+# ❌ WRONG: Mocking external service
+@patch("httpx.Client.get")
+def test_fetches_user(mock_get):
+    mock_get.return_value = Mock(json=lambda: {"id": 1})
+    user = api_client.get_user(1)
+    assert user.id == 1  # Proves nothing about real API
+
+
+# ✅ RIGHT: Use DI for Level 1, real service for Level 2/3
+def test_parses_user_response():
+    # Level 1: Test parsing logic with known data
+    response = {"id": 1, "name": "Test", "email": "test@example.com"}
+    user = parse_user_response(response)
+    assert user.id == 1
+
+
+@pytest.mark.e2e
+def test_fetches_real_user(test_credentials):
+    # Level 3: Test against real API
+    client = ApiClient(credentials=test_credentials)
+    user = client.get_user(known_test_user_id)
+    assert user is not None
+```
+
+### Overusing pytest-mock
+
+```python
+# ❌ WRONG: mocker fixture everywhere
+def test_sync(mocker):
+    mocker.patch("os.path.exists", return_value=True)
+    mocker.patch("subprocess.run", return_value=Mock(returncode=0))
+    result = sync_files(src, dest)
+    assert result.success  # What did we prove? Nothing.
+
+
+# ✅ RIGHT: DI for controllable behavior
+def test_sync_returns_success_on_zero_exit():
+    class FakeRunner:
+        def run(self, cmd: list[str]) -> tuple[int, str, str]:
+            return (0, "Done", "")
+
+    deps = SyncDeps(runner=FakeRunner())
+    result = sync_files(src, dest, deps)
+    assert result.success
+```
+
+### Testing Library Behavior
+
+```python
+# ❌ WRONG: Testing that argparse works
+def test_parses_verbose_flag():
+    parser = create_parser()
+    args = parser.parse_args(["--verbose"])
+    assert args.verbose is True  # Testing argparse, not your code
+
+
+# ✅ RIGHT: Test YOUR behavior that uses parsed args
+def test_verbose_mode_produces_detailed_output():
+    output = run_command(Config(verbose=True))
+    assert "DEBUG:" in output
 ```

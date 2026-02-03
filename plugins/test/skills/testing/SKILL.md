@@ -4,9 +4,11 @@ description: Learn how to test code without mocking. Use when learning testing a
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
-# Test Strategy (Foundational Skill)
+# Test Strategy Router
 
 You are the **foundational test strategy authority**. All other skills—architect, coder, reviewer—MUST consult you before making decisions about testing.
+
+This skill is a **decision router**. Follow the stages in order. Most paths terminate before you ever consider test doubles.
 
 ---
 
@@ -18,13 +20,604 @@ Every test exists to answer this question. Tests are not bureaucracy—they are 
 
 ---
 
-## Tests Serve Three Purposes
+## Stage 1: What Evidence Do You Need?
 
-| Purpose          | What It Means                     | Example                                                    |
-| ---------------- | --------------------------------- | ---------------------------------------------------------- |
-| **Code quickly** | Fast feedback loop while building | Run Level 1 tests in <1 second to verify logic as you code |
-| **Evidence**     | Prove the spec is implemented     | Show user that acceptance criteria are met                 |
-| **Debug**        | Find bugs when regressions occur  | Named test cases point directly to the broken behavior     |
+**Before writing any test, answer these questions:**
+
+1. **What behavior could be wrong in production?**
+   Not "what code am I testing" but what could actually fail for users?
+
+2. **If this test passes, what does that prove about the real system?**
+   A test that proves nothing about production is waste.
+
+3. **What failure would this test catch that would otherwise reach users?**
+   If you can't name a concrete failure, you don't need the test.
+
+### The Evidence Trap
+
+Agents often skip this stage. They see code and think "I need to test this." But that's backwards.
+
+**Wrong approach:**
+
+1. See `OrderProcessor` that calls `repository.save()`
+2. Think "I need to test OrderProcessor"
+3. Create `InMemoryRepository` fake
+4. Write test that passes
+
+**Right approach:**
+
+1. Ask "What evidence do I need?"
+2. Evidence needed: "orders persist correctly"
+3. Realize: a fake repository proves nothing about persistence
+4. Test at Level 2 with real database
+
+---
+
+## Stage 2: At What Level Does That Evidence Live?
+
+Evidence can only be proven at specific levels. Use the five factors to determine where.
+
+### The Five Factors
+
+#### 1. What Does the Spec Promise?
+
+The acceptance criteria drive the minimum test level:
+
+| Spec Promise                      | Minimum Level | Why                                |
+| --------------------------------- | ------------- | ---------------------------------- |
+| "User can export data as CSV"     | Level 1       | File I/O with temp dirs is Level 1 |
+| "Prices are calculated correctly" | Level 1       | Pure calculation                   |
+| "CLI processes Hugo site"         | Level 2       | Project-specific binary            |
+| "Database query returns users"    | Level 2       | Real database required             |
+| "User can complete checkout"      | Level 3       | Real payment provider              |
+| "Works in Safari"                 | Level 3       | Real browser required              |
+
+#### 2. What Dependencies Are Involved?
+
+| Dependency                             | Minimum Level |
+| -------------------------------------- | ------------- |
+| None (pure function)                   | Level 1       |
+| File system (temp dirs)                | Level 1       |
+| Standard dev tools (git, node)         | Level 1       |
+| Database                               | Level 2       |
+| External HTTP API                      | Level 2       |
+| Project-specific binary (Hugo, ffmpeg) | Level 2       |
+| Browser API                            | Level 3       |
+| Third-party service (live)             | Level 3       |
+| Real credentials                       | Level 3       |
+
+#### 3. How Complex Is YOUR Code?
+
+| Code Type                                   | Level 1 Value                |
+| ------------------------------------------- | ---------------------------- |
+| **Your logic** (algorithms, parsers, rules) | HIGH - test thoroughly       |
+| **Library wiring** (argparse, Zod, YAML)    | LOW - trust the library      |
+| **Simple glue code**                        | LOW - covered by integration |
+
+**Trust the library**: Don't test that argparse parses flags. Test YOUR behavior that uses the parsed result.
+
+#### 4. Debuggability Needs
+
+> When this Level 2/3 test fails, will a Level 1 test help me find the bug faster?
+
+| Scenario                                        | Add Level 1? | Reason                                        |
+| ----------------------------------------------- | ------------ | --------------------------------------------- |
+| Integration test fails on complex algorithm     | YES          | Level 1 isolates the algorithm                |
+| Integration test fails on argparse flag parsing | NO           | Trust argparse; check your usage              |
+| E2E test fails on payment flow                  | MAYBE        | If payment calculation is complex, yes        |
+| E2E test fails on clipboard                     | NO           | It's a browser API call, nothing to unit test |
+
+#### 5. Where Does Achievable Confidence Live?
+
+Some guarantees can ONLY be proven at certain levels:
+
+| You Want to Know...           | Achievable At |
+| ----------------------------- | ------------- |
+| Your math is correct          | Level 1       |
+| Your SQL is valid             | Level 2       |
+| The API accepts your requests | Level 2       |
+| Users can complete the flow   | Level 3       |
+| It works in Safari            | Level 3       |
+
+### Level Selection Decision
+
+```
+Based on the five factors:
+├─→ Evidence lives at Level 3 → Use real environment. DONE.
+│   (Consider: add Level 1 for debuggability of complex parts?)
+│
+├─→ Evidence lives at Level 2 → Use real dependencies. DONE.
+│   (Consider: add Level 1 for debuggability of complex parts?)
+│
+└─→ Evidence lives at Level 1 → Go to Stage 3
+```
+
+**If evidence requires Level 2 or 3, stop here.** Use real dependencies. Do not fake what you can test for real.
+
+---
+
+## Stage 3: What Kind of Level 1 Code Is This?
+
+You've determined Level 1 is appropriate. Now classify the code.
+
+### 3A: Pure Computation
+
+**Definition:** Given inputs, compute outputs. No external state, no side effects.
+
+Examples:
+
+- Validation logic
+- Parsing functions
+- Business calculations
+- Data transformations
+- Command/argument building
+
+**Decision:** Test directly. No doubles needed. DONE.
+
+```typescript
+// Pure computation - test at Level 1, no doubles
+function calculateDiscount(order: Order, coupon: Coupon): number {
+  if (coupon.expired) return 0;
+  if (order.total < coupon.minPurchase) return 0;
+  return Math.min(order.total * coupon.percentage, coupon.maxDiscount);
+}
+
+// Test directly
+test("applies percentage discount", () => {
+  const order = { total: 100 };
+  const coupon = { percentage: 0.1, maxDiscount: 50, minPurchase: 0, expired: false };
+  expect(calculateDiscount(order, coupon)).toBe(10);
+});
+```
+
+### 3B: Code with Dependencies - Can You Extract?
+
+**Question:** Can you extract the pure computation from the dependency interaction?
+
+**If YES:** Extract it, test the pure part at Level 1, test integration at Level 2. DONE.
+
+```typescript
+// BEFORE: Tangled code
+class OrderProcessor {
+  async process(order: Order): Promise<void> {
+    // Validation (pure)
+    if (!order.items.length) throw new ValidationError("Empty order");
+    if (order.total < 0) throw new ValidationError("Negative total");
+
+    // Persistence (integration)
+    await this.repository.save(order);
+  }
+}
+
+// AFTER: Extracted
+function validateOrder(order: Order): ValidationResult {
+  // Pure computation - test at Level 1, no doubles
+  if (!order.items.length) return { ok: false, error: "Empty order" };
+  if (order.total < 0) return { ok: false, error: "Negative total" };
+  return { ok: true };
+}
+
+class OrderProcessor {
+  async process(order: Order): Promise<void> {
+    // Glue code - test at Level 2 with real DB
+    const validation = validateOrder(order);
+    if (!validation.ok) throw new ValidationError(validation.error);
+    await this.repository.save(order);
+  }
+}
+```
+
+Now:
+
+- `validateOrder` → Level 1, no doubles, full 4-part progression
+- `OrderProcessor.process` → Level 2, real database
+
+**The fake repository was never needed.**
+
+### 3C: Glue/Orchestration Code - Can't Extract
+
+**Definition:** The behavior IS the interaction with the dependency. The code exists to orchestrate, coordinate, or handle dependency behavior. You can't extract it without losing the thing you're testing.
+
+Examples:
+
+- Retry logic
+- Circuit breakers
+- Saga orchestration
+- Caching invalidation logic
+- Rate limiting
+- Multi-step workflows
+
+**If you're here:** Go to Stage 4.
+
+---
+
+## Stage 4: Can the Real System Produce the Behavior?
+
+You have glue/orchestration code that you can't extract. Before reaching for test doubles, ask:
+
+| Question                                                   | If YES   | If NO         |
+| ---------------------------------------------------------- | -------- | ------------- |
+| **Reliably?** (deterministic, not flaky)                   | Continue | Go to Stage 5 |
+| **Safely?** (won't charge money, send emails, delete data) | Continue | Go to Stage 5 |
+| **Cheaply?** (won't cost $$ or take hours)                 | Continue | Go to Stage 5 |
+| **Observably?** (can see what you need to assert)          | Continue | Go to Stage 5 |
+
+**If YES to all:** Use real system at Level 2. DONE.
+
+**If NO to any:** Go to Stage 5.
+
+---
+
+## Stage 5: Which Exception Applies?
+
+You've proven:
+
+1. Evidence lives at Level 1
+2. Code can't be factored into pure computation
+3. Real system can't produce the behavior reliably/safely/cheaply/observably
+
+**Now and only now** may you consider test doubles. But you must match a specific exception.
+
+### The Seven Exception Cases
+
+Test doubles are ONLY legitimate when you need **deterministic control over behavior the real system can't reliably produce**.
+
+#### Exception 1: Failure Modes
+
+**When:** You need to test behavior under specific failure conditions that the real system can't reliably produce.
+
+Examples:
+
+- Timeouts at specific points in a call
+- Connection resets mid-stream
+- Partial writes / partial reads
+- Throttling / rate limits
+- Retryable vs non-retryable error codes
+- DNS failures, TLS handshake failures
+
+**Double type:** Stub that returns predetermined errors
+
+```typescript
+// Testing retry logic under timeout
+const timeoutingClient: HttpClient = {
+  async fetch(url) {
+    throw new TimeoutError("Request timed out");
+  },
+};
+
+test("retries on timeout", async () => {
+  let attempts = 0;
+  const client: HttpClient = {
+    async fetch(url) {
+      attempts++;
+      if (attempts < 3) throw new TimeoutError("timeout");
+      return { status: 200, body: "ok" };
+    },
+  };
+
+  const result = await fetchWithRetry(url, client);
+  expect(attempts).toBe(3);
+  expect(result.status).toBe(200);
+});
+```
+
+#### Exception 2: Interaction Protocols
+
+**When:** Correctness depends on the conversation pattern, not just input/output.
+
+Examples:
+
+- Multi-step workflows (create → poll → finalize)
+- Pagination loops and cursor handling
+- Transactional outbox patterns
+- Sagas and compensating actions
+- "Must call A before B"
+- "Must not call B if A failed"
+- Ensuring no extra calls (cost, rate limits)
+
+**Double type:** Spy that records calls, or Mock for strict sequence assertions
+
+```typescript
+// Testing that compensating action is called on failure
+test("saga calls compensation on step 2 failure", async () => {
+  const calls: string[] = [];
+
+  const step1 = {
+    execute: async () => {
+      calls.push("step1");
+    },
+  };
+  const step2 = {
+    execute: async () => {
+      calls.push("step2");
+      throw new Error("fail");
+    },
+    compensate: async () => {
+      calls.push("step2-compensate");
+    },
+  };
+  const step1Compensate = {
+    compensate: async () => {
+      calls.push("step1-compensate");
+    },
+  };
+
+  await runSaga([step1, step2]).catch(() => {});
+
+  expect(calls).toEqual(["step1", "step2", "step2-compensate", "step1-compensate"]);
+});
+```
+
+#### Exception 3: Time and Concurrency
+
+**When:** You need deterministic control over timing and scheduling.
+
+Examples:
+
+- Scheduled retries with jitter
+- Token refresh races
+- Lease renewal loops
+- Debounce/throttle logic
+- "Eventually consistent" wait loops
+- Visibility timeouts
+
+**Double type:** Fake clock, controllable scheduler
+
+```typescript
+// Testing lease renewal with fake clock
+test("renews lease before expiry", async () => {
+  const fakeClock = createFakeClock();
+  let renewCount = 0;
+
+  const lease = createLease({
+    ttl: 30_000,
+    renewAt: 25_000,
+    onRenew: () => {
+      renewCount++;
+    },
+    clock: fakeClock,
+  });
+
+  await fakeClock.advance(24_000);
+  expect(renewCount).toBe(0);
+
+  await fakeClock.advance(2_000); // Now at 26s
+  expect(renewCount).toBe(1);
+});
+```
+
+#### Exception 4: Safety
+
+**When:** The real system is destructive or irreversible.
+
+Examples:
+
+- Payment providers (charges/refunds)
+- Email/SMS sending
+- Destructive admin APIs (delete, rotate keys)
+- Systems with strict quotas/billing
+
+**Double type:** Stub that records but doesn't execute
+
+```typescript
+// Testing payment flow without charging
+test("processes refund for cancelled order", async () => {
+  const refunds: Array<{ amount: number; reason: string }> = [];
+
+  const paymentProvider: PaymentProvider = {
+    async refund(chargeId, amount, reason) {
+      refunds.push({ amount, reason });
+      return { refundId: "refund_123", status: "succeeded" };
+    },
+  };
+
+  await cancelOrder(order, paymentProvider);
+
+  expect(refunds).toEqual([{ amount: 99.99, reason: "order_cancelled" }]);
+});
+```
+
+#### Exception 5: Combinatorial Cost
+
+**When:** You need 100+ scenarios and real system is too slow/expensive.
+
+Examples:
+
+- HTTP client behavior matrix: status codes × retry rules × idempotency × timeout budgets
+- Queue consumer: redelivery × poison messages × DLQ routing × batch sizes
+- Caching: TTL × stale-while-revalidate × negative caching × stampede protection
+
+**Double type:** Fake that can be configured for each scenario
+
+```typescript
+// Testing 27 combinations of retry behavior
+const scenarios = generateRetryScenarios(); // 27 combinations
+
+for (const scenario of scenarios) {
+  test(`retry behavior: ${scenario.name}`, async () => {
+    const client = createConfigurableClient(scenario.responses);
+    const result = await fetchWithRetry(url, client, scenario.config);
+    expect(result).toMatchSnapshot();
+  });
+}
+```
+
+#### Exception 6: Observability
+
+**When:** You need to verify details the real system can't expose.
+
+Examples:
+
+- "Did we include this header?"
+- "Did we batch these operations?"
+- "Did we send the idempotency key?"
+- "Did we avoid N+1 calls?"
+- "Did we handle pagination correctly?"
+
+**Double type:** Spy that records request details
+
+```typescript
+// Testing that idempotency key is sent
+test("includes idempotency key in payment request", async () => {
+  const requests: Array<{ headers: Record<string, string> }> = [];
+
+  const client: HttpClient = {
+    async fetch(url, options) {
+      requests.push({ headers: options.headers });
+      return { status: 200 };
+    },
+  };
+
+  await chargeCard(card, amount, client);
+
+  expect(requests[0].headers["Idempotency-Key"]).toBeDefined();
+});
+```
+
+#### Exception 7: Contract Testing
+
+**When:** Third-party API you don't control, need to verify your serialization/parsing.
+
+Examples:
+
+- Verify request serialization matches API spec
+- Verify you can parse all documented response variants
+- Pin behavior when provider changes subtly
+
+**Double type:** Contract stub that enforces expected format
+
+```typescript
+// Testing response parsing for all documented variants
+const responseVariants = [
+  { status: 200, body: { data: [...] } },           // Success
+  { status: 200, body: { data: [], next: "..." } }, // Paginated
+  { status: 429, body: { retry_after: 60 } },       // Rate limited
+  { status: 503, body: { message: "..." } },        // Service unavailable
+];
+
+for (const variant of responseVariants) {
+  test(`handles ${variant.status} response`, async () => {
+    const client = createContractClient(variant);
+    const result = await apiClient.fetch(client);
+    expect(() => parseResponse(result)).not.toThrow();
+  });
+}
+```
+
+### If No Exception Applies
+
+**STOP.** You should not use test doubles.
+
+Options:
+
+1. **Re-examine Stage 3B**: Can you really not extract pure logic?
+2. **Test at Level 2**: Use real dependencies
+3. **Accept no Level 1 test**: Some glue code doesn't need unit tests
+
+---
+
+## Anti-Patterns: What Agents Get Wrong
+
+### Anti-Pattern 1: Skipping the Evidence Question
+
+**Wrong:**
+
+```
+Agent sees: OrderService calls repository.save()
+Agent thinks: "I need to test OrderService"
+Agent does: Creates InMemoryRepository
+```
+
+**Right:**
+
+```
+Agent asks: "What evidence do I need?"
+Agent answers: "Evidence that orders persist correctly"
+Agent realizes: Fake repository proves nothing about persistence
+Agent does: Tests at Level 2 with real database
+```
+
+### Anti-Pattern 2: Calling Fakes "In-Memory Implementations"
+
+The skill says "DI with real in-memory implementations" is allowed at Level 1. Agents read this as permission to create fakes.
+
+**Fake (not allowed by default):**
+
+```typescript
+// This is a FAKE dressed up as an "in-memory implementation"
+class InMemoryUserRepository {
+  private users: User[] = [];
+
+  async save(user: User) {
+    this.users.push(user); // Records call, doesn't implement real behavior
+  }
+
+  async findById(id: string) {
+    return this.users.find(u => u.id === id); // Canned behavior
+  }
+}
+```
+
+**Real in-memory implementation (allowed):**
+
+```typescript
+// SQLite in-memory - actually implements database behavior
+const db = new Database(":memory:");
+db.exec(schema);
+
+// This is a REAL implementation that happens to be in-memory
+// It has real SQL parsing, real constraints, real transactions
+```
+
+### Anti-Pattern 3: Faking for Speed
+
+**Wrong thinking:** "Real DB is slow, so I'll fake it"
+
+Speed alone is not an exception. You need:
+
+- **100+ scenarios** (Exception 5: Combinatorial Cost), AND
+- Real system would take **hours**, not just seconds
+
+A test that takes 2 seconds with a real DB is fine. Don't optimize developer experience at the cost of test validity.
+
+### Anti-Pattern 4: Faking What Can Be Tested Real
+
+**Wrong:**
+
+```typescript
+// Creating FakeHttpClient instead of testing against real endpoint
+const fakeClient: HttpClient = {
+  async fetch(url) {
+    return { status: 200, body: { users: [] } };
+  },
+};
+```
+
+**Right:** Use Level 2 test with real HTTP server (local test server or docker container).
+
+If you're testing "does my code handle HTTP responses correctly?" - use a real HTTP server. The fake proves your code works with your imagination of HTTP, not actual HTTP.
+
+### Anti-Pattern 5: Testing Library Behavior
+
+**Wrong:**
+
+```typescript
+// Tests that argparse works, not your code
+test("parses --verbose flag", () => {
+  const args = parser.parse(["--verbose"]);
+  expect(args.verbose).toBe(true); // Testing argparse!
+});
+```
+
+**Right:**
+
+```typescript
+// Tests YOUR behavior that uses the parsed result
+test("verbose mode produces detailed output", () => {
+  const output = runCommand({ verbose: true });
+  expect(output).toContain("DEBUG:"); // Testing your code!
+});
+```
 
 ---
 
@@ -32,427 +625,67 @@ Every test exists to answer this question. Tests are not bureaucracy—they are 
 
 > **Mocking is always wrong. There is no exception.**
 
-Mocking gives you a test that passes while your production code fails. This is worse than no test at all.
+Mocking (using mocking frameworks to intercept and stub arbitrary methods) gives you a test that passes while your production code fails. This is worse than no test at all.
 
-If you feel you need to mock:
+**If you feel you need to mock:**
 
-1. **Redesign** using dependency injection with real in-memory implementations, OR
+1. **Redesign using dependency injection** with real implementations or legitimate doubles (matching an exception case), OR
 2. **Test at a different level**—push to Level 2 or 3 where real dependencies are available
 
+The seven exception cases use **test doubles** (stubs, spies, fakes), not mocks. The distinction:
+
+- **Mock**: Framework intercepts method calls on real objects
+- **Test double**: You provide an alternative implementation via dependency injection
+
 ---
 
-## The Three Levels
+## Quick Reference: The Router Flow
 
 ```
-┌─────────────────────┐
-│      LEVEL 3        │  "Does it work in the real world?"
-│   System / E2E      │  Real credentials, real services
-│                     │  Full user workflows
-└──────────┬──────────┘
-           │
-┌──────────▼──────────┐
-│      LEVEL 2        │  "Does it work with real infrastructure?"
-│    Integration      │  Real binaries, real databases
-│                     │  Test harnesses required
-└──────────┬──────────┘
-           │
-┌──────────▼──────────┐
-│      LEVEL 1        │  "Is our logic correct?"
-│    Unit / Pure      │  Standard dev environment only
-│                     │  DI with real in-memory implementations
-└─────────────────────┘
-```
-
-### Level 1: Standard Dev Environment
-
-**The question**: Is our logic correct, independent of any external system?
-
-**Allowed:**
-
-| Resource           | Examples                               | Why                     |
-| ------------------ | -------------------------------------- | ----------------------- |
-| Test runner        | pytest, vitest, jest, go test          | Dev environment         |
-| Temp directories   | `tempfile.mkdtemp()`, `os.tmpdir()`    | OS-provided, isolated   |
-| Environment vars   | Set/read env vars within test          | Language runtime        |
-| Standard dev tools | git, node, npm (tool), python, curl    | CI without setup        |
-| DI implementations | In-memory repositories, stub notifiers | Real code, test-focused |
-| Factories/builders | Generate test data programmatically    | Reproducible            |
-
-**Forbidden:**
-
-| Resource                  | Why                                      |
-| ------------------------- | ---------------------------------------- |
-| Real databases            | Level 2                                  |
-| Real HTTP APIs            | Level 2 or 3                             |
-| Project-specific binaries | Level 2 (ffmpeg, hugo, custom tools)     |
-| Installing dependencies   | `npm install`, `pip install` are Level 2 |
-| Mocking external systems  | Never. Redesign with DI instead.         |
-
-**Critical filesystem rule**: All Level 1 tests MUST use OS-provided temporary directories exclusively. Never write outside temp directories.
-
-### Level 2: Project-Specific Dependencies
-
-**The question**: Does our code correctly interact with real external dependencies?
-
-**Covers:**
-
-- Project-specific tools: Hugo, Caddy, FFmpeg, custom binaries
-- Project-specific build tools: Make, Gradle, Maven
-- Containerized services: Docker databases, message queues
-
-**Required before writing**: Document the test harness for each dependency.
-
-**If you don't know the harness, STOP and ask:**
-
-> I need to write integration tests for [dependency].
->
-> To proceed, I need to know:
->
-> 1. What test harness exists or should I build?
-> 2. How do I start/stop/reset it?
-> 3. Where are fixture files or seed data?
-> 4. What environment variables configure it?
-
-### Level 3: Real Environment
-
-**The question**: Does the complete system work the way users will actually use it?
-
-**Covers:**
-
-- Real credentials against real (test) environments
-- Third-party services in production or staging
-- Browser-based testing for web applications
-- Complete user workflows end-to-end
-
-**Required before writing**: Document credentials and test accounts.
-
-**If you don't know the credentials, STOP and ask:**
-
-> I need to write end-to-end tests that use [external service].
->
-> To proceed, I need to know:
->
-> 1. Where are the test credentials stored?
-> 2. What test accounts/environments exist?
-> 3. Are there rate limits or quotas?
-> 4. How do I reset test data between runs?
-
----
-
-## The Three Dimensions
-
-Every test level offers different tradeoffs across three orthogonal dimensions:
-
-### 1. Detection: What Bugs Can This Level Find?
-
-Each level has a **different lens**—not progressively broader, but genuinely different:
-
-| Level  | Detects                                             | Cannot Detect                                 |
-| ------ | --------------------------------------------------- | --------------------------------------------- |
-| **L1** | Algorithmic bugs, edge cases, invariant violations  | Race conditions, integration mismatches       |
-| **L2** | Race conditions, integration mismatches, contracts  | Pure logic bugs hidden in stack, graphical UX |
-| **L3** | Workflow breaks, UX failures, real-world edge cases | Algorithmic bugs, intermittent races          |
-
-**Key insight**: L1 property-based tests catch algorithmic bugs that L3 almost never detects. L2 randomized harnesses catch race conditions that L1 can't see.
-
-### 2. Validity: What Does a Passing Test Prove?
-
-| Level  | A Passing Test Proves                           | False Confidence Risk                               |
-| ------ | ----------------------------------------------- | --------------------------------------------------- |
-| **L1** | The isolated logic is correct for tested inputs | Low—tests exactly what it claims                    |
-| **L2** | Components integrate correctly with the harness | Medium—depends on harness fidelity to production    |
-| **L3** | The workflow succeeds in the test environment   | High—can pass while feature is broken in production |
-
-**Key insight**: "E2E tests pass" does NOT mean "it works for users." L3 has the highest false confidence risk.
-
-### 3. Cost: What Investment Does This Level Require?
-
-| Aspect          | L1                          | L2                                             | L3                                             |
-| --------------- | --------------------------- | ---------------------------------------------- | ---------------------------------------------- |
-| **Upfront**     | Low (no setup, just code)   | Medium (harnesses, fixtures, containers)       | High (real env, credentials, test accounts)    |
-| **Per-run**     | Milliseconds                | Seconds to minutes                             | Minutes to hours                               |
-| **Maintenance** | Low (stable, deterministic) | Medium (harness evolution, dependency updates) | High (brittle to UI changes, flaky, env drift) |
-
-**Key insight**: A test cheap to write can be expensive to maintain. L3 tests often become "tests you're afraid to touch."
-
----
-
-## Where Evidence Lives
-
-Some outcomes can only be proven at specific levels:
-
-| Outcome                             | Minimum Level | Best Combination                                  |
-| ----------------------------------- | ------------- | ------------------------------------------------- |
-| Algorithm correctness               | 1             | L1 with property-based testing                    |
-| Parser handles grammar              | 1             | L1 typical + edges + properties                   |
-| User can export data as CSV         | 1             | L1 with temp directory (file I/O is Level 1)      |
-| Database query returns correct data | 2             | L2 integration; L1 only if query logic is complex |
-| CLI binary behaves correctly        | 2             | L2 with fixture files                             |
-| API contract is honored             | 2 or 3        | L2 against test server; L3 against staging        |
-| Clipboard works in browsers         | 3 only        | L3 in real browser; L1/L2 prove nothing           |
-| Payment flow completes              | 3 only        | L3 with test credentials                          |
-
-### The Clipboard Example
-
-A "copy to clipboard" React component:
-
-- **L1 test** (component renders): Proves nothing about clipboard functionality
-- **L3 test** (actually copies in browser): Proves the feature works
-
-**Best combination**: Skip L1/L2 entirely, write L3 tests in target browsers.
-
-### The Pricing Engine Example
-
-A complex pricing calculation with discounts, taxes, promotions:
-
-- **L2 only** (integration test checks total): Knows IF wrong, not WHERE the bug is
-- **L1 + L2**: L1 isolates which rule is broken; L2 confirms end-to-end
-
-**Best combination**: L1 with full 4-part progression + L2 for integration.
-
----
-
-## Add Lower Levels for Debuggability
-
-When Level 2 or 3 is required for evidence, add Level 1 tests ONLY if:
-
-1. **The code is complex**—your logic (algorithms, parsers, rules), not library wiring
-2. **Debugging will be hard**—when the higher-level test fails, will you know where to look?
-3. **Property-based testing adds value**—would generated inputs find edge cases?
-
-| Scenario                                        | Add Level 1? | Reason                                        |
-| ----------------------------------------------- | ------------ | --------------------------------------------- |
-| Integration test fails on a complex algorithm   | YES          | Level 1 isolates the algorithm                |
-| Integration test fails on argparse flag parsing | NO           | Trust argparse; check your usage              |
-| E2E test fails on payment flow                  | MAYBE        | If payment calculation logic is complex, yes  |
-| E2E test fails on clipboard                     | NO           | It's a browser API call, nothing to unit test |
-
----
-
-## Trust the Library
-
-Libraries like argparse, Zod, pydantic, js-yaml are battle-tested. Don't test that they work—test YOUR logic.
-
-**Don't test library behavior:**
-
-```python
-# BAD: Tests argparse, not your code
-def test_verbose_flag_is_parsed():
-    args = parser.parse_args(["--verbose"])
-    assert args.verbose is True
-```
-
-**Do test your behavior:**
-
-```python
-# GOOD: Tests your logic that uses the parsed result
-def test_verbose_mode_produces_detailed_output():
-    output = run_command(verbose=True)
-    assert "DEBUG:" in output
+STAGE 1: What evidence do I need?
+         ↓
+STAGE 2: At what level does that evidence live?
+         ├─→ Level 2/3: Use real dependencies. DONE.
+         └─→ Level 1: Continue
+                ↓
+STAGE 3: What kind of Level 1 code?
+         ├─→ 3A Pure computation: No doubles. DONE.
+         ├─→ 3B Can extract pure part: Extract, test pure at L1, integration at L2. DONE.
+         └─→ 3C Glue code (can't extract): Continue
+                ↓
+STAGE 4: Can real system produce the behavior?
+         ├─→ YES (reliable, safe, cheap, observable): Use real at Level 2. DONE.
+         └─→ NO: Continue
+                ↓
+STAGE 5: Which exception applies?
+         ├─→ Exception matches: Use appropriate double. Document which exception.
+         └─→ No exception: Don't write L1 for this code. Test at L2.
 ```
 
 ---
 
-## Randomized Test Harnesses
+## Reference Material
 
-Always ask: **What is the data structure that describes the fixture?**
+For detailed patterns at each level, see:
 
-Example: When testing directory tree operations:
+- [Level 1: Unit/Pure Logic](levels/level-1-unit.md) - DI patterns, pure function testing
+- [Level 2: Integration](levels/level-2-integration.md) - Harness patterns, fixtures
+- [Level 3: E2E](levels/level-3-e2e.md) - Credential management, workflow testing
 
-1. The underlying structure is a DAG (directed acyclic graph)
-2. Generate a DAG data structure first
-3. Test your logic against the DAG at Level 1
-4. Convert to actual directories in temp directory for Level 2
+For test organization:
 
-### Seeding
-
-- Seeds should derive from system time (different every run)
-- Show seed on failure for reproduction
-- This maximizes variety while enabling reproduction
-
----
-
-## The 4-Part Progression
-
-Organize tests at any level to serve all three purposes (code/evidence/debug):
-
-### Part 0: Shared Test Values
-
-Create a test values file with named, typed data:
-
-```typescript
-export const TYPICAL = {
-  BASIC: { input: "simple", expected: 42 },
-  COMPLEX: { input: "with-flags", expected: 100 },
-} as const;
-
-export const EDGES = {
-  EMPTY: { input: "", expected: 0 },
-  MAX: { input: "x".repeat(1000), expected: "ERROR" },
-} as const;
-```
-
-### Part 1: Named Typical Cases
-
-One `it()` per category. When test fails, you know EXACTLY which case.
-
-### Part 2: Named Edge Cases
-
-One `it()` per boundary condition. Each boundary is independently debuggable.
-
-### Part 3: Systematic Coverage Loop
-
-Loop over all known cases. Should ONLY fail if Parts 1-2 missed a category.
-
-### Part 4: Generated/Property-Based
-
-Reproducible via seed. Escalate from debuggable loops to comprehensive properties.
-
-### Level Breadth
-
-| Level   | Typical Parts      | Why                                   |
-| ------- | ------------------ | ------------------------------------- |
-| Level 1 | All 4 parts        | Cheapest—can afford full breadth      |
-| Level 2 | Parts 1-2, maybe 3 | More expensive—focus on key scenarios |
-| Level 3 | Part 1 only        | Most expensive—critical flows only    |
-
----
-
-## Test Location in CODE Framework
-
-Tests are **co-located** with specs in the `spx/` tree:
-
-| Location                                        | State       | May Fail? | Purpose                          |
-| ----------------------------------------------- | ----------- | --------- | -------------------------------- |
-| `spx/{container}/tests/` (not in outcomes.yaml) | In progress | YES       | TDD red-green during development |
-| `spx/{container}/tests/` (in outcomes.yaml)     | Validated   | NO        | Protect working functionality    |
-
-**The invariant**: Tests listed in `outcomes.yaml` MUST ALWAYS PASS (precommit validates this).
-
-**No graduation**: Tests stay where they are. The `outcomes.yaml` file tracks which tests have passed. Test level is indicated by filename suffix:
-
-- `*.unit.test.{ts,py}` - Level 1 (Vitest/pytest)
-- `*.integration.test.{ts,py}` - Level 2 (Vitest/pytest)
-- `*.e2e.test.{ts,py}` - Level 3, non-browser (Vitest/pytest)
-- `*.e2e.spec.{ts,py}` - Level 3, browser-based (Playwright)
-
-**Runner separation**: Vitest/pytest find `*.test.*` files, Playwright finds `*.spec.*` files. No config needed.
-
-Stories persist as containers in the tree. Completion is tracked by `outcomes.yaml`, not by moving files.
-
----
-
-## Test Infrastructure
-
-Keep test infrastructure separate from tests. Categories:
-
-### 1. Test Environment Context Managers
-
-Shared utilities (like `withTestEnv`) that handle:
-
-- Seeding and reproducibility
-- Temp directory lifecycle
-- Environment variable isolation
-- Shared setup/teardown
-
-### 2. Containerized Services
-
-Local databases, dev servers, message queues. Managed via docker-compose.
-
-### 3. Fixtures
-
-Named test values (TYPICAL, EDGES)—static data collections.
-
-### 4. Generators
-
-Randomized data generation with seeding for reproducibility.
-
----
-
-## Dependency Injection Pattern
-
-```python
-# BAD: Hardcoded dependency, requires mocking
-class OrderProcessor:
-    def process(self, order):
-        db = PostgresDatabase()  # Hardcoded!
-        db.save(order)
-
-
-# GOOD: Injected dependencies, testable without mocks
-class OrderProcessor:
-    def __init__(self, repository):
-        self.repository = repository
-
-    def process(self, order):
-        self.repository.save(order)
-
-
-# Level 1 test: Real in-memory implementation
-def test_order_processing_saves():
-    saved = []
-
-    class InMemoryRepo:
-        def save(self, order):
-            saved.append(order)
-
-    processor = OrderProcessor(InMemoryRepo())
-    processor.process(Order(customer="alice"))
-
-    assert len(saved) == 1
-```
-
----
-
-## Quick Reference: Level Selection
-
-| Evidence needed for...  | Level |
-| ----------------------- | ----- |
-| Business logic          | 1     |
-| Parsing/validation      | 1     |
-| Algorithm output        | 1     |
-| File I/O with temp dirs | 1     |
-| Database queries        | 2     |
-| HTTP calls              | 2     |
-| CLI binary behavior     | 2     |
-| Full user workflow      | 3     |
-| Real credentials        | 3     |
-| Browser behavior        | 3     |
-| Third-party services    | 3     |
+- [4-Part Progression](reference/4-part-progression.md) - Typical/Edge/Systematic/Property-based
+- [Double Types](reference/double-types.md) - Meszaros taxonomy when doubles ARE needed
 
 ---
 
 ## Checklist Before Declaring Tests Complete
 
 - [ ] Evidence exists at the level where it can be proven
-- [ ] No mocking anywhere—DI with real implementations
+- [ ] Stage 1 question answered: "What evidence do I need?"
+- [ ] No test doubles without matching exception case
+- [ ] Exception case documented if doubles are used
 - [ ] Level 2 harnesses documented
 - [ ] Level 3 credentials documented (not hardcoded)
 - [ ] Tests verify behavior, not implementation
 - [ ] Regression tests all pass
-
----
-
-## When You're Stuck
-
-**For Level 1:**
-
-> Can I verify this behavior using only the test runner, language primitives, temp dirs, and DI?
->
-> If no → move to Level 2
-
-**For Level 2:**
-
-> What test harness do I need?
->
-> If you don't know → **STOP AND ASK THE USER**
-
-**For Level 3:**
-
-> Where are the credentials?
->
-> If you don't know → **STOP AND ASK THE USER**
-
----
-
-*The goal is not "passing tests" or "high coverage"—it's **justified confidence that your code works in the real world**.*
