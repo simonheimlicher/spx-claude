@@ -257,12 +257,27 @@ tests/
 - Moved to `tests/` with DONE.md referencing them
 - Any combination of the above
 
+**Phantom graduation**: DONE.md may claim tests graduated to `tests/unit/...` but:
+
+- The `tests/` directory doesn't exist
+- Tests are actually still in `specs/.../tests/`
+
+```bash
+# DONE.md says tests are here:
+ls tests/unit/test_foo.py  # File not found!
+
+# Tests are actually here:
+ls specs/.../tests/test_foo.py  # Found!
+```
+
 **Migration approach**:
 
 1. Read DONE.md to understand intended test locations
-2. If DONE.md says graduated → check if `tests/` has them (use those, they're authoritative)
-3. If tests exist in BOTH locations → `specs/.../tests/` may be stale duplicates
-4. Remove from ALL original locations to avoid duplicates in final state
+2. **Check if files actually exist** at the claimed location
+3. If DONE.md says graduated AND tests exist in `tests/` → use those
+4. If tests only exist in `specs/.../tests/` → use those (ignore DONE.md claims)
+5. If tests exist in BOTH locations → `specs/.../tests/` may be stale duplicates
+6. Remove from ALL original locations to avoid duplicates in final state
 
 ## Target System: spx/ (CODE Framework)
 
@@ -319,6 +334,23 @@ spx/
 2. **Hyphen** (`-`) separates BSP from slug (not underscore)
 3. **ADRs interleaved** in the tree, not in separate `decisions/` directory
 4. **No TRDs** - technical details go in feature.md
+
+### ADRs Already in spx/
+
+ADRs may have been migrated earlier with RENUMBERED BSPs. Before migrating:
+
+1. Check if ADR content already exists in spx/ under a different number
+2. If yes: **UPDATE REFERENCES** in spec files to point to existing spx/ ADR
+3. If no: Migrate the ADR with appropriate BSP
+
+```bash
+# Check for existing ADRs
+ls spx/*.adr.md
+
+# Example: adr-07 was renumbered to 21
+# decisions/adr-07_python-tooling.md  →  spx/21-python-tooling.adr.md (EXISTS)
+# Action: Update references in spec files, do NOT re-migrate
+```
 
 ### Parsing Legacy Names
 
@@ -401,21 +433,63 @@ Example:
 
 ## Test File Naming in CODE Framework
 
-Tests use suffix naming to indicate level:
+### Determining Test Level
 
-| Level       | Pattern                        | Example                        |
-| ----------- | ------------------------------ | ------------------------------ |
-| Unit        | `*.unit.test.{ts,py}`          | `parsing.unit.test.ts`         |
-| Integration | `*.integration.test.{ts,py}`   | `cli.integration.test.ts`      |
-| E2E         | `*.e2e.test.{ts,py}`           | `workflow.e2e.test.ts`         |
-| E2E (PW)    | `*.e2e.spec.{ts,py}` (browser) | `login.e2e.spec.ts` (optional) |
+Read the test. Check what it uses. Apply the `/testing` skill's Quick Reference table.
 
-**Transformation:**
+| Evidence needed for...  | Level |
+| ----------------------- | ----- |
+| Business logic          | 1     |
+| Parsing/validation      | 1     |
+| File I/O with temp dirs | 1     |
+| Database queries        | 2     |
+| HTTP calls              | 2     |
+| CLI binary behavior     | 2     |
+| Full user workflow      | 3     |
+| Real credentials        | 3     |
+| Browser behavior        | 3     |
+
+**Example:**
+
+- Test reads `pyproject.toml` with `tomllib` → Level 1 (parsing)
+- Test runs `subprocess.run(["pre-commit", ...])` → Level 2 (CLI binary)
+- Test creates git repo + runs pre-commit hooks → Level 2 (project-specific tools)
+
+### CRITICAL: Test Level ≠ Container Level
+
+A story can have Level 2 tests. A capability can have Level 1 tests. Determine level by what the test USES, not where it lives.
+
+### TypeScript Naming
+
+TypeScript uses `.test.` SUFFIX:
+
+| Level        | Pattern                   | Example                   |
+| ------------ | ------------------------- | ------------------------- |
+| Level 1      | `*.unit.test.ts`          | `parsing.unit.test.ts`    |
+| Level 2      | `*.integration.test.ts`   | `cli.integration.test.ts` |
+| Level 3      | `*.e2e.test.ts`           | `workflow.e2e.test.ts`    |
+| Level 3 (PW) | `*.e2e.spec.ts` (browser) | `login.e2e.spec.ts`       |
+
+### Python Naming
+
+Python uses `test_` PREFIX (for pytest discovery):
+
+| Level   | Pattern                 | Example                   |
+| ------- | ----------------------- | ------------------------- |
+| Level 1 | `test_*.unit.py`        | `test_parsing.unit.py`    |
+| Level 2 | `test_*.integration.py` | `test_cli.integration.py` |
+| Level 3 | `test_*.e2e.py`         | `test_workflow.e2e.py`    |
+
+**Transformation examples:**
 
 ```text
+# TypeScript
 tests/unit/parsing.test.ts           → spx/.../tests/parsing.unit.test.ts
 tests/integration/cli.test.ts        → spx/.../tests/cli.integration.test.ts
-tests/e2e/workflow.test.ts           → spx/.../tests/workflow.e2e.test.ts
+
+# Python
+specs/.../tests/test_foo.py          → spx/.../tests/test_foo.unit.py
+tests/integration/test_bar.py        → spx/.../tests/test_bar.integration.py
 ```
 
 </test_file_naming>
@@ -505,30 +579,26 @@ After migration, verify NO tests remain in:
 
 ## Reference Worktree (MANDATORY)
 
-**Always create the worktree before starting migration.** It provides:
-
-- Baseline for coverage comparison
-- Source of truth for debugging coverage mismatches
-- Recovery point if migration is interrupted
+**Create the worktree first. One command. Just do it.**
 
 ```bash
-PROJECT_ROOT=$(git rev-parse --show-toplevel)
-PROJECT_NAME=$(basename "$PROJECT_ROOT")
-WORKTREE_PATH="$(dirname "$PROJECT_ROOT")/${PROJECT_NAME}_pre-spx"
-
-# Find last commit before spx/ existed
-REF_COMMIT=$(git log --oneline --diff-filter=A --all -- 'spx/' | tail -1 | cut -d' ' -f1)^
-
-# Create if doesn't exist (idempotent)
-if [ ! -d "$WORKTREE_PATH" ]; then
-  git worktree add "$WORKTREE_PATH" "$REF_COMMIT"
-fi
-
-# Verify: spx/ should NOT exist in worktree
-[ ! -d "$WORKTREE_PATH/spx" ] && echo "✓ Worktree valid"
+git worktree add "../$(basename $(pwd))_pre-spx" \
+  $(git log --oneline --diff-filter=A --all -- 'spx/' | tail -1 | cut -d' ' -f1)^
 ```
 
-**The worktree is your safety net.** After `git mv`, the worktree still has originals for comparison.
+Then verify:
+
+```bash
+[ ! -d "../$(basename $(pwd))_pre-spx/spx" ] && echo "✓ Worktree valid"
+```
+
+**Why mandatory:**
+
+- Baseline for test comparison
+- Recovery if migration fails
+- Debugging when tests behave differently
+
+**Do NOT ask "should I create a worktree?" Just create it.**
 
 </worktree_requirement>
 
