@@ -232,11 +232,12 @@ specs/
           story-NN_slug/
             slug.story.md
             tests/
-              DONE.md         # KEY: Documents graduated tests
+              DONE.md         # MAY exist - documents completion
+              *.py            # Tests MAY still be here
 decisions/
   adr-NN_slug.md              # Separate ADR directory
 tests/
-  unit/                       # Graduated tests live HERE
+  unit/                       # Tests MAY have graduated here (or not)
   integration/
   e2e/
 ```
@@ -244,10 +245,24 @@ tests/
 **Key characteristics:**
 
 - **Work items move** between backlog/doing/done directories
-- **Tests graduate** from `specs/.../tests/` to `tests/{level}/`
-- **DONE.md** documents which tests graduated and where
-- **Status** = which directory the work item is in
+- **Tests MAY OR MAY NOT have graduated** - check actual file locations
+- **DONE.md** MAY exist - documents completion but test locations may be inconsistent
+- **Status** = which directory the work item is in (irrelevant for migration)
 - **Naming**: `{type}-{BSP}_{slug}/` (e.g., `capability-27_spec-domain/`)
+
+**⚠️ MESSY REALITY**: The legacy system evolved. Tests might be:
+
+- Still in `specs/.../tests/` (never graduated)
+- Copied to `tests/` but also still in `specs/.../tests/` (duplicated - specs/ copies may be stale)
+- Moved to `tests/` with DONE.md referencing them
+- Any combination of the above
+
+**Migration approach**:
+
+1. Read DONE.md to understand intended test locations
+2. If DONE.md says graduated → check if `tests/` has them (use those, they're authoritative)
+3. If tests exist in BOTH locations → `specs/.../tests/` may be stale duplicates
+4. Remove from ALL original locations to avoid duplicates in final state
 
 ## Target System: spx/ (CODE Framework)
 
@@ -344,12 +359,19 @@ capability-21/feature-87/story-54  ← DIFFERENT story-54
 
 ## Understanding DONE.md Format
 
-DONE.md documents test graduation for completed stories. Example:
+DONE.md documents test completion for work items. **Read this file to find where tests are.**
+
+Test locations in DONE.md may be:
+
+- `specs/.../tests/` - Tests stayed in place (common now)
+- `tests/unit/...` etc. - Tests were graduated (older pattern)
+
+Example:
 
 ```markdown
 # Story Complete: validate-args
 
-## Graduated Tests
+## Tests
 
 | Requirement                  | Test File                            | Level       |
 | ---------------------------- | ------------------------------------ | ----------- |
@@ -369,9 +391,9 @@ DONE.md documents test graduation for completed stories. Example:
 
 **Key information to extract:**
 
-1. **Graduated Tests table** - Maps requirements to test file locations
-2. **Test Level** - Determines target suffix (unit → `.unit.test.ts`)
-3. **Original location** - Where to find the test in the legacy `tests/` directory
+1. **Tests table** - Maps requirements to test file locations
+2. **Test Level** - Determines target suffix (unit → `.unit.test.py`)
+3. **Actual location** - Where to find the test (go get it from there)
 
 </done_md_format>
 
@@ -436,11 +458,58 @@ tests/integration/status/state.integration.test.ts:
 
 </shared_test_files>
 
+<migration_workflow>
+
+## Migration Workflow
+
+**Before starting any migration:**
+
+1. **Create worktree** (once per migration session) - See worktree_requirement section
+
+**For each work item being migrated:**
+
+1. **Read DONE.md** - It documents what tests exist and where they are located
+2. **Check for duplicates** - If DONE.md says tests graduated to `tests/`, verify:
+   - Do graduated tests exist in `tests/`?
+   - Do tests ALSO exist in `specs/.../tests/`?
+3. **Use the authoritative source**:
+   - If DONE.md says graduated AND tests exist in `tests/` → use those (they're authoritative)
+   - If tests only exist in `specs/.../tests/` → use those
+   - **WARNING**: If tests exist in BOTH locations, the `specs/.../tests/` copies may be stale duplicates
+4. **Capture baseline coverage** - Run tests from worktree to get baseline (worktree is untouched)
+5. **Move tests with `git mv`** to `spx/.../tests/` (preserves history):
+   ```bash
+   git mv specs/.../tests/test_foo.py spx/.../tests/foo.unit.test.py
+   ```
+   - Rename with level suffix during the move
+   - **NEVER copy/rewrite tests** - use `git mv` to preserve history
+6. **Verify coverage matches** - Run moved tests, compare to baseline
+7. **Remove stale duplicates** with `git rm` if tests existed in multiple locations:
+   - Remove from `tests/` if graduated copies exist there
+   - **Failure to remove from `tests/` leaves duplicates!**
+
+**The directory location (backlog/doing/done) is irrelevant for migration. Migrate content regardless of which directory it's in.**
+
+### Duplicate Prevention Checklist
+
+After migration, verify NO tests remain in:
+
+- [ ] `tests/unit/` for this work item
+- [ ] `tests/integration/` for this work item
+- [ ] `tests/e2e/` for this work item
+- [ ] `specs/.../tests/` for this work item
+
+</migration_workflow>
+
 <worktree_requirement>
 
-## Reference Worktree Requirement
+## Reference Worktree (MANDATORY)
 
-The worktree contains the original DONE.md files - the source of truth for which tests graduated from which work item.
+**Always create the worktree before starting migration.** It provides:
+
+- Baseline for coverage comparison
+- Source of truth for debugging coverage mismatches
+- Recovery point if migration is interrupted
 
 ```bash
 PROJECT_ROOT=$(git rev-parse --show-toplevel)
@@ -459,7 +528,7 @@ fi
 [ ! -d "$WORKTREE_PATH/spx" ] && echo "✓ Worktree valid"
 ```
 
-**CRITICAL:** Always read DONE.md from `$WORKTREE_PATH`, never from main repo.
+**The worktree is your safety net.** After `git mv`, the worktree still has originals for comparison.
 
 </worktree_requirement>
 
@@ -476,17 +545,32 @@ fi
 
 ### Verification Process
 
+**Baseline from worktree** (always available):
+
 ```bash
-# Run ALL legacy tests that will be removed
-pnpm vitest run tests/unit/status/state.test.ts tests/integration/status/state.integration.test.ts --coverage
-
-# Run ALL SPX tests for the feature
-pnpm vitest run spx/.../NN-slug.feature --coverage
-
-# Compare coverage on target source files - MUST MATCH
+# Run tests from worktree to get baseline coverage
+cd "$WORKTREE_PATH" && just test "path/to/original/tests --cov --cov-report=json"
 ```
 
-**STOP if coverage doesn't match.** Identify which story's tests are incomplete.
+**After moving tests with `git mv`**:
+
+```bash
+# Run moved tests from spx/ location
+just test "spx/.../tests/ --cov --cov-report=json"
+# Compare coverage to baseline - MUST MATCH
+```
+
+**If coverage doesn't match** - debug using worktree:
+
+```bash
+# Compare test files
+diff -u "$WORKTREE_PATH/path/to/test.py" spx/.../tests/test.py
+
+# Run specific tests from worktree to identify what's missing
+cd "$WORKTREE_PATH" && just test "path/to/test.py -v"
+```
+
+The worktree always has the original state - debugging is trivial.
 
 </coverage_verification>
 
@@ -499,8 +583,8 @@ A migration is complete and valid when:
 ### Structure
 
 - [ ] SPX directory exists with correct naming (`{BSP}-{slug}.{type}/`)
-- [ ] All spec files copied and renamed correctly
-- [ ] ADRs moved from `decisions/` to in-tree location
+- [ ] All spec files moved with `git mv` and renamed correctly
+- [ ] ADRs moved with `git mv` from `decisions/` to in-tree location
 - [ ] Test directories created at appropriate levels
 
 ### Tests
@@ -537,9 +621,11 @@ A migration is complete and valid when:
 
 ### Source of Truth
 
-- **DONE.md in worktree** is the ONLY source of truth for which tests belong to which work item
+- **DONE.md in the work item directory** documents which tests exist and where they are
+- Read DONE.md first, then get tests from the location it specifies
 - Never guess test mappings based on filename patterns
-- Never trust SPX-MIGRATION.md written by previous runs - always verify against worktree DONE.md
+- Never trust SPX-MIGRATION.md written by previous runs - always verify against DONE.md
+- **Worktree is mandatory** - use it for baseline coverage, debugging, and recovery
 
 ### Deletion Safety
 
@@ -557,13 +643,14 @@ A migration is complete and valid when:
 
 Every operation MUST be reentrant (can be interrupted and resumed):
 
-| Step                    | If interrupted  | On restart                      |
-| ----------------------- | --------------- | ------------------------------- |
-| Read DONE.md            | No state change | Reads again from worktree       |
-| Create SPX-MIGRATION.md | Partial file    | Overwrites with correct content |
-| Copy tests              | Some copied     | Skips existing, copies rest     |
-| Verify coverage         | No state change | Runs again                      |
-| git rm legacy tests     | Some removed    | Skips already-removed           |
-| git rm old specs        | Some removed    | Skips already-removed           |
+| Step              | If interrupted  | On restart                         |
+| ----------------- | --------------- | ---------------------------------- |
+| Create worktree   | No state change | Idempotent - skips if exists       |
+| Read DONE.md      | No state change | Reads again                        |
+| Capture baseline  | No state change | Run from worktree again            |
+| git mv tests      | Some moved      | Skips existing, moves rest         |
+| Verify coverage   | No state change | Runs again (worktree has baseline) |
+| git rm duplicates | Some removed    | Skips already-removed              |
+| git rm old specs  | Some removed    | Skips already-removed              |
 
 </constraints>
