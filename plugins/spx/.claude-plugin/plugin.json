@@ -1,6 +1,6 @@
 {
   "name": "spx",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Spec-driven development: PRDs, ADRs, capabilities, features, stories",
   "author": {
     "name": "Simon Heimlicher"

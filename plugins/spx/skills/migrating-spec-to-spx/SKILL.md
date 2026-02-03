@@ -55,29 +55,36 @@ This skill is referenced by:
 
 ### Per-Story Success
 
-| Criterion                       | How to Verify                                                   |
-| ------------------------------- | --------------------------------------------------------------- |
-| DONE.md exists in worktree      | `cat $WORKTREE_PATH/specs/work/done/.../story-NN/tests/DONE.md` |
-| SPX tests exist                 | `ls spx/.../NN-slug.story/tests/*.test.ts`                      |
-| SPX tests match DONE.md entries | Count tests in DONE.md table vs SPX test file                   |
+| Criterion                           | How to Verify                                                |
+| ----------------------------------- | ------------------------------------------------------------ |
+| SPX tests exist                     | `ls spx/.../NN-slug.story/tests/*.{unit,integration,e2e}.py` |
+| SPX-MIGRATION.md exists             | `cat spx/.../NN-slug.story/SPX-MIGRATION.md`                 |
+| DONE.md does NOT exist in spx/      | `! test -f spx/.../NN-slug.story/tests/DONE.md`              |
+| If DONE.md in worktree: tests match | Count tests in DONE.md table vs SPX test files               |
+
+**Note:** Stories WITHOUT DONE.md in the worktree still get migrated - they're incomplete stories. Migrate all tests found in `specs/.../tests/`. The SPX-MIGRATION.md documents what was found and migrated.
 
 ### Per-Feature Success
 
-| Criterion                            | How to Verify                                   |
-| ------------------------------------ | ----------------------------------------------- |
-| ALL stories in feature migrated      | Every story with DONE.md has SPX tests          |
-| Coverage parity at legacy file level | See concrete example below                      |
-| SPX-MIGRATION.md exists              | `cat spx/.../NN-slug.feature/SPX-MIGRATION.md`  |
-| Legacy tests removed                 | `git status` shows deletions, not modifications |
+| Criterion                            | How to Verify                                            |
+| ------------------------------------ | -------------------------------------------------------- |
+| ALL stories in feature migrated      | Every story in worktree has corresponding SPX story      |
+| ALL stories pass Per-Story Success   | Each story has SPX-MIGRATION.md, no DONE.md in spx/      |
+| Coverage parity at legacy file level | See concrete example below                               |
+| SPX-MIGRATION.md exists at feature   | `cat spx/.../NN-slug.feature/SPX-MIGRATION.md`           |
+| No DONE.md anywhere in spx/ feature  | `! find spx/.../NN-slug.feature -name DONE.md \| grep .` |
+| Legacy tests removed                 | `git status` shows deletions, not modifications          |
 
 ### Per-Capability Success
 
-| Criterion             | How to Verify                                            |
-| --------------------- | -------------------------------------------------------- |
-| ALL features migrated | Every feature passes per-feature criteria                |
-| Legacy specs removed  | `ls specs/work/done/capability-NN_slug/` returns nothing |
-| Tests pass            | `pnpm test` shows 0 failures                             |
-| Validation passes     | `pnpm run validate` succeeds                             |
+| Criterion                            | How to Verify                                           |
+| ------------------------------------ | ------------------------------------------------------- |
+| ALL features migrated                | Every feature passes Per-Feature Success criteria       |
+| SPX-MIGRATION.md exists at cap level | `cat spx/NN-slug.capability/SPX-MIGRATION.md`           |
+| No DONE.md anywhere in spx/ cap      | `! find spx/NN-slug.capability -name DONE.md \| grep .` |
+| Legacy specs removed                 | `ls specs/work/*/capability-NN_slug/` returns nothing   |
+| Tests pass                           | `just test` or `pnpm test` shows 0 failures             |
+| Validation passes                    | `just check` or `pnpm run validate` succeeds            |
 
 ### Concrete Coverage Verification Example
 
@@ -210,6 +217,29 @@ These failures occurred during actual migrations. Avoid them.
 **Why it failed:** Partial state is hard to communicate. SPX-MIGRATION.md wasn't updated mid-feature.
 
 **How to avoid:** Complete entire features before handoff. If you must stop mid-feature, update SPX-MIGRATION.md with explicit "Stories migrated: X, Y. Stories remaining: Z" section.
+
+### Failure 7: Copying DONE.md to spx/ Without Renaming
+
+**What happened:** Agent moved DONE.md to spx/ but kept the filename as DONE.md.
+
+**Why it failed:** DONE.md is the legacy name. In spx/, the corrected record is called SPX-MIGRATION.md.
+
+**How to avoid:**
+
+- Use `git mv` to move AND rename in one operation:
+  ```bash
+  git mv specs/.../tests/DONE.md spx/.../NN-slug.story/SPX-MIGRATION.md
+  ```
+- Then edit SPX-MIGRATION.md to add the corrected record sections (see `<spx_migration_md>`)
+- Verify with: `! find spx/ -name DONE.md | grep .`
+
+### Failure 8: Skipping Stories Without DONE.md
+
+**What happened:** Agent only migrated stories that had DONE.md, skipping "incomplete" stories.
+
+**Why it failed:** DONE.md absence means the story wasn't marked complete - NOT that it should be skipped. The story's tests still exist and need to be migrated.
+
+**How to avoid:** Migrate ALL stories in the capability, regardless of DONE.md presence. For stories without DONE.md, the SPX-MIGRATION.md documents "No completion record found - migrated all tests from specs/.../tests/".
 
 </failure_modes>
 
@@ -557,25 +587,33 @@ tests/integration/status/state.integration.test.ts:
 4. **Capture baseline coverage** - Run tests from worktree to get baseline (worktree is untouched)
 5. **Move tests with `git mv`** to `spx/.../tests/` (preserves history):
    ```bash
-   git mv specs/.../tests/test_foo.py spx/.../tests/foo.unit.test.py
+   git mv specs/.../tests/test_foo.py spx/.../tests/test_foo.unit.py
    ```
    - Rename with level suffix during the move
    - **NEVER copy/rewrite tests** - use `git mv` to preserve history
-6. **Verify coverage matches** - Run moved tests, compare to baseline
-7. **Remove stale duplicates** with `git rm` if tests existed in multiple locations:
+6. **Move DONE.md to SPX-MIGRATION.md** (if DONE.md exists):
+   ```bash
+   git mv specs/.../tests/DONE.md spx/.../NN-slug.story/SPX-MIGRATION.md
+   ```
+   - Then edit SPX-MIGRATION.md to add corrected record sections (see `<spx_migration_md>`)
+   - If no DONE.md exists, create SPX-MIGRATION.md documenting "No completion record found"
+7. **Verify coverage matches** - Run moved tests, compare to baseline
+8. **Remove stale duplicates** with `git rm` if tests existed in multiple locations:
    - Remove from `tests/` if graduated copies exist there
    - **Failure to remove from `tests/` leaves duplicates!**
 
 **The directory location (backlog/doing/done) is irrelevant for migration. Migrate content regardless of which directory it's in.**
 
-### Duplicate Prevention Checklist
+### Post-Migration Checklist
 
-After migration, verify NO tests remain in:
+After migration, verify:
 
-- [ ] `tests/unit/` for this work item
-- [ ] `tests/integration/` for this work item
-- [ ] `tests/e2e/` for this work item
-- [ ] `specs/.../tests/` for this work item
+- [ ] NO tests remain in `tests/unit/` for this work item
+- [ ] NO tests remain in `tests/integration/` for this work item
+- [ ] NO tests remain in `tests/e2e/` for this work item
+- [ ] NO files remain in `specs/.../tests/` (tests moved, DONE.md became SPX-MIGRATION.md)
+- [ ] NO DONE.md exists anywhere in `spx/` (`! find spx/ -name DONE.md | grep .`)
+- [ ] SPX-MIGRATION.md exists for every story that had tests
 
 </migration_workflow>
 
@@ -772,12 +810,15 @@ just test "spx/.../tests/"
 {N} passed in {X}s
 \`\`\`
 
-## Files Removed
+## Files Moved/Removed
 
-Legacy files removed with `git rm`:
+Legacy files and their disposition:
 
-- `specs/.../tests/test_foo.py`
-- `specs/.../tests/DONE.md`
+| Legacy File                   | Action   | Destination                            |
+| ----------------------------- | -------- | -------------------------------------- |
+| `specs/.../tests/test_foo.py` | `git mv` | `spx/.../tests/test_foo.unit.py`       |
+| `specs/.../tests/DONE.md`     | `git mv` | `spx/.../SPX-MIGRATION.md` (this file) |
+| `tests/unit/test_bar.py`      | `git rm` | (duplicate removed)                    |
 ```
 
 ### Failure Mode: Incomplete SPX-MIGRATION.md
@@ -835,14 +876,16 @@ This creates an audit trail that explains discrepancies.
 
 Every operation MUST be reentrant (can be interrupted and resumed):
 
-| Step              | If interrupted  | On restart                         |
-| ----------------- | --------------- | ---------------------------------- |
-| Create worktree   | No state change | Idempotent - skips if exists       |
-| Read DONE.md      | No state change | Reads again                        |
-| Capture baseline  | No state change | Run from worktree again            |
-| git mv tests      | Some moved      | Skips existing, moves rest         |
-| Verify coverage   | No state change | Runs again (worktree has baseline) |
-| git rm duplicates | Some removed    | Skips already-removed              |
-| git rm old specs  | Some removed    | Skips already-removed              |
+| Step                      | If interrupted  | On restart                         |
+| ------------------------- | --------------- | ---------------------------------- |
+| Create worktree           | No state change | Idempotent - skips if exists       |
+| Read DONE.md              | No state change | Reads again (from worktree)        |
+| Capture baseline          | No state change | Run from worktree again            |
+| git mv tests              | Some moved      | Skips existing, moves rest         |
+| git mv DONE→SPX-MIGRATION | Moved or not    | Skips if SPX-MIGRATION.md exists   |
+| Edit SPX-MIGRATION.md     | Partial edit    | Re-edit (worktree has original)    |
+| Verify coverage           | No state change | Runs again (worktree has baseline) |
+| git rm duplicates         | Some removed    | Skips already-removed              |
+| git rm old specs          | Some removed    | Skips already-removed              |
 
 </constraints>
