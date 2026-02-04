@@ -1,109 +1,160 @@
 ---
 name: coding-python
-description: Write Python code that's tested and type-safe. Use when coding Python or implementing features.
-allowed-tools: Read, Write, Bash, Glob, Grep, Edit, Skill
+description: Write Python implementation code to pass existing tests. Use when implementing code after tests are written.
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
-# Python Expert Coder
+<objective>
+Write implementation code that makes existing tests pass. Given a story spec and failing tests, produce production-grade Python code.
 
-You are an **expert Python developer**. Your role is to translate specifications into production-grade, type-safe, tested code—and to fix issues when the reviewer rejects your work.
+**This skill WRITES implementation. Tests should already exist and be failing.**
 
-> **PREREQUISITES:**
->
-> 1. Read `/testing` for methodology (5 stages, 5 factors, 7 exceptions)
-> 2. Read `/standardizing-python-testing` for Python testing standards
-> 3. Read `/standardizing-python` for code standards (type annotations, named constants, naming conventions)
+</objective>
 
-## Foundational Stance
+<quick_start>
+**Input:** Story spec path with existing failing tests
 
-> **CONSULT TESTING FIRST. NO MOCKING. DEPENDENCY INJECTION. BEHAVIOR ONLY.**
+**Output:** Implementation code that makes tests pass
 
-- **BEFORE writing any test**, consult `/testing` for methodology, `/testing-python` for patterns
-- Check the ADR for assigned testing levels—implement tests at those levels
-- Use **dependency injection**, NEVER mocking frameworks
-- Test **behavior** (what the code does), not implementation (how it does it)
-- You do NOT have authority to approve your own work—that's the Reviewer's job
+**Workflow:**
 
----
+1. Read story spec and failing tests
+2. Write implementation code (GREEN phase)
+3. Refactor while keeping tests green (REFACTOR phase)
+4. Self-verify (types, lint)
 
-## Orchestration Protocol
+</quick_start>
 
-You are the **workhorse** of the autonomous loop. You find work, implement it, get it reviewed, and report back.
+<prerequisites>
 
-### Prime Directive
+Before invoking this skill:
 
-> **FIND WORK. IMPLEMENT. GET REVIEWED. REPORT RESULT.**
+1. **Tests must exist** - Written by `/testing-python`
+2. **Tests must fail** - RED phase complete
+3. **Spec must be loaded** - Context from `/understanding-specs`
 
-You must complete ALL work items before returning DONE. A single completed item is not the end.
+If tests don't exist, invoke `/testing-python` first.
 
-### Main Loop
+</prerequisites>
 
-```
-1. Run `spx spec status` to see work item overview
-2. Run `spx spec next` to get the next work item
-3. IF no items → return DONE
-4. IF no ADRs in scope → invoke /architecting-python
-5. IMPLEMENT code + tests (existing Implementation Protocol)
-6. LOOP (max 10 iterations):
-    a. Invoke /reviewing-python
-    b. MATCH verdict:
-        APPROVED → break (reviewer committed)
-        REJECTED → remediate, continue loop
-        CONDITIONAL → add noqa comments, continue loop
-        ABORT → invoke /architecting-python, restart implementation
-        BLOCKED → return BLOCKED
-7. Run `spx spec status` to check if more items
-8. IF items remain → return CONTINUE
-9. IF no items → return DONE
+<workflow>
+
+## Step 1: Understand the Spec and Tests
+
+Read the story spec and existing tests:
+
+```bash
+# Read story spec
+cat {story_path}/{story_name}.story.md
+
+# Read failing tests
+cat {story_path}/tests/*.py
+
+# Run tests to see current failures
+uv run --extra dev pytest {story_path}/tests/ -v
 ```
 
-### Return Value Contract
+Understand:
 
-You MUST return one of these values:
+- What behaviors the tests verify
+- What interfaces are expected (function signatures, classes)
+- What the tests import (where implementation should live)
 
-| Return     | Meaning                      | When                                         |
-| ---------- | ---------------------------- | -------------------------------------------- |
-| `CONTINUE` | Item done, more items remain | After APPROVED, `spx spec status` shows more |
-| `DONE`     | All items complete           | `spx spec status` shows no OPEN/IN_PROGRESS  |
-| `BLOCKED`  | Cannot proceed               | Reviewer returned BLOCKED                    |
+## Step 2: Write Implementation (GREEN)
 
-### Phase -1: Find Next Work Item
+Write the minimal implementation that makes tests pass.
 
-**Before any implementation**, assess the project state:
-
-1. **Run `spx spec status`** to see work item overview
-2. **Run `spx spec next`** to get the next work item path
-3. **Check item counts**:
-   - If no items → return `DONE`
-   - Otherwise, continue
-4. **Store the selected item path** for use in implementation
-
-### Phase -0.5: Ensure Architecture
-
-Before implementing, verify ADRs exist for the work item's scope:
-
-1. **Check for ADRs** (interleaved in containers):
-   - `spx/NN-{slug}.adr.md` (product-level)
-   - `spx/NN-{slug}.capability/NN-{slug}.adr.md` (capability-level)
-   - `spx/.../NN-{slug}.feature/NN-{slug}.adr.md` (feature-level)
-
-2. **If ADRs are missing or don't cover this work item**:
-   - Invoke `/architecting-python` with the feature spec and work item spec
-   - Wait for ADRs to be created
-   - Continue to implementation
-
----
-
-## MANDATORY: Code Patterns
-
-These patterns are enforced by the reviewer. Violations will be REJECTED.
-
-### Constants
-
-All literal values (strings, numbers) must be module-level constants:
+**Code standards (per `/standardizing-python`):**
 
 ```python
-# ❌ REJECTED: Magic values inline
+# ✅ Type annotations on ALL functions
+def process_order(order: Order, config: Config) -> OrderResult: ...
+
+
+# ✅ Named constants for all literals
+MIN_ORDER_VALUE = 10
+MAX_ITEMS = 100
+
+
+def validate_order(order: Order) -> ValidationResult:
+    if order.total < MIN_ORDER_VALUE:
+        return ValidationResult(ok=False, error="Order below minimum")
+    ...
+
+
+# ✅ Dependency injection for external dependencies
+@dataclass
+class OrderProcessorDeps:
+    run_command: CommandRunner
+    get_env: Callable[[str], str | None] = os.environ.get
+
+
+def process_order(order: Order, deps: OrderProcessorDeps) -> OrderResult: ...
+```
+
+**Import hygiene:**
+
+```python
+# ✅ Absolute imports for infrastructure
+from myproject.shared.config import Config
+from myproject_testing.harnesses import PostgresHarness
+
+# ✅ Relative imports only for same-package modules
+from .models import Order
+from . import validators
+
+# ❌ Deep relative imports (use absolute)
+from .....tests.harnesses import ...  # WRONG
+```
+
+## Step 3: Run Tests (Verify GREEN)
+
+```bash
+# Run tests - they should now pass
+uv run --extra dev pytest {story_path}/tests/ -v
+
+# All tests should pass
+# If any fail, fix implementation and re-run
+```
+
+## Step 4: Refactor (Keep GREEN)
+
+Clean up the implementation while keeping tests green:
+
+1. **Extract constants** - Any repeated literals become module-level constants
+2. **Simplify** - Remove unnecessary complexity
+3. **Clarify** - Rename for clarity
+4. **DRY** - Extract shared logic
+
+After each change, run tests to ensure they still pass.
+
+## Step 5: Self-Verify
+
+Run all verification tools:
+
+```bash
+# Type checking
+uv run --extra dev mypy src/
+
+# Linting
+uv run --extra dev ruff check src/
+
+# Tests one more time
+uv run --extra dev pytest {story_path}/tests/ -v
+```
+
+**All must pass before declaring complete.**
+
+</workflow>
+
+<code_patterns>
+
+## Mandatory Patterns
+
+### Named Constants
+
+```python
+# ❌ REJECTED: Magic values
 def validate_score(score: int) -> bool:
     return 0 <= score <= 100
 
@@ -117,27 +168,10 @@ def validate_score(score: int) -> bool:
     return MIN_SCORE <= score <= MAX_SCORE
 ```
 
-**Share constants between code and tests** — tests import from the module under test:
-
-```python
-# src/scoring.py
-MIN_SCORE = 0
-MAX_SCORE = 100
-
-# tests/test_scoring.py
-from src.scoring import MIN_SCORE, MAX_SCORE
-
-
-def test_rejects_below_minimum():
-    assert not validate_score(MIN_SCORE - 1)
-```
-
 ### Dependency Injection
 
-External dependencies must be injected, not imported directly:
-
 ```python
-# ❌ REJECTED: Direct import
+# ❌ REJECTED: Direct import of external dependency
 import subprocess
 
 
@@ -148,362 +182,107 @@ def sync_files(src: str, dest: str) -> bool:
 
 # ✅ REQUIRED: Dependency injection
 from dataclasses import dataclass
-from typing import Callable
+from typing import Protocol
+
+
+class CommandRunner(Protocol):
+    def run(self, cmd: list[str]) -> tuple[int, str, str]: ...
 
 
 @dataclass
 class SyncDeps:
-    run_command: Callable[[list[str]], tuple[int, str, str]]
+    run_command: CommandRunner
 
 
 def sync_files(src: str, dest: str, deps: SyncDeps) -> bool:
-    returncode, _, _ = deps.run_command(["rsync", src, dest])
+    returncode, _, _ = deps.run_command.run(["rsync", src, dest])
     return returncode == 0
 ```
 
----
-
-## MANDATORY: Consult Testing Skills First
-
-Before writing any test, you MUST:
-
-1. **Check the ADR** for the Testing Strategy section and assigned levels
-2. **Read** `/testing` for methodology and level determination
-3. **Read** `/testing-python` for Python implementation patterns
-4. **Use dependency injection** instead of mocking (see patterns above)
-5. **Test behavior** — observable outcomes, not implementation details
-6. **Justify escalation** — if you need a higher level than ADR specifies, document why
-
-### Testing Levels Quick Reference
-
-| Level           | When to Use                  | Key Pattern           |
-| --------------- | ---------------------------- | --------------------- |
-| 1 (Unit)        | Pure logic, command building | Dependency injection  |
-| 2 (Integration) | Real binaries, Docker/VM     | Test harnesses        |
-| 3 (E2E)         | Real services, OAuth         | Test account fixtures |
-
-### NO MOCKING — Use Dependency Injection Instead
+### Type Annotations
 
 ```python
-# ❌ FORBIDDEN: Mocking
-@patch("subprocess.run")
-def test_sync(mock_run):
-    mock_run.return_value = Mock(returncode=0)
-    result = sync_files(src, dest)
-    mock_run.assert_called_once()  # Tests implementation, not behavior
-
-
-# ✅ REQUIRED: Dependency Injection
-def test_sync():
-    deps = SyncDependencies(
-        run_command=lambda cmd: (0, "success", ""),  # Controlled, not mocked
-    )
-    result = sync_files(src, dest, deps)
-    assert result.success  # Tests behavior
-```
-
----
-
-## Two Modes of Operation
-
-You operate in one of two modes depending on your input:
-
-| Input                            | Mode               | Protocol                             |
-| -------------------------------- | ------------------ | ------------------------------------ |
-| Spec (feature spec, ADR)         | **Implementation** | Follow Implementation Protocol below |
-| Rejection feedback from reviewer | **Remediation**    | Follow Remediation Protocol below    |
-
----
-
-## Implementation Protocol
-
-Execute these phases IN ORDER.
-
-### Phase 0: Understand the Spec
-
-Before writing any code:
-
-1. **Read the specification** completely
-2. **Identify deliverables**: What files, functions, classes need to be created?
-3. **Identify interfaces**: What are the function signatures, input/output types?
-4. **Identify edge cases**: What error conditions must be handled?
-5. **Identify test scenarios**: What tests will prove correctness?
-
-### Phase 1: Write Tests First (TDD)
-
-For each function/class to implement:
-
-1. **Create test file** in the location specified by the project's CLAUDE.md or ADRs
-2. **Write test cases** following debuggability progression
-3. **Run tests** to confirm they fail (red phase)
-
-#### Debuggability-First Test Organization
-
-> **See `/standardizing-python`** for mandatory code standards: named constants, type annotations, naming conventions.
-
-**Test Progression** — structure tests in 4 parts:
-
-1. **Named Typical Cases** — clear, named constants for happy path
-2. **Named Edge Cases** — boundary conditions with named constants
-3. **Systematic Coverage** — parametrized tests using the same constants
-4. **Property-Based Testing** — Hypothesis for invariant checking
-
-**Part 4: Property-Based Testing** (Hypothesis):
-
-```python
-@given(st.text(min_size=0, max_size=100))
-def test_never_raises_unexpected_exception(self, input_str: str) -> None:
-    try:
-        result = process(input_str)
-        assert isinstance(result, int)
-    except ValueError:
-        pass  # Expected for invalid inputs
-```
-
-### Phase 2: Implement Code
-
-Write implementation that makes tests pass.
-
-> **See `/standardizing-python`** for mandatory standards: type annotations on ALL functions (including `-> None`), lowercase argument names, avoiding builtin shadowing.
-
-**Modern Python Syntax** (Python 3.10+):
-
-```python
+# ✅ All functions have full type annotations
 def get_user(user_id: int) -> User | None:
     users: list[User] = fetch_users()
     return next((u for u in users if u.id == user_id), None)
+
+
+# ✅ -> None on functions that don't return
+def log_event(event: Event) -> None:
+    logger.info(f"Event: {event}")
 ```
 
-**Dependency Injection**:
+### Modern Python (3.10+)
 
 ```python
-# GOOD - Dependencies as parameters
-def sync_files(source: Path, dest: Path, logger: Logger) -> SyncResult:
-    logger.info(f"Syncing {source} to {dest}")
+# ✅ Union types with |
+def find_user(id: int) -> User | None: ...
+
+
+# ✅ list, dict lowercase (not List, Dict)
+users: list[User] = []
+config: dict[str, str] = {}
+
+# ✅ Match statements
+match command:
+    case "start":
+        start_server()
+    case "stop":
+        stop_server()
+    case _:
+        raise ValueError(f"Unknown command: {command}")
 ```
 
-**Import Hygiene**:
+</code_patterns>
 
-Before writing any import, ask: *"Is this a module-internal file (same package, moves together) or infrastructure (tests/, lib/, shared/)?"*
+<output_format>
 
-```python
-# WRONG: Deep relative imports to infrastructure — will REJECT in review
-from .....tests.harnesses import create_fixture
-from ...shared.config import Config
-from ....lib.logging import Logger
-
-# WRONG: sys.path manipulation
-import sys
-
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-# RIGHT: Use absolute imports with proper packaging
-from myproject_testing.harnesses import create_fixture
-from myproject.shared.config import Config
-from myproject.lib.logging import Logger
-```
-
-**Depth Rules:**
-
-- `from . import sibling` — ✅ OK (same package, module-internal)
-- `from .. import parent` — ⚠️ Review (is it truly module-internal?)
-- `from ... import` or deeper — ❌ REJECT (use absolute import)
-
-**Fix import issues with proper packaging:**
-
-```bash
-# Install project in editable mode (includes dev dependencies)
-uv pip install -e ".[dev]"
-```
-
-**NEVER use path hacks for imports:**
-
-```python
-# ❌ FORBIDDEN: Path manipulation
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-# ❌ FORBIDDEN: Relative path traversal for infrastructure
-from .....tests.harnesses import create_fixture
-
-# ✅ REQUIRED: Proper packaging
-from myproject_testing.fixtures import create_fixture  # Installed package
-```
-
-If tests can't import shared fixtures/harnesses, the project needs a `{project}_testing/` package. See the `/architecting-python` skill for the pattern.
-
-### Phase 3: Self-Verification
-
-Before declaring completion, verify the test environment and run ALL verification tools.
-
-#### Step 1: Verify Test Environment (CRITICAL)
-
-```bash
-# Check pytest is from project venv, NOT system
-uv run which pytest
-# Expected: /path/to/project/.venv/bin/pytest
-# If shows /opt/homebrew/bin/pytest or similar → WRONG, fix first
-
-# If wrong, install dev dependencies:
-uv pip install -e ".[dev]"
-
-# Verify again
-uv run which pytest  # Must show .venv/bin/pytest
-```
-
-**Why this matters**: System pytest uses a different Python without your project's dependencies. Tests will fail with confusing "ModuleNotFoundError" even when packages are installed.
-
-#### Step 2: Verify Test Utilities Importable
-
-If project has `{project}_testing/` package:
-
-```bash
-uv run python -c "from {project}_testing.fixtures import ...; print('OK')"
-```
-
-If this fails, check `pyproject.toml` has both packages and re-run `uv pip install -e ".[dev]"`.
-
-#### Step 3: Run Verification Tools
-
-```bash
-# Type checking
-uv run mypy {source_dir}
-
-# Linting
-uv run ruff check {source_dir}
-
-# Tests (use project's test command if available)
-just check  # or: uv run pytest {test_dirs} --ignore=legacy/
-```
-
-**Expected**: All pass. Coverage ≥80% for new code.
-
-### Phase 4: Submit for Review
-
-Invoke `/reviewing-python` with the work item path.
-
----
-
-## Remediation Protocol
-
-When your input is **rejection feedback** from the reviewer.
-
-### Phase R0: Parse the Rejection
-
-1. **Categorize issues**:
-   - **Blocking**: Must fix (type errors, security, test failures)
-   - **Conditional**: Need noqa comments with justification
-2. **Identify affected files**: List every file:line mentioned
-3. **Check for patterns**: Multiple similar issues may have a common root cause
-
-### Phase R1: Understand Root Cause
-
-Before fixing, understand WHY the code was rejected:
-
-- If 5 type errors stem from one wrong return type, fix the return type
-- If tests fail because of a logic error, fix the logic (not the test assertions)
-
-### Phase R2: Apply Fixes
-
-**Type Errors**:
-
-```python
-# WRONG - Suppressing without understanding
-result = some_function()  # type: ignore
-
-# RIGHT - Fix the actual type
-result: ExpectedType = some_function()
-```
-
-**Security Issues**:
-
-```python
-# WRONG - Suppressing blindly
-subprocess.run(cmd, shell=True)  # noqa: S602
-
-# RIGHT - Remove the vulnerability
-subprocess.run(cmd_list)  # No shell=True
-```
-
-### Phase R3: Self-Verification
-
-Same as Phase 3. All tools must pass before re-submitting.
-
-### Phase R4: Submit for Re-Review
-
-Re-invoke `/reviewing-python`.
-
----
-
-## Review Loop Protocol
-
-### Handling Reviewer Verdicts
-
-| Verdict         | Action                                                             |
-| --------------- | ------------------------------------------------------------------ |
-| **APPROVED**    | Reviewer committed. Run `spx spec status` to check for more items. |
-| **REJECTED**    | Parse feedback, remediate issues, re-invoke `/reviewing-python`.   |
-| **CONDITIONAL** | Add noqa comments per feedback, re-invoke `/reviewing-python`.     |
-| **BLOCKED**     | Return `BLOCKED` to orchestrator.                                  |
-| **ABORT**       | Invoke `/architecting-python` to revise ADRs, restart.             |
-
-### Max Iterations
-
-If the coder↔reviewer loop exceeds **10 iterations**, return `BLOCKED`.
-
----
-
-## Final Output Format
-
-### On APPROVED (more items remain)
-
-```markdown
-## Result: CONTINUE
-
-### Completed Work Item
-
-{work_item_path}
-
-### Commit
-
-{commit_hash} - {commit_message}
-
-### Next
-
-More work items remain. Run `/autopython` again to continue.
-```
-
-### On APPROVED (no more items)
+When implementation is complete, report:
 
 ````markdown
-## Result: DONE
+## Implementation Complete
 
-### Summary
+### Story: {story_path}
 
-All work items have been implemented and approved.
+### Files Created/Modified
 
-### Verification Command
+| File                      | Action   | Description                  |
+| ------------------------- | -------- | ---------------------------- |
+| `src/mymodule/handler.py` | Created  | Order handler implementation |
+| `src/mymodule/models.py`  | Modified | Added Order dataclass        |
+
+### Verification
 
 ```bash
-uv run --extra dev pytest tests/ -v
+$ uv run --extra dev pytest {story_path}/tests/ -v
+# All tests passing
+
+$ uv run --extra dev mypy src/
+# No errors
+
+$ uv run --extra dev ruff check src/
+# No issues
 ```
 ````
 
-````
-### On BLOCKED
+### Ready for Review
 
-```markdown
-## Result: BLOCKED
+Implementation complete. Ready for `/reviewing-python`.
 
-### Work Item
-{work_item_path}
+```
+</output_format>
 
-### Reason
-{infrastructure issue or max iterations}
-````
+<success_criteria>
 
----
+Task is complete when:
 
-*Remember: Your code will face an adversarial reviewer with zero tolerance. Write code that will survive that scrutiny.*
+- [ ] All tests in `{story}/tests/` pass
+- [ ] Type checking passes (`mypy`)
+- [ ] Linting passes (`ruff check`)
+- [ ] Code uses named constants (no magic values)
+- [ ] Code uses dependency injection (no direct external imports)
+- [ ] All functions have type annotations
+
+</success_criteria>
+```

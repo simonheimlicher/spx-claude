@@ -4,234 +4,246 @@ description: Implement Python stories in a feature through specs, testing, codin
 ---
 
 <objective>
-Autonomous Python feature implementer. Implements stories in a feature one after another, coordinating specs, testing, coding, and review skills in a strict sequence until all stories are complete.
+Orchestrate Python feature implementation by invoking skills in sequence for each story. This is a 4-step loop: write tests → review tests → implement → review implementation.
 </objective>
 
-<essential_principles>
-**NO MOCKING. BEHAVIOR TESTING. CONSTANTS PATTERN. FULL BSP PATHS. FOLLOW THE STRICT SEQUENCE.**
-
-- **Strict Sequence of Skills:** Follow the workflow sequence **exactly** - no skipping steps
-- **Full BSP Paths ALWAYS:** BSP numbers are sibling-unique, not globally unique. ALWAYS use full paths like `21-core-cli.capability/54-commands.feature/54-something.story`, never bare names like `54-something.story`
-- **Behavior-Driven Development:** Tests are written first to verify **behavior**, never implementation, then code is written to (i) validate that the tests are appropriate and (ii) pass them. Finally code and tests are refactored until they pass reviewing skills without reservation
-- **Do Not Repeat Yourself (DRY):** Do not use any literal string multiple times. Define **constants in the implementation,** then check for constants in tests (not literal strings)
-- **Mandatory Review Quality Gate:** Each story and its tests must pass review before proceeding to the next
-
-</essential_principles>
-
 <quick_start>
-**Given a feature with stories to implement:**
+**Input:** Feature or story path
 
-1. Run `spx spec next` to identify the next incomplete story
-2. Run the 5-step implementation cycle
-3. Repeat until `spx spec next` returns no more work items
+**Workflow per story:**
 
 ```text
-Story → Specs → Test Design → Implement → Review → Remediate → Next Story
-         ↓          ↓           ↓          ↓          ↓
-   understanding  testing    coding   manual     reviewing
-      -specs      -python    -python  review     -python
+Story → Step 1 → Step 2 → Step 3 → Step 4 → Next Story
+          │         │         │         │
+      /testing   /reviewing  /coding   /reviewing
+       -python    -python     -python   -python
+                  -tests
 ```
 
-**CLI commands for status:**
-
-- `spx spec next` - Get next work item (respects BSP ordering)
-- `spx spec status --format table` - View project status
+1. **Load spec** - Invoke `/understanding-specs` on the story
+2. **Write tests** - Invoke `/testing-python` → tests written
+3. **Review tests** - Invoke `/reviewing-python-tests` → APPROVE/REJECT
+4. **Implement** - Invoke `/coding-python` → code written
+5. **Review code** - Invoke `/reviewing-python` → APPROVE/REJECT
+6. **Next story** - Repeat until feature complete
 
 </quick_start>
 
 <workflow>
 
-## Part A: Story Implementation
+## Step 0: Identify Work Items
 
-**For each story in the feature:**
+Determine which stories to implement:
 
-**Step 1: Load Story Context**
-Invoke `/understanding-specs` on the story to load:
+```bash
+# Option A: Get next story automatically
+spx spec next
 
-- Story specification
+# Option B: List stories in a feature
+ls {feature_path}/*-*.story/
+
+# Option C: Specific story provided by user
+# Use the provided story path directly
+```
+
+## Step 1: Load Story Context
+
+For each story, invoke `/understanding-specs`:
+
+```text
+/understanding-specs {story_path}
+```
+
+This loads:
+
+- Story specification (outcomes, acceptance criteria)
 - Parent feature/capability requirements
 - Relevant ADRs and constraints
 
-If context loading fails, STOP.
+**If context fails to load:** STOP. Ask user for guidance.
 
-Use the `AskUserQuestion` tool to discover with the user's help what the missing document should contain. Then use `/managing-specs` to create missing specifications, then restart this workflow.
+## Step 2: Write Tests
 
-**Step 2: Design Tests**
-Invoke `/testing` for methodology (5 stages, 5 factors, 7 exceptions), then `/testing-python` for Python patterns.
+Invoke `/testing-python` with the story path:
 
-**MANDATORY**: No mocking, behavior testing, DRY using constants pattern.
+```text
+/testing-python
+```
 
-**Step 3: Implement**
-Invoke `/coding-python` with the story spec to:
+The skill will:
 
-- **RED phase:** Write tests following the test design
-- **GREEN phase:** Write high quality production code
-- **REFACTOR phase:** Run type checking and linting. Refactor the implementation code and tests. Always ensure all tests pass
+- Read story outcomes (Gherkin)
+- Determine test levels per `/testing` methodology
+- Write test files to `{story}/tests/`
+- Run tests to confirm they fail (RED)
 
-**Step 4: Manual Review**
-Before invoking the automated reviewer, manually verify:
+**Output:** Test files created, failing as expected.
 
-- [ ] Tests verify the correct behaviors at the correct level using adequate test harnesses for integration and e2e tests
-- [ ] Code matches story requirements
-- [ ] No missing edge cases
-- [ ] Code is clean and readable
-- [ ] No obvious issues that might fail review
+## Step 3: Review Tests
 
-Fix any issues found before proceeding.
+Invoke `/reviewing-python-tests`:
 
-**Step 5: Automated Review**
-Invoke `/reviewing-python` to review the implementation.
+```text
+/reviewing-python-tests
+```
 
-**If review identifies issues:**
+The reviewer will check:
 
-1. Use `/coding-python` to fix issues
+- Evidentiary value (can tests pass while outcome fails?)
+- Spec compliance (all outcomes covered?)
+- Standards compliance (markers, types, no mocking)
+
+**If REJECT:**
+
+1. Fix issues identified by reviewer
+2. Re-invoke `/reviewing-python-tests`
+3. Repeat until APPROVE
+
+**If APPROVE:** Proceed to Step 4.
+
+## Step 4: Implement
+
+Invoke `/coding-python`:
+
+```text
+/coding-python
+```
+
+The skill will:
+
+- Read failing tests
+- Write implementation code
+- Run tests until GREEN
+- Self-verify (types, lint)
+
+**Output:** Implementation complete, tests passing.
+
+## Step 5: Review Implementation
+
+Invoke `/reviewing-python`:
+
+```text
+/reviewing-python
+```
+
+The reviewer will check:
+
+- Code quality (constants, DI, types)
+- Spec compliance
+- Security, performance
+
+**If REJECT:**
+
+1. Fix issues identified by reviewer
 2. Re-invoke `/reviewing-python`
-3. Repeat until the reviewer approves
+3. Repeat until APPROVE
 
-**If review approves:**
+**If APPROVE:** Story is complete.
 
-- Story is complete
-- Proceed to next story
+## Step 6: Next Story
 
-**Step 6: Next Story**
 Return to Step 1 with the next story in the feature.
 
-Continue until all stories in the feature are implemented and approved.
-
----
-
-## Part B: Feature Completion
-
-**After ALL stories in a feature are approved**, complete the feature:
-
-**Step 7: Feature-Level Tests**
-
-1. **Read the feature spec** to find `## Outcomes` section with Test Files tables
-2. **Check for integration tests** (Level 2 harness references)
-3. **If Level 2 tests are specified:**
-   - Implement each test following the spec's Gherkin
-   - Tests go in the feature's `tests/` directory with `test_*.level_2.py` naming
-   - Use real infrastructure via test harnesses (no mocking)
-   - Run tests: `uv run --extra dev pytest spx/{capability}/{feature}/tests/ -v`
-4. **If no Level 2 tests specified:** Feature uses Level 1 only (documented in Test Strategy section)
-
-**Step 8: Commit Feature Outcomes**
-
-Run `spx spx commit` to update the feature's outcomes.yaml:
-
-- Validates all tests in `spx/{capability}/{feature}/tests/` pass
-- Records `spec_blob` and `test_blob` SHAs
-- Verifies child story outcomes.yaml files are current
-
-**Step 9: Next Feature**
-Return to Part A, Step 1 with the first story of the next feature.
-
-Continue until all features in the capability are implemented.
-
----
-
-## Part C: Capability Completion
-
-**After ALL features in a capability are approved**, complete the capability:
-
-**Step 10: Capability-Level Tests**
-
-1. **Read the capability spec** to find `## Outcomes` section with Test Files tables
-2. **Check for E2E tests** (Level 3 harness references)
-3. **If Level 3 tests are specified:**
-   - Implement each test following the spec's Gherkin
-   - Tests go in the capability's `tests/` directory with `test_*.level_3.py` naming
-   - Use real credentials and services (full user workflows)
-   - Run tests: `uv run --extra dev pytest spx/{capability}/tests/ -v`
-4. **If no Level 3 tests specified:** Capability uses Level 1-2 only (documented in Test Strategy section)
-
-**Step 11: Commit Capability Outcomes**
-
-Run `spx spx commit` to update the capability's outcomes.yaml:
-
-- Validates all tests in `spx/{capability}/tests/` pass
-- Records `spec_blob` and `test_blob` SHAs
-- Verifies child feature outcomes.yaml files are current
-- Capability is complete when outcomes.yaml is valid and all children are passing
+Continue until all stories are implemented and approved.
 
 </workflow>
 
-<skill_invocations>
-**Skills this orchestrator invokes:**
+<skill_sequence>
 
-| Skill                  | Purpose                             | When                 |
-| ---------------------- | ----------------------------------- | -------------------- |
-| `/understanding-specs` | Load story context and requirements | Start of each story  |
-| `/testing`             | Testing methodology                 | After context loaded |
-| `/testing-python`      | Python implementation patterns      | After methodology    |
-| `/coding-python`       | Implement code and tests            | After test design    |
-| `/reviewing-python`    | Automated code review               | After implementation |
+| Step | Skill                     | Purpose      | Output                  |
+| ---- | ------------------------- | ------------ | ----------------------- |
+| 1    | `/understanding-specs`    | Load context | Spec loaded             |
+| 2    | `/testing-python`         | Write tests  | Test files (failing)    |
+| 3    | `/reviewing-python-tests` | Review tests | APPROVE/REJECT          |
+| 4    | `/coding-python`          | Implement    | Code files (tests pass) |
+| 5    | `/reviewing-python`       | Review code  | APPROVE/REJECT          |
 
-**Invocation syntax (ALWAYS use full paths):**
+**Rejection loops:** Steps 3 and 5 may loop until APPROVE.
 
-```text
-# ✅ CORRECT: Full path
-/understanding-specs 21-core-cli.capability/54-commands.feature/54-run.story
-
-# ❌ WRONG: Bare story name (ambiguous)
-/understanding-specs 54-run.story
-```
-
-</skill_invocations>
+</skill_sequence>
 
 <progress_tracking>
-**Track progress through the capability (ALWAYS use full paths):**
+
+Track progress through the feature:
 
 ```text
-21-core-cli.capability/
-├── 54-commands.feature/
-│   ├── 10-init.story/     [outcomes.yaml ✓] All tests passing
-│   ├── 20-build.story/    [outcomes.yaml ✓] All tests passing
-│   ├── 30-run.story/      [→] In Progress (Step 3)
-│   └── 40-test.story/     [pending] Not started
-│   └── outcomes.yaml           [pending] Commit after all stories pass
-├── 65-config.feature/
-│   └── (stories pending)
-│   └── outcomes.yaml           [pending]
-└── outcomes.yaml               [pending] Commit after all features pass
+{feature_path}/
+├── 10-first.story/      [✓] Tests approved, code approved
+├── 20-second.story/     [→] In Progress (Step 4: implementing)
+├── 30-third.story/      [pending] Not started
+└── 40-fourth.story/     [pending] Not started
 ```
 
 **Legend:**
 
-- `[outcomes.yaml ✓]` = All tests passing, outcomes.yaml valid
-- `[→]` = In progress
-- `[pending]` = Not started or tests not passing
-- Tests live in each container's `tests/` directory
-- Level indicated by test filename suffix (`test_*.level_1.py`, `test_*.level_2.py`, `test_*.level_3.py`)
+- `[✓]` = Story complete (tests + code approved)
+- `[→]` = In progress (show current step)
+- `[pending]` = Not started
 
-Update this tracking as you complete each work item.
+Update tracking after each story.
 
 </progress_tracking>
 
+<output_format>
+
+When feature is complete, report:
+
+````markdown
+## Feature Implementation Complete
+
+### Feature: {feature_path}
+
+### Stories Implemented
+
+| Story           | Tests      | Code       | Status   |
+| --------------- | ---------- | ---------- | -------- |
+| 10-first.story  | ✓ Approved | ✓ Approved | Complete |
+| 20-second.story | ✓ Approved | ✓ Approved | Complete |
+| 30-third.story  | ✓ Approved | ✓ Approved | Complete |
+
+### Verification
+
+```bash
+$ uv run --extra dev pytest {feature_path}/ -v
+# All tests passing
+
+$ uv run --extra dev mypy src/
+# No errors
+```
+````
+
+### Next Steps
+
+Feature complete. Ready for feature-level integration tests (if specified in feature spec).
+
+```
+</output_format>
+
+<error_handling>
+
+**Test review fails repeatedly (3+ attempts):**
+→ Stop and report issues to user for guidance
+
+**Code review fails repeatedly (3+ attempts):**
+→ Stop and report issues to user for guidance
+
+**Missing ADRs:**
+→ Invoke `/architecting-python` before continuing
+
+**Spec not found:**
+→ Stop and ask user for correct path
+
+</error_handling>
+
 <success_criteria>
 
-## Story Complete
+Feature is complete when:
 
-- [ ] Story passed approval by `/reviewing-python`
-- [ ] Tests co-located in `spx/{capability}/{feature}/{story}/tests/`
-- [ ] `spx spx commit` generates valid outcomes.yaml
-
-## Feature Complete
-
-- [ ] All child story outcomes.yaml files are valid
-- [ ] Feature-level integration tests implemented (if specified in spec)
-- [ ] `spx spx commit` generates valid feature outcomes.yaml
-- [ ] All tests pass (`uv run --extra dev pytest spx/{capability}/{feature}/ -v`)
-- [ ] Type checking passes (`uv run --extra dev mypy src/`)
-- [ ] Linting passes (`uv run --extra dev ruff check src/`)
-
-## Capability Complete
-
-- [ ] All child feature outcomes.yaml files are valid
-- [ ] Capability-level E2E tests implemented (if specified in spec)
-- [ ] `spx spx commit` generates valid capability outcomes.yaml
-- [ ] All tests pass at all levels
-
-Implementation quality (no mocking, constants pattern) is verified by `/reviewing-python`.
+- [ ] All stories have tests approved by `/reviewing-python-tests`
+- [ ] All stories have code approved by `/reviewing-python`
+- [ ] All tests pass: `uv run --extra dev pytest {feature}/`
+- [ ] Type checking passes: `uv run --extra dev mypy src/`
+- [ ] Linting passes: `uv run --extra dev ruff check src/`
 
 </success_criteria>
+```

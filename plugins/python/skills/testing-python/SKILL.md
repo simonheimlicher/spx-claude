@@ -1,522 +1,229 @@
 ---
 name: testing-python
-description: Python-specific testing patterns with dependency injection and real infrastructure. Use when testing Python code or writing Python tests.
-allowed-tools: Read, Bash, Glob, Grep, Write, Edit
+description: Write Python tests for a story spec. Use when writing tests for Python code, before implementation.
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 <objective>
-Provide Python-specific implementations for testing decisions made by the `/testing` router. This skill shows HOW to implement tests in Python—the router determines WHAT to test and at WHAT level.
+Write test files for a story specification. Given a story spec with Gherkin outcomes, produce actual test files that verify those outcomes at the appropriate test levels.
+
+**This skill WRITES tests. It does not just design or plan.**
+
 </objective>
 
 <quick_start>
-**PREREQUISITE**: Run through `/testing` first to determine test level and approach.
+**Input:** Story spec path (e.g., `spx/01-capability/02-feature/21-story.story/`)
 
-1. Read `/testing` for methodology (5 stages, 5 factors, 7 exceptions)
-2. Mentally apply to your context
-3. Consult `/standardizing-python-testing` for standards (property-based, factories, markers)
-4. Use this skill for Python-specific implementation patterns
+**Output:** Test files written to `{story}/tests/` directory
 
-When providing insights to users, cite sources:
+**Workflow:**
 
-- "Per /testing Stage 2 Factor 2, database dependency requires Level 2"
-- "Per /standardizing-python-testing, parsers MUST have property-based tests"
+1. Read the story spec to understand outcomes
+2. Consult `/testing` methodology (5 stages) to determine test levels
+3. Reference `/standardizing-python-testing` for Python patterns
+4. Write test files that verify each outcome
+5. Run tests to confirm they fail (RED phase)
 
 </quick_start>
 
-<router_to_python_mapping>
-After running through the `/testing` router, use this mapping:
+<workflow>
 
-| Router Decision                                 | Python Implementation                          |
-| ----------------------------------------------- | ---------------------------------------------- |
-| **Stage 2 → Level 1**                           | pytest + temp dirs + dataclasses for DI        |
-| **Stage 2 → Level 2**                           | pytest fixtures + Docker/subprocess harnesses  |
-| **Stage 2 → Level 3**                           | pytest + skip decorators + credential loading  |
-| **Stage 3A** (Pure computation)                 | Pure functions, test directly                  |
-| **Stage 3B** (Extract pure part)                | Factor into pure functions + thin wrappers     |
-| **Stage 5 Exception 1** (Failure modes)         | Protocol + stub returning errors               |
-| **Stage 5 Exception 2** (Interaction protocols) | Spy class recording calls                      |
-| **Stage 5 Exception 3** (Time/concurrency)      | `patch("time.time")`, `patch("random.random")` |
-| **Stage 5 Exception 4** (Safety)                | Stub that records but doesn't execute          |
-| **Stage 5 Exception 6** (Observability)         | Spy class capturing request details            |
+## Step 1: Load Context
 
-</router_to_python_mapping>
+Read the story spec and related files:
 
-<level_tooling>
+```bash
+# Read story spec
+cat {story_path}/{story_name}.story.md
 
-| Level          | Infrastructure                                   | Speed  |
-| -------------- | ------------------------------------------------ | ------ |
-| 1: Unit        | Python stdlib + temp dirs + standard dev tools   | <100ms |
-| 2: Integration | Docker containers + project-specific binaries    | <1s    |
-| 3: E2E         | Network services + external APIs + test accounts | <10s   |
+# Read parent feature for context
+cat {feature_path}/{feature_name}.feature.md
 
-**Standard dev tools** (Level 1): git, cat, grep, curl—available in CI without setup.
-**Project-specific tools** (Level 2): Docker, PostgreSQL, Hugo, ffmpeg—require installation.
-
-</level_tooling>
-
-<level_1_patterns>
-
-## Pure Computation (Stage 3A)
-
-When the router determines your code is pure computation, test it directly.
-
-```python
-# ✅ Test pure functions directly, no doubles needed
-def test_command_includes_checksum_flag() -> None:
-    cmd = build_rclone_command("/source", "remote:dest", checksum=True)
-    assert "--checksum" in cmd
-
-
-def test_unicode_paths_preserved() -> None:
-    cmd = build_rclone_command("/tank/фото", "remote:резервная")
-    assert "/tank/фото" in cmd
-
-
-def test_validates_empty_order() -> None:
-    result = validate_order(Order(items=[]))
-    assert result.ok is False
-    assert "empty" in result.error.lower()
+# Check for ADRs that constrain testing approach
+ls {capability_path}/*.adr.md {feature_path}/*.adr.md 2>/dev/null
 ```
 
-## Temporary Directories
+Extract from the spec:
 
-Temp dirs are NOT external dependencies—use freely at Level 1.
+- **Outcomes** - Gherkin scenarios to verify
+- **Test Strategy** - Which levels are specified
+- **Harnesses** - Any referenced test harnesses
 
-```python
-import tempfile
-from pathlib import Path
+## Step 2: Determine Test Levels
 
+For each outcome, apply the `/testing` methodology:
 
-def test_loads_yaml_config() -> None:
-    with tempfile.TemporaryDirectory() as tmpdir:
-        config_path = Path(tmpdir) / "config.yaml"
-        config_path.write_text("""
-site_dir: ./site
-base_url: http://localhost:1313
-""")
-        config = load_config(config_path)
-        assert config.site_dir == "./site"
-```
+**Stage 1:** What evidence do I need?
+**Stage 2:** At what level does that evidence live? (5 factors)
+**Stage 3:** What kind of code is this? (Pure/Extract/Glue)
+**Stage 4:** Can the real system produce the behavior?
+**Stage 5:** Which exception applies, if any?
 
-## Extracted Logic (Stage 3B)
+| Evidence Type                   | Minimum Level |
+| ------------------------------- | ------------- |
+| Pure computation/algorithm      | 1             |
+| File I/O with temp dirs         | 1             |
+| Standard dev tools (git, curl)  | 1             |
+| Project-specific binary         | 2             |
+| Database, Docker                | 2             |
+| Real credentials, external APIs | 3             |
 
-When the router says "extract the pure part," factor your code.
+## Step 3: Design Test Cases
 
-**Before** (tangled):
+For each outcome, design test cases that:
 
-```python
-class OrderProcessor:
-    def __init__(self, repository) -> None:
-        self.repository = repository
+1. **Verify behavior, not implementation** - What the code does, not how
+2. **Use the Gherkin as guide** - GIVEN/WHEN/THEN maps to arrange/act/assert
+3. **Cover edge cases** - Boundary conditions, error conditions
+4. **Use named constants** - No magic values (per `/standardizing-python-testing`)
 
-    def process(self, order: Order) -> None:
-        # Validation (pure) mixed with persistence (integration)
-        if not order.items:
-            raise ValidationError("Empty order")
-        self.repository.save(order)
-```
-
-**After** (factored):
+**Test case structure:**
 
 ```python
-# Pure computation - test at Level 1, no doubles
-def validate_order(order: Order) -> ValidationResult:
-    if not order.items:
-        return ValidationResult(ok=False, error="Empty order")
-    return ValidationResult(ok=True)
+# Named constants at module level
+VALID_INPUT = "expected_input"
+EXPECTED_OUTPUT = "expected_output"
+ERROR_INPUT = "invalid_input"
 
 
-# Thin wrapper - test at Level 2 with real database
-class OrderProcessor:
-    def __init__(self, repository) -> None:
-        self.repository = repository
+@pytest.mark.level_1
+def test_outcome_name_happy_path() -> None:
+    """GIVEN valid input WHEN processed THEN returns expected output."""
+    # Arrange
+    input_data = VALID_INPUT
 
-    def process(self, order: Order) -> None:
-        result = validate_order(order)
-        if not result.ok:
-            raise ValidationError(result.error)
-        self.repository.save(order)
+    # Act
+    result = function_under_test(input_data)
+
+    # Assert
+    assert result == EXPECTED_OUTPUT
+
+
+@pytest.mark.level_1
+def test_outcome_name_error_case() -> None:
+    """GIVEN invalid input WHEN processed THEN raises appropriate error."""
+    with pytest.raises(ValidationError):
+        function_under_test(ERROR_INPUT)
 ```
 
-Now test separately:
+## Step 4: Write Test Files
 
-```python
-# Level 1: Test validation logic exhaustively
-def test_validates_empty_order() -> None:
-    result = validate_order(Order(items=[]))
-    assert result.ok is False
+Create test files in the story's tests directory:
 
-
-# Level 2: Test persistence with real database (see Level 2 section)
+```text
+{story_path}/
+├── {story_name}.story.md
+└── tests/
+    ├── test_{outcome_name}.level_1.py
+    ├── test_{outcome_name}.level_2.py  # if Level 2 needed
+    └── conftest.py                      # fixtures if needed
 ```
 
-## Dependency Injection Pattern
+**File naming convention:**
 
-When code has dependencies but Level 1 is appropriate (per router Stage 3), use DI with Protocols.
+- `test_{name}.level_1.py` - Unit tests
+- `test_{name}.level_2.py` - Integration tests
+- `test_{name}.level_3.py` - E2E tests
 
-See `/standardizing-python-testing` for Protocol and dataclass patterns.
+**Mandatory elements per `/standardizing-python-testing`:**
 
-```python
-from dataclasses import dataclass
-from typing import Protocol
+- `@pytest.mark.level_N` on every test
+- `-> None` return type on every test function
+- Type annotations on all parameters
+- Named constants for all test values
+- Property-based tests for parsers/serializers/math (`@given`)
+- No mocking - use dependency injection
 
+## Step 5: Verify Tests Fail (RED)
 
-class CommandRunner(Protocol):
-    def run(self, cmd: list[str]) -> tuple[int, str, str]: ...
+Run the tests to confirm they fail for the right reasons:
 
+```bash
+# Run tests - they should fail because implementation doesn't exist
+uv run --extra dev pytest {story_path}/tests/ -v
 
-@dataclass
-class SyncDependencies:
-    run_command: CommandRunner
-
-
-def sync_to_remote(source: str, dest: str, deps: SyncDependencies) -> SyncResult:
-    cmd = build_command(source, dest)
-    returncode, stdout, stderr = deps.run_command.run(cmd)
-    return SyncResult(success=returncode == 0, output=stdout)
-
-
-# Test with controlled implementation
-def test_sync_returns_success_on_zero_exit() -> None:
-    class FakeRunner:
-        def run(self, cmd: list[str]) -> tuple[int, str, str]:
-            return (0, "Transferred: 5 files", "")
-
-    deps = SyncDependencies(run_command=FakeRunner())
-    result = sync_to_remote("/src", "remote:dest", deps)
-    assert result.success is True
+# Expected: Tests fail with ImportError or AssertionError
+# NOT: Tests pass (would mean tests are trivial)
+# NOT: Tests fail with unexpected errors
 ```
 
-</level_1_patterns>
+**If tests pass:** Tests are not testing anything useful. Revise.
+**If tests fail with wrong errors:** Fix test setup, imports, etc.
+**If tests fail with expected errors:** Proceed to implementation.
 
-<exception_implementations>
+</workflow>
 
-## Exception Case Implementations
+<test_writing_checklist>
 
-When the router reaches Stage 5 and an exception applies, here's how to implement each in Python.
+Before declaring tests complete:
 
-### Exception 1: Failure Modes
+- [ ] Each Gherkin outcome has at least one test
+- [ ] Test level matches the evidence type (per `/testing` Stage 2)
+- [ ] File names include level suffix (`.level_1.py`, etc.)
+- [ ] All tests marked with `@pytest.mark.level_N`
+- [ ] All test functions have `-> None` return type
+- [ ] All parameters have type annotations
+- [ ] Named constants used (no magic values)
+- [ ] Parsers/serializers have property-based tests (`@given`)
+- [ ] No mocking - dependency injection where doubles needed
+- [ ] Tests run and fail for expected reasons (RED phase)
 
-Testing retry logic, error handling, circuit breakers.
+</test_writing_checklist>
 
-```python
-from typing import Protocol
+<patterns_reference>
 
+See `/standardizing-python-testing` for:
 
-class HttpClient(Protocol):
-    def fetch(self, url: str) -> dict: ...
+- **Level patterns** - How to write Level 1, 2, 3 tests
+- **Exception implementations** - The 7 exception cases in Python
+- **Property-based testing** - Hypothesis patterns
+- **Data factories** - Factory and builder patterns
+- **DI patterns** - Protocol and dataclass dependencies
+- **Harness patterns** - Docker, subprocess harnesses
+- **Anti-patterns** - What to avoid
 
+</patterns_reference>
 
-def test_retries_on_timeout() -> None:
-    attempts = 0
+<output_format>
 
-    class TimeoutingClient:
-        def fetch(self, url: str) -> dict:
-            nonlocal attempts
-            attempts += 1
-            if attempts < 3:
-                raise TimeoutError("Request timed out")
-            return {"status": 200, "body": "ok"}
+When tests are written, report:
 
-    result = fetch_with_retry("https://api.example.com", TimeoutingClient())
-    assert attempts == 3
-    assert result["status"] == 200
+````markdown
+## Tests Written
+
+### Story: {story_path}
+
+### Test Files Created
+
+| File                        | Level | Outcomes Covered |
+| --------------------------- | ----- | ---------------- |
+| `tests/test_foo.level_1.py` | 1     | Outcome 1, 2     |
+| `tests/test_foo.level_2.py` | 2     | Outcome 3        |
+
+### Test Run (RED Phase)
+
+```bash
+$ uv run --extra dev pytest {story_path}/tests/ -v
+# Output showing expected failures
 ```
+````
 
-### Exception 2: Interaction Protocols
+### Ready for Implementation
 
-Testing call sequences, saga compensation, "no extra calls."
+Tests are ready. Implementation should make these tests pass.
 
-```python
-def test_saga_compensates_in_reverse_order() -> None:
-    calls: list[str] = []
-
-    class Step1:
-        def execute(self) -> None:
-            calls.append("step1-execute")
-
-        def compensate(self) -> None:
-            calls.append("step1-compensate")
-
-    class Step2:
-        def execute(self) -> None:
-            calls.append("step2-execute")
-            raise RuntimeError("Step 2 failed")
-
-        def compensate(self) -> None:
-            calls.append("step2-compensate")
-
-    saga = Saga([Step1(), Step2()])
-
-    with pytest.raises(RuntimeError):
-        saga.run()
-
-    assert calls == [
-        "step1-execute",
-        "step2-execute",
-        "step2-compensate",
-        "step1-compensate",
-    ]
 ```
-
-### Exception 3: Time and Concurrency
-
-Testing time-dependent behavior with controlled time.
-
-```python
-from unittest.mock import patch
-
-
-def test_lease_renews_before_expiry() -> None:
-    with patch("time.time") as mock_time:
-        mock_time.return_value = 1000.0
-
-        renewed = False
-
-        def on_renew() -> None:
-            nonlocal renewed
-            renewed = True
-
-        lease = Lease(ttl=30, renew_at=25, on_renew=on_renew)
-
-        # Before renewal threshold
-        mock_time.return_value = 1024.0
-        lease.tick()
-        assert renewed is False
-
-        # After renewal threshold
-        mock_time.return_value = 1026.0
-        lease.tick()
-        assert renewed is True
-```
-
-### Exception 4: Safety
-
-Testing destructive operations without executing them.
-
-```python
-def test_processes_refund_for_cancelled_order() -> None:
-    refunds: list[dict] = []
-
-    class FakePaymentProvider:
-        def refund(self, charge_id: str, amount: float, reason: str) -> dict:
-            refunds.append({"charge_id": charge_id, "amount": amount, "reason": reason})
-            return {"refund_id": "refund_123", "status": "succeeded"}
-
-    processor = OrderProcessor(payment=FakePaymentProvider())
-    processor.cancel_order(order_with_charge)
-
-    assert refunds == [
-        {"charge_id": "ch_123", "amount": 99.99, "reason": "order_cancelled"}
-    ]
-```
-
-### Exception 6: Observability
-
-Testing request details the real system can't expose.
-
-```python
-def test_includes_idempotency_key() -> None:
-    requests: list[dict] = []
-
-    class SpyHttpClient:
-        def post(self, url: str, headers: dict, body: dict) -> dict:
-            requests.append({"url": url, "headers": headers, "body": body})
-            return {"status": 200}
-
-    client = PaymentClient(http=SpyHttpClient())
-    client.charge(amount=100, card_token="tok_123")
-
-    assert len(requests) == 1
-    assert "Idempotency-Key" in requests[0]["headers"]
-```
-
-</exception_implementations>
-
-<level_2_patterns>
-
-## Integration Patterns
-
-When the router determines Level 2 is appropriate, use real dependencies via harnesses.
-
-See `/standardizing-python-testing` for harness base patterns.
-
-### pytest Fixtures for Harnesses
-
-```python
-import pytest
-
-
-@pytest.fixture(scope="module")
-def database() -> PostgresHarness:
-    harness = PostgresHarness()
-    harness.start()
-    yield harness
-    harness.stop()
-
-
-@pytest.fixture(autouse=True)
-def reset_database(database: PostgresHarness) -> None:
-    yield
-    database.reset()
-
-
-@pytest.mark.level_2
-def test_user_repository_saves_and_retrieves(database: PostgresHarness) -> None:
-    repo = UserRepository(database.connection_string)
-    user = User(email="test@example.com", name="Test User")
-
-    repo.save(user)
-    retrieved = repo.find_by_email("test@example.com")
-
-    assert retrieved is not None
-    assert retrieved.name == "Test User"
-```
-
-### Binary Harness
-
-```python
-@dataclass
-class HugoHarness:
-    site_dir: Path
-    output_dir: Path
-
-    def build(self, args: list[str] | None = None) -> subprocess.CompletedProcess:
-        args = args or []
-        return subprocess.run(
-            [
-                "hugo",
-                "--source",
-                str(self.site_dir),
-                "--destination",
-                str(self.output_dir),
-            ]
-            + args,
-            capture_output=True,
-            text=True,
-        )
-
-
-@pytest.mark.level_2
-def test_builds_site_successfully(hugo: HugoHarness) -> None:
-    result = hugo.build()
-    assert result.returncode == 0
-    assert (hugo.output_dir / "index.html").exists()
-```
-
-</level_2_patterns>
-
-<level_3_patterns>
-
-## E2E Patterns
-
-When the router determines Level 3 is required (real credentials, external services).
-
-See `/standardizing-python-testing` for credential management patterns.
-
-### Skip If No Credentials
-
-```python
-credentials = load_credentials()
-skip_no_creds = pytest.mark.skipif(
-    credentials is None, reason="E2E credentials not configured"
-)
-
-
-@skip_no_creds
-@pytest.mark.level_3
-def test_full_sync_workflow(dropbox_test_folder: str) -> None:
-    result = sync_to_dropbox(local_path, dropbox_test_folder)
-    assert result.success
-    assert result.files_transferred > 0
-```
-
-**Note**: Use `skipif` only for optional E2E tests. Required tests must fail loudly—see `/standardizing-python-testing`.
-
-</level_3_patterns>
-
-<anti_patterns>
-
-## Python-Specific Anti-Patterns
-
-### Using unittest.mock.patch on External Services
-
-```python
-# ❌ WRONG: Mocking external service
-@patch("httpx.Client.get")
-def test_fetches_user(mock_get: Mock) -> None:
-    mock_get.return_value = Mock(json=lambda: {"id": 1})
-    user = api_client.get_user(1)
-    assert user.id == 1  # Proves nothing about real API
-
-
-# ✅ RIGHT: Use DI for Level 1, real service for Level 2/3
-def test_parses_user_response() -> None:
-    # Level 1: Test parsing logic with known data
-    response = {"id": 1, "name": "Test", "email": "test@example.com"}
-    user = parse_user_response(response)
-    assert user.id == 1
-
-
-@pytest.mark.level_3
-def test_fetches_real_user(test_credentials: dict) -> None:
-    # Level 3: Test against real API
-    client = ApiClient(credentials=test_credentials)
-    user = client.get_user(known_test_user_id)
-    assert user is not None
-```
-
-### Overusing pytest-mock
-
-```python
-# ❌ WRONG: mocker fixture everywhere
-def test_sync(mocker: MockerFixture) -> None:
-    mocker.patch("os.path.exists", return_value=True)
-    mocker.patch("subprocess.run", return_value=Mock(returncode=0))
-    result = sync_files(src, dest)
-    assert result.success  # What did we prove? Nothing.
-
-
-# ✅ RIGHT: DI for controllable behavior
-def test_sync_returns_success_on_zero_exit() -> None:
-    class FakeRunner:
-        def run(self, cmd: list[str]) -> tuple[int, str, str]:
-            return (0, "Done", "")
-
-    deps = SyncDeps(runner=FakeRunner())
-    result = sync_files(src, dest, deps)
-    assert result.success
-```
-
-### Testing Library Behavior
-
-```python
-# ❌ WRONG: Testing that argparse works
-def test_parses_verbose_flag() -> None:
-    parser = create_parser()
-    args = parser.parse_args(["--verbose"])
-    assert args.verbose is True  # Testing argparse, not your code
-
-
-# ✅ RIGHT: Test YOUR behavior that uses parsed args
-def test_verbose_mode_produces_detailed_output() -> None:
-    output = run_command(Config(verbose=True))
-    assert "DEBUG:" in output
-```
-
-</anti_patterns>
+</output_format>
 
 <success_criteria>
-Testing is complete when:
 
-- [ ] `/testing` router consulted for level and approach
-- [ ] `/standardizing-python-testing` consulted for standards
-- [ ] Property-based tests present for parsers, serializers, math, complex algorithms
-- [ ] All tests have `-> None` return type
-- [ ] All tests marked with appropriate level (`@pytest.mark.level_1/level_2/level_3`)
-- [ ] File naming follows convention (`.level_1.py`, `.level_2.py`, `.level_3.py`)
-- [ ] No mocking—DI with Protocols where doubles are needed
-- [ ] Exception case documented when test doubles are used
-- [ ] All tests pass
+Task is complete when:
+
+- [ ] Test files exist in `{story}/tests/` directory
+- [ ] Each outcome from spec has corresponding test(s)
+- [ ] Tests follow `/standardizing-python-testing` standards
+- [ ] Tests run and fail for expected reasons
+- [ ] Output report shows files created and test run results
 
 </success_criteria>
+```

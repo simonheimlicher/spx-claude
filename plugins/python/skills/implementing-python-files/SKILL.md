@@ -5,32 +5,28 @@ args: file_paths
 ---
 
 <objective>
-File-focused Python implementation skill. Implements code for one or more specific files using test-driven development, processing each file sequentially through test design, implementation, and review.
+File-focused Python implementation skill. Implements code for one or more specific files using the 4-step TDD workflow: write tests → review tests → implement → review implementation.
 </objective>
 
-<essential_principles>
-**NO MOCKING. BEHAVIOR TESTING. CONSTANTS PATTERN. SEQUENTIAL FILE PROCESSING.**
-
-- **File-Centric Workflow:** Each file goes through the complete cycle before moving to the next
-- **Behavior-Driven Development:** Tests are written first to verify **behavior**, then code is written to pass them
-- **Do Not Repeat Yourself (DRY):** Define **constants in the implementation**, then check for constants in tests (not literal strings)
-- **Mandatory Review Quality Gate:** Each file must pass review before proceeding to the next
-
-</essential_principles>
-
 <quick_start>
-**Given file path(s) to implement:**
+**Input:** One or more file paths to implement
 
-1. Parse the file path(s) from arguments
-2. For each file, run the 4-step implementation cycle
-3. Continue until all files are complete
+**Workflow per file:**
 
 ```text
-File → Test Design → Implement → Review → Next File
-          ↓             ↓          ↓
-       testing       coding    reviewing
-       -python       -python    -python
+File → Step 1 → Step 2 → Step 3 → Step 4 → Next File
+         │         │         │         │
+     /testing   /reviewing  /coding   /reviewing
+      -python    -python     -python   -python
+                 -tests
 ```
+
+1. **Analyze file context** - Understand what the file should do
+2. **Write tests** - Invoke `/testing-python` → tests written
+3. **Review tests** - Invoke `/reviewing-python-tests` → APPROVE/REJECT
+4. **Implement** - Invoke `/coding-python` → code written
+5. **Review code** - Invoke `/reviewing-python` → APPROVE/REJECT
+6. **Next file** - Repeat until all files complete
 
 </quick_start>
 
@@ -65,15 +61,8 @@ File → Test Design → Implement → Review → Next File
 Extract file paths from arguments. For each path:
 
 1. **Normalize path** - Convert to absolute or project-relative
-2. **Determine test location** - Co-located in `tests/` subdirectory or sibling `test_*.py`
+2. **Determine test location** - Co-located `tests/` or sibling `test_*.py`
 3. **Check for existing tests** - Will augment, not replace
-
-```text
-src/mymodule/handler.py → tests/unit/mymodule/test_handler.py
-                        → or: src/mymodule/tests/test_handler.level_1.py (if spx/ style)
-```
-
----
 
 ## For Each File (Sequential)
 
@@ -85,115 +74,77 @@ Before writing tests, understand:
 2. **Read related files** - Imports, dependencies, interfaces
 3. **Identify behaviors** - What should this code do?
 
-If file doesn't exist yet, determine expected behaviors from:
+If file doesn't exist, determine expected behaviors from:
 
 - User's request/description
 - Interface contracts (if implementing an interface)
 - Calling code (if being called by existing code)
 
-### Step 2: Design Tests
+### Step 2: Write Tests
 
-Invoke `/testing` for methodology, then `/testing-python` for Python patterns.
+Invoke `/testing-python`:
 
-Design tests that verify:
+The skill will:
 
-- Expected behaviors (not implementation details)
-- Edge cases and error conditions
-- Integration with dependencies (via injection, not mocking)
+- Determine test levels per `/testing` methodology
+- Write test files
+- Run tests to confirm they fail (RED)
 
-**Test file naming:**
+### Step 3: Review Tests
 
-```text
-# For src/mymodule/handler.py
-tests/unit/mymodule/test_handler.py          # Unit tests (Level 1)
-tests/integration/mymodule/test_handler.py   # Integration tests (Level 2)
-```
+Invoke `/reviewing-python-tests`:
 
-### Step 3: Implement
+**If REJECT:** Fix issues, re-invoke until APPROVE.
+**If APPROVE:** Proceed to Step 4.
 
-Invoke `/coding-python` to implement:
+### Step 4: Implement
 
-**RED phase:**
+Invoke `/coding-python`:
 
-- Write failing tests following the test design
-- Tests should fail for the right reasons (missing behavior)
+The skill will:
 
-**GREEN phase:**
+- Read failing tests
+- Write implementation code
+- Run tests until GREEN
+- Self-verify (types, lint)
 
-- Write minimal production code to pass tests
-- Focus on correctness, not optimization
+### Step 5: Review Code
 
-**REFACTOR phase:**
+Invoke `/reviewing-python`:
 
-- Clean up code while keeping tests green
-- Apply constants pattern (extract repeated literals)
-- Run type checking: `uv run --extra dev mypy src/`
-- Run linting: `uv run --extra dev ruff check src/`
-
-### Step 4: Review
-
-Invoke `/reviewing-python` to review the implementation.
-
-**If review identifies issues:**
-
-1. Use `/coding-python` to fix issues
-2. Re-invoke `/reviewing-python`
-3. Repeat until the reviewer approves
-
-**If review approves:**
-
-- File is complete
-- Proceed to next file
-
----
-
-## After All Files Complete
-
-Run full verification:
-
-```bash
-# All tests pass
-uv run --extra dev pytest -v
-
-# Type checking
-uv run --extra dev mypy src/
-
-# Linting
-uv run --extra dev ruff check src/
-```
+**If REJECT:** Fix issues, re-invoke until APPROVE.
+**If APPROVE:** File is complete. Proceed to next file.
 
 </workflow>
 
-<skill_invocations>
-**Skills this workflow invokes:**
+<skill_sequence>
 
-| Skill               | Purpose                        | When                 |
-| ------------------- | ------------------------------ | -------------------- |
-| `/testing`          | Testing methodology            | Before writing tests |
-| `/testing-python`   | Python implementation patterns | Before writing tests |
-| `/coding-python`    | Implementation (RED/GREEN/REF) | After test design    |
-| `/reviewing-python` | Code review                    | After implementation |
+| Step | Skill                     | Purpose               |
+| ---- | ------------------------- | --------------------- |
+| 2    | `/testing-python`         | Write tests           |
+| 3    | `/reviewing-python-tests` | Review tests          |
+| 4    | `/coding-python`          | Write implementation  |
+| 5    | `/reviewing-python`       | Review implementation |
 
-</skill_invocations>
+</skill_sequence>
 
 <progress_tracking>
-**Track progress through file list:**
+
+Track progress through file list:
 
 ```text
 Files to implement:
-├── src/mymodule/handler.py      [✓] Tests passing, reviewed
-├── src/mymodule/processor.py    [→] In Progress (Step 3)
+├── src/mymodule/handler.py      [✓] Tests approved, code approved
+├── src/mymodule/processor.py    [→] In Progress (Step 4: implementing)
 ├── src/mymodule/validator.py    [pending] Not started
 └── src/mymodule/formatter.py    [pending] Not started
 ```
 
 **Legend:**
 
-- `[✓]` = Tests passing, review approved
-- `[→]` = In progress
+- `[✓]` = Tests + code approved
+- `[→]` = In progress (show current step)
 - `[pending]` = Not started
-
-Update tracking as you complete each file.
 
 </progress_tracking>
 
@@ -202,10 +153,9 @@ Update tracking as you complete each file.
 ## File Complete
 
 - [ ] Tests exist and verify correct behaviors
-- [ ] Tests use dependency injection (no mocking)
+- [ ] Tests approved by `/reviewing-python-tests`
 - [ ] Implementation passes all tests
-- [ ] Code uses constants pattern (no repeated literals)
-- [ ] File passed `/reviewing-python` approval
+- [ ] Code approved by `/reviewing-python`
 
 ## All Files Complete
 
@@ -226,11 +176,5 @@ Update tracking as you complete each file.
 
 **Review fails repeatedly (3+ attempts):**
 → Stop and report issues to user for guidance
-
-**Circular dependency detected:**
-→ Flag architectural issue, suggest DI pattern
-
-**Type errors that can't be resolved:**
-→ Stop and report, may need interface changes
 
 </error_handling>
