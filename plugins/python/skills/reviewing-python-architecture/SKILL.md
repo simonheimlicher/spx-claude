@@ -4,59 +4,60 @@ description: Review ADRs to check they follow testing principles. Use when revie
 allowed-tools: Read, Grep
 ---
 
-# Python Architecture Reviewer
+<objective>
+Review ADRs against `/testing` principles. Point out violations, reference the specific principle, and show correct architecture.
+</objective>
 
-You are a **principal architect** reviewing ADRs. Your feedback is direct, concise, and principle-based.
+<quick_start>
 
-## Your Role
+1. Read `/testing` for methodology (5 stages, 5 factors, 7 exceptions)
+2. Identify violations of testing principles
+3. Output APPROVED or REJECTED with specific violations
+4. Show correct approach with code examples
 
-Review ADRs against testing-python principles. Point out what violates principles, reference the specific principle, and show what correct architecture looks like.
+</quick_start>
 
-## Process
+<principles_to_enforce>
+From `/testing`:
 
-1. **Read /testing-python** (entire file, focus on lines 24-122)
-2. **Identify violations** - what contradicts testing-python principles
-3. **Output decision** - APPROVED or REJECTED with specific violations
-4. **Show correct approach** - what the architecture should be
+**Level definitions** (from Stage 2 Five Factors):
 
-## Principles to Enforce
+- **Level 1**: Pure computation, file I/O with temp dirs, standard dev tools (git, curl)
+  - Test directly, no doubles needed
+- **Level 2**: Real dependencies via harnesses (Docker, databases, project-specific binaries)
+  - Use real systems, not fakes
+- **Level 3**: Real credentials, external services, browsers
+  - Full real-world workflows
 
-From /testing-python:
+**Critical rules** (from Five Factors):
 
-**Level definitions:**
-
-- Level 1: Python stdlib + Git + standard tools + temp fixtures
-  - Includes: All Python standard library, Git operations, standard dev tools (cat, grep, curl)
-  - Excludes: Project-specific binaries, network, external services
-
-- Level 2: Project-specific binaries/tools running locally
-  - Includes: Docker, ZFS, PostgreSQL, Redis, Hugo, etc.
-  - Excludes: Network calls, external APIs, SaaS services
-
-- Level 3: External dependencies (network, APIs, browsers)
-  - Includes: Network services, APIs, external repos, SaaS APIs
-  - Full real-world workflows with external dependencies
-
-**Critical rules:**
-
-- Git is Level 1 (standard dev tool, always available in CI)
-- Project-specific tools require installation/setup (Level 2)
-- SaaS services (Trakt, GitHub API, Stripe, Auth0) have **NO Level 2** - jump from 1 to 3
+- Standard dev tools (git, cat, grep, curl) are Level 1
+- Project-specific tools (Docker, PostgreSQL, Hugo) are Level 2
+- SaaS services (Trakt, GitHub API, Stripe, Auth0) jump from Level 1 → Level 3 (no Level 2)
 - Network dependencies and external services are Level 3
 
-**Mocking prohibition:**
+**Mocking prohibition** (Cardinal Rule):
 
+- **NO mocking. Ever.** - `/testing` cardinal rule
 - NO `unittest.mock.patch` for external services
 - NO `respx.mock` for internet APIs
-- NO "Mock at boundary" language for external services
 - Use dependency injection with Protocol interfaces instead
+- Test doubles (stubs, spies, fakes) only when exception case applies
 
-**Reality principle:**
+**Reality principle**:
 
-- "Reality is the oracle, not mocks"
-- Tests must verify behavior against real systems at appropriate levels
+- "Reality is the oracle" - tests must verify behavior against real systems
+- A fake proves your code works with your imagination, not the real system
 
-## Output Format
+**Test doubles require exception case** (Stage 5):
+
+- Only 7 legitimate exceptions for test doubles
+- Each use must document which exception applies
+- No exception = no doubles, test at Level 2
+
+</principles_to_enforce>
+
+<output_format>
 
 ````markdown
 # ARCHITECTURE REVIEW
@@ -70,7 +71,7 @@ From /testing-python:
 ### {Violation name}
 
 **Where:** Lines {X-Y}
-**Principle violated:** {Specific principle from python-test}
+**Principle violated:** /testing {section name}
 **Why this fails:** {Direct explanation}
 
 **Correct approach:**
@@ -94,8 +95,8 @@ From /testing-python:
 
 ## References
 
-- /testing-python: Lines {X-Y} (principle violated)
-- {Any other relevant context}
+- /testing: {section name} (principle violated)
+- /standardizing-python-testing: {section if applicable}
 
 ---
 
@@ -103,23 +104,27 @@ From /testing-python:
 {If APPROVED: "Architecture meets standards"}
 
 ````
-## What to Avoid
+</output_format>
+
+<review_guidelines>
 
 **Don't:**
-- Reference "GitHub patterns" or "StackOverflow" - irrelevant where patterns come from
-- Provide grep commands - LLMs understand principles without checklists
-- Explain multiple times - be concise
-- Role play multiple personas - you are one principal architect
-- Count how many times you've seen this - focus on principles, not statistics
-- Provide checklists - other skills understand what needs to change
+
+- Reference specific line numbers (they change)
+- Provide grep commands
+- Explain multiple times
+- Count statistics
 
 **Do:**
-- Reference specific lines in /testing-python
-- Show correct architecture (code examples)
-- Be direct about what violates principles
-- Assume the other skill will understand and fix
 
-## Example Review
+- Reference `/testing` section names (e.g., "Stage 5 Exception 1", "Cardinal Rule")
+- Show correct architecture with code examples
+- Be direct about violations
+- Reference `/standardizing-python-testing` for Python-specific patterns
+
+</review_guidelines>
+
+<example_review>
 
 ```markdown
 # ARCHITECTURE REVIEW
@@ -133,17 +138,16 @@ From /testing-python:
 ### Level 2 Assigned to SaaS Service
 
 **Where:** Lines 132-133
-**Principle violated:** /testing-python lines 41-45
+**Principle violated:** /testing Stage 2 Factor 2
 
-Trakt.tv is a SaaS service that cannot run locally. testing-python states:
-
-> ❌ NO (SaaS APIs: Trakt, GitHub, Stripe, Auth0, OpenAI, etc.):
-> Level 2: DOES NOT EXIST
+Trakt.tv is a SaaS service that cannot run locally. Per /testing Five Factors:
+- SaaS services have no Level 2 - jump from Level 1 to Level 3
 
 **Correct approach:**
+
 ```markdown
-| List operations | 1 (Unit) | DI with TraktListProvider protocol |
-| List operations | 3 (Internet) | Real Trakt API with test account |
+| List operations | 1 | DI with TraktListProvider protocol |
+| List operations | 3 | Real Trakt API with test account |
 ````
 
 ---
@@ -151,20 +155,20 @@ Trakt.tv is a SaaS service that cannot run locally. testing-python states:
 ### Mocking External Services
 
 **Where:** Lines 132, 133, 145
-**Principle violated:** /testing-python lines 48-57
+**Principle violated:** /testing Cardinal Rule
 
-Testing Principles section says "Mock at the PyTrakt API boundary" - this violates the NO MOCKING principle. PyTrakt calling Trakt.tv is the external service boundary.
+Testing Strategy says "Mock at the PyTrakt API boundary" - this violates the NO MOCKING principle.
 
 **Correct approach:**
 
-Use dependency injection:
+Use dependency injection per /standardizing-python-testing:
 
 ```python
 class TraktListProvider(Protocol):
     def __call__(self, list_name: str, username: str) -> Any | None: ...
 
 
-# Level 1: Inject fake implementation
+# Level 1: Inject fake implementation (Exception 1: Failure modes)
 # Level 3: Use real PyTrakt
 ```
 
@@ -172,33 +176,35 @@ class TraktListProvider(Protocol):
 
 ## Required Changes
 
-1. Remove all Level 2 assignments for Trakt operations
+1. Remove all Level 2 assignments for SaaS operations
 2. Remove "Mock at boundary" language
-3. Add DI protocol definitions showing how Level 1 works
-4. Update escalation rationale to explain Level 1→3 jump
+3. Add DI protocol definitions per /standardizing-python-testing
+4. Document which exception case justifies any test doubles
 
 ---
 
 ## References
 
-- /testing-python: Lines 24-122 (Universal Testing Levels)
-- /testing-python: Lines 41-45 (SaaS services have no Level 2)
-- /testing-python: Lines 48-57 (Mocking prohibition)
+- /testing: Cardinal Rule (no mocking)
+- /testing: Stage 2 Factor 2 (dependency levels)
+- /testing: Stage 5 (exception cases for test doubles)
+- /standardizing-python-testing: Protocol patterns
 
 ---
 
 Revise and resubmit.
 
 ```
-## Key Principles
+</example_review>
 
-1. **Concise** - 50-100 lines max
-2. **Principle-based** - Reference testing-python directly
-3. **Show correct approach** - Code examples, not prose
-4. **LLM-to-LLM** - Assume recipient understands principles
-5. **No theater** - You are one principal architect, not a board
+<success_criteria>
+Review is complete when:
 
----
+- [ ] Checked for mocking violations (Cardinal Rule)
+- [ ] Verified level assignments match `/testing` Five Factors
+- [ ] Checked test double usage has documented exception case
+- [ ] Output follows format with section references (not line numbers)
+- [ ] Correct approach shown with code examples
 
-*Review with authority from expertise, not role play.*
+</success_criteria>
 ```

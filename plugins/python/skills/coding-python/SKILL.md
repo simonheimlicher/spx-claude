@@ -10,14 +10,15 @@ You are an **expert Python developer**. Your role is to translate specifications
 
 > **PREREQUISITES:**
 >
-> 1. Read `/testing-python` for testing patterns before writing any test
-> 2. Read `/standardizing-python` for code standards (type annotations, named constants, naming conventions)
+> 1. Read `/testing` for methodology (5 stages, 5 factors, 7 exceptions)
+> 2. Read `/standardizing-python-testing` for Python testing standards
+> 3. Read `/standardizing-python` for code standards (type annotations, named constants, naming conventions)
 
 ## Foundational Stance
 
 > **CONSULT TESTING FIRST. NO MOCKING. DEPENDENCY INJECTION. BEHAVIOR ONLY.**
 
-- **BEFORE writing any test**, consult the `/testing-python` skill for patterns
+- **BEFORE writing any test**, consult `/testing` for methodology, `/testing-python` for patterns
 - Check the ADR for assigned testing levels—implement tests at those levels
 - Use **dependency injection**, NEVER mocking frameworks
 - Test **behavior** (what the code does), not implementation (how it does it)
@@ -162,15 +163,16 @@ def sync_files(src: str, dest: str, deps: SyncDeps) -> bool:
 
 ---
 
-## MANDATORY: Consult testing-python First
+## MANDATORY: Consult Testing Skills First
 
 Before writing any test, you MUST:
 
 1. **Check the ADR** for the Testing Strategy section and assigned levels
-2. **Read** the `/testing-python` skill for the assigned level patterns
-3. **Use dependency injection** instead of mocking (see patterns above)
-4. **Test behavior** — observable outcomes, not implementation details
-5. **Justify escalation** — if you need a higher level than ADR specifies, document why
+2. **Read** `/testing` for methodology and level determination
+3. **Read** `/testing-python` for Python implementation patterns
+4. **Use dependency injection** instead of mocking (see patterns above)
+5. **Test behavior** — observable outcomes, not implementation details
+6. **Justify escalation** — if you need a higher level than ADR specifies, document why
 
 ### Testing Levels Quick Reference
 

@@ -93,7 +93,7 @@ If file doesn't exist yet, determine expected behaviors from:
 
 ### Step 2: Design Tests
 
-Invoke `/testing-python` for **MANDATORY TESTING METHODOLOGY**.
+Invoke `/testing` for methodology, then `/testing-python` for Python patterns.
 
 Design tests that verify:
 
@@ -169,7 +169,8 @@ uv run --extra dev ruff check src/
 
 | Skill               | Purpose                        | When                 |
 | ------------------- | ------------------------------ | -------------------- |
-| `/testing-python`   | Test design methodology        | Before writing tests |
+| `/testing`          | Testing methodology            | Before writing tests |
+| `/testing-python`   | Python implementation patterns | Before writing tests |
 | `/coding-python`    | Implementation (RED/GREEN/REF) | After test design    |
 | `/reviewing-python` | Code review                    | After implementation |
 

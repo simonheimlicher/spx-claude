@@ -57,9 +57,9 @@ If context loading fails, STOP.
 Use the `AskUserQuestion` tool to discover with the user's help what the missing document should contain. Then use `/managing-specs` to create missing specifications, then restart this workflow.
 
 **Step 2: Design Tests**
-Invoke `/testing-python` to design the test strategy.
+Invoke `/testing` for methodology (5 stages, 5 factors, 7 exceptions), then `/testing-python` for Python patterns.
 
-Invoke `/testing-python` for **MANDATORY TESTING METHODOLOGY** (no mocking, behavior testing, DRY using constants pattern).
+**MANDATORY**: No mocking, behavior testing, DRY using constants pattern.
 
 **Step 3: Implement**
 Invoke `/coding-python` with the story spec to:
@@ -162,7 +162,8 @@ Run `spx spx commit` to update the capability's outcomes.yaml:
 | Skill                  | Purpose                             | When                 |
 | ---------------------- | ----------------------------------- | -------------------- |
 | `/understanding-specs` | Load story context and requirements | Start of each story  |
-| `/testing-python`      | Design test strategy                | After context loaded |
+| `/testing`             | Testing methodology                 | After context loaded |
+| `/testing-python`      | Python implementation patterns      | After methodology    |
 | `/coding-python`       | Implement code and tests            | After test design    |
 | `/reviewing-python`    | Automated code review               | After implementation |
 

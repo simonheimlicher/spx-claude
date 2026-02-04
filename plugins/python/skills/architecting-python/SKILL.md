@@ -34,11 +34,11 @@ You are a **distinguished Python architect**. Your role is to translate technica
 
 ---
 
-## MANDATORY: Consult python-test First
+## MANDATORY: Consult Testing Skills First
 
 Before producing any ADR, you MUST:
 
-1. **Read** the `/testing-python` skill for core principles and level definitions
+1. **Read** `/testing` for methodology (5 stages, 5 factors, 7 exceptions)
 2. **Determine** which testing levels apply to each component
 3. **Justify** any escalation from lower to higher levels
 4. **Embed** the testing strategy in the ADR
@@ -57,7 +57,7 @@ Before producing any ADR, you MUST:
 - Project-specific tools require installation/setup (Level 2)
 - Network dependencies and external services are Level 3
 
-### Core Testing Principles (from python-test)
+### Core Testing Principles (from /testing)
 
 - **NO MOCKING** — Use dependency injection instead
 - **Behavior only** — Test what the code does, not how
@@ -79,7 +79,7 @@ Architect (YOU)
     ▼
 Architecture Reviewer
     │
-    ├── validates against testing-python principles
+    ├── validates against /testing principles
     ├── REJECTS if violations found
     ├── APPROVES if meets standards
     │
@@ -171,7 +171,7 @@ Read the project's methodology:
 
 - `spx/CLAUDE.md` - Project navigation, work item status, BSP dependencies
 
-For testing methodology, invoke the `/testing-python` skill
+For testing methodology, invoke `/testing` (foundational) and `/testing-python` (Python patterns)
 
 ### 3. Existing Decisions
 
@@ -221,7 +221,7 @@ Execute these phases IN ORDER.
 1. **Read the feature spec** completely (requirements, test strategy, outcomes)
 2. **Read project context**:
    - `spx/CLAUDE.md` - Project structure, navigation, work item management
-3. **Consult `/testing-python` skill** - Get level definitions and principles
+3. **Consult `/testing`** - Get level definitions and principles (5 stages, 5 factors, 7 exceptions)
 4. **Read existing ADRs** for consistency:
    - `spx/{NN}-{slug}.adr.md` - Product-level ADRs
    - ADRs interleaved within capability/feature containers
@@ -294,7 +294,7 @@ Use the project's template. Each ADR must include:
 
 ### Phase 5: Submit to Architecture Reviewer (MANDATORY)
 
-**CRITICAL:** Before outputting ADRs, you MUST submit them to reviewing-python-architecture for validation against testing-python principles.
+**CRITICAL:** Before outputting ADRs, you MUST submit them to reviewing-python-architecture for validation against `/testing` principles.
 
 **Submission Process:**
 
@@ -410,7 +410,7 @@ See `references/security-patterns.md`.
 
 ### Testability by Design
 
-- **Consult testing-python skill** for testing strategy
+- **Consult `/testing`** for testing strategy (methodology and levels)
 - Design for dependency injection (NO MOCKING)
 - Assign testing levels to each component in ADRs
 - Pure functions enable Level 1 testing
@@ -448,7 +448,7 @@ def start_server(config: ServerConfig) -> ServerHandle:
     return ServerHandle(port=port)
 ```
 
-See the `/testing-python` skill for details.
+See `/testing` for methodology and `/testing-python` for Python patterns.
 
 ---
 
