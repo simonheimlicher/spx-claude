@@ -153,31 +153,35 @@ Use the template from `/managing-spx`:
 {ADRs that constrain this feature}
 ```
 
-**Critical: Principle 11**
+**Critical: Principle 11 - Correctly Understood**
 
-Features do NOT list story outcomes. If you find yourself writing:
+Features MUST have their own outcomes. Principle 11 means features don't list outcomes that ARE stories (atomic implementation units).
 
-```markdown
-## Outcomes
-
-### 1. Parse credentials ← This is a story
-
-### 2. Validate password ← This is a story
-
-### 3. Create session ← This is a story
-```
-
-STOP. These should be stories under the feature, not outcomes in the feature spec.
-
-Feature outcomes (if any) are about the feature AS A WHOLE:
+**Features KEEP these outcomes:**
 
 ```markdown
 ## Outcomes
 
-### 1. Complete login flow works end-to-end
+### 1. Complete login flow works end-to-end ← KEEP (integration)
+
+### 2. Failed logins are rate-limited ← KEEP (integration)
+
+### 3. Session tokens are securely generated ← KEEP (quality gate)
 ```
 
-Or the feature may have NO outcomes—just stories underneath.
+**Features MOVE these to stories:**
+
+```markdown
+### 4. Parse credentials from request ← MOVE TO STORY (atomic)
+
+### 5. Validate password against hash ← MOVE TO STORY (atomic)
+
+### 6. Create session record ← MOVE TO STORY (atomic)
+```
+
+**The test:** Does this outcome require multiple pieces working together (integration) or is it a single atomic behavior (story)?
+
+**⚠️ WARNING:** Do NOT remove all outcomes from features. Features need integration outcomes and quality gates.
 
 ## Step 6: Validate Decomposition
 
@@ -275,40 +279,52 @@ AFTER:
 
 ## The SPI Anti-Pattern (What NOT to Do)
 
-The agent created this feature spec:
+The agent created this feature spec with 5 outcomes:
+
+| Outcome                           | Type         | Action              |
+| --------------------------------- | ------------ | ------------------- |
+| 1. SPI master transmits in mode 0 | Atomic       | MOVE to story       |
+| 2. SPI modes 1-3 verified         | Atomic       | MOVE to story       |
+| 3. SPI slave responds             | Atomic       | MOVE to story       |
+| 4. Master-slave loopback works    | Integration  | **KEEP in feature** |
+| 5. Lint-clean HDL                 | Quality gate | **KEEP in feature** |
+
+**Correct result - feature KEEPS outcomes 4-5:**
 
 ```markdown
-# Feature: Serial SPI
+# Feature: Serial SPI (AFTER decomposition)
 
 ## Outcomes
 
-### 1. SPI master transmits in mode 0
+### 1. Master-slave loopback works end-to-end
 
-### 2. SPI modes 1-3 verified
+GIVEN SPI master and slave connected via loopback
+WHEN master sends 0xAB
+THEN slave receives 0xAB AND master receives slave response
 
-### 3. SPI slave responds
+### 2. Generated HDL passes lint
 
-### 4. Master-slave loopback works
-
-### 5. Lint-clean HDL
+GIVEN configured SPI components
+WHEN Verilog is generated
+THEN Verilator lint passes with zero warnings
 ```
 
-**What went wrong:**
-
-Outcomes 1-3 are **atomic stories**, not feature outcomes. They should be:
+**Directory structure:**
 
 ```
 22-serial-spi.feature/
-├── serial-spi.feature.md     # Outcomes 4-5 only (if needed)
-├── 10-spi-master.story/      # Handles outcomes 1-2
-├── 20-spi-slave.story/       # Handles outcome 3
-└── 30-spi-integration.story/ # Or keep 4 as feature outcome
+├── serial-spi.feature.md     # Keeps integration + quality outcomes
+├── 10-spi-master.story/      # Former outcomes 1-2 (atomic)
+└── 20-spi-slave.story/       # Former outcome 3 (atomic)
 ```
 
-**The test:**
+**⚠️ WRONG:** Removing ALL outcomes from the feature. Features MUST keep integration and quality gate outcomes.
 
-- Can "SPI master transmits in mode 0" be implemented atomically? YES → Story
-- Can "Master-slave loopback works" be implemented atomically? MAYBE → Could be story or feature outcome
+**The decision test:**
+
+- "SPI master mode 0" - single component, testable in isolation → STORY
+- "Master-slave loopback" - requires BOTH master AND slave → FEATURE
+- "Lint-clean HDL" - quality gate, cross-cutting verification → FEATURE
 
 </the_spi_mistake>
 
@@ -316,12 +332,18 @@ Outcomes 1-3 are **atomic stories**, not feature outcomes. They should be:
 
 ## What NOT to Create as Features
 
-| Anti-pattern                   | Why wrong             | Fix                 |
-| ------------------------------ | --------------------- | ------------------- |
-| "Login and Registration"       | Two features          | Split               |
-| "Parse Config"                 | Too small             | Story               |
-| Feature with 12 stories        | Too large             | Split into features |
-| Feature listing story outcomes | Violates Principle 11 | Move to stories     |
+| Anti-pattern             | Why wrong    | Fix                 |
+| ------------------------ | ------------ | ------------------- |
+| "Login and Registration" | Two features | Split               |
+| "Parse Config"           | Too small    | Story               |
+| Feature with 12 stories  | Too large    | Split into features |
+
+## What NOT to Do When Decomposing
+
+| Anti-pattern                     | Why wrong                          | Correct action                           |
+| -------------------------------- | ---------------------------------- | ---------------------------------------- |
+| Remove ALL outcomes from feature | Features need integration outcomes | KEEP integration + quality gate outcomes |
+| Keep ALL outcomes in feature     | Atomic outcomes should be stories  | MOVE only atomic outcomes to stories     |
 
 ## Signals You're at Wrong Level
 
@@ -341,7 +363,8 @@ Decomposition complete when:
 - [ ] Each feature is a significant vertical slice
 - [ ] Each feature needs ≤7 stories
 - [ ] BSP ordering reflects dependencies
-- [ ] Features do NOT list story-level outcomes
+- [ ] Features KEEP integration and quality gate outcomes
+- [ ] Features MOVE atomic outcomes to stories
 - [ ] Structure can grow organically
 
 </success_criteria>

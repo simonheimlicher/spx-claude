@@ -272,9 +272,31 @@ Container levels (Story, Feature, Capability) are about **scope of concern**:
 
 **These are orthogonal.** A story can have Level 2 tests. A capability can have Level 1 tests.
 
-### Mistake 4: Empty Container Syndrome
+### Mistake 4: Removing All Outcomes from Features
 
-A feature with no outcomes of its own is fine—it's a container for stories. The feature's purpose is to group related stories, not to duplicate their outcomes.
+**WRONG:** Agents removing ALL outcomes from features because "features don't list story outcomes."
+
+**Features MUST have their own outcomes.** Principle 11 means features don't list outcomes that ARE stories (atomic implementation units). Features still have:
+
+- **Integration outcomes**: Scenarios where multiple stories work together
+- **Quality gates**: Cross-cutting verification (lint-clean, synthesizable)
+- **End-to-end scenarios**: Complete feature workflows
+
+```markdown
+# Feature: Serial SPI
+
+## Outcomes
+
+### 1. Master-slave loopback works ← KEEP (integration)
+
+### 2. Generated HDL passes lint ← KEEP (quality gate)
+```
+
+What to MOVE to stories:
+
+```markdown
+### 3. SPI master mode 0 works ← MOVE TO STORY (atomic)
+```
 
 </common_mistakes>
 

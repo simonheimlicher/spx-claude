@@ -6,7 +6,9 @@ description: |
 ---
 
 <objective>
-Transform Feature specs into well-scoped Story specs. Each story is an atomic implementation unit—something that can be understood, implemented, and tested as a single coherent piece, expressible as Gherkin scenarios.
+Transform Feature specs into well-scoped Story specs by identifying which outcomes are atomic (should become stories) vs integration-level (should stay in feature). Each story is an atomic implementation unit—something that can be understood, implemented, and tested as a single coherent piece, expressible as Gherkin scenarios.
+
+**⚠️ CRITICAL:** Do NOT remove all outcomes from the feature. Features MUST keep their integration outcomes and quality gates. Only MOVE atomic outcomes to stories.
 </objective>
 
 <prerequisite>
@@ -32,6 +34,25 @@ You must understand:
 </quick_start>
 
 <workflow>
+
+## Step 0: Sort Feature Outcomes into KEEP vs MOVE
+
+**Before creating stories, classify each existing feature outcome:**
+
+| Outcome type              | Action              | Example                        |
+| ------------------------- | ------------------- | ------------------------------ |
+| Integration scenario      | **KEEP in feature** | "Master-slave loopback works"  |
+| Quality gate              | **KEEP in feature** | "Lint-clean HDL generated"     |
+| End-to-end workflow       | **KEEP in feature** | "Complete login flow works"    |
+| Atomic component behavior | **MOVE to story**   | "SPI master mode 0 works"      |
+| Single isolated operation | **MOVE to story**   | "Parse credentials from input" |
+
+**The test:** Does this outcome require multiple pieces working together?
+
+- YES → KEEP in feature (integration)
+- NO → MOVE to story (atomic)
+
+**⚠️ Do NOT remove all outcomes from the feature.** Features need their integration and quality gate outcomes.
 
 ## Step 1: Analyze Feature for Atomic Pieces
 
@@ -392,6 +413,8 @@ THEN it works correctly
 
 Decomposition complete when:
 
+- [ ] Feature KEEPS integration and quality gate outcomes
+- [ ] Only atomic outcomes are MOVED to stories
 - [ ] Each story is expressible as Gherkin scenarios
 - [ ] Each story is atomic and implementable as single unit
 - [ ] Total stories ≤7 (or feature needs splitting)
