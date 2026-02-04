@@ -118,16 +118,6 @@ If a PRD exists at a level but the corresponding spec file is missing, offer to 
 
 ## Status Determination
 
-**Use CLI commands to check status (do NOT manually inspect directories):**
-
-```bash
-# View project status
-spx spec status --format table
-
-# Get next work item (respects BSP ordering)
-spx spec next
-```
-
 Status is derived from `outcomes.yaml` state, not directory location.
 
 ## Test Co-location (CODE Framework)

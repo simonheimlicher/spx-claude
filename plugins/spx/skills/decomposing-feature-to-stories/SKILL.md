@@ -9,6 +9,8 @@ description: |
 Transform Feature specs into well-scoped Story specs by identifying which outcomes are atomic (should become stories) vs integration-level (should stay in feature). Each story is an atomic implementation unit—something that can be understood, implemented, and tested as a single coherent piece, expressible as Gherkin scenarios.
 
 **⚠️ CRITICAL:** Do NOT remove all outcomes from the feature. Features MUST keep their integration outcomes and quality gates. Only MOVE atomic outcomes to stories.
+
+**OUTCOMES, NOT TASKS.** Stories are OUTCOMES (states that should exist), not tasks (things to do).
 </objective>
 
 <prerequisite>
@@ -360,13 +362,37 @@ The same behavior can be one story or multiple:
 
 ## What NOT to Create as Stories
 
-| Anti-pattern               | Why wrong               | Fix                      |
-| -------------------------- | ----------------------- | ------------------------ |
-| "The login feature"        | Feature, not story      | Keep as feature          |
-| "Write tests"              | Meta task, not behavior | Part of all stories      |
-| "Refactor X"               | Technical task          | Tied to a behavior story |
-| "Fix bug in Y"             | Maintenance             | Tied to a behavior story |
-| Multiple behaviors bundled | Not atomic              | Split into stories       |
+**OUTCOMES, NOT TASKS.** Stories are states that should exist, not things to do.
+
+| Anti-pattern               | Why wrong          | Correct approach                                            |
+| -------------------------- | ------------------ | ----------------------------------------------------------- |
+| "ADR compliance"           | Task, not outcome  | ADR compliance is verified BY stories, not a separate story |
+| "Refactor to use X"        | Task, not outcome  | The outcome is the behavior; refactoring is HOW             |
+| "Write tests"              | Meta task          | Tests are PROOF of outcomes                                 |
+| "Fix bug in Y"             | Task framing       | Outcome: "Edge case Y handled correctly"                    |
+| "The login feature"        | Feature, not story | Keep as feature                                             |
+| Multiple behaviors bundled | Not atomic         | Split into stories                                          |
+
+**The ADR Compliance Anti-Pattern:**
+
+WRONG:
+
+```
+21-cordic-rotate.story/     # Rotate mode works
+37-cordic-vector.story/     # Vector mode works
+76-adr-compliance.story/    # ← NOT A STORY - this is a task
+```
+
+RIGHT:
+
+```
+21-cordic-rotate.story/     # Rotate mode works (ADR-compliant by design)
+37-cordic-vector.story/     # Vector mode works (ADR-compliant by design)
+# ADR compliance is verified by each story's tests
+# May also be a feature-level quality gate outcome
+```
+
+**ADR compliance IS an outcome** — verified through tests. But "make code comply with ADR" is a TASK, not an outcome.
 
 ## Signals You're at Wrong Level
 

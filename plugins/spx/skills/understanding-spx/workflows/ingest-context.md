@@ -201,9 +201,7 @@ Glob: "{story-path}/*.story.md"
 # Verify exactly one file found
 Read: {story-path}/{slug}.story.md
 
-# Check status using CLI (preferred method)
-spx spec status --format json
-# Or check specific work item status in the output
+# Check for outcomes.yaml and tests/ to determine status
 ```
 
 **Abort if**:

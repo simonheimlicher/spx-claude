@@ -12,10 +12,44 @@ Teach the human interpretation of CODE framework levels. This skill explains WHA
 
 <essential_principles>
 
+**OUTCOMES, NOT TASKS.**
+
+This is the most fundamental principle. The Product Tree contains OUTCOMES—states of the world that should exist—not tasks to be done.
+
+| WRONG (Task)                  | RIGHT (Outcome)                           |
+| ----------------------------- | ----------------------------------------- |
+| "Refactor to comply with ADR" | "System produces correct output"          |
+| "Fix bug in X"                | "Edge case Y handled correctly"           |
+| "Add error handling"          | "Invalid input returns clear error"       |
+| "Write tests"                 | Tests are PROOF of outcomes, not outcomes |
+
+**ADRs GOVERN, they don't implement.**
+
+- ADR = "when you do X, do it THIS way" — no outcomes, no work, no tests
+- NEED comes from stories/features/capabilities — they describe outcomes
+- ADR compliance is verified through the outcomes that stories deliver
+
+**SHARED NEED → ENABLER:**
+
+When multiple containers share a need, factor it into an ENABLER at the lowest convergence point:
+
+```
+54-component-library.capability/
+├── 54-fixed-point-format.adr.md       # GOVERNS (no tests here)
+├── 21-dsp-foundation.feature/         # ENABLER for shared need
+│   └── 21-fixed-point-helpers.story/  # Implements shared helpers
+│       └── tests/                     # Tests for the enabler
+├── 54-dsp-cordic.feature/             # DEPENDS ON enabler
+├── 76-dsp-nco.feature/                # DEPENDS ON enabler
+└── 87-dsp-cic.feature/                # DEPENDS ON enabler
+```
+
+The ADR doesn't get tests. The ENABLER that satisfies the shared need gets tests.
+
 **The Product Tree replaces the backlog.**
 
-- Writing a spec = creating potential energy
-- Passing tests = realizing potential (not "done", but "proven")
+- Writing a spec = creating potential energy (a state that should exist)
+- Passing tests = realizing potential (proving the state exists)
 - The tree grows coherently—ideas must connect to existing structure
 
 **The Concrete Ceiling:**
@@ -296,6 +330,35 @@ What to MOVE to stories:
 
 ```markdown
 ### 3. SPI master mode 0 works ← MOVE TO STORY (atomic)
+```
+
+### Mistake 5: Treating ADRs as Implementation
+
+**WRONG:** "Where do we test the ADR?" or "ADR compliance story"
+
+**ADRs GOVERN, they don't implement:**
+
+- ADRs create NO work, NO outcomes, NO tests
+- NEED comes from stories/features/capabilities
+- ADR compliance is verified through the outcomes stories deliver
+
+**The ENABLER pattern for shared needs:**
+
+```
+WRONG:
+54-component-library.capability/
+├── 54-fixed-point-format.adr.md
+└── tests/
+    └── test_adr_compliance.py    ← ADRs don't get tests!
+
+RIGHT:
+54-component-library.capability/
+├── 54-fixed-point-format.adr.md       # GOVERNS (no tests)
+├── 21-dsp-foundation.feature/         # ENABLER (has the NEED)
+│   └── 21-fixed-point-helpers.story/  # Satisfies shared need
+│       └── tests/                     # Tests verify outcomes
+├── 54-dsp-cordic.feature/             # Uses enabler
+└── 76-dsp-nco.feature/                # Uses enabler
 ```
 
 </common_mistakes>

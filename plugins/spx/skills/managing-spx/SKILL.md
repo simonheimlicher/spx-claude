@@ -134,9 +134,6 @@ spx/
 - **BSP numbering**: Binary Space Partitioning encodes dependency order—lower BSP items are dependencies that higher-BSP items may rely on; same BSP means independent
 - **Full paths required**: BSP numbers repeat at different levels (see `<bsp_full_paths>` below)
 - **Test co-location**: Tests stay in `spx/.../tests/` permanently (no graduation)
-- **Status rules** (use CLI, do NOT check manually):
-  - `spx spec status --format table` - View project status
-  - `spx spec next` - Get next work item (respects BSP ordering)
 
 </key_principles>
 
@@ -182,16 +179,6 @@ spx/
 <understanding_work_items>
 
 <three_states>
-**Use CLI commands to check status (do NOT manually inspect directories):**
-
-```bash
-# View project status
-spx spec status --format table
-
-# Get next work item (respects BSP ordering)
-spx spec next
-```
-
 Status values:
 
 | State           | Meaning          |
