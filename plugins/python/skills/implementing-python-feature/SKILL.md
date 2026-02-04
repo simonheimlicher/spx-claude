@@ -1,10 +1,10 @@
 ---
-name: orchestrating-python
-description: Orchestrate Python story implementation through specs, testing, coding, and review. Use when implementing features with multiple stories or when auto-implementing a feature.
+name: implementing-python-feature
+description: Implement Python stories in a feature through specs, testing, coding, and review. Use when implementing features with multiple stories or when auto-implementing a feature.
 ---
 
 <objective>
-Autonomous Python implementation orchestrator. Implements stories in a feature one after another, coordinating specs, testing, coding, and review skills in a strict sequence until all stories are complete.
+Autonomous Python feature implementer. Implements stories in a feature one after another, coordinating specs, testing, coding, and review skills in a strict sequence until all stories are complete.
 </objective>
 
 <essential_principles>

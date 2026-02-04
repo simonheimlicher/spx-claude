@@ -15,7 +15,7 @@ Your ONLY job: discover stories → spawn subagent → wait → repeat.
 </critical_rule>
 
 <objective>
-Orchestrate story implementation by spawning `python:orchestrating-python` subagents.
+Orchestrate story implementation by spawning `python:python-feature-implementer` subagents.
 </objective>
 
 <context>
@@ -38,9 +38,9 @@ Orchestrate story implementation by spawning `python:orchestrating-python` subag
 
    ```
    Task tool:
-     subagent_type: python:orchestrating-python
+     subagent_type: python:python-feature-implementer
      description: "Implement story-NN_slug"
-     prompt: "Implement the story at {full-story-path} using the orchestrating-python workflow exactly."
+     prompt: "Implement the story at {full-story-path} using the implementing-python-feature workflow exactly."
    ```
 
 4. **Wait for subagent completion**

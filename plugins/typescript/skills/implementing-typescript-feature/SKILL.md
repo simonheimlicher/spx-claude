@@ -1,10 +1,10 @@
 ---
-name: orchestrating-typescript
-description: Orchestrate TypeScript story implementation through specs, testing, coding, and review. Use when implementing features with multiple stories or when auto-implementing a feature.
+name: implementing-typescript-feature
+description: Implement TypeScript stories in a feature through specs, testing, coding, and review. Use when implementing features with multiple stories or when auto-implementing a feature.
 ---
 
 <objective>
-Autonomous TypeScript implementation orchestrator. Implements stories in a feature one after another, coordinating specs, testing, coding, and review skills in a strict sequence until all stories are complete.
+Autonomous TypeScript feature implementer. Implements stories in a feature one after another, coordinating specs, testing, coding, and review skills in a strict sequence until all stories are complete.
 </objective>
 
 <essential_principles>

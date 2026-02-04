@@ -15,7 +15,7 @@ Your ONLY job: discover stories → spawn subagent → wait → repeat.
 </critical_rule>
 
 <objective>
-Orchestrate story implementation by spawning `typescript:orchestrating-typescript` subagents.
+Orchestrate story implementation by spawning `typescript:typescript-feature-implementer` subagents.
 </objective>
 
 <context>
@@ -38,9 +38,9 @@ Orchestrate story implementation by spawning `typescript:orchestrating-typescrip
 
    ```
    Task tool:
-     subagent_type: typescript:orchestrating-typescript
+     subagent_type: typescript:typescript-feature-implementer
      description: "Implement story-NN_slug"
-     prompt: "Implement the story at {full-story-path} using the orchestrating-typescript workflow exactly."
+     prompt: "Implement the story at {full-story-path} using the implementing-typescript-feature workflow exactly."
    ```
 
 4. **Wait for subagent completion**
