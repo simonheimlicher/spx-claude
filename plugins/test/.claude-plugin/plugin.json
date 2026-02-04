@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Test strategy router: evidence-based level selection with strict rules for test doubles",
   "author": {
     "name": "Simon Heimlicher"

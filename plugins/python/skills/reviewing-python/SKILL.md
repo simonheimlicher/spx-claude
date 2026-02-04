@@ -665,11 +665,11 @@ spx/{capability}/{feature}/{story}/tests/*.py
 
 Test level is indicated by filename suffix:
 
-| Test Level  | Filename Pattern        | Example                   |
-| ----------- | ----------------------- | ------------------------- |
-| Unit        | `test_*.unit.py`        | `test_parsing.unit.py`    |
-| Integration | `test_*.integration.py` | `test_cli.integration.py` |
-| E2E         | `test_*.e2e.py`         | `test_workflow.e2e.py`    |
+| Test Level | Filename Pattern    | Example                    |
+| ---------- | ------------------- | -------------------------- |
+| Level 1    | `test_*.level_1.py` | `test_parsing.level_1.py`  |
+| Level 2    | `test_*.level_2.py` | `test_cli.level_2.py`      |
+| Level 3    | `test_*.level_3.py` | `test_workflow.level_3.py` |
 
 #### 6.2 Run Tests and Commit Outcome
 
@@ -710,10 +710,10 @@ Check the outcomes.yaml shows all tests passing:
 spec_blob: { sha }
 committed_at: { timestamp }
 tests:
-  - file: test_parsing.unit.py
+  - file: test_parsing.level_1.py
     blob: { sha }
     passed_at: { timestamp }
-  - file: test_cli.integration.py
+  - file: test_cli.level_2.py
     blob: { sha }
     passed_at: { timestamp }
 ```

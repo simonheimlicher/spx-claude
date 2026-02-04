@@ -70,7 +70,7 @@ Extract file paths from arguments. For each path:
 
 ```text
 src/mymodule/handler.py → tests/unit/mymodule/test_handler.py
-                        → or: src/mymodule/tests/test_handler.unit.py (if spx/ style)
+                        → or: src/mymodule/tests/test_handler.level_1.py (if spx/ style)
 ```
 
 ---

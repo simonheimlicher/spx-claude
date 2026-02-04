@@ -110,7 +110,7 @@ Continue until all stories in the feature are implemented and approved.
 2. **Check for integration tests** (Level 2 harness references)
 3. **If Level 2 tests are specified:**
    - Implement each test following the spec's Gherkin
-   - Tests go in the feature's `tests/` directory with `test_*.integration.py` naming
+   - Tests go in the feature's `tests/` directory with `test_*.level_2.py` naming
    - Use real infrastructure via test harnesses (no mocking)
    - Run tests: `uv run --extra dev pytest spx/{capability}/{feature}/tests/ -v`
 4. **If no Level 2 tests specified:** Feature uses Level 1 only (documented in Test Strategy section)
@@ -140,7 +140,7 @@ Continue until all features in the capability are implemented.
 2. **Check for E2E tests** (Level 3 harness references)
 3. **If Level 3 tests are specified:**
    - Implement each test following the spec's Gherkin
-   - Tests go in the capability's `tests/` directory with `test_*.e2e.py` naming
+   - Tests go in the capability's `tests/` directory with `test_*.level_3.py` naming
    - Use real credentials and services (full user workflows)
    - Run tests: `uv run --extra dev pytest spx/{capability}/tests/ -v`
 4. **If no Level 3 tests specified:** Capability uses Level 1-2 only (documented in Test Strategy section)
@@ -201,7 +201,7 @@ Run `spx spx commit` to update the capability's outcomes.yaml:
 - `[→]` = In progress
 - `[pending]` = Not started or tests not passing
 - Tests live in each container's `tests/` directory
-- Level indicated by test filename suffix (`test_*.unit.py`, `test_*.integration.py`, `test_*.e2e.py`)
+- Level indicated by test filename suffix (`test_*.level_1.py`, `test_*.level_2.py`, `test_*.level_3.py`)
 
 Update this tracking as you complete each work item.
 

@@ -1,6 +1,6 @@
 ---
 name: creating-skills
-description: Create and refine Claude Code Skills. Use when creating skills, writing SKILL.md files, or improving existing skills.
+description: Create and refine Claude Code Skills. Use when user asks you to create a skill, write a SKILL.md file, or improve a skill.
 ---
 
 <accessing_skill_files>

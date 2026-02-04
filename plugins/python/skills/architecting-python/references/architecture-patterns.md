@@ -431,10 +431,10 @@ project/
     ├── CLAUDE.md           # Navigation and work item management
     └── NN-{slug}.capability/
         └── NN-{slug}.feature/
-            └── tests/      # Co-located tests with prefix naming
-                ├── test_foo.unit.py
-                ├── test_bar.integration.py
-                └── test_baz.e2e.py
+            └── tests/      # Co-located tests with level suffix naming
+                ├── test_foo.level_1.py
+                ├── test_bar.level_2.py
+                └── test_baz.level_3.py
 ```
 
 **Key**: Test utilities in `mypackage_testing/` are installed via `uv pip install -e ".[dev]"`. Co-located tests in `spx/.../tests/` import from `mypackage_testing.fixtures`. See `test-infrastructure-patterns.md`.

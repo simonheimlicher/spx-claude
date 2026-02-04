@@ -15,13 +15,24 @@ If you can answer that question, the tests are **REJECTED**.
 </objective>
 
 <quick_start>
-Review protocol has 5 phases - stop at first rejection:
+**PREREQUISITE**: Reference these skills when reporting findings:
+
+- `/testing` - Methodology (5 stages, 5 factors, 7 exceptions)
+- `/standardizing-python-testing` - Python testing standards
+
+Review protocol has 6 phases - stop at first rejection:
 
 1. **Spec structure validation** - Gherkin format, test links exist, level appropriateness
 2. **Evidentiary integrity** - Adversarial test, dependency handling, harness verification
-3. **Lower-level assumptions** - Check for stories/features, evaluate coverage
-4. **ADR compliance** - Identify applicable ADRs, verify constraints
-5. **Test quality** - Type annotations, no mocking, magic values
+3. **Property-based testing** - MANDATORY for parsers, serializers, math, complex algorithms
+4. **Lower-level assumptions** - Check for stories/features, evaluate coverage
+5. **ADR compliance** - Identify applicable ADRs, verify constraints
+6. **Test quality** - Type annotations, no mocking, magic values
+
+When reporting findings, cite source skills:
+
+- "Per /testing Stage 2 Factor 2, database dependency requires Level 2"
+- "Per /standardizing-python-testing, parsers MUST have property-based tests"
 
 Use bash commands to verify:
 
@@ -34,6 +45,9 @@ grep -rn "pytest.mark.skipif" {test_dir}
 
 # Find mocking (any = REJECT)
 grep -rn "@patch\|Mock()\|MagicMock" {test_dir}
+
+# Find property-based tests (REQUIRED for parsers/serializers)
+grep -rn "@given\|hypothesis" {test_dir}
 ```
 
 </quick_start>
@@ -94,14 +108,14 @@ Each outcome MUST have a Test Files table with valid Markdown links:
 ```markdown
 | File                                            | Level | Harness |
 | ----------------------------------------------- | ----- | ------- |
-| [test_uart_tx.unit](tests/test_uart_tx.unit.py) | 1     | -       |
+| [test_uart_tx.level_1](tests/test_uart_tx.level_1.py) | 1     | -       |
 ````
 
 **Check:**
 
 1. Link syntax is valid Markdown: `[display](path)`
 2. Linked file EXISTS at specified path
-3. Level matches filename suffix (`.unit.py` = Level 1, `.integration.py` = Level 2, `.e2e.py` = Level 3)
+3. Level matches filename suffix (`.level_1.py` = Level 1, `.level_2.py` = Level 2, `.level_3.py` = Level 3)
 
 ```bash
 # Verify linked files exist
@@ -212,10 +226,81 @@ ls -la {harness_path}
 If any check fails, STOP and REJECT with detailed findings.
 </phase>
 
+<phase name="property_based_testing">
+Per `/testing` and `/standardizing-python-testing`, property-based testing is **MANDATORY** for:
+
+| Code Type               | Required Property        | Hypothesis Pattern        |
+| ----------------------- | ------------------------ | ------------------------- |
+| Parsers                 | `parse(format(x)) == x`  | `@given(st.text())`       |
+| Serialization           | `decode(encode(x)) == x` | `@given(valid_objects())` |
+| Mathematical operations | Algebraic properties     | `@given(st.integers())`   |
+| Complex algorithms      | Invariant preservation   | `@given(valid_inputs())`  |
+
+**3.1 Identify Applicable Code Types**
+
+```bash
+# Find parsers and serializers
+grep -rn "def parse\|def encode\|def decode\|def serialize\|def deserialize" {src_dir}
+
+# Check if tests have property-based coverage
+grep -rn "@given\|from hypothesis" {test_dir}
+```
+
+**3.2 Evaluate Coverage**
+
+For each identified parser/serializer/math operation:
+
+| Found                                      | Verdict    |
+| ------------------------------------------ | ---------- |
+| `@given` decorator with roundtrip property | ✓ PASS     |
+| Only example-based tests                   | **REJECT** |
+| No tests at all                            | **REJECT** |
+
+**Example rejection:**
+
+```python
+# ❌ REJECT: Parser with only example-based tests
+def test_parse_json_simple() -> None:
+    result = parse('{"key": "value"}')
+    assert result == {"key": "value"}
+
+
+# Missing: @given(st.text()) + roundtrip property
+```
+
+**3.3 Verify Property Quality**
+
+Property tests must test meaningful properties, not just "doesn't crash":
+
+```python
+# ❌ REJECT: Trivial property (only tests "doesn't crash")
+@given(st.text())
+def test_parse_doesnt_crash(text: str) -> None:
+    try:
+        parse(text)
+    except ParseError:
+        pass  # Expected for invalid input
+
+
+# ✅ ACCEPT: Meaningful roundtrip property
+@given(valid_json_values())
+def test_roundtrip(value: JsonValue) -> None:
+    assert parse(format(value)) == value
+```
+
+**GATE 3**: Before proceeding to Phase 4, verify:
+
+- [ ] Identified all parsers, serializers, math operations, complex algorithms in code under test
+- [ ] Ran grep for `@given` patterns in test files
+- [ ] Each applicable code type has property-based tests with meaningful properties
+
+If any check fails, STOP and REJECT with detailed findings citing `/standardizing-python-testing`.
+</phase>
+
 <phase name="lower_level_assumptions">
 Features assume stories have tested what can be tested at story level. Capabilities assume features have done their job.
 
-**3.1 Check for Lower-Level Specs**
+**4.1 Check for Lower-Level Specs**
 
 ```bash
 # For a feature, check if stories exist
@@ -225,7 +310,7 @@ ls -d {feature_path}/*-*.story/ 2>/dev/null
 ls -d {capability_path}/*-*.feature/ 2>/dev/null
 ```
 
-**3.2 Evaluate Assumptions**
+**4.2 Evaluate Assumptions**
 
 | Scenario                              | Action                                                            |
 | ------------------------------------- | ----------------------------------------------------------------- |
@@ -237,7 +322,7 @@ ls -d {capability_path}/*-*.feature/ 2>/dev/null
 
 **If spec contains language about missing/pending specs**: REJECT. Specs are not working documents.
 
-**3.3 Integration Test Assumptions**
+**4.3 Integration Test Assumptions**
 
 For integration tests (Level 2), verify they don't duplicate story-level evidence:
 
@@ -249,7 +334,7 @@ For integration tests (Level 2), verify they don't duplicate story-level evidenc
 
 **If integration tests are doing story-level work because stories don't exist**: Note as structural issue. Tests may be legitimately coarse in transitional state, but this should be flagged.
 
-**GATE 3**: Before proceeding to Phase 4, verify:
+**GATE 4**: Before proceeding to Phase 5, verify:
 
 - [ ] Checked for lower-level specs (stories within features, features within capabilities)
 - [ ] No "pending" or "will be added" language in spec
@@ -261,7 +346,7 @@ If any check fails, STOP and REJECT with detailed findings.
 <phase name="adr_compliance">
 Check test code against architectural decisions.
 
-**4.1 Identify Applicable ADRs**
+**5.1 Identify Applicable ADRs**
 
 ```bash
 # Find ADRs referenced in spec
@@ -272,7 +357,7 @@ ls {capability_path}/*.adr.md
 ls {feature_path}/*.adr.md 2>/dev/null
 ```
 
-**4.2 Verify Compliance**
+**5.2 Verify Compliance**
 
 For each ADR, check test code follows its constraints:
 
@@ -284,7 +369,7 @@ For each ADR, check test code follows its constraints:
 
 **If tests violate ADR constraints**: REJECT.
 
-**GATE 4**: Before proceeding to Phase 5, verify:
+**GATE 5**: Before proceeding to Phase 6, verify:
 
 - [ ] Identified all applicable ADRs (spec references + ancestry)
 - [ ] Ran grep for each ADR constraint against test files
@@ -294,9 +379,9 @@ If any check fails, STOP and REJECT with detailed findings.
 </phase>
 
 <phase name="test_quality">
-Verify tests follow Python testing patterns.
+Verify tests follow Python testing patterns per `/standardizing-python-testing`.
 
-**5.1 Type Annotations**
+**6.1 Type Annotations**
 
 ```bash
 # Find test functions missing return type
@@ -305,7 +390,7 @@ grep -rn "def test_" {test_dir} | grep -v "-> None"
 
 **All test functions MUST have `-> None` return type annotation.**
 
-**5.2 No Mocking**
+**6.2 No Mocking**
 
 ```bash
 # Find mocking patterns
@@ -314,7 +399,7 @@ grep -rn "@patch\|Mock()\|MagicMock\|mocker\." {test_dir}
 
 **Any mocking = REJECT.** Use dependency injection instead.
 
-**5.3 Magic Values**
+**6.3 Magic Values**
 
 ```bash
 # Find assertions with magic numbers (PLR2004)
@@ -323,14 +408,14 @@ grep -rn "assert.*==" {test_dir} | grep -E "[0-9]+"
 
 **Magic values in assertions should use named constants.**
 
-**5.4 Test Organization**
+**6.4 Test Organization**
 
 - [ ] Test class/function names describe the scenario
 - [ ] Assertions verify outcomes, not implementation
 - [ ] Fixtures clean up after themselves
 - [ ] No hardcoded paths or environment-specific values
 
-**GATE 5 (FINAL)**: Before issuing verdict, verify:
+**GATE 6 (FINAL)**: Before issuing verdict, verify:
 
 - [ ] All test functions have `-> None` return type
 - [ ] No mocking patterns found
@@ -354,7 +439,7 @@ Failures from actual usage:
 **Failure 2: Missed broken test links**
 
 - What happened: Agent checked link syntax but didn't verify files exist
-- Why it failed: Spec had `[test_foo.unit](tests/test_foo.unit.py)` but file was actually named `test_foo_unit.py`
+- Why it failed: Spec had `[test_foo.level_1](tests/test_foo.level_1.py)` but file was actually named `test_foo_level_1.py`
 - How to avoid: Run `ls -la {container}/tests/{file}` for EVERY linked file in Phase 1.2. Don't trust link syntax alone.
 
 **Failure 3: Approved tests that mocked the SUT**
@@ -375,6 +460,12 @@ Failures from actual usage:
 - Why it failed: Multiple stories share one implementation file; per-story coverage is meaningless
 - How to avoid: Always compare coverage at the implementation file level, not story level
 
+**Failure 6: Approved parser without property-based tests**
+
+- What happened: Agent saw comprehensive example-based tests for a JSON parser, approved
+- Why it failed: Example tests don't catch edge cases that property-based tests would find (Unicode, escaping, deeply nested structures)
+- How to avoid: Per `/standardizing-python-testing`, parsers MUST have property-based tests. Run `grep -rn "@given" {test_dir}` and verify roundtrip properties exist.
+
 </failure_modes>
 
 <concrete_examples>
@@ -394,9 +485,9 @@ WHEN a byte 0x55 is written to the input stream
 THEN the TX line outputs start bit, 8 data bits (LSB first), and stop bit
 ````
 
-$ ls -la tests/test_uart_tx.unit.py
--rw-r--r-- 1 user group 2847 Jan 15 10:23 tests/test_uart_tx.unit.py
-✓ File exists, Level 1 matches .unit.py suffix
+$ ls -la tests/test_uart_tx.level_1.py
+-rw-r--r-- 1 user group 2847 Jan 15 10:23 tests/test_uart_tx.level_1.py
+✓ File exists, Level 1 matches .level_1.py suffix
 
 ````
 Phase 2 checks:
@@ -431,14 +522,14 @@ Phase 2.2 finds silent skip:
 
 ```bash
 $ grep -rn "pytest.mark.skipif" tests/
-tests/test_verilog_gen.unit.py:15:@pytest.mark.skipif(not verilator_available(), reason="Verilator not available")
+tests/test_verilog_gen.level_1.py:15:@pytest.mark.skipif(not verilator_available(), reason="Verilator not available")
 ```
 
 **Verdict: REJECT**
 
-| # | Category    | Location                    | Issue                         | Required Fix                                     |
-| - | ----------- | --------------------------- | ----------------------------- | ------------------------------------------------ |
-| 1 | Silent Skip | test_verilog_gen.unit.py:15 | skipif on required dependency | Change to pytest.fail() if verilator unavailable |
+| # | Category    | Location                       | Issue                         | Required Fix                                     |
+| - | ----------- | ------------------------------ | ----------------------------- | ------------------------------------------------ |
+| 1 | Silent Skip | test_verilog_gen.level_1.py:15 | skipif on required dependency | Change to pytest.fail() if verilator unavailable |
 
 **How Tests Could Pass While Outcome Fails:**
 
@@ -520,18 +611,21 @@ All outcomes have genuine evidentiary coverage at appropriate levels.
 <rejection_triggers>
 Quick reference for common rejection triggers:
 
-| Category           | Trigger                           | Verdict |
-| ------------------ | --------------------------------- | ------- |
-| **Spec Structure** | Code examples in spec             | REJECT  |
-| **Spec Structure** | Missing or broken test file links | REJECT  |
-| **Spec Structure** | Language about "pending" specs    | REJECT  |
-| **Level**          | Outcome tested at wrong level     | REJECT  |
-| **Dependencies**   | `skipif` on required dependency   | REJECT  |
-| **Dependencies**   | Harness referenced but missing    | REJECT  |
-| **ADR**            | Test violates ADR constraint      | REJECT  |
-| **Python**         | Missing `-> None` on test         | REJECT  |
-| **Python**         | Mocking (`@patch`, `Mock()`)      | REJECT  |
-| **Evidentiary**    | Test can pass with broken impl    | REJECT  |
+| Category           | Trigger                                    | Verdict |
+| ------------------ | ------------------------------------------ | ------- |
+| **Spec Structure** | Code examples in spec                      | REJECT  |
+| **Spec Structure** | Missing or broken test file links          | REJECT  |
+| **Spec Structure** | Language about "pending" specs             | REJECT  |
+| **Level**          | Outcome tested at wrong level              | REJECT  |
+| **Dependencies**   | `skipif` on required dependency            | REJECT  |
+| **Dependencies**   | Harness referenced but missing             | REJECT  |
+| **Property-Based** | Parser without `@given` roundtrip test     | REJECT  |
+| **Property-Based** | Serializer without `@given` roundtrip test | REJECT  |
+| **Property-Based** | Math operation without property tests      | REJECT  |
+| **ADR**            | Test violates ADR constraint               | REJECT  |
+| **Python**         | Missing `-> None` on test                  | REJECT  |
+| **Python**         | Mocking (`@patch`, `Mock()`)               | REJECT  |
+| **Evidentiary**    | Test can pass with broken impl             | REJECT  |
 
 </rejection_triggers>
 
@@ -539,8 +633,9 @@ Quick reference for common rejection triggers:
 Task is complete when:
 
 - [ ] Verdict is APPROVE or REJECT (no middle ground)
-- [ ] All 5 phases executed in order (or stopped at first REJECT)
+- [ ] All 6 phases executed in order (or stopped at first REJECT)
 - [ ] All gates passed (or documented why gate failed)
+- [ ] Property-based test coverage verified for parsers/serializers/math/algorithms
 - [ ] Each rejection reason has file:line location
 - [ ] Evidentiary gap explained (how tests could pass while outcome fails)
 - [ ] Output follows specified format (APPROVE or REJECT template)

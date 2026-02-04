@@ -1,6 +1,6 @@
 ---
 name: auditing-skills
-description: Audit SKILL.md files for best practices. Use when auditing, reviewing, or evaluating skills for compliance.
+description: Review and audit skills for best practices. Use when user asks you to audit a skill, audit all skills, review a skill, review all skills
 allowed-tools: Read, Grep, Glob
 model: sonnet
 ---
