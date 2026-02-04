@@ -1,7 +1,7 @@
 {
   "name": "spx",
-  "version": "0.2.5",
-  "description": "Spec-driven development: PRDs, ADRs, capabilities, features, stories",
+  "version": "0.3.0",
+  "description": "Customer Outcome Driven Engineering (CODE) framework: PRDs, ADRs, capabilities, features, stories",
   "author": {
     "name": "Simon Heimlicher"
   },
