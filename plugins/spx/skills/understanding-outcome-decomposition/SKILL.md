@@ -29,6 +29,25 @@ This is the most fundamental principle. The Product Tree contains OUTCOMES—sta
 - NEED comes from stories/features/capabilities — they describe outcomes
 - ADR compliance is verified through code review, not through testing
 
+**STORIES REQUIRED FOR IMPLEMENTATION.**
+
+A feature without stories is NOT ready for implementation—regardless of whether code already exists.
+
+- Implementation STARTS at the story level, never at feature level
+- Story-level tests provide atomic verification and property-based testing
+- Feature-level tests alone are insufficient—they rarely cover edge cases
+- **Existing passing tests do not validate missing stories**
+
+```
+WRONG: "Implementation exists and passes tests, so flat structure is fine"
+RIGHT: "Feature needs stories before any implementation can be verified"
+
+WRONG: "Feature-level tests are comprehensive enough"
+RIGHT: "Only story-level tests enable atomic verification and property-based testing"
+```
+
+If you encounter a feature with implementation but no stories: **recommend decomposition**, not acceptance.
+
 **SHARED NEED → ENABLER:**
 
 When **2+ containers** share a need, factor it into an ENABLER at the lowest convergence point:
@@ -363,6 +382,37 @@ RIGHT:
 └── 76-dsp-nco.feature/                # Uses enabler
 ```
 
+### Mistake 6: Assuming Existing Implementation Validates Missing Stories
+
+**WRONG reasoning:**
+
+```
+"Implementation exists and is functional"
+"Tests are comprehensive"
+"Structure is flat - all tests at feature level"
+"This may be intentional for a completed feature"
+```
+
+**Why this is wrong:**
+
+1. **Existence of code doesn't validate structure** - The CODE framework requires stories regardless of implementation state
+2. **Feature-level tests are never "comprehensive enough"** - They rarely do property-based testing, edge case coverage, or atomic verification
+3. **"Flat structure works" is backlog thinking** - Specs are permanent documentation, not work tracking
+4. **Completed ≠ correctly structured** - Legacy code often lacks proper decomposition
+
+**RIGHT response when finding implementation without stories:**
+
+```
+"Feature has implementation but no stories. This violates CODE framework.
+Recommend decomposing into stories to enable:
+- Atomic verification of each behavior
+- Property-based testing at story level
+- Clear specification of edge cases
+- Independent verification of each unit"
+```
+
+**The test:** If a feature has `tests/` but no `*.story/` directories, it needs decomposition—regardless of whether tests pass.
+
 </common_mistakes>
 
 <what_goes_where>
@@ -406,5 +456,6 @@ Skill mastery demonstrated when:
 - [ ] Understands that test levels and container levels are orthogonal
 - [ ] Can decompose a capability into features, features into stories
 - [ ] Knows that small trees (1-1-1) are valid starting points
+- [ ] **Recommends decomposition when finding features with implementation but no stories**
 
 </success_criteria>
