@@ -125,6 +125,13 @@ Read: [ADR path]
 - Capability spec missing BUT PRD exists at this level
 - Prompt: "Found PRD but no capability.md - create spec from it?"
 
+**Enumerate Features (ALWAYS)**:
+
+```bash
+# CRITICAL: Use ls or find for directories, NOT Glob
+ls -d {capability-path}/*.feature/ 2>/dev/null || echo "No features found"
+```
+
 **Output**:
 
 ```
@@ -134,6 +141,9 @@ Capability Context Loaded: 10-cli.capability
   - Capability ADRs: 2
     - [Commander Pattern](21-commander-pattern.adr.md)
     - [Config Loading](37-config-loading.adr.md)
+  - Features: 2
+    - 20-commands.feature/
+    - 37-plugins.feature/
 ```
 
 ---
@@ -170,6 +180,19 @@ Read: [ADR path]
 
 **Note**: Technical details belong in feature.md. No separate TRD documents.
 
+**Enumerate Stories (ALWAYS, even if not descending to story level)**:
+
+```bash
+# CRITICAL: Use ls to find directories, NOT Glob
+# Glob matches files, not directories - story directories won't appear!
+ls -d {feature-path}/*.story/ 2>/dev/null || echo "No stories found"
+
+# Alternative: find command
+find {feature-path} -maxdepth 1 -type d -name "*.story"
+```
+
+**If no stories found**: Feature is NOT ready for implementation. Recommend decomposition using `/decomposing-feature-to-stories`.
+
 **Output**:
 
 ```
@@ -177,6 +200,10 @@ Feature Context Loaded: 20-commands.feature
   - commands.feature.md
   - Feature ADRs: 1
     - [Subcommand Structure](21-subcommand-structure.adr.md)
+  - Stories: 3
+    - 21-parse-flags.story/
+    - 37-execute-command.story/
+    - 54-output-format.story/
 ```
 
 ---
@@ -191,7 +218,6 @@ Feature Context Loaded: 20-commands.feature
 
 - `{story-path}/{slug}.story.md` MUST EXIST
 - `{story-path}/tests/` directory Should exist for in-progress work
-- `{story-path}/outcomes.yaml` Test verification ledger (may not exist yet)
 
 **Actions**:
 
@@ -201,7 +227,7 @@ Glob: "{story-path}/*.story.md"
 # Verify exactly one file found
 Read: {story-path}/{slug}.story.md
 
-# Check for outcomes.yaml and tests/ to determine status
+# Check for tests/ directory to understand coverage
 ```
 
 **Abort if**:
@@ -209,16 +235,12 @@ Read: {story-path}/{slug}.story.md
 - Story spec missing
 - Multiple story specs found (ambiguous)
 
-**Warning if**:
-
-- Working on completed story (all tests in outcomes.yaml passing)
-
 **Output**:
 
 ```
 Story Context Loaded: 30-build.story
   - build.story.md
-  - outcomes.yaml: 3 tests passing
+  - tests/ directory: exists
 ```
 
 ---
@@ -266,7 +288,6 @@ Story Context Loaded: 30-build.story
 
 - **Spec**: 30-build.story/build.story.md
 - **Tests**: tests/ directory exists
-- **Outcome ledger**: outcomes.yaml (3 tests passing)
 
 ## Constraints Summary
 
