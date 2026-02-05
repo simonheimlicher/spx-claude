@@ -1,6 +1,6 @@
 ---
 name: standardizing-python-testing
-description: Python testing standards enforced across all skills. Reference skill for property-based testing, factories, markers, harness patterns, and level-specific implementations.
+description: Python testing standards enforced across all skills. Reference skill for property-based testing, factories, harness patterns, and level-specific implementations.
 allowed-tools: Read
 ---
 
@@ -17,8 +17,7 @@ Reference this skill for:
 - **Exception implementations** - The 7 exception cases from `/testing` in Python
 - **Property-based testing** - MANDATORY for parsers, serializers, math, algorithms
 - **Data factories** - NO magic values, use factories with constants
-- **Test markers** - `@pytest.mark.level_N`
-- **File naming** - `.level_1.py`, `.level_2.py`, `.level_3.py`
+- **File naming** - `.unit.py`, `.integration.py`, `.e2e.py` (level indicated by filename, no markers needed)
 - **DI patterns** - Protocols and dataclass dependencies
 - **Harness patterns** - Docker, subprocess, binary harnesses
 - **Test signatures** - `-> None`, type annotations
@@ -326,7 +325,6 @@ def reset_database(database: PostgresHarness) -> None:
     database.reset()
 
 
-@pytest.mark.level_2
 def test_user_repository_saves_and_retrieves(database: PostgresHarness) -> None:
     repo = UserRepository(database.connection_string)
     user = User(email="test@example.com", name="Test User")
@@ -362,7 +360,6 @@ class HugoHarness:
         )
 
 
-@pytest.mark.level_2
 def test_builds_site_successfully(hugo: HugoHarness) -> None:
     result = hugo.build()
     assert result.returncode == 0
@@ -457,7 +454,6 @@ skip_no_creds = pytest.mark.skipif(
 
 
 @skip_no_creds
-@pytest.mark.level_3
 def test_full_sync_workflow(dropbox_test_folder: str) -> None:
     result = sync_to_dropbox(local_path, dropbox_test_folder)
     assert result.success
@@ -629,59 +625,15 @@ def test_admin_can_delete_users() -> None:
 
 </data_factories>
 
-<test_markers>
-All tests MUST be marked with their level using pytest markers. See `/testing` for level definitions.
-
-### Marker Usage
-
-```python
-import pytest
-
-
-# ✅ REQUIRED: Mark every test with its level
-@pytest.mark.level_1
-def test_validates_empty_order() -> None: ...
-
-
-@pytest.mark.level_2
-def test_saves_to_database(database: PostgresHarness) -> None: ...
-
-
-@pytest.mark.level_3
-def test_full_checkout_flow(credentials: dict) -> None: ...
-```
-
-### pytest Configuration
-
-```toml
-# pyproject.toml
-[tool.pytest.ini_options]
-testpaths = ["spx"]
-python_files = ["test_*.py"]
-markers = [
-  "level_1: See /testing for level definitions",
-  "level_2: See /testing for level definitions",
-  "level_3: See /testing for level definitions",
-]
-
-# Run by level:
-# pytest -m level_1    # Level 1 only
-# pytest -m level_2    # Level 2 only
-# pytest -m level_3    # Level 3 only
-# pytest               # All tests
-```
-
-</test_markers>
-
 <file_naming>
 Test level is indicated by filename suffix:
 
-| Level | Suffix             | Example                                 |
-| ----- | ------------------ | --------------------------------------- |
-| 1     | `.level_1.py`      | `test_validation.level_1.py`            |
-| 2     | `.level_2.py`      | `test_database.level_2.py`              |
-| 3     | `.level_3.py`      | `test_checkout.level_3.py`              |
-| 3     | `.level_3.spec.py` | `checkout.level_3.spec.py` (Playwright) |
+| Level | Suffix            | Example                             |
+| ----- | ----------------- | ----------------------------------- |
+| 1     | `.unit.py`        | `test_validation.unit.py`           |
+| 2     | `.integration.py` | `test_database.integration.py`      |
+| 3     | `.e2e.py`         | `test_checkout.e2e.py`              |
+| 3     | `.e2e.spec.py`    | `checkout.e2e.spec.py` (Playwright) |
 
 ### Directory Structure
 
@@ -691,9 +643,9 @@ spx/
     └── {feature}/
         ├── {feature}.md
         └── tests/
-            ├── test_{name}.level_1.py
-            ├── test_{name}.level_2.py
-            └── test_{name}.level_3.py
+            ├── test_{name}.unit.py
+            ├── test_{name}.integration.py
+            └── test_{name}.e2e.py
 ```
 
 </file_naming>
@@ -840,7 +792,7 @@ def require_credentials() -> dict:
 
 
 # ✅ CORRECT: Fail loudly if credentials required but missing
-@pytest.mark.level_3
+# File: test_payment.e2e.py
 def test_charges_card() -> None:
     creds = require_credentials()
     client = StripeClient(creds["key"])
@@ -849,8 +801,8 @@ def test_charges_card() -> None:
 
 
 # ❌ REJECTED: Silent skip on required credentials
+# File: test_payment.e2e.py
 @pytest.mark.skipif(not load_credentials(), reason="No credentials")
-@pytest.mark.level_3
 def test_charges_card_bad() -> (
     None
 ): ...  # CI goes green with zero payment verification!
@@ -881,7 +833,7 @@ def test_parses_user_response() -> None:
     assert user.id == 1
 
 
-@pytest.mark.level_3
+# File: test_api.e2e.py
 def test_fetches_real_user(test_credentials: dict) -> None:
     # Level 3: Test against real API
     client = ApiClient(credentials=test_credentials)
@@ -936,10 +888,9 @@ def test_verbose_mode_produces_detailed_output() -> None:
 | Missing property tests for parser  | `test_parse_json` without `@given`        | Mandatory for parsers |
 | Magic values in assertions         | `assert score == 45`                      | PLR2004               |
 | Missing `-> None` on test          | `def test_foo(self):`                     | ANN201                |
-| Missing marker                     | No `@pytest.mark.level_N`                 | Level not indicated   |
 | Mocking                            | `@patch("module.func")`                   | Use DI instead        |
 | Silent skip on required dependency | `@pytest.mark.skipif(not has_postgres())` | Must fail, not skip   |
-| Wrong filename suffix              | `test_db.py` for Level 2 test             | Use `.level_2.py`     |
+| Wrong filename suffix              | `test_db.py` for integration test         | Use `.integration.py` |
 | Untyped fixture parameter          | `def test_foo(tmp_path) -> None:`         | ANN001                |
 
 </rejection_criteria>
@@ -949,10 +900,9 @@ Code follows these standards when:
 
 - [ ] Parsers, serializers, math operations have property-based tests with `@given`
 - [ ] Test data uses factories with named constants (no magic values)
-- [ ] All tests marked with `@pytest.mark.level_N`
-- [ ] File names indicate level (`.level_1.py`, `.level_2.py`, `.level_3.py`)
+- [ ] File names indicate level (`.unit.py`, `.integration.py`, `.e2e.py`)
 - [ ] DI uses Protocols, not mocking
-- [ ] Level 2 tests use harnesses with real dependencies
+- [ ] Integration tests use harnesses with real dependencies
 - [ ] All test functions have `-> None` return type
 - [ ] All fixture parameters have type annotations
 - [ ] Required credentials fail loudly, not skip silently

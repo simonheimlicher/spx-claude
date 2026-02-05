@@ -106,16 +106,16 @@ def test_uart_tx():
 Each outcome MUST have a Test Files table with valid Markdown links:
 
 ```markdown
-| File                                            | Level | Harness |
-| ----------------------------------------------- | ----- | ------- |
-| [test_uart_tx.level_1](tests/test_uart_tx.level_1.py) | 1     | -       |
+| File                                       | Level | Harness |
+| ------------------------------------------ | ----- | ------- |
+| [test_uart_tx.unit](tests/test_uart_tx.unit.py) | 1     | -       |
 ````
 
 **Check:**
 
 1. Link syntax is valid Markdown: `[display](path)`
 2. Linked file EXISTS at specified path
-3. Level matches filename suffix (`.level_1.py` = Level 1, `.level_2.py` = Level 2, `.level_3.py` = Level 3)
+3. Level matches filename suffix (`.unit.py` = Level 1, `.integration.py` = Level 2, `.e2e.py` = Level 3)
 
 ```bash
 # Verify linked files exist
@@ -439,7 +439,7 @@ Failures from actual usage:
 **Failure 2: Missed broken test links**
 
 - What happened: Agent checked link syntax but didn't verify files exist
-- Why it failed: Spec had `[test_foo.level_1](tests/test_foo.level_1.py)` but file was actually named `test_foo_level_1.py`
+- Why it failed: Spec had `[test_foo.unit](tests/test_foo.unit.py)` but file was actually named `test_foo_unit.py`
 - How to avoid: Run `ls -la {container}/tests/{file}` for EVERY linked file in Phase 1.2. Don't trust link syntax alone.
 
 **Failure 3: Approved tests that mocked the SUT**
@@ -485,9 +485,9 @@ WHEN a byte 0x55 is written to the input stream
 THEN the TX line outputs start bit, 8 data bits (LSB first), and stop bit
 ````
 
-$ ls -la tests/test_uart_tx.level_1.py
--rw-r--r-- 1 user group 2847 Jan 15 10:23 tests/test_uart_tx.level_1.py
-✓ File exists, Level 1 matches .level_1.py suffix
+$ ls -la tests/test_uart_tx.unit.py
+-rw-r--r-- 1 user group 2847 Jan 15 10:23 tests/test_uart_tx.unit.py
+✓ File exists, Level 1 matches .unit.py suffix
 
 ````
 Phase 2 checks:
@@ -522,14 +522,14 @@ Phase 2.2 finds silent skip:
 
 ```bash
 $ grep -rn "pytest.mark.skipif" tests/
-tests/test_verilog_gen.level_1.py:15:@pytest.mark.skipif(not verilator_available(), reason="Verilator not available")
+tests/test_verilog_gen.unit.py:15:@pytest.mark.skipif(not verilator_available(), reason="Verilator not available")
 ```
 
 **Verdict: REJECT**
 
-| # | Category    | Location                       | Issue                         | Required Fix                                     |
-| - | ----------- | ------------------------------ | ----------------------------- | ------------------------------------------------ |
-| 1 | Silent Skip | test_verilog_gen.level_1.py:15 | skipif on required dependency | Change to pytest.fail() if verilator unavailable |
+| # | Category    | Location                    | Issue                         | Required Fix                                     |
+| - | ----------- | --------------------------- | ----------------------------- | ------------------------------------------------ |
+| 1 | Silent Skip | test_verilog_gen.unit.py:15 | skipif on required dependency | Change to pytest.fail() if verilator unavailable |
 
 **How Tests Could Pass While Outcome Fails:**
 

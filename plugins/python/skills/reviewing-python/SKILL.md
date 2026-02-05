@@ -733,11 +733,11 @@ spx/{capability}/{feature}/{story}/tests/*.py
 
 Test level is indicated by filename suffix:
 
-| Test Level | Filename Pattern    | Example                    |
-| ---------- | ------------------- | -------------------------- |
-| Level 1    | `test_*.level_1.py` | `test_parsing.level_1.py`  |
-| Level 2    | `test_*.level_2.py` | `test_cli.level_2.py`      |
-| Level 3    | `test_*.level_3.py` | `test_workflow.level_3.py` |
+| Test Level | Filename Pattern        | Example                   |
+| ---------- | ----------------------- | ------------------------- |
+| Level 1    | `test_*.unit.py`        | `test_parsing.unit.py`    |
+| Level 2    | `test_*.integration.py` | `test_cli.integration.py` |
+| Level 3    | `test_*.e2e.py`         | `test_workflow.e2e.py`    |
 
 #### 6.2 Run Tests
 

@@ -83,12 +83,12 @@ Create test files following `/standardizing-python-testing`:
 
 **Mandatory elements:**
 
-- `@pytest.mark.level_N` on every test
 - `-> None` return type on every test function
 - Type annotations on all parameters
 - Named constants for all test values
 - Property-based tests for parsers/serializers/math (`@given`)
 - No mocking - use dependency injection
+- File naming indicates level (`.unit.py`, `.integration.py`, `.e2e.py`)
 
 ### Step 4: Verify Tests Fail (RED)
 
@@ -119,12 +119,12 @@ For each rejection reason:
 | Rejection Category     | Fix Action                                           |
 | ---------------------- | ---------------------------------------------------- |
 | Missing `-> None`      | Add return type to test functions                    |
-| Missing level marker   | Add `@pytest.mark.level_N`                           |
 | Evidentiary gap        | Rewrite test to actually verify the outcome          |
 | Mocking detected       | Replace with dependency injection                    |
 | Missing property tests | Add `@given` tests for parsers/serializers           |
 | Silent skip            | Change `skipif` to `pytest.fail()` for required deps |
 | Magic values           | Extract to named constants                           |
+| Wrong filename suffix  | Use `.unit.py`, `.integration.py`, or `.e2e.py`      |
 
 ### Step 3: Verify Fixes
 
@@ -164,8 +164,7 @@ Before declaring tests complete:
 
 - [ ] Each Gherkin outcome has at least one test
 - [ ] Test level matches the evidence type (per `/testing` Stage 2)
-- [ ] File names include level suffix (`.level_1.py`, etc.)
-- [ ] All tests marked with `@pytest.mark.level_N`
+- [ ] File names include level suffix (`.unit.py`, `.integration.py`, `.e2e.py`)
 - [ ] All test functions have `-> None` return type
 - [ ] All parameters have type annotations
 - [ ] Named constants used (no magic values)
@@ -200,9 +199,9 @@ See `/standardizing-python-testing` for:
 
 ### Test Files Created
 
-| File                        | Level | Outcomes Covered |
-| --------------------------- | ----- | ---------------- |
-| `tests/test_foo.level_1.py` | 1     | Outcome 1, 2     |
+| File                     | Level | Outcomes Covered |
+| ------------------------ | ----- | ---------------- |
+| `tests/test_foo.unit.py` | 1     | Outcome 1, 2     |
 
 ### Test Run (RED Phase)
 
