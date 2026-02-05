@@ -9,10 +9,11 @@ Write effective git commit messages following Conventional Commits standard with
 
 <quick_start>
 
-1. Review changes: `git status`, `git diff --cached`
-2. Stage specific files: `git add path/to/file.ts` (never `git add .`)
-3. Write message: `type(scope): description` (imperative, under 50 chars)
-4. Commit following verification protocol below
+1. **Run project validation first**: Check CLAUDE.md for `just check`, `pnpm run check`, etc.
+2. Review changes: `git status`, `git diff`
+3. Stage specific files: `git add path/to/file.ts` (never `git add .`)
+4. Write message: `type(scope): description` (imperative, under 50 chars)
+5. Commit following verification protocol below
 
 </quick_start>
 
@@ -81,6 +82,23 @@ The reviewing skill provides the specific file list and work item context. This 
 </review_workflow_context>
 
 <verification_protocol>
+
+**Step 0: Run Project-Specific Validation (BEFORE Staging)**
+
+Before staging any files, check CLAUDE.md for project-specific validation commands and run them. This prevents having to re-stage after auto-fixes.
+
+```bash
+# Check CLAUDE.md for commands like:
+just check        # Justfile task runner
+just validate
+pnpm run check    # pnpm scripts
+pnpm run validate
+npm run check     # npm scripts
+make check        # Makefile targets
+make lint
+```
+
+**Why before staging?** Many project commands (formatters, linters with auto-fix) modify files. Running them after staging means you need to re-stage the fixed files. Run validation first, then stage.
 
 **Step 1: Selective Staging**
 
