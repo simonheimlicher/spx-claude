@@ -1,8 +1,8 @@
 ---
-name: understanding-code-framework
+name: understanding-outcome-decomposition
 description: |
-  Foundational skill teaching CODE framework hierarchy and decomposition. Read FIRST before creating or decomposing specs.
-  Use when learning CODE structure, understanding capability/feature/story distinctions, or before breaking down work.
+  Foundational skill for decomposing outcomes into capabilities, features, and stories.
+  Use when breaking down PRDs, understanding outcome levels, or before using decomposition skills.
 allowed-tools: Read, Glob, Grep
 ---
 

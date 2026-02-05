@@ -14,7 +14,7 @@ Transform Feature specs into well-scoped Story specs by identifying which outcom
 </objective>
 
 <prerequisite>
-**READ FIRST**: `/understanding-code-framework`
+**READ FIRST**: `/understanding-outcome-decomposition`
 
 You must understand:
 

@@ -10,7 +10,7 @@ Transform Capability specs into well-scoped Feature specs. Each feature is a sig
 </objective>
 
 <prerequisite>
-**READ FIRST**: `/understanding-code-framework`
+**READ FIRST**: `/understanding-outcome-decomposition`
 
 You must understand:
 

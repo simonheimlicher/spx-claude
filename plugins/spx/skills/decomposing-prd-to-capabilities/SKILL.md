@@ -10,7 +10,7 @@ Transform Product Requirements (PRD) into well-scoped Capability specs. Each cap
 </objective>
 
 <prerequisite>
-**READ FIRST**: `/understanding-code-framework`
+**READ FIRST**: `/understanding-outcome-decomposition`
 
 You must understand:
 
