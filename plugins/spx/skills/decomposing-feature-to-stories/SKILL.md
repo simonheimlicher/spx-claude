@@ -20,7 +20,7 @@ You must understand:
 
 - Story = atomic implementation unit (expressible as Gherkin)
 - Feature should have ≤7 stories
-- Stories prove themselves through the outcome ledger
+- Stories prove themselves through passing tests
 - The tree can start small (1 story) and grow organically
 
 </prerequisite>
@@ -147,7 +147,6 @@ For each story, create:
 ```
 spx/.../NN-{slug}.feature/NN-{slug}.story/
 ├── {slug}.story.md
-├── outcomes.yaml          # Created when tests pass
 └── tests/                 # Created when starting implementation
 ```
 

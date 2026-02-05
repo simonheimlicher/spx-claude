@@ -38,7 +38,6 @@ When you write a spec, you aren't adding to a pile. You are creating **potential
 ```
 Writing spec    = Creating potential (the state SHOULD exist)
 Passing tests   = Realizing potential (proving it DOES exist)
-Outcome ledger  = Recording what's been realized
 ```
 
 **A realized story isn't "done"—it's PROVEN TRUE.**
@@ -178,7 +177,7 @@ Agent understands durable map when:
 - [ ] Never asks "where does done work go"
 - [ ] Uses "realize" instead of "complete/close/done"
 - [ ] Understands specs are permanent product documentation
-- [ ] Knows status is derived from outcome ledger
+- [ ] Knows status is derived from test results
 - [ ] Thinks in realization rate, not velocity
 - [ ] Never suggests archiving or moving completed work
 

@@ -121,7 +121,6 @@ For each feature, create:
 ```
 spx/NN-{cap}.capability/NN-{slug}.feature/
 ├── {slug}.feature.md
-├── outcomes.yaml          # Created when tests pass
 └── tests/                 # Created when starting implementation
 ```
 

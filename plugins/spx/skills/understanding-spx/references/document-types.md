@@ -10,16 +10,13 @@ Product
     ├── {slug}.capability.md     REQUIRED
     ├── {topic}.prd.md           OPTIONAL (enrichment)
     ├── NN-{slug}.adr.md         OPTIONAL (interleaved)
-    ├── outcomes.yaml                 Test verification ledger
     ├── tests/                   OPTIONAL (co-located tests)
     └── Feature (Integration level)
         ├── {slug}.feature.md    REQUIRED
         ├── NN-{slug}.adr.md     OPTIONAL (interleaved)
-        ├── outcomes.yaml             Test verification ledger
         ├── tests/               OPTIONAL (co-located tests)
         └── Story (Unit level)
             ├── {slug}.story.md  REQUIRED
-            ├── outcomes.yaml         Test verification ledger
             └── tests/           OPTIONAL (co-located tests)
 ```
 
@@ -44,7 +41,6 @@ Product
 | Capability Spec | `{slug}.capability.md` | YES           | E2E scenario definition       |
 | PRD             | `{topic}.prd.md`       | NO (optional) | Product requirements catalyst |
 | Capability ADRs | `NN-{slug}.adr.md`     | NO            | Capability-scoped decisions   |
-| Outcome ledger  | `outcomes.yaml`        | NO            | Test verification state       |
 | Tests           | `tests/`               | NO            | Co-located tests              |
 
 **Note**: PRD is optional enrichment. If PRD exists but spec is missing, offer to create spec from PRD.
@@ -53,12 +49,11 @@ Product
 
 **Location**: `spx/NN-{slug}.capability/NN-{slug}.feature/`
 
-| Document       | Pattern             | Required? | Purpose                         |
-| -------------- | ------------------- | --------- | ------------------------------- |
-| Feature Spec   | `{slug}.feature.md` | YES       | Integration scenario definition |
-| Feature ADRs   | `NN-{slug}.adr.md`  | NO        | Feature-scoped decisions        |
-| Outcome ledger | `outcomes.yaml`     | NO        | Test verification state         |
-| Tests          | `tests/`            | NO        | Co-located tests                |
+| Document     | Pattern             | Required? | Purpose                         |
+| ------------ | ------------------- | --------- | ------------------------------- |
+| Feature Spec | `{slug}.feature.md` | YES       | Integration scenario definition |
+| Feature ADRs | `NN-{slug}.adr.md`  | NO        | Feature-scoped decisions        |
+| Tests        | `tests/`            | NO        | Co-located tests                |
 
 **Note**: Technical details belong in feature.md, not separate TRD documents.
 
@@ -66,11 +61,10 @@ Product
 
 **Location**: `spx/.../NN-{slug}.story/`
 
-| Document       | Pattern           | Required? | Purpose                          |
-| -------------- | ----------------- | --------- | -------------------------------- |
-| Story Spec     | `{slug}.story.md` | YES       | Atomic implementation definition |
-| Outcome ledger | `outcomes.yaml`   | NO        | Test verification state          |
-| Tests          | `tests/`          | NO        | Co-located tests                 |
+| Document   | Pattern           | Required? | Purpose                          |
+| ---------- | ----------------- | --------- | -------------------------------- |
+| Story Spec | `{slug}.story.md` | YES       | Atomic implementation definition |
+| Tests      | `tests/`          | NO        | Co-located tests                 |
 
 **Note**: Stories do NOT have their own ADRs. They inherit decisions from parent feature/capability.
 
@@ -118,11 +112,11 @@ If a PRD exists at a level but the corresponding spec file is missing, offer to 
 
 ## Status Determination
 
-Status is derived from `outcomes.yaml` state, not directory location.
+Status is derived from whether tests pass, not from directory location or spec content.
 
 ## Test Co-location (CODE Framework)
 
-Tests are co-located with their specs in `spx/.../tests/`. The `outcomes.yaml` ledger tracks which tests pass.
+Tests are co-located with their specs in `spx/.../tests/`.
 
 | Level      | Location                           | Test Suffix             |
 | ---------- | ---------------------------------- | ----------------------- |

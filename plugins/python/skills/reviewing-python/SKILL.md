@@ -20,7 +20,7 @@ Use this path to access skill files:
 </accessing_skill_files>
 
 <objective>
-Adversarial code review enforcing zero-tolerance on mocking, type safety, and security. On APPROVED, commits to outcome ledger.
+Adversarial code review enforcing zero-tolerance on mocking, type safety, and security.
 </objective>
 
 <quick_start>
@@ -50,7 +50,7 @@ Adversarial code review enforcing zero-tolerance on mocking, type safety, and se
 
 # Python Strict Code Reviewer
 
-You are an **adversarial code reviewer**. Your role is to find flaws, not validate the coder's work. On APPROVED, you also verify tests and commit to outcome ledger.
+You are an **adversarial code reviewer**. Your role is to find flaws, not validate the coder's work.
 
 ## Foundational Stance
 
@@ -716,11 +716,11 @@ Based on your findings, determine the verdict:
 
 ---
 
-### Phase 6: Commit outcome (APPROVED Only)
+### Phase 6: Verify Tests Pass (APPROVED Only)
 
 > **Write access is earned by passing review.** This phase only runs on APPROVED.
 
-When all checks pass, commit outcomes to record the verified state.
+When all checks pass, verify all tests pass.
 
 #### 6.1 Identify Test Location
 
@@ -739,54 +739,21 @@ Test level is indicated by filename suffix:
 | Level 2    | `test_*.level_2.py` | `test_cli.level_2.py`      |
 | Level 3    | `test_*.level_3.py` | `test_workflow.level_3.py` |
 
-#### 6.2 Run Tests and Commit Outcome
-
-Run `spx spx commit` to validate tests and generate outcomes.yaml:
+#### 6.2 Run Tests
 
 ```bash
-# Commit the work item's outcomes
-spx spx commit spx/{capability}/{feature}/{story}
+pytest spx/{capability}/{feature}/{story}/tests/ -v --tb=short
 ```
 
-The command:
-
-1. Runs all tests in `tests/` directory
-2. Records `spec_blob` SHA of the spec file
-3. Records `test_blob` SHA for each passing test
-4. Generates `outcomes.yaml` with timestamps
-
-#### 6.3 Verify outcomes.yaml Is Valid
-
-```bash
-# Check outcomes.yaml was created/updated
-cat spx/{capability}/{feature}/{story}/outcomes.yaml
-```
-
-**If commit fails**: The verdict becomes REJECTED with reason "Tests don't pass - cannot commit to outcome ledger."
+**If tests fail**: The verdict becomes REJECTED with reason "Tests don't pass."
 
 ---
 
 ### Phase 7: Report Completion (APPROVED Only)
 
-After committing to outcome ledger, report completion to the orchestrator.
+Report completion to the orchestrator.
 
-#### 7.1 Verify outcomes.yaml Contents
-
-Check the outcomes.yaml shows all tests passing:
-
-```yaml
-spec_blob: { sha }
-committed_at: { timestamp }
-tests:
-  - file: test_parsing.level_1.py
-    blob: { sha }
-    passed_at: { timestamp }
-  - file: test_cli.level_2.py
-    blob: { sha }
-    passed_at: { timestamp }
-```
-
-#### 7.2 Final Output
+#### 7.1 Final Output
 
 Report completion:
 
@@ -804,28 +771,28 @@ Report completion:
 | Semgrep | PASS   | 0 findings                   |
 | pytest  | PASS   | {X}/{X} tests, {Y}% coverage |
 
-### Outcome Committed
+### Tests Passing
 
 | Container                             | Tests Passing |
 | ------------------------------------- | ------------- |
 | `spx/{capability}/{feature}/{story}/` | {X}/{X}       |
 
-### Verification Command
+### Test Command
 
 \`\`\`bash
-spx spx commit spx/{capability}/{feature}/{story}
+pytest spx/{capability}/{feature}/{story}/tests/ -v
 \`\`\`
 
 ### Work Item Status
 
-This work item is complete. outcomes.yaml is valid.
+This work item is complete. All tests passing.
 ```
 
 ---
 
 ### Phase 8: Commit (APPROVED Only)
 
-After committing to outcome ledger, commit the completed work item. **This is the reviewer's responsibility** — committing is the seal of approval.
+Commit the completed work item. **This is the reviewer's responsibility** — committing is the seal of approval.
 
 **Follow the `committing-changes` skill** for core commit protocol (selective staging, verification, Conventional Commits format).
 
@@ -837,11 +804,10 @@ When committing as part of review approval, apply these additional guidelines:
 
 Stage **only** files from the approved work item:
 
-| Category       | Example Paths                                      |
-| -------------- | -------------------------------------------------- |
-| Implementation | `src/{modified files for this story}`              |
-| Tests          | `spx/{capability}/{feature}/{story}/tests/*.py`    |
-| Outcome ledger | `spx/{capability}/{feature}/{story}/outcomes.yaml` |
+| Category       | Example Paths                                   |
+| -------------- | ----------------------------------------------- |
+| Implementation | `src/{modified files for this story}`           |
+| Tests          | `spx/{capability}/{feature}/{story}/tests/*.py` |
 
 **Exclude**: Unrelated files, experimental code, files from other work items.
 
@@ -867,7 +833,7 @@ After successful commit:
 
 Commit: {commit_hash}
 Files committed: {count}
-Outcome committed: spx/{capability}/{feature}/{story}/outcomes.yaml
+Tests passing: {count}
 
 Work item is complete.
 ```

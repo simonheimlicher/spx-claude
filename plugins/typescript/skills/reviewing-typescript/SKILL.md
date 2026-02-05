@@ -22,7 +22,7 @@ Use this path to access skill files:
 </accessing_skill_files>
 
 <objective>
-Adversarial code review enforcing zero-tolerance on mocking, type safety, and security. On APPROVED, commits to outcome ledger.
+Adversarial code review enforcing zero-tolerance on mocking, type safety, and security.
 </objective>
 
 <quick_start>

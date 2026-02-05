@@ -41,7 +41,7 @@ Verify and load complete hierarchical context for a work item by reading all spe
 - `/understanding-durable-map` - Specs are permanent product documentation, not work items
 - `/understanding-outcome-decomposition` - What belongs at each level (capability/feature/story)
 
-Specs describe what the product IS. Status is derived from the outcome ledger, not from spec content.
+Specs describe what the product IS. Status is derived from whether tests pass, not from spec content.
 </prerequisite>
 
 <quick_start>

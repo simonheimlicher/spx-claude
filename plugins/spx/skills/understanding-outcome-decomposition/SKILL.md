@@ -79,7 +79,7 @@ Note: ADRs don't have Gherkin—they GOVERN, they don't describe outcomes. The c
 
 **Principle 11:**
 
-> Higher levels unaware of lower level breakdown. Features don't list story outcomes. Capabilities don't list feature outcomes. Completion bubbles up through the outcome ledger, not spec references.
+> Higher levels unaware of lower level breakdown. Features don't list story outcomes. Capabilities don't list feature outcomes. Completion bubbles up through test results, not spec references.
 
 </essential_principles>
 
@@ -305,7 +305,7 @@ Each piece should be:
 └── ...
 ```
 
-**Why?** Principle 11—features don't list story outcomes. Stories prove themselves through the outcome ledger.
+**Why?** Principle 11—features don't list story outcomes. Stories prove themselves through passing tests.
 
 ### Mistake 2: Features with >7 Stories
 

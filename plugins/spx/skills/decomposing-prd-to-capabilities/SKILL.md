@@ -120,7 +120,6 @@ For each capability, create:
 ```
 spx/NN-{slug}.capability/
 ├── {slug}.capability.md
-├── outcomes.yaml          # Created when tests pass
 └── tests/                 # Created when starting implementation
 ```
 

@@ -321,18 +321,15 @@ spx/
   NN-{slug}.adr.md            # ADRs interleaved with containers
   NN-{slug}.capability/
     {slug}.capability.md
-    outcomes.yaml             # Test verification ledger
     tests/                    # Tests STAY here
       *.unit.test.{ts,py}
       *.integration.test.{ts,py}
     NN-{slug}.adr.md
     NN-{slug}.feature/
       {slug}.feature.md
-      outcomes.yaml
       tests/
       NN-{slug}.story/
         {slug}.story.md
-        outcomes.yaml
         tests/
 ```
 
@@ -340,8 +337,7 @@ spx/
 
 - **Specs stay in place** - Nothing moves because work is "done"
 - **Tests co-located** - Tests live with specs permanently, no graduation
-- **outcomes.yaml** - Machine-generated verification ledger (replaces DONE.md + directory location)
-- **Status** = derived from outcomes.yaml, not directory location
+- **Status** = derived from test results, not directory location
 - **Naming**: `{BSP}-{slug}.{type}/` (e.g., `27-spec-domain.capability/`)
 - **No TRDs** - Technical details belong in feature.md itself
 
@@ -359,7 +355,7 @@ spx/
 | Story example      | `story-54_validate-args/`           | `54-validate-args.story/`      |
 | Spec file          | `{slug}.{type}.md`                  | `{slug}.{type}.md` (unchanged) |
 | ADR location       | `decisions/adr-NN_slug.md`          | `NN-{slug}.adr.md` (in tree)   |
-| Status tracking    | Directory location (backlog/doing/) | outcomes.yaml verification     |
+| Status tracking    | Directory location (backlog/doing/) | Test results                   |
 | Test location      | `tests/{level}/` (graduated)        | `spx/.../tests/` (co-located)  |
 
 **Key transformations:**

@@ -203,8 +203,8 @@ These scenarios generate warnings but don't abort:
 WARNING: Working on completed work item
 
 **Story**: 30-build.story
-**Status**: All tests in outcomes.yaml passing
-**Risk**: This story is complete. Changes may require re-committing outcomes.
+**Status**: All tests passing
+**Risk**: This story is complete. Changes may require re-running tests.
 
 **Recommendations**:
 

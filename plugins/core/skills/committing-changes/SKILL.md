@@ -73,9 +73,8 @@ This skill may be referenced during the commit phase of a code review. In that c
 2. **Scope to work item** — Stage only files from the approved work item:
    - Implementation files
    - Co-located tests (in `spx/.../tests/`)
-   - Updated outcomes.yaml (test verification ledger)
 3. **Include work item reference** — Add `Refs: {capability}/{feature}/{story}` in footer
-4. **Verify tests pass** — All tests in outcomes.yaml must pass before committing
+4. **Verify tests pass** — All tests must pass before committing
 
 The reviewing skill provides the specific file list and work item context. This skill provides the commit protocol mechanics.
 

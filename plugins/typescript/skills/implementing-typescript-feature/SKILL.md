@@ -110,13 +110,15 @@ Continue until all stories in the feature are implemented and approved.
    - Run tests: `vitest run spx/{capability}/{feature}/tests/`
 4. **If no Level 2 tests specified:** Feature uses Level 1 only (documented in Test Strategy section)
 
-**Step 8: Commit Feature Outcomes**
+**Step 8: Verify Feature Tests Pass**
 
-Run `spx spx commit` to update the feature's outcomes.yaml:
+Run all feature-level tests:
 
-- Validates all tests in `spx/{capability}/{feature}/tests/` pass
-- Records `spec_blob` and `test_blob` SHAs
-- Verifies child story outcomes.yaml files are current
+```bash
+vitest run spx/{capability}/{feature}/tests/
+```
+
+All tests must pass before moving to the next feature.
 
 **Step 9: Next Feature**
 Return to Part A, Step 1 with the first story of the next feature.
@@ -140,14 +142,15 @@ Continue until all features in the capability are implemented.
    - Run tests: `vitest run spx/{capability}/tests/`
 4. **If no Level 3 tests specified:** Capability uses Level 1-2 only (documented in Test Strategy section)
 
-**Step 11: Commit Capability Outcomes**
+**Step 11: Verify Capability Tests Pass**
 
-Run `spx spx commit` to update the capability's outcomes.yaml:
+Run all capability-level tests:
 
-- Validates all tests in `spx/{capability}/tests/` pass
-- Records `spec_blob` and `test_blob` SHAs
-- Verifies child feature outcomes.yaml files are current
-- Capability is complete when outcomes.yaml is valid and all children are passing
+```bash
+vitest run spx/{capability}/tests/
+```
+
+Capability is complete when all tests at all levels pass.
 
 </workflow>
 
@@ -179,20 +182,17 @@ Run `spx spx commit` to update the capability's outcomes.yaml:
 ```text
 21-core-cli.capability/
 ├── 54-commands.feature/
-│   ├── 10-init.story/     [outcomes.yaml ✓] All tests passing
-│   ├── 20-build.story/    [outcomes.yaml ✓] All tests passing
+│   ├── 10-init.story/     [✓] All tests passing
+│   ├── 20-build.story/    [✓] All tests passing
 │   ├── 30-run.story/      [→] In Progress (Step 3)
 │   └── 40-test.story/     [pending] Not started
-│   └── outcomes.yaml           [pending] Commit after all stories pass
 ├── 65-config.feature/
 │   └── (stories pending)
-│   └── outcomes.yaml           [pending]
-└── outcomes.yaml               [pending] Commit after all features pass
 ```
 
 **Legend:**
 
-- `[outcomes.yaml ✓]` = All tests passing, outcomes.yaml valid
+- `[✓]` = All tests passing
 - `[→]` = In progress
 - `[pending]` = Not started or tests not passing
 - Tests live in each container's `tests/` directory
@@ -208,22 +208,20 @@ Update this tracking as you complete each work item.
 
 - [ ] Story passed approval by `/reviewing-typescript`
 - [ ] Tests co-located in `spx/{capability}/{feature}/{story}/tests/`
-- [ ] `spx spx commit` generates valid outcomes.yaml
+- [ ] All story tests pass
 
 ## Feature Complete
 
-- [ ] All child story outcomes.yaml files are valid
+- [ ] All story tests pass
 - [ ] Feature-level integration tests implemented (if specified in spec)
-- [ ] `spx spx commit` generates valid feature outcomes.yaml
 - [ ] All tests pass (`vitest run spx/{capability}/{feature}/`)
 - [ ] Type checking passes (`tsc --noEmit`)
 - [ ] Linting passes (`eslint`)
 
 ## Capability Complete
 
-- [ ] All child feature outcomes.yaml files are valid
+- [ ] All feature tests pass
 - [ ] Capability-level E2E tests implemented (if specified in spec)
-- [ ] `spx spx commit` generates valid capability outcomes.yaml
 - [ ] All tests pass at all levels
 
 Implementation quality (no mocking, constants pattern) is verified by `/reviewing-typescript`.

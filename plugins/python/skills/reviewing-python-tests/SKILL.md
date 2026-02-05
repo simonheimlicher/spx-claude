@@ -62,7 +62,7 @@ A missing comma is REJECT. A philosophical disagreement about test structure is 
 </verdict>
 
 <context>
-This skill protects the outcome ledger from phantom evidence. A single evidentiary gap means CI can go green while promised outcomes remain unfulfilled. The cost of false approval is infinite; the cost of false rejection is rework.
+This skill protects the test suite from phantom evidence. A single evidentiary gap means CI can go green while promised outcomes remain unfulfilled. The cost of false approval is infinite; the cost of false rejection is rework.
 </context>
 
 <review_protocol>
@@ -653,5 +653,5 @@ grep -c "### Verdict: REJECT" review_output.md   # Should be 1 for reject
 <cardinal_rule>
 **If you can explain how the tests could pass while the outcome remains unfulfilled, the tests are REJECTED.**
 
-Your job is to protect the outcome ledger from phantom evidence. A rejected review that catches an evidentiary gap is worth infinitely more than an approval that lets one through.
+Your job is to protect the test suite from phantom evidence. A rejected review that catches an evidentiary gap is worth infinitely more than an approval that lets one through.
 </cardinal_rule>

@@ -126,7 +126,6 @@ Tests are executable proof that outcomes exist.
 | Unit naming        | `*.unit.test.*`        | `/reviewing-{language}-tests` |
 | Integration naming | `*.integration.test.*` | `/reviewing-{language}-tests` |
 | E2E naming         | `*.e2e.test.*`         | `/reviewing-{language}-tests` |
-| Recording          | `outcomes.yaml`        | `/reviewing-{language}-tests` |
 
 ### Test Level vs Container Level
 
@@ -180,13 +179,6 @@ A **Capability** CAN have Level 1 tests (for pure logic verification).
 │        "Here's proof it exists"          │
 │                                         │
 │  Verified by: /reviewing-{lang}-tests   │
-└────────────────┬────────────────────────┘
-                 │ proves EXISTS
-                 ▼
-┌─────────────────────────────────────────┐
-│              LEDGER                      │
-│         "Recorded as realized"           │
-│           (outcomes.yaml)                │
 └─────────────────────────────────────────┘
 ```
 
@@ -199,7 +191,6 @@ A **Capability** CAN have Level 1 tests (for pure logic verification).
 | Constrain implementation approach | ADR              | `/reviewing-{language}-architecture` |
 | Define a state that should exist  | Spec outcome     | `/reviewing-{language}`              |
 | Prove an outcome exists           | Test             | `/reviewing-{language}-tests`        |
-| Record what's proven              | outcomes.yaml    | `spx spx verify`                     |
 | Document trade-offs               | ADR Consequences | `/reviewing-{language}-architecture` |
 | Show I examined the codebase      | Story Analysis   | `/reviewing-{language}`              |
 | Gate on combined quality          | Feature outcome  | `/reviewing-{language}`              |
