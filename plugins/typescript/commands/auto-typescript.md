@@ -20,9 +20,6 @@ Orchestrate story implementation by spawning `typescript:typescript-feature-impl
 
 <context>
 **Feature path:** $ARGUMENTS
-
-**Project status:**
-!`spx spec status --format table`
 </context>
 
 <workflow>
@@ -32,7 +29,7 @@ Orchestrate story implementation by spawning `typescript:typescript-feature-impl
    - If not found, STOP and report error
 
 2. **Discover next story**
-   - Run `spx spec next` to get the next incomplete work item
+   - List stories in the feature directory to find incomplete work items
 
 3. **Spawn subagent** (MANDATORY - use Task tool)
 

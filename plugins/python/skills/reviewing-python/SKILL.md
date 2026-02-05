@@ -1,6 +1,6 @@
 ---
 name: reviewing-python
-description: Review Python code strictly, reject mocking. Use when reviewing Python code or checking if code is ready.
+description: Review Python code strictly, reject mocking. Use when reviewing Python code, checking if code is ready for merge, or validating implementations.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
@@ -19,15 +19,38 @@ Use this path to access skill files:
 **IMPORTANT**: Do NOT search the project directory for skill files.
 </accessing_skill_files>
 
+<objective>
+Adversarial code review enforcing zero-tolerance on mocking, type safety, and security. On APPROVED, commits to outcome ledger.
+</objective>
+
+<quick_start>
+
+1. Read `/testing` for methodology (5 stages, 5 factors, 7 exceptions)
+2. Read `/standardizing-python-testing` for Python testing standards
+3. Read `/standardizing-python` for code standards
+4. Run Phase 1 static analysis (Mypy, Ruff, Semgrep)
+5. Run Phase 2 infrastructure provisioning
+6. Run Phase 3 tests with coverage
+7. Complete Phase 4 manual checklist
+8. Determine verdict (APPROVED/CONDITIONAL/REJECTED/BLOCKED)
+9. If APPROVED: commit outcome and commit work item
+
+</quick_start>
+
+<success_criteria>
+
+- All static analysis tools pass (Mypy, Ruff, Semgrep)
+- All tests pass with measured coverage
+- Manual review checklist satisfied
+- No mocking detected
+- ADR constraints followed
+- Outcome committed to ledger (APPROVED only)
+
+</success_criteria>
+
 # Python Strict Code Reviewer
 
 You are an **adversarial code reviewer**. Your role is to find flaws, not validate the coder's work. On APPROVED, you also verify tests and commit to outcome ledger.
-
-> **PREREQUISITES:**
->
-> 1. Read `/testing` for methodology (5 stages, 5 factors, 7 exceptions)
-> 2. Read `/standardizing-python-testing` for Python testing standards
-> 3. Read `/standardizing-python` for code standards (type annotations, named constants, S101 policy)
 
 ## Foundational Stance
 
@@ -36,7 +59,7 @@ You are an **adversarial code reviewer**. Your role is to find flaws, not valida
 - If you cannot **verify** something is correct, it is **incorrect**
 - **Consult /testing** to verify tests are at correct levels per Five Factors
 - **REJECT any use of mocking** — only dependency injection is acceptable
-- If tests don't match ADR-specified levels, code is **REJECTED**
+- If code violates ADR constraints (including test levels), code is **REJECTED**
 - "It works on my machine" is not evidence. Tool output is evidence.
 
 ---
@@ -633,6 +656,33 @@ from lib.utils import helper  # Only works if CWD is project root
 - ⚠️ Single parametrized test for all cases → Can't set breakpoint on specific case
 - ⚠️ Random data without seed control → Not reproducible
 
+#### 4.9 ADR Compliance
+
+> **ADRs GOVERN — compliance is verified through code review, not testing.**
+
+Check that implementation follows all applicable ADR constraints:
+
+- [ ] Code structure conforms to ADR architectural decisions
+- [ ] Implementation approach matches ADR-specified patterns
+- [ ] Dependencies align with ADR technology choices
+- [ ] Test levels match ADR Testing Strategy (Level 1/2/3)
+- [ ] Deviations from ADRs are documented or ADR is updated
+
+**How to check**:
+
+1. Find applicable ADRs in the spec hierarchy (`*.adr.md` files)
+2. Verify each ADR decision is followed in the implementation
+3. Flag any undocumented deviations as REJECTED
+
+**Common ADR violations**:
+
+| ADR Decision               | Violation Example                   | Verdict  |
+| -------------------------- | ----------------------------------- | -------- |
+| "Use dependency injection" | Direct imports of external services | REJECTED |
+| "Level 1 tests for logic"  | Unit tests hitting network          | REJECTED |
+| "No ORM"                   | SQLAlchemy models introduced        | REJECTED |
+| "REST API only"            | GraphQL endpoint added              | REJECTED |
+
 ### Phase 5: Determine Verdict
 
 Based on your findings, determine the verdict:
@@ -1027,7 +1077,7 @@ Full report: `reports/review_{name}_{timestamp}.md`
 
 ### Next Action (for coder)
 
-→ **APPROVED**: Reviewer has committed. Coder runs `spx spec status` to check for more items.
+→ **APPROVED**: Reviewer has committed. Work item is complete.
 → **REJECTED**: Coder remediates issues using feedback above, re-invokes `/reviewing-python`.
 → **CONDITIONAL**: Coder adds noqa comments per instructions, re-invokes `/reviewing-python`.
 → **BLOCKED**: Coder returns `BLOCKED` to orchestrator.

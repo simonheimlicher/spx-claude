@@ -628,8 +628,6 @@ Use click or argparse with subcommand pattern.
 - `references/testability-patterns.md` - Designing for testability
 - `references/test-infrastructure-patterns.md` - Test packaging, pytest config, environment verification
 
-For methodology, use the `spx` CLI (`spx spec status`, `spx spec next`).
-
 ---
 
 *Remember: Your decisions shape everything downstream. A well-designed architecture enables clean implementation. A flawed architecture causes downstream skills to abort. Design carefully.*

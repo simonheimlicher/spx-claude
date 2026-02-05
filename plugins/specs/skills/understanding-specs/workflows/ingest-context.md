@@ -212,9 +212,7 @@ Glob: "{story-path}/*.story.md"
 # Verify exactly one file found
 Read: {story-path}/{slug}.story.md
 
-# Check status using CLI (preferred method)
-spx spec status --format json
-# Or check specific work item status in the output
+# Check for tests directory to determine status
 # Status values: OPEN, IN_PROGRESS, DONE
 ```
 
@@ -232,7 +230,7 @@ spx spec status --format json
 ```
 ✓ Story Context Loaded: story-30_build
   - build.story.md
-  - Status: IN_PROGRESS (from `spx spec status`)
+  - Status: IN_PROGRESS
 ```
 
 ---

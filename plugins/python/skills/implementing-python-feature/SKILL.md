@@ -36,13 +36,10 @@ Story → Step 1 → Step 2 → Step 3 → Step 4 → Next Story
 Determine which stories to implement:
 
 ```bash
-# Option A: Get next story automatically
-spx spec next
-
-# Option B: List stories in a feature
+# Option A: List stories in a feature
 ls {feature_path}/*-*.story/
 
-# Option C: Specific story provided by user
+# Option B: Specific story provided by user
 # Use the provided story path directly
 ```
 

@@ -27,11 +27,11 @@ This is the most fundamental principle. The Product Tree contains OUTCOMES—sta
 
 - ADR = "when you do X, do it THIS way" — no outcomes, no work, no tests
 - NEED comes from stories/features/capabilities — they describe outcomes
-- ADR compliance is verified through the outcomes that stories deliver
+- ADR compliance is verified through code review, not through testing
 
 **SHARED NEED → ENABLER:**
 
-When multiple containers share a need, factor it into an ENABLER at the lowest convergence point:
+When **2+ containers** share a need, factor it into an ENABLER at the lowest convergence point:
 
 ```
 54-component-library.capability/
@@ -52,9 +52,11 @@ The ADR doesn't get tests. The ENABLER that satisfies the shared need gets tests
 - Passing tests = realizing potential (proving the state exists)
 - The tree grows coherently—ideas must connect to existing structure
 
-**The Concrete Ceiling:**
+**The Concrete Ceiling (for outcomes):**
 
-> If you can't express it as a Gherkin scenario with Given/When/Then, it doesn't belong in the engineering system.
+> If you can't express it as a Gherkin scenario with Given/When/Then, it's not an outcome and doesn't belong in a spec.
+
+Note: ADRs don't have Gherkin—they GOVERN, they don't describe outcomes. The ceiling applies to outcomes in specs, not to all content in the engineering system.
 
 **Principle 11:**
 
@@ -367,11 +369,11 @@ RIGHT:
 
 ## What Goes Where (Summary)
 
-| Type     | Purpose            | Contains                | Verified by                      |
-| -------- | ------------------ | ----------------------- | -------------------------------- |
-| **ADR**  | GOVERNS how        | Constraints, rationale  | `/reviewing-{lang}-architecture` |
-| **Spec** | DESCRIBES outcomes | Gherkin, test refs      | `/reviewing-{lang}`              |
-| **Test** | PROVES existence   | Executable verification | `/reviewing-{lang}-tests`        |
+| Type     | Purpose            | Contains                | Verified by                          |
+| -------- | ------------------ | ----------------------- | ------------------------------------ |
+| **ADR**  | GOVERNS how        | Constraints, rationale  | `/reviewing-{language}-architecture` |
+| **Spec** | DESCRIBES outcomes | Gherkin, test refs      | `/reviewing-{language}`              |
+| **Test** | PROVES existence   | Executable verification | `/reviewing-{language}-tests`        |
 
 **The Flow:**
 

@@ -125,16 +125,6 @@ If a PRD or TRD exists at a level but the corresponding spec file is missing, of
 
 ## Status Determination
 
-**Use CLI commands to check status (do NOT manually inspect directories):**
-
-```bash
-# View project status
-spx spec status --format table
-
-# Get next work item (respects BSP ordering)
-spx spec next
-```
-
 Status values: OPEN, IN_PROGRESS, DONE
 
 ## Test Co-Location

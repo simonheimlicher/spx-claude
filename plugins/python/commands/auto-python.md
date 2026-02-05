@@ -20,20 +20,16 @@ Orchestrate story implementation by spawning `python:python-feature-implementer`
 
 <context>
 **Arguments:** $ARGUMENTS
-
-**Project status:**
-!`spx spec status --format table`
 </context>
 
 <argument_handling>
 
 **Three modes of operation:**
 
-| Input        | Behavior                               |
-| ------------ | -------------------------------------- |
-| No arguments | Use `spx spec next` to find next story |
-| Feature path | Implement all stories in the feature   |
-| Story path   | Implement that specific story          |
+| Input        | Behavior                             |
+| ------------ | ------------------------------------ |
+| Feature path | Implement all stories in the feature |
+| Story path   | Implement that specific story        |
 
 **Detection logic:**
 
@@ -50,13 +46,6 @@ Orchestrate story implementation by spawning `python:python-feature-implementer`
 ## Step 1: Determine Work Items
 
 Based on arguments:
-
-**No arguments:**
-
-```bash
-spx spec next
-# Returns the next incomplete work item
-```
 
 **Feature path:**
 

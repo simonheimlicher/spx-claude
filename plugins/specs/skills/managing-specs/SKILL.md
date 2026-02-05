@@ -173,9 +173,6 @@ specs/
 - **BSP numbering**: Two-digit (10-99), lower number = must complete first
 - **BSP numbers are SIBLING-UNIQUE**: Numbers are only unique among siblings, not globally (see `<bsp_sibling_uniqueness>` below)
 - **Tests co-located**: Tests stay in `specs/.../tests/` permanently (no graduation)
-- **Status rules** (use CLI, do NOT check manually):
-  - `spx spec status --format table` - View project status
-  - `spx spec next` - Get next work item (respects BSP ordering)
 
 </key_principles>
 
@@ -221,16 +218,6 @@ capability-21/feature-02/story-54  ← DIFFERENT story-54
 <understanding_work_items>
 
 <three_states>
-**Use CLI commands to check status (do NOT manually inspect directories):**
-
-```bash
-# View project status
-spx spec status --format table
-
-# Get next work item (respects BSP ordering)
-spx spec next
-```
-
 Status values:
 
 | State           | Meaning          |

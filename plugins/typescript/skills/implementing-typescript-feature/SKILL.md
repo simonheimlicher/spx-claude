@@ -21,9 +21,9 @@ Autonomous TypeScript feature implementer. Implements stories in a feature one a
 <quick_start>
 **Given a feature with stories to implement:**
 
-1. Run `spx spec next` to identify the next incomplete story
+1. Identify the next incomplete story by listing the feature directory
 2. Run the 5-step implementation cycle
-3. Repeat until `spx spec next` returns no more work items
+3. Repeat until all stories are complete
 
 ```text
 Story → Specs → Test Design → Implement → Review → Remediate → Next Story
@@ -31,11 +31,6 @@ Story → Specs → Test Design → Implement → Review → Remediate → Next 
    understanding  testing    coding   manual     reviewing
       -specs    -typescript -typescript review   -typescript
 ```
-
-**CLI commands for status:**
-
-- `spx spec next` - Get next work item (respects BSP ordering)
-- `spx spec status --format table` - View project status
 
 </quick_start>
 

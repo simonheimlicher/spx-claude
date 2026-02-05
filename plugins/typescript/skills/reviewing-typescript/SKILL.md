@@ -1,6 +1,6 @@
 ---
 name: reviewing-typescript
-description: Review TypeScript code strictly, reject mocking. Use when reviewing TypeScript code or checking if code is ready.
+description: Review TypeScript code strictly, reject mocking. Use when reviewing TypeScript code, checking if code is ready for merge, or validating implementations.
 allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 ---
 
@@ -20,6 +20,22 @@ Use this path to access skill files:
 
 **IMPORTANT**: Do NOT search the project directory for skill files.
 </accessing_skill_files>
+
+<objective>
+Adversarial code review enforcing zero-tolerance on mocking, type safety, and security. On APPROVED, commits to outcome ledger.
+</objective>
+
+<quick_start>
+
+1. Read `/testing-typescript` for methodology and test level decisions
+2. Run Phase 1 static analysis (tsc, ESLint, Semgrep)
+3. Run Phase 2 infrastructure provisioning
+4. Run Phase 3 tests with coverage
+5. Complete Phase 4 manual checklist (including ADR compliance)
+6. Determine verdict (APPROVED/CONDITIONAL/REJECTED/BLOCKED)
+7. If APPROVED: commit outcome and commit work item
+
+</quick_start>
 
 <essential_principles>
 **TRUST NO ONE. REJECT MOCKING. ZERO TOLERANCE.**

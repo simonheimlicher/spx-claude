@@ -4,11 +4,13 @@ A clear taxonomy of what content belongs in ADRs, Specs, and Tests.
 
 ## The Three Types
 
-| Type     | Purpose                     | Verified by                          |
+| Type     | Purpose                     | Verified by (skill pattern)          |
 | -------- | --------------------------- | ------------------------------------ |
 | **ADR**  | GOVERNS how                 | `/reviewing-{language}-architecture` |
 | **Spec** | DESCRIBES what should exist | `/reviewing-{language}`              |
 | **Test** | PROVES it exists            | `/reviewing-{language}-tests`        |
+
+*Replace `{language}` with actual language: `python`, `typescript`, etc.*
 
 ---
 
@@ -37,12 +39,17 @@ ADRs say "when you do X, do it THIS way." They constrain implementation.
 ### ADR Verification
 
 ```
-/reviewing-{language}-architecture checks:
-□ Decision has clear rationale
-□ Options were genuinely considered
-□ Consequences are acknowledged
-□ No implementation details leaked in
-□ Constraints are enforceable
+/reviewing-{language}-architecture checks ADR STRUCTURE:
+□ Context explains why decision is needed
+□ Options were genuinely considered (not just "we picked X")
+□ Decision states what was chosen and why
+□ Consequences acknowledge trade-offs
+□ No implementation details leaked in (ADRs GOVERN, don't implement)
+□ Constraints are clear and enforceable
+
+/reviewing-{language} checks ADR COMPLIANCE:
+□ Code follows constraints from applicable ADRs
+□ Deviations are documented or ADR is updated
 ```
 
 ---
