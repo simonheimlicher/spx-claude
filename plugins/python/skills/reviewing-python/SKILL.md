@@ -136,6 +136,23 @@ Execute these phases IN ORDER. Do not skip phases.
 1. Determine the target files/directories to review
 2. Check if the project has its own tool configurations in `pyproject.toml`
 3. If project configs exist, prefer them; otherwise use the skill's strict configs
+4. **Check CLAUDE.md for project-specific validation commands**
+
+#### Project-Specific Commands
+
+Many projects define custom validation commands in `CLAUDE.md` or `README.md`. Check for and run these before concluding review:
+
+```bash
+# Common patterns to look for:
+just check        # Justfile task runner
+just validate
+pnpm run check    # Node.js (even in Python projects with mixed tooling)
+pnpm run validate
+make check        # Makefile targets
+make lint
+```
+
+**If CLAUDE.md specifies validation commands**: Run them. Failures = REJECTED.
 
 ### Phase 1: Static Analysis
 

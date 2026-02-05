@@ -5,6 +5,25 @@
 1. Determine the target files/directories to review
 2. Check if project has configs in `tsconfig.json`, `eslint.config.js`
 3. If project configs exist, prefer them; otherwise use skill's strict configs
+4. **Check CLAUDE.md for project-specific validation commands**
+
+### Project-Specific Commands
+
+Many projects define custom validation commands in `CLAUDE.md` or `README.md`. Check for and run these before concluding review:
+
+```bash
+# Common patterns to look for:
+just check        # Justfile task runner
+just validate
+pnpm run check    # pnpm scripts
+pnpm run validate
+npm run check     # npm scripts
+npm run validate
+make check        # Makefile targets
+make lint
+```
+
+**If CLAUDE.md specifies validation commands**: Run them. Failures = REJECTED.
 
 ## Phase 1: Static Analysis
 
