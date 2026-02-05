@@ -1,15 +1,30 @@
 ---
 name: testing-python
-description: Write Python tests for a story spec. Use when writing tests for Python code, before implementation.
+description: Write or fix Python tests for a story spec. Use when writing tests for Python code, or fixing tests after review rejection.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 <objective>
-Write test files for a story specification. Given a story spec with Gherkin outcomes, produce actual test files that verify those outcomes at the appropriate test levels.
+Write or fix test files for a story specification. This skill handles both:
+1. **Writing new tests** - Given a story spec, produce test files
+2. **Fixing rejected tests** - Given reviewer feedback, fix existing tests
 
 **This skill WRITES tests. It does not just design or plan.**
-
 </objective>
+
+<mode_detection>
+**Determine which mode you're in:**
+
+1. **WRITE mode** - Tests don't exist yet or you're starting fresh
+   - Check: `ls {story_path}/tests/*.py` returns nothing or minimal files
+   - Action: Follow full workflow below
+
+2. **FIX mode** - Tests exist but were rejected by reviewer
+   - Check: Recent `/reviewing-python-tests` output shows REJECT with specific issues
+   - Action: Read the rejection, fix the specific issues, re-run tests
+
+**Always check which mode before proceeding.**
+</mode_detection>
 
 <quick_start>
 **Input:** Story spec path (e.g., `spx/01-capability/02-feature/21-story.story/`)
@@ -18,17 +33,17 @@ Write test files for a story specification. Given a story spec with Gherkin outc
 
 **Workflow:**
 
-1. Read the story spec to understand outcomes
-2. Consult `/testing` methodology (5 stages) to determine test levels
-3. Reference `/standardizing-python-testing` for Python patterns
-4. Write test files that verify each outcome
-5. Run tests to confirm they fail (RED phase)
+```
+Check mode → WRITE or FIX → Execute → Verify → Report
+```
 
 </quick_start>
 
-<workflow>
+<write_mode_workflow>
 
-## Step 1: Load Context
+## WRITE Mode: Creating New Tests
+
+### Step 1: Load Context
 
 Read the story spec and related files:
 
@@ -49,15 +64,9 @@ Extract from the spec:
 - **Test Strategy** - Which levels are specified
 - **Harnesses** - Any referenced test harnesses
 
-## Step 2: Determine Test Levels
+### Step 2: Determine Test Levels
 
 For each outcome, apply the `/testing` methodology:
-
-**Stage 1:** What evidence do I need?
-**Stage 2:** At what level does that evidence live? (5 factors)
-**Stage 3:** What kind of code is this? (Pure/Extract/Glue)
-**Stage 4:** Can the real system produce the behavior?
-**Stage 5:** Which exception applies, if any?
 
 | Evidence Type                   | Minimum Level |
 | ------------------------------- | ------------- |
@@ -68,64 +77,11 @@ For each outcome, apply the `/testing` methodology:
 | Database, Docker                | 2             |
 | Real credentials, external APIs | 3             |
 
-## Step 3: Design Test Cases
+### Step 3: Write Test Files
 
-For each outcome, design test cases that:
+Create test files following `/standardizing-python-testing`:
 
-1. **Verify behavior, not implementation** - What the code does, not how
-2. **Use the Gherkin as guide** - GIVEN/WHEN/THEN maps to arrange/act/assert
-3. **Cover edge cases** - Boundary conditions, error conditions
-4. **Use named constants** - No magic values (per `/standardizing-python-testing`)
-
-**Test case structure:**
-
-```python
-# Named constants at module level
-VALID_INPUT = "expected_input"
-EXPECTED_OUTPUT = "expected_output"
-ERROR_INPUT = "invalid_input"
-
-
-@pytest.mark.level_1
-def test_outcome_name_happy_path() -> None:
-    """GIVEN valid input WHEN processed THEN returns expected output."""
-    # Arrange
-    input_data = VALID_INPUT
-
-    # Act
-    result = function_under_test(input_data)
-
-    # Assert
-    assert result == EXPECTED_OUTPUT
-
-
-@pytest.mark.level_1
-def test_outcome_name_error_case() -> None:
-    """GIVEN invalid input WHEN processed THEN raises appropriate error."""
-    with pytest.raises(ValidationError):
-        function_under_test(ERROR_INPUT)
-```
-
-## Step 4: Write Test Files
-
-Create test files in the story's tests directory:
-
-```text
-{story_path}/
-├── {story_name}.story.md
-└── tests/
-    ├── test_{outcome_name}.level_1.py
-    ├── test_{outcome_name}.level_2.py  # if Level 2 needed
-    └── conftest.py                      # fixtures if needed
-```
-
-**File naming convention:**
-
-- `test_{name}.level_1.py` - Unit tests
-- `test_{name}.level_2.py` - Integration tests
-- `test_{name}.level_3.py` - E2E tests
-
-**Mandatory elements per `/standardizing-python-testing`:**
+**Mandatory elements:**
 
 - `@pytest.mark.level_N` on every test
 - `-> None` return type on every test function
@@ -134,24 +90,73 @@ Create test files in the story's tests directory:
 - Property-based tests for parsers/serializers/math (`@given`)
 - No mocking - use dependency injection
 
-## Step 5: Verify Tests Fail (RED)
-
-Run the tests to confirm they fail for the right reasons:
+### Step 4: Verify Tests Fail (RED)
 
 ```bash
-# Run tests - they should fail because implementation doesn't exist
 uv run --extra dev pytest {story_path}/tests/ -v
-
-# Expected: Tests fail with ImportError or AssertionError
-# NOT: Tests pass (would mean tests are trivial)
-# NOT: Tests fail with unexpected errors
 ```
 
-**If tests pass:** Tests are not testing anything useful. Revise.
-**If tests fail with wrong errors:** Fix test setup, imports, etc.
-**If tests fail with expected errors:** Proceed to implementation.
+Tests should FAIL with ImportError or AssertionError (implementation doesn't exist yet).
 
-</workflow>
+</write_mode_workflow>
+
+<fix_mode_workflow>
+
+## FIX Mode: Fixing Rejected Tests
+
+### Step 1: Read Rejection Feedback
+
+Find the most recent `/reviewing-python-tests` output. Look for:
+
+- Specific file:line locations
+- Issue categories (evidentiary gap, missing property tests, etc.)
+- Required fixes
+
+### Step 2: Apply Fixes
+
+For each rejection reason:
+
+| Rejection Category     | Fix Action                                           |
+| ---------------------- | ---------------------------------------------------- |
+| Missing `-> None`      | Add return type to test functions                    |
+| Missing level marker   | Add `@pytest.mark.level_N`                           |
+| Evidentiary gap        | Rewrite test to actually verify the outcome          |
+| Mocking detected       | Replace with dependency injection                    |
+| Missing property tests | Add `@given` tests for parsers/serializers           |
+| Silent skip            | Change `skipif` to `pytest.fail()` for required deps |
+| Magic values           | Extract to named constants                           |
+
+### Step 3: Verify Fixes
+
+```bash
+# Run tests again
+uv run --extra dev pytest {story_path}/tests/ -v
+
+# Check types
+uv run --extra dev mypy {story_path}/tests/
+
+# Check linting
+uv run --extra dev ruff check {story_path}/tests/
+```
+
+### Step 4: Report What Was Fixed
+
+```markdown
+## Tests Fixed
+
+### Issues Addressed
+
+| Issue           | Location       | Fix Applied                          |
+| --------------- | -------------- | ------------------------------------ |
+| Missing -> None | test_foo.py:15 | Added return type                    |
+| Magic value     | test_foo.py:23 | Extracted to EXPECTED_VALUE constant |
+
+### Verification
+
+Tests run and fail for expected reasons (RED phase complete).
+```
+
+</fix_mode_workflow>
 
 <test_writing_checklist>
 
@@ -186,9 +191,9 @@ See `/standardizing-python-testing` for:
 
 <output_format>
 
-When tests are written, report:
+**WRITE mode output:**
 
-````markdown
+```markdown
 ## Tests Written
 
 ### Story: {story_path}
@@ -198,21 +203,28 @@ When tests are written, report:
 | File                        | Level | Outcomes Covered |
 | --------------------------- | ----- | ---------------- |
 | `tests/test_foo.level_1.py` | 1     | Outcome 1, 2     |
-| `tests/test_foo.level_2.py` | 2     | Outcome 3        |
 
 ### Test Run (RED Phase)
 
-```bash
-$ uv run --extra dev pytest {story_path}/tests/ -v
-# Output showing expected failures
+Tests fail as expected. Ready for review.
 ```
-````
 
-### Ready for Implementation
+**FIX mode output:**
 
-Tests are ready. Implementation should make these tests pass.
+```markdown
+## Tests Fixed
 
+### Issues Addressed
+
+| Issue   | Location    | Fix Applied |
+| ------- | ----------- | ----------- |
+| {issue} | {file:line} | {fix}       |
+
+### Verification
+
+Tests pass checklist. Ready for re-review.
 ```
+
 </output_format>
 
 <success_criteria>
@@ -223,7 +235,6 @@ Task is complete when:
 - [ ] Each outcome from spec has corresponding test(s)
 - [ ] Tests follow `/standardizing-python-testing` standards
 - [ ] Tests run and fail for expected reasons
-- [ ] Output report shows files created and test run results
+- [ ] All reviewer feedback addressed (if FIX mode)
 
 </success_criteria>
-```
