@@ -7,6 +7,15 @@ description: Create and manage spx/ specs including capabilities, features, stor
 Single source of truth for spx/ directory structure and all document templates. Enables creation of requirements (PRD), decisions (ADR), and work items (capability/feature/story) with consistent structure across all products using the SPX framework.
 </objective>
 
+<prerequisite>
+**Foundational understanding required:**
+
+- `/understanding-durable-map` - Specs are permanent product documentation, not work items
+- `/understanding-outcome-decomposition` - What belongs at each level (capability/feature/story)
+
+If you find yourself wanting to "close" items or thinking in tasks, read these first.
+</prerequisite>
+
 <quick_start>
 Different use cases read different sections:
 

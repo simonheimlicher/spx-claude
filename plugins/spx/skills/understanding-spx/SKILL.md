@@ -35,6 +35,15 @@ Use this path to access skill files:
 Verify and load complete hierarchical context for a work item by reading all specification documents from product level down to the target work item. Fails fast with actionable errors when required documents are missing. Ensures implementation skills have complete context including all constraints (ADRs), requirements (PRD), and specifications before starting work.
 </objective>
 
+<prerequisite>
+**Foundational understanding required:**
+
+- `/understanding-durable-map` - Specs are permanent product documentation, not work items
+- `/understanding-outcome-decomposition` - What belongs at each level (capability/feature/story)
+
+Specs describe what the product IS. Status is derived from the outcome ledger, not from spec content.
+</prerequisite>
+
 <quick_start>
 Invoke with **FULL work item path**:
 

@@ -340,7 +340,7 @@ What to MOVE to stories:
 
 - ADRs create NO work, NO outcomes, NO tests
 - NEED comes from stories/features/capabilities
-- ADR compliance is verified through the outcomes stories deliver
+- ADR compliance is verified through code review, not through testing
 
 **The ENABLER pattern for shared needs:**
 
@@ -363,13 +363,34 @@ RIGHT:
 
 </common_mistakes>
 
+<what_goes_where>
+
+## What Goes Where (Summary)
+
+| Type     | Purpose            | Contains                | Verified by                      |
+| -------- | ------------------ | ----------------------- | -------------------------------- |
+| **ADR**  | GOVERNS how        | Constraints, rationale  | `/reviewing-{lang}-architecture` |
+| **Spec** | DESCRIBES outcomes | Gherkin, test refs      | `/reviewing-{lang}`              |
+| **Test** | PROVES existence   | Executable verification | `/reviewing-{lang}-tests`        |
+
+**The Flow:**
+
+```
+ADR constrains HOW → Spec defines WHAT → Test PROVES → Ledger RECORDS
+```
+
+**See `references/what-goes-where.md` for detailed taxonomy.**
+
+</what_goes_where>
+
 <reference_index>
 
 ## References
 
-| File                                | Purpose                         |
-| ----------------------------------- | ------------------------------- |
-| `references/level-decision-tree.md` | Step-by-step decision flowchart |
+| File                                | Purpose                                    |
+| ----------------------------------- | ------------------------------------------ |
+| `references/what-goes-where.md`     | What content belongs in ADRs, Specs, Tests |
+| `references/level-decision-tree.md` | Decision flowchart for container levels    |
 
 </reference_index>
 
