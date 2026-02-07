@@ -10,13 +10,15 @@ Product
     ├── {slug}.capability.md     ✅ REQUIRED
     ├── {topic}.prd.md           ⚠️ OPTIONAL (enrichment)
     ├── decisions/
-    │   └── adr-NNN_{slug}.md    ⚠️ OPTIONAL
+    │   ├── adr-NNN_{slug}.md    ⚠️ OPTIONAL (architectural)
+    │   └── pdr-NNN_{slug}.md    ⚠️ OPTIONAL (product)
     ├── tests/                   ⚠️ OPTIONAL (co-located, permanent home)
     └── Feature (Integration level)
         ├── {slug}.feature.md    ✅ REQUIRED
         ├── {topic}.trd.md       ⚠️ OPTIONAL (enrichment)
         ├── decisions/
-        │   └── adr-NNN_{slug}.md ⚠️ OPTIONAL
+        │   ├── adr-NNN_{slug}.md ⚠️ OPTIONAL (architectural)
+        │   └── pdr-NNN_{slug}.md ⚠️ OPTIONAL (product)
         ├── tests/               ⚠️ OPTIONAL (co-located, permanent home)
         └── Story (Unit level)
             ├── {slug}.story.md  ✅ REQUIRED
@@ -33,18 +35,20 @@ Product
 | ------------- | ----------------------- | --------- | ------------------------------------ |
 | Project Guide | `CLAUDE.md`             | ✅ YES    | Project structure and navigation     |
 | Product ADRs  | `decisions/adr-*.md`    | ⚠️ NO      | Product-wide architectural decisions |
+| Product PDRs  | `decisions/pdr-*.md`    | ⚠️ NO      | Product-wide product decisions       |
 | Product PRD   | `{product-name}.prd.md` | ⚠️ NO      | Optional product-wide requirements   |
 
 ### Capability-Level Documents
 
 **Location**: `specs/work/{status}/capability-NN_{slug}/`
 
-| Document        | Pattern                  | Required?                | Purpose                          |
-| --------------- | ------------------------ | ------------------------ | -------------------------------- |
-| Capability Spec | `{slug}.capability.md`   | ✅ YES                   | E2E scenario definition          |
-| PRD             | `{topic}.prd.md`         | ⚠️ NO (optional)          | Product requirements catalyst    |
-| Capability ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Capability-scoped decisions      |
-| Tests           | `tests/`                 | ⚠️ NO (determines status) | Co-located E2E tests (permanent) |
+| Document        | Pattern                  | Required?                | Purpose                             |
+| --------------- | ------------------------ | ------------------------ | ----------------------------------- |
+| Capability Spec | `{slug}.capability.md`   | ✅ YES                   | E2E scenario definition             |
+| PRD             | `{topic}.prd.md`         | ⚠️ NO (optional)          | Product requirements catalyst       |
+| Capability ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Capability-scoped arch decisions    |
+| Capability PDRs | `decisions/pdr-NNN_*.md` | ⚠️ NO                     | Capability-scoped product decisions |
+| Tests           | `tests/`                 | ⚠️ NO (determines status) | Co-located E2E tests (permanent)    |
 
 **Note**: PRD is optional enrichment. If PRD exists but spec is missing, offer to create spec from PRD.
 
@@ -56,7 +60,8 @@ Product
 | ------------ | ------------------------ | ------------------------ | ---------------------------------------- |
 | Feature Spec | `{slug}.feature.md`      | ✅ YES                   | Integration scenario definition          |
 | TRD          | `{topic}.trd.md`         | ⚠️ NO (optional)          | Technical requirements catalyst          |
-| Feature ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Feature-scoped decisions                 |
+| Feature ADRs | `decisions/adr-NNN_*.md` | ⚠️ NO                     | Feature-scoped arch decisions            |
+| Feature PDRs | `decisions/pdr-NNN_*.md` | ⚠️ NO                     | Feature-scoped product decisions         |
 | Tests        | `tests/`                 | ⚠️ NO (determines status) | Co-located integration tests (permanent) |
 
 **Note**: TRD is optional enrichment. If TRD exists but spec is missing, offer to create spec from TRD.
@@ -71,7 +76,7 @@ Product
 | Tests      | `tests/`          | ⚠️ NO (determines status) | Co-located unit tests (permanent) |
 | Completion | `tests/DONE.md`   | ⚠️ NO (signals DONE)      | Evidence of completion            |
 
-**Note**: Stories do NOT have their own ADRs. They inherit decisions from parent feature/capability.
+**Note**: Stories do NOT have their own ADRs or PDRs. They inherit decisions from parent feature/capability.
 
 ## Document Content Requirements
 
@@ -112,8 +117,22 @@ Product
 - **Context**: Why this decision is needed
 - **Decision**: What is being decided
 - **Consequences**: Trade-offs and implications
-- **Compliance**: How adherence will be verified
+- **Compliance**: How adherence will be verified (code review criteria)
 - **Testing Strategy**: Test levels for components
+
+### Product Decision Records (PDR)
+
+**Must contain**:
+
+- **Context**: Why this product decision is needed
+- **Decision**: What product behavior is being decided
+- **Product Invariants**: Observable behaviors users can rely on
+- **Compliance**: How adherence will be verified (product behavior validation)
+
+**ADR vs PDR**:
+
+- **ADR**: Governs code architecture (HOW to build)
+- **PDR**: Governs product behavior (WHAT users experience)
 
 ## PRD/TRD as Optional Enrichment
 

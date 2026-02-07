@@ -1,6 +1,6 @@
 ---
 name: understanding-spx
-description: Read all specs for a story, feature, or capability including PRDs and ADRs. Use when starting implementation, checking progress, or asked to "read the spec". For CODE framework (spx/) projects.
+description: Read all specs for a story, feature, or capability including PRDs, ADRs, and PDRs. Use when starting implementation, checking progress, or asked to "read the spec". For CODE framework (spx/) projects.
 allowed-tools: Read, Glob, Grep
 ---
 
@@ -26,13 +26,13 @@ Use this path to access skill files:
 - Missing spec file = ABORT immediately with clear error
 - PRD is optional enrichment - read if present, offer to create spec from it if spec is missing
 - Read order: Product → Capability → Feature → Story (top-down)
-- All ADRs at all levels must be read and understood
+- All ADRs and PDRs at all levels must be read and understood
 - This skill runs BEFORE any implementation work begins
 
 </essential_principles>
 
 <objective>
-Verify and load complete hierarchical context for a work item by reading all specification documents from product level down to the target work item. Fails fast with actionable errors when required documents are missing. Ensures implementation skills have complete context including all constraints (ADRs), requirements (PRD), and specifications before starting work.
+Verify and load complete hierarchical context for a work item by reading all specification documents from product level down to the target work item. Fails fast with actionable errors when required documents are missing. Ensures implementation skills have complete context including all constraints (ADRs), product decisions (PDRs), requirements (PRD), and specifications before starting work.
 </objective>
 
 <prerequisite>
@@ -115,13 +115,13 @@ Context ingestion succeeds when:
 
 - [ ] Work item located in `spx/`
 - [ ] Product guide (`spx/CLAUDE.md`) read
-- [ ] All product ADRs read
+- [ ] All product ADRs and PDRs read
 - [ ] Capability spec exists and read
 - [ ] Capability PRD read if present (optional enrichment)
-- [ ] All capability ADRs read
+- [ ] All capability ADRs and PDRs read
 - [ ] Feature spec exists and read (if working on feature/story)
-- [ ] All feature ADRs read
+- [ ] All feature ADRs and PDRs read
 - [ ] Story spec exists and read (if working on story)
-- [ ] Structured context summary generated with document count and ADR list
+- [ ] Structured context summary generated with document count and decision record list
 
 </success_criteria>

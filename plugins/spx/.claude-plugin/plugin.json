@@ -1,6 +1,6 @@
 {
   "name": "spx",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Customer Outcome Driven Engineering (CODE) framework: PRDs, ADRs, capabilities, features, stories",
   "author": {
     "name": "Simon Heimlicher"

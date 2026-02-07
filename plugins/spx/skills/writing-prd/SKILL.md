@@ -116,7 +116,7 @@ Read workflow: `workflows/define-product-scope.md`
 - Deep-think: What's the minimal viable increment?
 - Define what's included (capabilities delivering value)
 - Define what's excluded (with rationale)
-- Identify ADR triggers in technical approach
+- Identify ADR/PDR triggers in technical approach
 
 **Phase 4: PRD Composition**
 
@@ -131,7 +131,7 @@ Read workflow: `workflows/write-prd.md`
 
 - Mark PRD ready or incomplete (if dependencies exist)
 - Provide summary of product definition
-- List next actions (ADRs to write, open decisions)
+- List next actions (ADRs/PDRs to write, open decisions)
 - Report readiness assessment
 
 </workflow>
@@ -164,7 +164,7 @@ Is this scope achievable as one deliverable unit delivering real user value?
 - Is it too large (should split into multiple PRDs)?
 - Is it too small (not standalone user value)?
 - What's excluded and why?
-- What ADRs will implementation need?
+- What ADRs/PDRs will implementation need?
 
 </deep_thinking_checkpoints>
 
@@ -181,7 +181,7 @@ Is this scope achievable as one deliverable unit delivering real user value?
 1. User capabilities to guarantee (based on outcome analysis)
 2. Test level assignments (per `/testing` methodology)
 3. Acceptance test scenarios (derived from approved capabilities)
-4. Product approach and ADR triggers
+4. Product approach and ADR/PDR triggers
 
 </mandatory_user_interactions>
 
@@ -190,7 +190,7 @@ When product decisions are unclear:
 
 1. Use AskUserQuestion to clarify product direction
 2. Document open questions in "Open Decisions" section
-3. Mark ADR triggers for technical decisions
+3. Mark ADR/PDR triggers for technical decisions
 
 **A PRD with open decisions can be delivered** if decisions are explicitly documented with options and trade-offs.
 
@@ -204,7 +204,7 @@ All workflows in `workflows/`:
 | ----------------------------- | ------------------------------------------------ |
 | understand-user-problem.md    | User pain analysis and journey validation        |
 | design-measurable-outcomes.md | Outcome quantification and capability definition |
-| define-product-scope.md       | Scope boundaries and ADR identification          |
+| define-product-scope.md       | Scope boundaries and ADR/PDR identification      |
 | write-prd.md                  | PRD composition and section filling              |
 
 </workflows_index>
@@ -242,7 +242,7 @@ PRD creation complete when:
 - [ ] Every capability has ≥1 acceptance test scenario (Gherkin)
 - [ ] Complete E2E test code provided (TypeScript/Python)
 - [ ] Scope boundaries defined (included, excluded, rationale)
-- [ ] Product approach identifies ADR triggers
+- [ ] Product approach identifies ADR/PDR triggers
 - [ ] Open decisions documented with options and trade-offs
 - [ ] PRD file written to correct location (project/capability/feature)
 - [ ] Readiness Criteria self-check passed

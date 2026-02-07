@@ -37,9 +37,9 @@ Use information gathered in Phases 1-3 to complete all sections:
 
 **Scope Definition**: Copy included/excluded capabilities from Phase 3
 
-**Product Approach**: Fill UX principles, technical approach, ADR triggers from Phase 3
+**Product Approach**: Fill UX principles, technical approach, ADR/PDR triggers from Phase 3
 
-**Open Decisions**: Document questions and ADR triggers from Phase 3
+**Open Decisions**: Document questions and ADR/PDR triggers from Phase 3
 
 **Dependencies, Pre-Mortem, Delivery Strategy**: Fill from conversation context
 
@@ -57,7 +57,7 @@ Check every section exists per template:
 - [ ] Expected Outcome has measurable targets
 - [ ] Acceptance Tests have Gherkin + E2E code
 - [ ] Scope Definition has included/excluded + rationale
-- [ ] Product Approach identifies ADR triggers
+- [ ] Product Approach identifies ADR/PDR triggers
 - [ ] Open Decisions documents unresolved questions
 - [ ] Dependencies categorized
 - [ ] Pre-Mortem has ≥4 assumptions
@@ -106,7 +106,7 @@ Execute Readiness Criteria from template:
 
 **Next Actions:**
 
-[If ready]: Create ADRs for [N] technical decisions, then decompose into work items
+[If ready]: Create ADRs/PDRs for [N] decisions, then decompose into work items
 [If incomplete]: Resolve [N] open decisions before implementation
 
 **Readiness Assessment:**

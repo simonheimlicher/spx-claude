@@ -74,22 +74,26 @@ Does this scope feel right for one deliverable unit?
 **Wait for user validation.**
 </propose_boundaries>
 
-<identify_adr_triggers>
-**Analyze technical approach and mark ADR triggers:**
+<identify_decision_triggers>
+**Analyze approach and mark decision triggers (ADR for technical, PDR for product):**
 
 For each component or integration mentioned:
 
 - Does it involve technology choice? → ⚠️ ADR
 - Does it involve architectural pattern? → ⚠️ ADR
 - Does it involve data model design? → ⚠️ ADR
+- Does it involve product behavior/lifecycle? → ⚠️ PDR
+- Does it involve user-facing workflow phases? → ⚠️ PDR
 
-**Example:**
+**Examples:**
 
 - "Storage format for handoffs" → ⚠️ ADR: Markdown+YAML vs JSON vs SQLite
 - "Context capture strategy" → ⚠️ ADR: Full history vs summary vs user selection
+- "Simulation phases" → ⚠️ PDR: What phases exist and their semantics
+- "Session lifecycle" → ⚠️ PDR: How sessions progress through states
 
-**Document all ADR triggers in "Open Decisions" table.**
-</identify_adr_triggers>
+**Document all ADR/PDR triggers in "Open Decisions" table.**
+</identify_decision_triggers>
 
 <document_constraints>
 **Identify product-specific constraints:**
@@ -109,7 +113,7 @@ Phase 3 complete when:
 - [ ] Included capabilities defined (delivering core value)
 - [ ] Excluded capabilities documented with rationale
 - [ ] Scope boundaries validated by user
-- [ ] ADR triggers identified and documented
+- [ ] ADR/PDR triggers identified and documented
 - [ ] Product-specific constraints documented
 - [ ] Ready to write complete PRD
 

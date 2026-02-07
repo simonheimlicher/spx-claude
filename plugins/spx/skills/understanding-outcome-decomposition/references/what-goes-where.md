@@ -1,12 +1,13 @@
 # What Goes Where
 
-A clear taxonomy of what content belongs in ADRs, Specs, and Tests.
+A clear taxonomy of what content belongs in ADRs, PDRs, Specs, and Tests.
 
-## The Three Types
+## The Four Types
 
 | Type     | Purpose                     | Verified by (skill pattern)          |
 | -------- | --------------------------- | ------------------------------------ |
-| **ADR**  | GOVERNS how                 | `/reviewing-{language}-architecture` |
+| **ADR**  | GOVERNS how (architecture)  | `/reviewing-{language}-architecture` |
+| **PDR**  | GOVERNS what (product)      | Product/UX review                    |
 | **Spec** | DESCRIBES what should exist | `/reviewing-{language}`              |
 | **Test** | PROVES it exists            | `/reviewing-{language}-tests`        |
 
@@ -51,6 +52,38 @@ ADRs say "when you do X, do it THIS way." They constrain implementation.
 □ Code follows constraints from applicable ADRs
 □ Deviations are documented or ADR is updated
 ```
+
+---
+
+## PDRs (Product Decisions) — GOVERN BEHAVIOR
+
+PDRs say "the product behaves THIS way." They constrain product behavior, not code architecture.
+
+### PDR Content
+
+| Section            | Content                                | Verified by       |
+| ------------------ | -------------------------------------- | ----------------- |
+| Context            | Why this product decision is needed    | Product/UX review |
+| Decision           | What product behavior was chosen       | Product/UX review |
+| Product Invariants | Observable behaviors users can rely on | Product/UX review |
+| Compliance         | How to verify product behavior         | Product/UX review |
+
+### PDRs Do NOT Contain
+
+| ❌ Never in PDR     | Why not                        | Where it belongs |
+| ------------------- | ------------------------------ | ---------------- |
+| Code architecture   | PDRs govern product, not code  | ADR              |
+| Implementation code | PDRs govern, don't implement   | Story's Analysis |
+| Test files          | PDRs don't get tested directly | Spec's tests     |
+
+### ADR vs PDR
+
+| Aspect     | ADR                       | PDR                        |
+| ---------- | ------------------------- | -------------------------- |
+| Governs    | Code architecture         | Product behavior           |
+| Example    | "Use PostgreSQL"          | "Simulation has 3 phases"  |
+| Invariants | Algebraic code properties | Observable user guarantees |
+| Verified   | Code review               | Product validation         |
 
 ---
 

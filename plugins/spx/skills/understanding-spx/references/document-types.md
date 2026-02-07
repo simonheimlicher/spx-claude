@@ -9,11 +9,13 @@ Product
 └── Capability (E2E level)
     ├── {slug}.capability.md     REQUIRED
     ├── {topic}.prd.md           OPTIONAL (enrichment)
-    ├── NN-{slug}.adr.md         OPTIONAL (interleaved)
+    ├── NN-{slug}.adr.md         OPTIONAL (architectural decisions)
+    ├── NN-{slug}.pdr.md         OPTIONAL (product decisions)
     ├── tests/                   OPTIONAL (co-located tests)
     └── Feature (Integration level)
         ├── {slug}.feature.md    REQUIRED
-        ├── NN-{slug}.adr.md     OPTIONAL (interleaved)
+        ├── NN-{slug}.adr.md     OPTIONAL (architectural decisions)
+        ├── NN-{slug}.pdr.md     OPTIONAL (product decisions)
         ├── tests/               OPTIONAL (co-located tests)
         └── Story (Unit level)
             ├── {slug}.story.md  REQUIRED
@@ -30,18 +32,20 @@ Product
 | ------------- | ----------------------- | --------- | ------------------------------------ |
 | Project Guide | `CLAUDE.md`             | YES       | Project structure and navigation     |
 | Product ADRs  | `NN-{slug}.adr.md`      | NO        | Product-wide architectural decisions |
+| Product PDRs  | `NN-{slug}.pdr.md`      | NO        | Product-wide product decisions       |
 | Product PRD   | `{product-name}.prd.md` | NO        | Optional product-wide requirements   |
 
 ### Capability-Level Documents
 
 **Location**: `spx/NN-{slug}.capability/`
 
-| Document        | Pattern                | Required?     | Purpose                       |
-| --------------- | ---------------------- | ------------- | ----------------------------- |
-| Capability Spec | `{slug}.capability.md` | YES           | E2E scenario definition       |
-| PRD             | `{topic}.prd.md`       | NO (optional) | Product requirements catalyst |
-| Capability ADRs | `NN-{slug}.adr.md`     | NO            | Capability-scoped decisions   |
-| Tests           | `tests/`               | NO            | Co-located tests              |
+| Document        | Pattern                | Required?     | Purpose                             |
+| --------------- | ---------------------- | ------------- | ----------------------------------- |
+| Capability Spec | `{slug}.capability.md` | YES           | E2E scenario definition             |
+| PRD             | `{topic}.prd.md`       | NO (optional) | Product requirements catalyst       |
+| Capability ADRs | `NN-{slug}.adr.md`     | NO            | Capability-scoped arch decisions    |
+| Capability PDRs | `NN-{slug}.pdr.md`     | NO            | Capability-scoped product decisions |
+| Tests           | `tests/`               | NO            | Co-located tests                    |
 
 **Note**: PRD is optional enrichment. If PRD exists but spec is missing, offer to create spec from PRD.
 
@@ -49,11 +53,12 @@ Product
 
 **Location**: `spx/NN-{slug}.capability/NN-{slug}.feature/`
 
-| Document     | Pattern             | Required? | Purpose                         |
-| ------------ | ------------------- | --------- | ------------------------------- |
-| Feature Spec | `{slug}.feature.md` | YES       | Integration scenario definition |
-| Feature ADRs | `NN-{slug}.adr.md`  | NO        | Feature-scoped decisions        |
-| Tests        | `tests/`            | NO        | Co-located tests                |
+| Document     | Pattern             | Required? | Purpose                          |
+| ------------ | ------------------- | --------- | -------------------------------- |
+| Feature Spec | `{slug}.feature.md` | YES       | Integration scenario definition  |
+| Feature ADRs | `NN-{slug}.adr.md`  | NO        | Feature-scoped arch decisions    |
+| Feature PDRs | `NN-{slug}.pdr.md`  | NO        | Feature-scoped product decisions |
+| Tests        | `tests/`            | NO        | Co-located tests                 |
 
 **Note**: Technical details belong in feature.md, not separate TRD documents.
 
@@ -66,7 +71,7 @@ Product
 | Story Spec | `{slug}.story.md` | YES       | Atomic implementation definition |
 | Tests      | `tests/`          | NO        | Co-located tests                 |
 
-**Note**: Stories do NOT have their own ADRs. They inherit decisions from parent feature/capability.
+**Note**: Stories do NOT have their own ADRs or PDRs. They inherit decisions from parent feature/capability.
 
 ## Document Content Requirements
 
@@ -81,7 +86,7 @@ Product
 **May contain**:
 
 - **Test Strategy**: Component/level/harness/rationale table
-- **Architectural Constraints**: References to applicable ADRs
+- **Architectural Constraints**: References to applicable ADRs and PDRs
 - **Analysis** (stories only): Files, constants, config examined
 
 ### Requirements Documents (PRD)
@@ -100,7 +105,21 @@ Product
 - **Context**: Why this decision is needed
 - **Decision**: What is being decided
 - **Consequences**: Trade-offs and implications
-- **Compliance**: How adherence will be verified
+- **Compliance**: How adherence will be verified (code review criteria)
+
+### Product Decision Records (PDR)
+
+**Must contain**:
+
+- **Context**: Why this product decision is needed
+- **Decision**: What product behavior is being decided
+- **Product Invariants**: Observable behaviors users can rely on
+- **Compliance**: How adherence will be verified (product behavior validation)
+
+**ADR vs PDR**:
+
+- **ADR**: Governs code architecture (HOW to build)
+- **PDR**: Governs product behavior (WHAT users experience)
 
 ## PRD as Optional Enrichment
 

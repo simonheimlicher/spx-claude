@@ -14,7 +14,7 @@ The PRD template is provided by the `/managing-specs` skill `<requirement_templa
 | Guarantees     | User capabilities (UC1, UC2...)       |
 | Tests          | Acceptance tests (Gherkin + E2E code) |
 | Scope          | Product features included/excluded    |
-| Open Decisions | Product trade-offs + ADR triggers     |
+| Open Decisions | Product trade-offs + ADR/PDR triggers |
 
 **Note**: Technical details belong in feature.md specs, not separate documents.
 
@@ -59,12 +59,12 @@ The PRD template is provided by the `/managing-specs` skill `<requirement_templa
 
 - UX principles guiding design decisions
 - High-level technical approach
-- ADR triggers marked with ⚠️ for architectural decisions
+- ADR/PDR triggers marked with ⚠️ for architectural decisions
 
 **Open Decisions:**
 
 - Questions requiring user input (options, trade-offs)
-- Decisions triggering ADRs (technical choices)
+- Decisions triggering ADRs (technical choices) or PDRs (product behavior)
 - Product trade-offs (scope, UX, approach impacts)
 
 </critical_sections>
@@ -76,7 +76,7 @@ The PRD template is provided by the `/managing-specs` skill `<requirement_templa
 
 **❌ No exclusions**: Everything in scope → Fix: Explicitly state what's deferred and why
 
-**❌ Missing ADR triggers**: Technical decisions undocumented → Fix: Mark all ⚠️ ADR needs
+**❌ Missing ADR/PDR triggers**: Technical decisions undocumented → Fix: Mark all ⚠️ ADR needs
 
 **❌ No measurable evidence**: Claiming value without metrics → Fix: Current → Target table
 
@@ -92,7 +92,7 @@ PRD is ready when:
 - Evidence metrics defined (Current → Target)
 - Acceptance tests complete (Gherkin + E2E code)
 - Scope boundaries defined (included/excluded + rationale)
-- ADR triggers identified
+- ADR/PDR triggers identified
 - Open decisions documented
 - No placeholder content
 

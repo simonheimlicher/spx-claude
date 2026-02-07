@@ -23,11 +23,12 @@ This is the most fundamental principle. The Product Tree contains OUTCOMES—sta
 | "Add error handling"          | "Invalid input returns clear error"       |
 | "Write tests"                 | Tests are PROOF of outcomes, not outcomes |
 
-**ADRs GOVERN, they don't implement.**
+**ADRs and PDRs GOVERN, they don't implement.**
 
-- ADR = "when you do X, do it THIS way" — no outcomes, no work, no tests
+- ADR = "when you do X, do it THIS way" — architectural constraints, no outcomes, no work, no tests
+- PDR = "the product behaves THIS way" — product behavior constraints, no outcomes, no work, no tests
 - NEED comes from stories/features/capabilities — they describe outcomes
-- ADR compliance is verified through code review, not through testing
+- ADR compliance is verified through code review; PDR compliance through product validation
 
 **STORIES REQUIRED FOR IMPLEMENTATION.**
 
@@ -63,7 +64,7 @@ When **2+ containers** share a need, factor it into an ENABLER at the lowest con
 └── 87-dsp-cic.feature/                # DEPENDS ON enabler
 ```
 
-The ADR doesn't get tests. The ENABLER that satisfies the shared need gets tests.
+The ADR (and PDR) doesn't get tests. The ENABLER that satisfies the shared need gets tests.
 
 **The Product Tree replaces the backlog.**
 
@@ -75,7 +76,7 @@ The ADR doesn't get tests. The ENABLER that satisfies the shared need gets tests
 
 > If you can't express it as a Gherkin scenario with Given/When/Then, it's not an outcome and doesn't belong in a spec.
 
-Note: ADRs don't have Gherkin—they GOVERN, they don't describe outcomes. The ceiling applies to outcomes in specs, not to all content in the engineering system.
+Note: ADRs and PDRs don't have Gherkin—they GOVERN, they don't describe outcomes. The ceiling applies to outcomes in specs, not to all content in the engineering system.
 
 **Principle 11:**
 
@@ -353,15 +354,15 @@ What to MOVE to stories:
 ### 3. SPI master mode 0 works ← MOVE TO STORY (atomic)
 ```
 
-### Mistake 5: Treating ADRs as Implementation
+### Mistake 5: Treating ADRs/PDRs as Implementation
 
 **WRONG:** "Where do we test the ADR?" or "ADR compliance story"
 
-**ADRs GOVERN, they don't implement:**
+**ADRs and PDRs GOVERN, they don't implement:**
 
-- ADRs create NO work, NO outcomes, NO tests
+- ADRs/PDRs create NO work, NO outcomes, NO tests
 - NEED comes from stories/features/capabilities
-- ADR compliance is verified through code review, not through testing
+- ADR compliance verified through code review; PDR compliance through product validation
 
 **The ENABLER pattern for shared needs:**
 
@@ -419,16 +420,17 @@ Recommend decomposing into stories to enable:
 
 ## What Goes Where (Summary)
 
-| Type     | Purpose            | Contains                | Verified by                          |
-| -------- | ------------------ | ----------------------- | ------------------------------------ |
-| **ADR**  | GOVERNS how        | Constraints, rationale  | `/reviewing-{language}-architecture` |
-| **Spec** | DESCRIBES outcomes | Gherkin, test refs      | `/reviewing-{language}`              |
-| **Test** | PROVES existence   | Executable verification | `/reviewing-{language}-tests`        |
+| Type     | Purpose                | Contains                | Verified by                          |
+| -------- | ---------------------- | ----------------------- | ------------------------------------ |
+| **ADR**  | GOVERNS how (arch)     | Constraints, rationale  | `/reviewing-{language}-architecture` |
+| **PDR**  | GOVERNS what (product) | Product invariants      | Product/UX review                    |
+| **Spec** | DESCRIBES outcomes     | Gherkin, test refs      | `/reviewing-{language}`              |
+| **Test** | PROVES existence       | Executable verification | `/reviewing-{language}-tests`        |
 
 **The Flow:**
 
 ```
-ADR constrains HOW → Spec defines WHAT → Test PROVES → Ledger RECORDS
+ADR/PDR constrains → Spec defines WHAT → Test PROVES → Ledger RECORDS
 ```
 
 **See `references/what-goes-where.md` for detailed taxonomy.**
@@ -439,10 +441,10 @@ ADR constrains HOW → Spec defines WHAT → Test PROVES → Ledger RECORDS
 
 ## References
 
-| File                                | Purpose                                    |
-| ----------------------------------- | ------------------------------------------ |
-| `references/what-goes-where.md`     | What content belongs in ADRs, Specs, Tests |
-| `references/level-decision-tree.md` | Decision flowchart for container levels    |
+| File                                | Purpose                                          |
+| ----------------------------------- | ------------------------------------------------ |
+| `references/what-goes-where.md`     | What content belongs in ADRs, PDRs, Specs, Tests |
+| `references/level-decision-tree.md` | Decision flowchart for container levels          |
 
 </reference_index>
 

@@ -1,10 +1,10 @@
 ---
 name: managing-specs
-description: Create and manage specs including capabilities, features, stories, PRDs, TRDs, and ADRs. Use when creating a feature, creating a story, adding specs, or setting up spec structure.
+description: Create and manage specs including capabilities, features, stories, PRDs, TRDs, ADRs, and PDRs. Use when creating a feature, creating a story, adding specs, or setting up spec structure.
 ---
 
 <objective>
-Single source of truth for specs/ directory structure and all document templates. Enables creation of requirements (PRD/TRD), decisions (ADR), and work items (capability/feature/story) with consistent structure across all products using the SPX framework.
+Single source of truth for specs/ directory structure and all document templates. Enables creation of requirements (PRD/TRD), decisions (ADR for architecture, PDR for product), and work items (capability/feature/story) with consistent structure across all products using the SPX framework.
 </objective>
 
 <quick_start>
@@ -13,6 +13,7 @@ Different use cases read different sections:
 - **Template access** → Read `<accessing_templates>` FIRST to understand where templates are located
 - **Structure definition** → Read `<structure_definition>` for specs/ directory hierarchy, BSP numbering, co-located tests
 - **ADR templates** → Read `<adr_templates>` for Architectural Decision Record patterns
+- **PDR templates** → Read `<pdr_templates>` for Product Decision Record patterns
 - **PRD/TRD templates** → Read `<requirement_templates>` for Product and Technical Requirements
 - **Work item templates** → Read `<work_item_templates>` for capability, feature, story, and DONE.md patterns
 
@@ -60,7 +61,8 @@ ${SKILL_DIR}/
 ├── SKILL.md                                    # This file
 └── templates/
     ├── decisions/
-    │   └── architectural-decision.adr.md
+    │   ├── architectural-decision.adr.md
+    │   └── product-decision.pdr.md
     ├── requirements/
     │   ├── product-change.prd.md
     │   └── technical-change.trd.md
@@ -112,7 +114,7 @@ The specs/ directory follows the SPX framework structure.
 <three_phase_transformation>
 
 1. **Requirements (PRD/TRD)** - Capture vision without implementation constraints
-2. **Decisions (ADR)** - Constrain architecture with explicit trade-offs
+2. **Decisions (ADR/PDR)** - Constrain architecture (ADR) or product behavior (PDR) with explicit trade-offs
 3. **Work Items (Capability/Feature/Story)** - Sized, testable implementation containers
 
 </three_phase_transformation>
@@ -508,10 +510,81 @@ decisions/adr-76_appended-decision.md    ← NEW
 
 </adr_templates>
 
-<referencing_adrs>
+<pdr_templates>
 
 <overview>
-**Always use markdown links with descriptive titles.**
+PDRs document product behavior decisions with trade-offs and user impact. Unlike ADRs (which govern code architecture), PDRs govern observable product behavior.
+</overview>
+
+<template_location>
+
+```
+${SKILL_DIR}/templates/decisions/product-decision.pdr.md
+```
+
+</template_location>
+
+<usage>
+
+Read the template and adapt:
+
+```bash
+# Read PDR template
+Read: ${SKILL_DIR}/templates/decisions/product-decision.pdr.md
+
+# Adapt for your decision
+- Document user need and problem
+- Describe product behavior choice
+- List product invariants users can rely on
+- Specify compliance criteria for product behavior
+```
+
+</usage>
+
+<scope_levels>
+
+PDRs can exist at three levels:
+
+- **Project**: `specs/decisions/pdr-NN_{slug}.md`
+- **Capability**: `specs/work/doing/capability-NN/decisions/pdr-NN_{slug}.md`
+- **Feature**: `specs/work/doing/.../feature-NN/decisions/pdr-NN_{slug}.md`
+
+Stories inherit product decisions from parent feature/capability.
+
+</scope_levels>
+
+<naming_convention>
+
+Format: `pdr-{NN}_{slug}.md`
+
+- NN: BSP number in range [10, 99]
+- slug: Kebab-case description (e.g., `simulation-lifecycle-phases`)
+
+</naming_convention>
+
+<adr_vs_pdr>
+
+| Aspect     | ADR                              | PDR                           |
+| ---------- | -------------------------------- | ----------------------------- |
+| Governs    | Code architecture                | Product behavior              |
+| Invariants | Algebraic code properties        | Observable user guarantees    |
+| Compliance | Code review criteria             | Product behavior validation   |
+| Example    | "Use PostgreSQL for persistence" | "Simulation has three phases" |
+
+**When to use which:**
+
+- Technical implementation choice → ADR
+- User-facing behavior choice → PDR
+- If unsure, ask: "Is this about HOW we build it (ADR) or WHAT users experience (PDR)?"
+
+</adr_vs_pdr>
+
+</pdr_templates>
+
+<referencing_decisions>
+
+<overview>
+**Always use markdown links with descriptive titles for both ADRs and PDRs.**
 </overview>
 
 <in_markdown_documents>
@@ -571,7 +644,7 @@ Type system: [Type Safety](../../../../decisions/adr-21_type-safety.md)
 
 </why_markdown_links>
 
-</referencing_adrs>
+</referencing_decisions>
 
 <requirement_templates>
 
@@ -723,7 +796,7 @@ Skill is working correctly when:
 - [ ] Templates exist and are readable in `templates/` subdirectories
 - [ ] Other skills can successfully read templates from appropriate sections
 - [ ] Progressive disclosure guides readers to relevant sections
-- [ ] ADR, requirement, and work item patterns are clearly documented
+- [ ] ADR, PDR, requirement, and work item patterns are clearly documented
 - [ ] Test co-location paths are correctly specified for each level
 - [ ] BSP numbering uses consistent two-digit format (10-99)
 

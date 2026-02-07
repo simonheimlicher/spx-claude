@@ -215,16 +215,17 @@ WARNING: Working on completed work item
 Proceeding with context ingestion...
 ```
 
-### No Product ADRs
+### No Product ADRs/PDRs
 
 ```markdown
 Product Context Loaded
 
 - spx/CLAUDE.md
 - Product ADRs: 0 (none found - acceptable for new projects)
+- Product PDRs: 0 (none found - acceptable for new projects)
 ```
 
-### No Capability/Feature ADRs
+### No Capability/Feature ADRs/PDRs
 
 ```markdown
 Capability Context Loaded: 10-cli.capability
@@ -232,6 +233,7 @@ Capability Context Loaded: 10-cli.capability
 - cli.capability.md
 - command-architecture.prd.md
 - Capability ADRs: 0 (none found - acceptable)
+- Capability PDRs: 0 (none found - acceptable)
 ```
 
 ## Success Path (No Errors)

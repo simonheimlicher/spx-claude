@@ -61,15 +61,16 @@ Glob: "specs/work/**/capability-{NN}_{slug}/"
 # Read project guide
 Read: specs/CLAUDE.md
 
-# Find and read all product ADRs
+# Find and read all product ADRs and PDRs
 Glob: "specs/decisions/adr-*.md"
-# For each ADR found:
-Read: [ADR path]
+Glob: "specs/decisions/pdr-*.md"
+# For each decision record found:
+Read: [decision record path]
 ```
 
 **Abort if**: `specs/CLAUDE.md` missing
 
-**Strict Mode Check**: None (product ADRs are truly optional)
+**Strict Mode Check**: None (product ADRs/PDRs are truly optional)
 
 **Output**:
 
@@ -80,6 +81,8 @@ Read: [ADR path]
     • [Type Safety](../decisions/adr-21_type-safety.md)
     • [Testing Strategy](../decisions/adr-37_testing-strategy.md)
     • [CLI Framework](../decisions/adr-54_cli-framework.md)
+  - Product PDRs: 1
+    • [Simulation Lifecycle](../decisions/pdr-10_simulation-lifecycle.md)
 ```
 
 ---
@@ -93,6 +96,7 @@ Read: [ADR path]
 - `{capability-path}/{slug}.capability.md` ✅ MUST EXIST
 - `{capability-path}/*.prd.md` ⚠️ OPTIONAL (read if present)
 - `{capability-path}/decisions/adr-*.md` ⚠️ May not exist
+- `{capability-path}/decisions/pdr-*.md` ⚠️ May not exist
 
 **Actions**:
 
@@ -109,10 +113,11 @@ Read: [PRD path]
 # If not found:
 # Continue without PRD (it's optional)
 
-# Read capability ADRs
+# Read capability ADRs and PDRs
 Glob: "{capability-path}/decisions/adr-*.md"
-# For each ADR found:
-Read: [ADR path]
+Glob: "{capability-path}/decisions/pdr-*.md"
+# For each decision record found:
+Read: [decision record path]
 ```
 
 **Abort if**:
@@ -134,6 +139,7 @@ Read: [ADR path]
   - Capability ADRs: 2
     • [Commander Pattern](decisions/adr-21_commander-pattern.md)
     • [Config Loading](decisions/adr-37_config-loading.md)
+  - Capability PDRs: 0
 ```
 
 ---
@@ -149,6 +155,7 @@ Read: [ADR path]
 - `{feature-path}/{slug}.feature.md` ✅ MUST EXIST
 - `{feature-path}/*.trd.md` ⚠️ OPTIONAL (read if present)
 - `{feature-path}/decisions/adr-*.md` ⚠️ May not exist
+- `{feature-path}/decisions/pdr-*.md` ⚠️ May not exist
 
 **Actions**:
 
@@ -165,10 +172,11 @@ Read: [TRD path]
 # If not found:
 # Continue without TRD (it's optional)
 
-# Read feature ADRs
+# Read feature ADRs and PDRs
 Glob: "{feature-path}/decisions/adr-*.md"
-# For each ADR found:
-Read: [ADR path]
+Glob: "{feature-path}/decisions/pdr-*.md"
+# For each decision record found:
+Read: [decision record path]
 ```
 
 **Abort if**:
@@ -189,6 +197,7 @@ Read: [ADR path]
   - command-framework.trd.md (optional, found)
   - Feature ADRs: 1
     • [Subcommand Structure](decisions/adr-21_subcommand-structure.md)
+  - Feature PDRs: 0
 ```
 
 ---
@@ -260,6 +269,8 @@ Read: {story-path}/{slug}.story.md
   - [Type Safety](../decisions/adr-21_type-safety.md)
   - [Testing Strategy](../decisions/adr-37_testing-strategy.md)
   - [CLI Framework](../decisions/adr-54_cli-framework.md)
+- **PDRs**: 1 document
+  - [Simulation Lifecycle](../decisions/pdr-10_simulation-lifecycle.md)
 
 ### Capability Level: cli
 
@@ -268,6 +279,7 @@ Read: {story-path}/{slug}.story.md
 - **ADRs**: 2 documents
   - [Commander Pattern](decisions/adr-21_commander-pattern.md)
   - [Config Loading](decisions/adr-37_config-loading.md)
+- **PDRs**: 0 documents
 
 ### Feature Level: commands
 
@@ -275,6 +287,7 @@ Read: {story-path}/{slug}.story.md
 - **TRD**: feature-20_commands/command-framework.trd.md
 - **ADRs**: 1 document
   - [Subcommand Structure](decisions/adr-21_subcommand-structure.md)
+- **PDRs**: 0 documents
 
 ### Story Level: build
 
@@ -289,6 +302,13 @@ Read: {story-path}/{slug}.story.md
 - Capability-scoped: 2
 - Feature-scoped: 1
 - Story-specific: 0 (stories inherit parent ADRs)
+
+**Total PDRs Applicable**: 1
+
+- Product-wide: 1
+- Capability-scoped: 0
+- Feature-scoped: 0
+- Story-specific: 0 (stories inherit parent PDRs)
 
 **Test Location**: `specs/work/doing/.../story-30_build/tests/` (co-located, permanent)
 
@@ -305,7 +325,7 @@ Product (spx-claude)
 
 ✅ All required documents verified and read
 ✅ Complete hierarchical context loaded
-✅ All architectural constraints understood
+✅ All architectural constraints (ADRs) and product decisions (PDRs) understood
 
 You may now proceed with implementation.
 ```
@@ -317,7 +337,7 @@ Workflow is complete when:
 
 - [ ] All phases executed in order (0 through 5)
 - [ ] Every required document located and read
-- [ ] All ADRs at all levels read and listed
+- [ ] All ADRs and PDRs at all levels read and listed
 - [ ] Context summary generated with complete document list
 - [ ] Clear indication that implementation may proceed
 - [ ] No ABORT conditions triggered (or appropriate error shown)

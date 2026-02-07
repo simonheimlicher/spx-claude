@@ -1,101 +1,50 @@
-# ADR: [Decision Title]
-
-<!--
-IMPORTANT: Do NOT include the ADR number in this header.
-- The number exists ONLY in the filename: adr-NN_slug.md
-- This prevents drift when ADRs are renumbered (BSP insertion)
-- The "ADR:" prefix identifies the document type
-- Example: File adr-21_type-safety.md has header "# ADR: Type Safety"
--->
+# ADR: [Title]
 
 ## Problem
 
-[1-3 sentences. What's broken, missing, or unclear? No wrapper sections.]
+[1-3 sentences. What's broken, missing, or unclear?]
 
 ## Context
 
-- **Business**: [Why this matters to users/product]
-- **Technical**: [Existing systems, language, constraints]
+- **Business**: [Why it matters to users/product]
+- **Technical**: [Existing systems, constraints]
 
 ## Decision
 
-**[The actual decision in one sentence.]**
+**[Primary decision in one sentence.]**
 
 ## Rationale
 
-[Why this decision. What alternatives were considered and why rejected. This is coherent reasoning, not a manufactured list of pros/cons. The argument should flow naturally and reference specific constraints that made this the right choice.]
+[Coherent argument. Alternatives considered. Why this is right given constraints. Not a manufactured pros/cons list.]
 
 ## Trade-offs Accepted
 
 - **[Trade-off]**: [Mitigation or acceptance reasoning]
-- **[Trade-off]**: [Mitigation or acceptance reasoning]
 
-## Testing Strategy
+## Invariants
 
-> **Architect**: Invoke the following skills efore writing this section:
->
-> 1. `test:testing` skill
-> 2. `test:testing-{language}` where `{language}` is the language-specific skill
->
-> This section is the contract between architect and coder.
+> Algebraic properties that hold for ALL code governed by this ADR.
 
-### Level Coverage
+- [Property in verifiable form]
+- [Property in verifiable form]
 
-| Level           | Question Answered                             | Scope                |
-| --------------- | --------------------------------------------- | -------------------- |
-| 1 (Unit)        | [What uncertainty does unit testing resolve?] | [Components covered] |
-| 2 (Integration) | [What uncertainty does integration resolve?]  | [Components covered] |
-| 3 (E2E)         | [What uncertainty does E2E resolve?]          | [Workflows covered]  |
+## Compliance
 
-*Delete rows for levels not needed. Every level included must have escalation rationale.*
+> Input to `/reviewing-{language}`. Write as executable verification criteria.
 
-### Escalation Rationale
+### Recognized By
 
-- **1 → 2**: [What unit tests cannot verify] → [What integration adds]
-- **2 → 3**: [What integration cannot verify] → [What E2E adds]
+An implementation follows this ADR when:
 
-*Only include escalation paths for levels present in Level Coverage.*
-
-### Test Harness
-
-| Level | Harness        | Location/Dependency                                          |
-| ----- | -------------- | ------------------------------------------------------------ |
-| 2     | [Harness name] | `path/to/harness.ts` or [Feature NN](../../feature-NN_slug/) |
-| 3     | [Harness name] | `path/to/harness.ts` or [ADR Title](../adr-NN_slug.md)       |
-
-*Level 1 typically needs no harness (pure functions). Include only levels that require test infrastructure.*
-
-### Behaviors Verified
-
-**Level 1 (Unit):**
-
-- [Specific testable behavior for pure functions/modules]
-
-**Level 2 (Integration):**
-
-- [Specific testable behavior involving component collaboration]
-
-**Level 3 (E2E):**
-
-- [Specific user workflow from start to finish]
-
-*Behaviors should be concrete and testable, not vague ("test the X").*
-
-## Validation
-
-### How to Recognize Compliance
-
-You're following this decision if:
-
-- [Concrete recognition criterion]
-- [Concrete recognition criterion]
+- [Observable pattern indicating compliance]
+- [Observable pattern indicating compliance]
 
 ### MUST
 
-- [Mandatory rule — violation breaks the architecture]
-- [Mandatory rule]
+- [Rule] — [Why this follows from the decision]
+- [Rule] — [Why]
 
 ### NEVER
 
-- [Prohibition — doing this violates the decision]
-- [Prohibition]
+- [Prohibition] — [Why this violates the decision]
+- [Prohibition] — [Why]
