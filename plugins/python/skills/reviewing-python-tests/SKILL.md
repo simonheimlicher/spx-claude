@@ -26,7 +26,7 @@ Review protocol has 6 phases - stop at first rejection:
 2. **Evidentiary integrity** - Adversarial test, dependency handling, harness verification
 3. **Property-based testing** - MANDATORY for parsers, serializers, math, complex algorithms
 4. **Lower-level assumptions** - Check for stories/features, evaluate coverage
-5. **ADR compliance** - Identify applicable ADRs, verify constraints
+5. **ADR/PDR compliance** - Identify applicable decision records, verify constraints
 6. **Test quality** - Type annotations, no mocking, magic values
 
 When reporting findings, cite source skills:
@@ -343,37 +343,38 @@ For integration tests (Level 2), verify they don't duplicate story-level evidenc
 If any check fails, STOP and REJECT with detailed findings.
 </phase>
 
-<phase name="adr_compliance">
-Check test code against architectural decisions.
+<phase name="decision_record_compliance">
+Check test code against decision records.
 
-**5.1 Identify Applicable ADRs**
+**5.1 Identify Applicable ADRs/PDRs**
 
 ```bash
-# Find ADRs referenced in spec
-grep -o '\[.*\](.*\.adr\.md)' {spec_file}
+# Find decision records referenced in spec
+grep -o '\[.*\](.*\.\(adr\|pdr\)\.md)' {spec_file}
 
-# Find ADRs in ancestry
-ls {capability_path}/*.adr.md
-ls {feature_path}/*.adr.md 2>/dev/null
+# Find ADRs/PDRs in ancestry
+ls {capability_path}/*.adr.md {capability_path}/*.pdr.md
+ls {feature_path}/*.adr.md {feature_path}/*.pdr.md 2>/dev/null
 ```
 
 **5.2 Verify Compliance**
 
-For each ADR, check test code follows its constraints:
+For each decision record, check test code follows its constraints:
 
-| ADR Constraint                              | What to Check                 |
-| ------------------------------------------- | ----------------------------- |
-| "Use `int(signal)` not `_raw()`"            | `grep "_raw()" {test_files}`  |
-| "Use `yield`, `yield n`, not string states" | `grep 'yield "' {test_files}` |
-| "No mocking"                                | `grep -E "@patch              |
+| Decision Constraint                         | What to Check                                               |
+| ------------------------------------------- | ----------------------------------------------------------- |
+| "Use `int(signal)` not `_raw()`"            | `grep "_raw()" {test_files}`                                |
+| "Use `yield`, `yield n`, not string states" | `grep 'yield "' {test_files}`                               |
+| "No mocking"                                | `grep -e "@patch" -e "Mock(" -e "MagicMock" {test_files}`   |
+| "Lifecycle state names" (PDR)               | `grep -e "Draft" -e "Published" -e "Archived" {test_files}` |
 
-**If tests violate ADR constraints**: REJECT.
+**If tests violate ADR/PDR constraints**: REJECT.
 
 **GATE 5**: Before proceeding to Phase 6, verify:
 
-- [ ] Identified all applicable ADRs (spec references + ancestry)
-- [ ] Ran grep for each ADR constraint against test files
-- [ ] No ADR violations found
+- [ ] Identified all applicable ADRs/PDRs (spec references + ancestry)
+- [ ] Ran grep for each decision-record constraint against test files
+- [ ] No ADR/PDR violations found
 
 If any check fails, STOP and REJECT with detailed findings.
 </phase>
@@ -553,11 +554,11 @@ All outcomes have genuine evidentiary coverage at appropriate levels.
 | - | ------- | ----- | --------- | ---------------- |
 | 1 | {name}  | {N}   | {file}    | Genuine          |
 
-### ADR Compliance
+### ADR/PDR Compliance
 
-| ADR    | Status    |
-| ------ | --------- |
-| {name} | Compliant |
+| Decision Record | Status    |
+| --------------- | --------- |
+| {name}          | Compliant |
 
 ### Notes
 
@@ -611,21 +612,21 @@ All outcomes have genuine evidentiary coverage at appropriate levels.
 <rejection_triggers>
 Quick reference for common rejection triggers:
 
-| Category           | Trigger                                    | Verdict |
-| ------------------ | ------------------------------------------ | ------- |
-| **Spec Structure** | Code examples in spec                      | REJECT  |
-| **Spec Structure** | Missing or broken test file links          | REJECT  |
-| **Spec Structure** | Language about "pending" specs             | REJECT  |
-| **Level**          | Outcome tested at wrong level              | REJECT  |
-| **Dependencies**   | `skipif` on required dependency            | REJECT  |
-| **Dependencies**   | Harness referenced but missing             | REJECT  |
-| **Property-Based** | Parser without `@given` roundtrip test     | REJECT  |
-| **Property-Based** | Serializer without `@given` roundtrip test | REJECT  |
-| **Property-Based** | Math operation without property tests      | REJECT  |
-| **ADR**            | Test violates ADR constraint               | REJECT  |
-| **Python**         | Missing `-> None` on test                  | REJECT  |
-| **Python**         | Mocking (`@patch`, `Mock()`)               | REJECT  |
-| **Evidentiary**    | Test can pass with broken impl             | REJECT  |
+| Category            | Trigger                                    | Verdict |
+| ------------------- | ------------------------------------------ | ------- |
+| **Spec Structure**  | Code examples in spec                      | REJECT  |
+| **Spec Structure**  | Missing or broken test file links          | REJECT  |
+| **Spec Structure**  | Language about "pending" specs             | REJECT  |
+| **Level**           | Outcome tested at wrong level              | REJECT  |
+| **Dependencies**    | `skipif` on required dependency            | REJECT  |
+| **Dependencies**    | Harness referenced but missing             | REJECT  |
+| **Property-Based**  | Parser without `@given` roundtrip test     | REJECT  |
+| **Property-Based**  | Serializer without `@given` roundtrip test | REJECT  |
+| **Property-Based**  | Math operation without property tests      | REJECT  |
+| **Decision Record** | Test violates ADR/PDR constraint           | REJECT  |
+| **Python**          | Missing `-> None` on test                  | REJECT  |
+| **Python**          | Mocking (`@patch`, `Mock()`)               | REJECT  |
+| **Evidentiary**     | Test can pass with broken impl             | REJECT  |
 
 </rejection_triggers>
 

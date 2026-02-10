@@ -163,7 +163,7 @@ Read the feature spec to understand:
 - Functional requirements in `## Requirements` section
 - Test strategy in `## Test Strategy` section
 - Outcomes with Gherkin in `## Outcomes` section
-- Architectural constraints from parent ADRs
+- Architectural constraints from parent ADRs/PDRs
 
 ### 2. Project Context
 
@@ -175,10 +175,11 @@ For testing methodology, invoke `/testing` (foundational) and `/testing-python` 
 
 ### 3. Existing Decisions
 
-Read existing ADRs to ensure consistency:
+Read existing ADRs/PDRs to ensure consistency:
 
 - `spx/{NN}-{slug}.adr.md` - Product-level ADRs (interleaved at root)
-- ADRs interleaved within capability/feature containers
+- `spx/{NN}-{slug}.pdr.md` - Product-level PDRs (interleaved at root)
+- ADRs/PDRs interleaved within capability/feature containers
 
 ---
 

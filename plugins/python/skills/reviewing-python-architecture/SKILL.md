@@ -1,17 +1,17 @@
 ---
 name: reviewing-python-architecture
-description: Review ADRs to check they follow testing principles. Use when reviewing ADRs or architecture decisions.
+description: Review ADRs to check they follow testing principles and parent PDR constraints. Use when reviewing ADRs or architecture decisions.
 allowed-tools: Read, Grep
 ---
 
 <objective>
-Review ADRs against `/testing` principles. Point out violations, reference the specific principle, and show correct architecture.
+Review ADRs against `/testing` principles and applicable PDR constraints. Point out violations, reference the specific principle, and show correct architecture.
 </objective>
 
 <quick_start>
 
 1. Read `/testing` for methodology (5 stages, 5 factors, 7 exceptions)
-2. Identify violations of testing principles
+2. Identify violations of testing principles and parent PDR constraints
 3. Output APPROVED or REJECTED with specific violations
 4. Show correct approach with code examples
 

@@ -55,7 +55,7 @@ This loads:
 
 - Story specification (outcomes, acceptance criteria)
 - Parent feature/capability requirements
-- Relevant ADRs and constraints
+- Relevant ADRs/PDRs and constraints
 
 **If context fails to load:** STOP. Ask user for guidance.
 

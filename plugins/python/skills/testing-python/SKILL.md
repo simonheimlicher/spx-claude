@@ -54,8 +54,8 @@ cat {story_path}/{story_name}.story.md
 # Read parent feature for context
 cat {feature_path}/{feature_name}.feature.md
 
-# Check for ADRs that constrain testing approach
-ls {capability_path}/*.adr.md {feature_path}/*.adr.md 2>/dev/null
+# Check for ADRs/PDRs that constrain testing approach
+ls {capability_path}/*.adr.md {capability_path}/*.pdr.md {feature_path}/*.adr.md {feature_path}/*.pdr.md 2>/dev/null
 ```
 
 Extract from the spec:
