@@ -122,9 +122,9 @@ For the capability being migrated:
    - `*.capability.md`, `*.feature.md`, `*.story.md`
    - Rename to new convention
 
-4. **Move ADRs** from `decisions/` to container root:
-   - From: `decisions/adr-21_type-safety.md`
-   - To: `21-type-safety.adr.md`
+4. **Move decision records (ADRs/PDRs)** from `decisions/` to container root:
+   - ADR example: `decisions/adr-21_type-safety.md` → `21-type-safety.adr.md`
+   - PDR example: `decisions/pdr-10-lifecycle.md` → `10-lifecycle.pdr.md`
 
 ---
 

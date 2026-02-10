@@ -266,6 +266,7 @@ specs/
               *.py            # Tests MAY still be here
 decisions/
   adr-NN_slug.md              # Separate ADR directory
+  pdr-NN_slug.md              # Separate PDR directory
 tests/
   unit/                       # Tests MAY have graduated here (or not)
   integration/
@@ -319,12 +320,14 @@ ls specs/.../tests/test_foo.py  # Found!
 spx/
   {product}.prd.md
   NN-{slug}.adr.md            # ADRs interleaved with containers
+  NN-{slug}.pdr.md            # PDRs interleaved with containers
   NN-{slug}.capability/
     {slug}.capability.md
     tests/                    # Tests STAY here
       *.unit.test.{ts,py}
       *.integration.test.{ts,py}
     NN-{slug}.adr.md
+    NN-{slug}.pdr.md
     NN-{slug}.feature/
       {slug}.feature.md
       tests/
@@ -355,6 +358,7 @@ spx/
 | Story example      | `story-54_validate-args/`           | `54-validate-args.story/`      |
 | Spec file          | `{slug}.{type}.md`                  | `{slug}.{type}.md` (unchanged) |
 | ADR location       | `decisions/adr-NN_slug.md`          | `NN-{slug}.adr.md` (in tree)   |
+| PDR location       | `decisions/pdr-NN_slug.md`          | `NN-{slug}.pdr.md` (in tree)   |
 | Status tracking    | Directory location (backlog/doing/) | Test results                   |
 | Test location      | `tests/{level}/` (graduated)        | `spx/.../tests/` (co-located)  |
 
@@ -362,20 +366,21 @@ spx/
 
 1. **BSP comes first** in directory names (for sort order)
 2. **Hyphen** (`-`) separates BSP from slug (not underscore)
-3. **ADRs interleaved** in the tree, not in separate `decisions/` directory
+3. **ADRs/PDRs interleaved** in the tree, not in separate `decisions/` directory
 4. **No TRDs** - technical details go in feature.md
 
-### ADRs Already in spx/
+### ADRs/PDRs Already in spx/
 
-ADRs may have been migrated earlier with RENUMBERED BSPs. Before migrating:
+ADRs/PDRs may have been migrated earlier with RENUMBERED BSPs. Before migrating:
 
-1. Check if ADR content already exists in spx/ under a different number
-2. If yes: **UPDATE REFERENCES** in spec files to point to existing spx/ ADR
-3. If no: Migrate the ADR with appropriate BSP
+1. Check if decision record content already exists in spx/ under a different number
+2. If yes: **UPDATE REFERENCES** in spec files to point to existing spx/ ADR/PDR
+3. If no: Migrate the ADR/PDR with appropriate BSP
 
 ```bash
-# Check for existing ADRs
+# Check for existing ADRs/PDRs
 ls spx/*.adr.md
+ls spx/*.pdr.md
 
 # Example: adr-07 was renumbered to 21
 # decisions/adr-07_python-tooling.md  →  spx/21-python-tooling.adr.md (EXISTS)
@@ -692,7 +697,7 @@ A migration is complete and valid when:
 
 - [ ] SPX directory exists with correct naming (`{BSP}-{slug}.{type}/`)
 - [ ] All spec files moved with `git mv` and renamed correctly
-- [ ] ADRs moved with `git mv` from `decisions/` to in-tree location
+- [ ] ADRs/PDRs moved with `git mv` from `decisions/` to in-tree location
 - [ ] Test directories created at appropriate levels
 
 ### Tests
@@ -783,15 +788,16 @@ ALL test files at this level, with test counts:
 
 **Total**: {N} tests
 
-## ADR Reference Updates
+## Decision Record Reference Updates
 
-If ANY spec file had ADR references updated:
+If ANY spec file had ADR/PDR references updated:
 
-| Spec File      | Old ADR Reference             | New ADR Reference          |
-| -------------- | ----------------------------- | -------------------------- |
-| `foo.story.md` | `decisions/adr-07_tooling.md` | `21-python-tooling.adr.md` |
+| Spec File      | Old Decision Reference          | New Decision Reference     |
+| -------------- | ------------------------------- | -------------------------- |
+| `foo.story.md` | `decisions/adr-07_tooling.md`   | `21-python-tooling.adr.md` |
+| `bar.story.md` | `decisions/pdr-10_lifecycle.md` | `10-lifecycle.pdr.md`      |
 
-If no ADR references were updated, state: "No ADR references required updates."
+If no ADR/PDR references were updated, state: "No ADR/PDR references required updates."
 
 ## Verification
 
@@ -825,7 +831,7 @@ Legacy files and their disposition:
 
 - Which tests came from where
 - Why tests are at their level
-- What ADR references changed
+- What ADR/PDR references changed
 - Whether all DONE.md entries are accounted for
 
 **How to avoid:** Use the template above. Every section is mandatory. If a section doesn't apply, explicitly state "N/A" or "None".

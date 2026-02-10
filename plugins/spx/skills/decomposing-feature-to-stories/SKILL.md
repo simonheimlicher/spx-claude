@@ -204,7 +204,7 @@ AND {additional assertion}
 
 ## Architectural Constraints
 
-{ADRs that constrain this story}
+{ADRs and PDRs that constrain this story}
 ```
 
 **Note:** Stories have an **Analysis** section that proves the agent examined the codebase. This is unique to stories.

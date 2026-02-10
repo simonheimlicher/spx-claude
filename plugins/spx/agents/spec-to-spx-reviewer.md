@@ -93,16 +93,17 @@ Verify spec files use `{slug}.{type}.md` pattern:
 - `parsing.feature.md` ✓
 - `validate-args.story.md` ✓
 
-### Check 2.3: ADR Placement
+### Check 2.3: Decision Record Placement
 
-Verify ADRs are in-tree, not in separate `decisions/` directory:
+Verify ADRs/PDRs are in-tree, not in separate `decisions/` directory:
 
 ```bash
-# Should find ADRs in spx/ tree
+# Should find decision records in spx/ tree
 Glob: spx/**/*.adr.md
+Glob: spx/**/*.pdr.md
 
-# Should NOT find ADRs in decisions/
-ls decisions/ 2>/dev/null && echo "⚠ ADRs still in decisions/"
+# Should NOT find decision records in decisions/
+ls decisions/ 2>/dev/null && echo "⚠ ADRs/PDRs still in decisions/"
 ```
 
 ---

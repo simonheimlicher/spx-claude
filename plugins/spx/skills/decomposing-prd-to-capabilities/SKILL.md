@@ -154,7 +154,7 @@ Use the template from `/managing-spx`:
 
 ## Architectural Constraints
 
-{ADRs that constrain this capability}
+{ADRs and PDRs that constrain this capability}
 ```
 
 **Note on Outcomes:** A capability may have its own outcomes (high-level integration/E2E scenarios) OR it may have no direct outcomes—just features underneath. Both are valid.

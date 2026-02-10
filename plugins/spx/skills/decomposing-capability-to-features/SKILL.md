@@ -149,7 +149,7 @@ Use the template from `/managing-spx`:
 
 ## Architectural Constraints
 
-{ADRs that constrain this feature}
+{ADRs and PDRs that constrain this feature}
 ```
 
 **Critical: Principle 11 - Correctly Understood**
