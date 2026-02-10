@@ -55,7 +55,7 @@ find . -name "feature-*" -type d -exec test -f {}/DONE.md \; -print
 
 ## Non-Functional Verification
 
-Evidence that coding standards and ADR requirements are met.
+Evidence that coding standards and ADR/PDR requirements are met.
 
 | Standard             | Evidence                                    |
 | -------------------- | ------------------------------------------- |

@@ -59,6 +59,7 @@ THEN [expected behavior]
 
 ## Architectural Constraints
 
-| ADR                                     | Constraint                         |
-| --------------------------------------- | ---------------------------------- |
-| [adr-NN_name](decisions/adr-NN_name.md) | [What constraint this ADR imposes] |
+| ADR                                     | Constraint                               |
+| --------------------------------------- | ---------------------------------------- |
+| [adr-NN_name](decisions/adr-NN_name.md) | [What constraint this ADR imposes]       |
+| [pdr-NN_name](decisions/pdr-NN_name.md) | [What product behavior this PDR governs] |
