@@ -44,13 +44,17 @@ Use this path to access skill files:
 - Test infrastructure documented OR in dependencies (no vagueness)
 - Readiness Criteria self-check before delivery
 
-**Requirements define WHAT, not WHEN:**
+**Requirements state product truth in atemporal voice:**
 
-- Requirements describe the ideal solution (timeless vision)
+- Requirements describe the ideal solution (permanent truth, not temporal narrative)
 - Define scope boundaries ("Out of scope: X is separate")
 - NEVER include implementation timing ("MVP", "Phase 2", "Defer to")
-- Avoid: "Not in MVP", "Phase X", "Defer until", "Later"
+- NEVER narrate history ("We discovered...", "X has accumulated without...", "Currently...")
+- NEVER frame as gap-filling ("We need...", "There is a need for...", "This is missing...")
+- State what the product IS or SHOULD BE, not what happened or what's lacking
+- Avoid: "Not in MVP", "Phase X", "Defer until", "Later", "We need", "Currently"
 - Correct: "Out of scope for this PRD", "Future capability", "Separate requirement"
+- See `/understanding-durable-map` atemporal voice principle for rewrite patterns
 
 </essential_principles>
 

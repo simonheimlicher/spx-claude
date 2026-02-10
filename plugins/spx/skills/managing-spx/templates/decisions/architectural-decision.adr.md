@@ -1,13 +1,13 @@
 # ADR: [Title]
 
-## Problem
+## Purpose
 
-[1-3 sentences. What's broken, missing, or unclear?]
+[1-3 sentences. What architectural concern this decision governs. State as permanent truth, not as something to fix.]
 
 ## Context
 
-- **Business**: [Why it matters to users/product]
-- **Technical**: [Existing systems, constraints]
+- **Business**: [How this shapes the user experience]
+- **Technical**: [Systems and constraints this decision applies to]
 
 ## Decision
 

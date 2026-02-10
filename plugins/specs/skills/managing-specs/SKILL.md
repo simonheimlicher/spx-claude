@@ -370,10 +370,10 @@ Read the template and adapt:
 Read: ${SKILL_DIR}/templates/decisions/architectural-decision.adr.md
 
 # Adapt for your decision
-- Document decision context and problem
-- List options considered with pros/cons
-- Document chosen option and rationale
+- State the architectural concern this decision governs (atemporal voice — no history)
+- Document the chosen option and rationale
 - Specify consequences and trade-offs
+- Define compliance criteria
 ```
 
 </usage>
@@ -533,8 +533,8 @@ Read the template and adapt:
 Read: ${SKILL_DIR}/templates/decisions/product-decision.pdr.md
 
 # Adapt for your decision
-- Document user need and problem
-- Describe product behavior choice
+- State the product behavior this decision governs (atemporal voice — no history)
+- Describe the chosen product behavior
 - List product invariants users can rely on
 - Specify compliance criteria for product behavior
 ```

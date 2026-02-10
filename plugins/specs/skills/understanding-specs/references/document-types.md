@@ -114,7 +114,7 @@ Product
 
 **Must contain**:
 
-- **Context**: Why this decision is needed
+- **Purpose**: What architectural concern this decision governs (atemporal — state as permanent truth)
 - **Decision**: What is being decided
 - **Consequences**: Trade-offs and implications
 - **Compliance**: How adherence will be verified (code review criteria)
@@ -124,7 +124,7 @@ Product
 
 **Must contain**:
 
-- **Context**: Why this product decision is needed
+- **Purpose**: What product behavior this decision governs (atemporal — state as permanent truth)
 - **Decision**: What product behavior is being decided
 - **Product Invariants**: Observable behaviors users can rely on
 - **Compliance**: How adherence will be verified (product behavior validation)

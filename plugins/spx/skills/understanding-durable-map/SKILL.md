@@ -46,6 +46,66 @@ The story "User can reset password" doesn't go away when implemented. It remains
 
 </the_fundamental_shift>
 
+<atemporal_voice>
+
+**SPECS STATE PRODUCT TRUTH. THEY NEVER NARRATE HISTORY.**
+
+Every document in the product tree — PRDs, ADRs, PDRs, capabilities, features, stories — describes what the product IS or what it SHOULD BE. Never what happened, what was discovered, what accumulated, or what is currently lacking.
+
+**The test**: Read your sentence aloud. If removing a date, "now", "currently", or "we need" would change the meaning, the sentence is temporal. Rewrite it.
+
+**Temporal markers to eliminate**:
+
+| Temporal (remove)                              | Atemporal (use instead)                  |
+| ---------------------------------------------- | ---------------------------------------- |
+| "We discovered that..."                        | State the fact directly                  |
+| "X has accumulated without..."                 | "X follows..." or "X requires..."        |
+| "We need..." / "There is a need for..."        | State what IS or SHOULD BE               |
+| "Currently..." / "Now..." / "At this point..." | Drop the word entirely                   |
+| "This was decided because..."                  | "This decision ensures..."               |
+| "After evaluating options..."                  | State the chosen option directly         |
+| "Previously..." / "Before this..."             | Remove — there is no before              |
+| "Going forward..." / "In the future..."        | Remove — there is only the product truth |
+
+**Rewrite pattern**:
+
+```
+TEMPORAL: "Product decisions have accumulated without a consistent set of
+          guiding principles, leading to conflicting semantics."
+
+ATEMPORAL: "A consistent set of design principles prevents conflicting
+           semantics across documentation, tests, and implementation."
+```
+
+```
+TEMPORAL: "We need a stable, shared decision basis for all future
+          product choices."
+
+ATEMPORAL: "All product decisions follow a shared priority order."
+```
+
+```
+TEMPORAL: "Multiple product decisions now govern lifecycle, simulation,
+          and types. Without a shared priority order, conflicts are
+          resolved inconsistently."
+
+ATEMPORAL: "Product decisions for lifecycle, simulation, and types
+           require a unified priority order to maintain consistency."
+```
+
+**Why this matters**: Temporal language implies the document is a snapshot of a moment — it will become stale. Atemporal language makes the document a permanent statement of product truth that remains valid regardless of when it is read.
+
+**The voice rule**:
+
+- **PRD**: States what users need and what the product delivers (permanent truth)
+- **ADR**: States what architectural choice governs this domain and why (permanent constraint)
+- **PDR**: States what product behavior users can rely on (permanent guarantee)
+- **Spec**: States what capability/feature/story exists and how it is proven (permanent map)
+
+None of these narrate how the product got here. The product tree has no memory — only truth.
+
+</atemporal_voice>
+
 <what_never_happens>
 
 **These backlog operations DO NOT EXIST in CODE:**
@@ -153,6 +213,10 @@ There's no backlog. There's a Product Tree. You can:
 
 You cannot "groom" or "prioritize" a backlog that doesn't exist.
 
+**Mistake 6: Writing specs with temporal narrative voice**
+
+Specs narrate history when they say "We discovered...", "X has accumulated without...", "We need...", or "Currently...". These make the document a snapshot of a moment rather than a permanent product truth. See `<atemporal_voice>` for the rewrite pattern.
+
 </common_mistakes>
 
 <quick_reference>
@@ -180,5 +244,6 @@ Agent understands durable map when:
 - [ ] Knows status is derived from test results
 - [ ] Thinks in realization rate, not velocity
 - [ ] Never suggests archiving or moving completed work
+- [ ] Writes all spec content in atemporal voice (no history, no "we need", no "currently")
 
 </success_criteria>

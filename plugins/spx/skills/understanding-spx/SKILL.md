@@ -42,6 +42,9 @@ Verify and load complete hierarchical context for a work item by reading all spe
 - `/understanding-outcome-decomposition` - What belongs at each level (capability/feature/story)
 
 Specs describe what the product IS. Status is derived from whether tests pass, not from spec content.
+
+**Atemporal voice**: All spec content must state product truth without temporal markers. If you encounter "we need", "currently", "has accumulated", or "was decided because" in a spec, flag it as a quality issue — the content should be rewritten in atemporal voice per `/understanding-durable-map`.
+
 </prerequisite>
 
 <quick_start>
