@@ -10,6 +10,8 @@ allowed-tools: Read, Bash, Glob, Grep, Write, Edit
 >
 > This skill provides TypeScript-specific implementations for decisions made there. Do NOT skip the router—it determines WHAT to test and at WHAT level. This skill shows HOW to implement that decision in TypeScript.
 
+**Note on Analysis sections (stories only):** When reading story specs, the Analysis section documents what the spec author examined. It provides context but is not binding — implementation may diverge as understanding deepens. Use it as a starting point, not a contract.
+
 ---
 
 ## Router Decision → TypeScript Implementation

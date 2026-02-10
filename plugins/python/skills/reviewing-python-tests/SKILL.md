@@ -103,6 +103,10 @@ def test_uart_tx():
 
 **1.2 Test File Linkage**
 
+**Test Files tables are contractual.** Every link must resolve to an actual file. Stale links = REJECT.
+
+This is distinct from the **Analysis section** (stories only), which documents the agent's codebase examination. Analysis references may diverge from implementation as understanding deepens — do NOT reject specs for stale Analysis references.
+
 Each outcome MUST have a Test Files table with valid Markdown links:
 
 ```markdown

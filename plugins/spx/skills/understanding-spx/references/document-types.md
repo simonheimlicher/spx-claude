@@ -77,17 +77,17 @@ Product
 
 ### Specification Files (.capability.md, .feature.md, .story.md)
 
-**Must contain**:
+**Must contain** (contract — references must resolve):
 
 - **Purpose**: What this container delivers and why it matters
 - **Requirements**: Functional and quality requirements
-- **Outcomes**: Numbered Gherkin scenarios with test file tables
+- **Outcomes**: Numbered Gherkin scenarios with test file tables (links must resolve to actual files)
 
 **May contain**:
 
-- **Test Strategy**: Component/level/harness/rationale table
-- **Architectural Constraints**: References to applicable ADRs and PDRs
-- **Analysis** (stories only): Files, constants, config examined
+- **Test Strategy**: Component/level/harness/rationale table (contract)
+- **Architectural Constraints**: References to applicable ADRs and PDRs (contract)
+- **Analysis** (stories only): Files, constants, config examined (context — implementation may diverge)
 
 ### Requirements Documents (PRD)
 
@@ -102,7 +102,7 @@ Product
 
 **Must contain**:
 
-- **Context**: Why this decision is needed
+- **Purpose**: What architectural concern this decision governs (atemporal — state as permanent truth)
 - **Decision**: What is being decided
 - **Consequences**: Trade-offs and implications
 - **Compliance**: How adherence will be verified (code review criteria)
@@ -111,7 +111,7 @@ Product
 
 **Must contain**:
 
-- **Context**: Why this product decision is needed
+- **Purpose**: What product behavior this decision governs (atemporal — state as permanent truth)
 - **Decision**: What product behavior is being decided
 - **Product Invariants**: Observable behaviors users can rely on
 - **Compliance**: How adherence will be verified (product behavior validation)

@@ -64,6 +64,8 @@ Extract from the spec:
 - **Test Strategy** - Which levels are specified
 - **Harnesses** - Any referenced test harnesses
 
+**Note on Analysis sections (stories only):** The Analysis section documents what the spec author examined. It provides context but is not binding — implementation may diverge as understanding deepens. Use it as a starting point, not a contract.
+
 ### Step 2: Determine Test Levels
 
 For each outcome, apply the `/testing` methodology:

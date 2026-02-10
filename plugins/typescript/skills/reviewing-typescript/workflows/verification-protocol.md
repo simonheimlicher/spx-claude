@@ -8,6 +8,8 @@ When all checks pass, verify all tests for the work item pass.
 
 ### 6.1 Identify Test Files
 
+**Test Files tables in specs are contractual.** Every link must resolve to an actual file. Stale links = REJECTED. This is distinct from the **Analysis section** (stories only), which documents the agent's codebase examination. Analysis references may diverge from implementation — do NOT reject specs for stale Analysis references.
+
 Locate tests in the work item directory:
 
 ```bash

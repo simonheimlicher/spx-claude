@@ -23,7 +23,7 @@ ADRs say "when you do X, do it THIS way." They constrain implementation.
 
 | Section      | Content                                  | Verified by                          |
 | ------------ | ---------------------------------------- | ------------------------------------ |
-| Context      | Why this decision is needed              | `/reviewing-{language}-architecture` |
+| Purpose      | What architectural concern this governs  | `/reviewing-{language}-architecture` |
 | Options      | Alternatives considered with trade-offs  | `/reviewing-{language}-architecture` |
 | Decision     | What we chose and why                    | `/reviewing-{language}-architecture` |
 | Consequences | Trade-offs accepted, constraints imposed | `/reviewing-{language}-architecture` |
@@ -41,7 +41,7 @@ ADRs say "when you do X, do it THIS way." They constrain implementation.
 
 ```
 /reviewing-{language}-architecture checks ADR STRUCTURE:
-□ Context explains why decision is needed
+□ Purpose states what this decision governs (atemporal voice)
 □ Options were genuinely considered (not just "we picked X")
 □ Decision states what was chosen and why
 □ Consequences acknowledge trade-offs
@@ -63,7 +63,7 @@ PDRs say "the product behaves THIS way." They constrain product behavior, not co
 
 | Section            | Content                                | Verified by       |
 | ------------------ | -------------------------------------- | ----------------- |
-| Context            | Why this product decision is needed    | Product/UX review |
+| Purpose            | What product behavior this governs     | Product/UX review |
 | Decision           | What product behavior was chosen       | Product/UX review |
 | Product Invariants | Observable behaviors users can rely on | Product/UX review |
 | Compliance         | How to verify product behavior         | Product/UX review |
@@ -93,16 +93,21 @@ Specs define states that should exist. Each level has specific content.
 
 ### Spec Content by Level
 
-| Section                   | Capability | Feature | Story | Verified by             |
-| ------------------------- | :--------: | :-----: | :---: | ----------------------- |
-| Purpose                   |     ✓      |    ✓    |   ✓   | `/reviewing-{language}` |
-| Success Metric            |     ✓      |    —    |   —   | `/reviewing-{language}` |
-| Requirements              |     ✓      |    ✓    |   —   | `/reviewing-{language}` |
-| Test Strategy             |     ✓      |    ✓    |   —   | `/reviewing-{language}` |
-| Outcomes (Gherkin)        |     ✓      |    ✓    |   ✓   | `/reviewing-{language}` |
-| Test File Table           |     ✓      |    ✓    |   ✓   | `/reviewing-{language}` |
-| Analysis                  |     —      |    —    |   ✓   | `/reviewing-{language}` |
-| Architectural Constraints |     ✓      |    ✓    |   ✓   | `/reviewing-{language}` |
+| Section                   | Capability | Feature | Story | Nature       | Verified by             |
+| ------------------------- | :--------: | :-----: | :---: | ------------ | ----------------------- |
+| Purpose                   |     ✓      |    ✓    |   ✓   | Contract     | `/reviewing-{language}` |
+| Success Metric            |     ✓      |    —    |   —   | Contract     | `/reviewing-{language}` |
+| Requirements              |     ✓      |    ✓    |   —   | Contract     | `/reviewing-{language}` |
+| Test Strategy             |     ✓      |    ✓    |   —   | Contract     | `/reviewing-{language}` |
+| Outcomes (Gherkin)        |     ✓      |    ✓    |   ✓   | Contract     | `/reviewing-{language}` |
+| Test File Table           |     ✓      |    ✓    |   ✓   | **Contract** | `/reviewing-{language}` |
+| Analysis                  |     —      |    —    |   ✓   | **Context**  | `/reviewing-{language}` |
+| Architectural Constraints |     ✓      |    ✓    |   ✓   | Contract     | `/reviewing-{language}` |
+
+**Contract vs. Context:**
+
+- **Contract** sections are durable truth. References must resolve. Stale links = defect.
+- **Context** sections document the agent's examination. References may diverge as understanding deepens — this is expected, not a defect.
 
 ### Outcome Scoping
 
@@ -139,10 +144,10 @@ Quality gates are typically **Feature outcomes** because they verify combined ou
 /reviewing-{language} checks:
 □ Outcomes are states, not tasks
 □ Gherkin is specific and testable
-□ Test files are referenced correctly
+□ Test file references resolve to actual files (contract — stale links = defect)
 □ Story outcomes are atomic
 □ Feature outcomes require integration
-□ Analysis section proves examination (stories only)
+□ Analysis section proves examination (context — references may diverge, stories only)
 ```
 
 ---
