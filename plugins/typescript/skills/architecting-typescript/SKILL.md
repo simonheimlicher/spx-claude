@@ -43,18 +43,18 @@ allowed-tools: Read, Write, Glob, Grep
 If you're creating ADRs for a spec-driven work item (story/feature/capability), ensure complete hierarchical context is loaded:
 
 1. **Invoke `specs:understanding-specs`** with the work item identifier
-2. **Verify all parent ADRs are loaded** - Must understand and honor all architectural decisions in hierarchy
+2. **Verify all parent ADRs/PDRs are loaded** - Must understand and honor all decision records in hierarchy
 3. **Read the feature spec** - Requirements, Test Strategy, and Outcomes sections
 
 **The `specs:understanding-specs` skill provides:**
 
-- Complete ADR hierarchy (product/capability/feature decisions)
+- Complete ADR/PDR hierarchy (product/capability/feature decisions)
 - Feature spec with requirements, test strategy, and outcomes
 - Story/feature/capability spec with Gherkin acceptance criteria
 
 **ADR creation requirements:**
 
-- Must not contradict parent ADRs (product → capability → feature hierarchy)
+- Must not contradict parent ADRs/PDRs (product → capability → feature hierarchy)
 - Must reference relevant parent decisions
 - Must include testing strategy with level assignments
 - Must document trade-offs and consequences
@@ -82,10 +82,11 @@ For testing methodology, invoke the `/testing-typescript` skill
 
 **3. Existing Decisions**
 
-Read existing ADRs to ensure consistency:
+Read existing ADRs/PDRs to ensure consistency:
 
 - `spx/{NN}-{slug}.adr.md` - Product-level ADRs (interleaved at root)
-- ADRs interleaved within capability/feature containers
+- `spx/{NN}-{slug}.pdr.md` - Product-level PDRs (interleaved at root)
+- ADRs/PDRs interleaved within capability/feature containers
 
 </input_context>
 

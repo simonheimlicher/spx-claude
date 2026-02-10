@@ -31,7 +31,7 @@ Adversarial code review enforcing zero-tolerance on mocking, type safety, and se
 2. Run Phase 1 static analysis (tsc, ESLint, Semgrep)
 3. Run Phase 2 infrastructure provisioning
 4. Run Phase 3 tests with coverage
-5. Complete Phase 4 manual checklist (including ADR compliance)
+5. Complete Phase 4 manual checklist (including ADR/PDR compliance)
 6. Determine verdict (APPROVED/CONDITIONAL/REJECTED/BLOCKED)
 7. If APPROVED: commit outcome and commit work item
 
@@ -88,18 +88,18 @@ expect(result.success).toBe(true); // Tests behavior
 If you're reviewing code for a spec-driven work item (story/feature/capability), verify the implementation has complete context:
 
 1. **Check that `spx:understanding-specs` was invoked** - Look for context loading in implementation
-2. **Verify all ADRs are referenced** - Implementation should follow architectural decisions (interleaved in containers)
+2. **Verify all ADRs/PDRs are referenced** - Implementation should follow decision records (interleaved in containers)
 3. **Verify feature spec requirements met** - Code should satisfy documented requirements
 
 **The `spx:understanding-specs` skill provides:**
 
-- Complete ADR hierarchy (product/capability/feature decisions)
+- Complete ADR/PDR hierarchy (product/capability/feature decisions)
 - Feature spec with validation strategy and acceptance criteria
 - Story/feature/capability spec with functional requirements
 
 **Review focus:**
 
-- Does implementation honor all ADRs in hierarchy?
+- Does implementation honor all ADRs/PDRs in hierarchy?
 - Does implementation satisfy feature spec validation strategy?
 - Does implementation meet story/feature acceptance criteria?
 

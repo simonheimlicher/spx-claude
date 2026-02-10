@@ -138,7 +138,7 @@
 
 - [ ] Tests use dependency injection, not mocking
 - [ ] Tests verify behavior, not implementation
-- [ ] Test levels match ADR specification
+- [ ] Test levels and behavior match ADR/PDR constraints
 - [ ] Named test values (not anonymous objects)
 - [ ] Debuggability-first organization
 

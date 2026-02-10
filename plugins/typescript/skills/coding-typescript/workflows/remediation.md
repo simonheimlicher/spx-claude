@@ -17,7 +17,7 @@ When your input is **rejection feedback** from a reviewer, follow this protocol.
 Before fixing, understand WHY the code was rejected:
 
 1. **Read the affected code** in context (not just the flagged line)
-2. **Read the spec/ADR** if the issue is about compliance
+2. **Read the spec/decision record (ADR/PDR)** if the issue is about compliance
 3. **Identify root cause vs symptoms**:
    - If 5 type errors stem from one wrong return type, fix the return type
    - If tests fail because of a logic error, fix the logic (not the test assertions)

@@ -103,7 +103,7 @@ async function syncFiles(
 | -------- | ------------------------- | ----------------------------------------------------- |
 | 1        | `docs/`, `README.md`      | Project architecture, design decisions, intended APIs |
 | 2        | `CLAUDE.md`               | Project-specific rules for Claude                     |
-| 3        | ADRs, specs               | Documented decisions and requirements                 |
+| 3        | ADRs/PDRs, specs          | Documented decisions and requirements                 |
 | 4        | This skill (`SKILL.md`)   | Generic TypeScript best practices                     |
 | 5        | Existing code (reference) | Evidence of implementation, NOT authority             |
 
@@ -238,7 +238,7 @@ it("GIVEN valid args WHEN running THEN returns success", async () => {
 
 - All specification documents exist (capability/feature/story specs)
 - All requirements documents exist (PRD at product level)
-- All architectural decisions (ADRs) are read and understood
+- All decision records (ADRs/PDRs) are read and understood
 - Complete hierarchical context is loaded (Product → Capability → Feature → Story)
 
 **Example invocation:**
@@ -261,7 +261,7 @@ You operate in one of two modes depending on your input:
 
 | Input                            | Mode               | Workflow                      |
 | -------------------------------- | ------------------ | ----------------------------- |
-| Spec (ADR, feature spec)         | **Implementation** | `workflows/implementation.md` |
+| Spec (ADR/PDR, feature spec)     | **Implementation** | `workflows/implementation.md` |
 | Rejection feedback from reviewer | **Remediation**    | `workflows/remediation.md`    |
 
 Determine your mode from the input, then follow the appropriate workflow.

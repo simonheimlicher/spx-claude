@@ -233,29 +233,30 @@ Is this import using 2+ levels of "../"?
 
 See `references/verification-tests.md` for test organization rules.
 
-## ADR Compliance
+## ADR/PDR Compliance
 
-> **ADRs GOVERN — compliance is verified through code review, not testing.**
+> **ADRs/PDRs GOVERN — compliance is verified through code review, not testing.**
 
-Check that implementation follows all applicable ADR constraints:
+Check that implementation follows all applicable ADR/PDR constraints:
 
 - [ ] Code structure conforms to ADR architectural decisions
 - [ ] Implementation approach matches ADR-specified patterns
 - [ ] Dependencies align with ADR technology choices
 - [ ] Test levels match ADR Testing Strategy (Level 1/2/3)
-- [ ] Deviations from ADRs are documented or ADR is updated
+- [ ] Product behavior conforms to PDR-defined constraints
+- [ ] Deviations from ADRs/PDRs are documented or decision records are updated
 
 **How to check**:
 
-1. Find applicable ADRs in the spec hierarchy (`*.adr.md` files)
-2. Verify each ADR decision is followed in the implementation
+1. Find applicable ADRs/PDRs in the spec hierarchy (`*.adr.md`, `*.pdr.md`)
+2. Verify each ADR/PDR decision is followed in the implementation
 3. Flag any undocumented deviations as REJECTED
 
-**Common ADR violations**:
+**Common ADR/PDR violations**:
 
-| ADR Decision               | Violation Example                   | Verdict  |
-| -------------------------- | ----------------------------------- | -------- |
-| "Use dependency injection" | Direct imports of external services | REJECTED |
-| "Level 1 tests for logic"  | Unit tests hitting network          | REJECTED |
-| "No class components"      | React class component added         | REJECTED |
-| "REST API only"            | GraphQL endpoint added              | REJECTED |
+| Decision Record Constraint           | Violation Example                   | Verdict  |
+| ------------------------------------ | ----------------------------------- | -------- |
+| "Use dependency injection" (ADR)     | Direct imports of external services | REJECTED |
+| "Level 1 tests for logic" (ADR)      | Unit tests hitting network          | REJECTED |
+| "No class components" (ADR)          | React class component added         | REJECTED |
+| "Lifecycle is Draft→Published" (PDR) | Added hidden `Archived` state       | REJECTED |

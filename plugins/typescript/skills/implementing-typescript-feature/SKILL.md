@@ -45,7 +45,7 @@ Invoke `/understanding-specs` on the story to load:
 
 - Story specification
 - Parent feature/capability requirements
-- Relevant ADRs and constraints
+- Relevant ADRs/PDRs and constraints
 
 If context loading fails, STOP.
 
