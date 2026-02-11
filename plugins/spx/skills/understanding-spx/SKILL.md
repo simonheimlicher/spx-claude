@@ -1,6 +1,6 @@
 ---
 name: understanding-spx
-description: Read all specs for a story, feature, or capability including PRDs, ADRs, and PDRs. Use when starting implementation, checking progress, or asked to "read the spec". For CODE framework (spx/) projects.
+description: Read all specs for a story, feature, or capability including PRDs, ADRs, and PDRs. Use when starting implementation, checking progress, or asked to "read the spec". For Outcome Engineering framework (spx/) projects.
 allowed-tools: Read, Glob, Grep
 ---
 

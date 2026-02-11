@@ -2,7 +2,7 @@
 
 ## Observable Outcome
 
-TypeScript plugin skills work with CODE structure: reference `spx/` paths, use co-located tests with suffix naming, understand `outcomes.yaml`.
+TypeScript plugin skills work with Outcome Engineering structure: reference `spx/` paths, use co-located tests with suffix naming, understand `outcomes.yaml`.
 
 ## Skills to Update
 

@@ -21,7 +21,7 @@
 
 ## Outcomes
 
-### 1. [Primary integration scenario]
+### 1. [Primary integration scenario] (Scenario)
 
 ```gherkin
 GIVEN [real environment with tools]
@@ -35,17 +35,15 @@ THEN [integrated behavior verified]
 
 ---
 
-### 2. [Error handling scenario]
+### 2. [Quality gate] (Conformance)
 
-```gherkin
-GIVEN [error condition]
-WHEN [feature action]
-THEN [graceful failure with clear message]
-```
+**Conforms to:** [tool or standard reference]
 
-| File                                                                 | Level | Harness                                                                 |
-| -------------------------------------------------------------------- | ----- | ----------------------------------------------------------------------- |
-| [{slug}-errors.integration](tests/{slug}-errors.integration.test.ts) | 2     | [harness-name](spx/NN-test-infrastructure.capability/NN-{name}.feature) |
+**Predicate:** [what the oracle checks]
+
+| File                                                                   | Level | Harness                                                                 |
+| ---------------------------------------------------------------------- | ----- | ----------------------------------------------------------------------- |
+| [{slug}-quality.integration](tests/{slug}-quality.integration.test.ts) | 2     | [harness-name](spx/NN-test-infrastructure.capability/NN-{name}.feature) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: managing-spx
-description: Create and manage spx/ specs including capabilities, features, stories, PRDs, ADRs, and PDRs. Use when creating a feature, creating a story, adding specs, or setting up spec structure. For CODE framework (spx/) projects.
+description: Create and manage spx/ specs including capabilities, features, stories, PRDs, ADRs, and PDRs. Use when creating a feature, creating a story, adding specs, or setting up spec structure. For Outcome Engineering framework (spx/) projects.
 ---
 
 <objective>
@@ -85,7 +85,7 @@ Read: ${SKILL_DIR}/templates/outcomes/feature-name.feature.md
 <structure_definition>
 
 <overview>
-The spx/ directory follows the CODE framework structure.
+The spx/ directory follows the Outcome Engineering framework structure.
 </overview>
 
 <three_phase_transformation>

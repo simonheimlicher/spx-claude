@@ -725,7 +725,7 @@ When all checks pass, verify all tests pass.
 
 #### 6.1 Identify Test Location
 
-Tests are co-located with specs in the CODE framework:
+Tests are co-located with specs in the Outcome Engineering framework:
 
 ```bash
 # Tests live in the container's tests/ directory

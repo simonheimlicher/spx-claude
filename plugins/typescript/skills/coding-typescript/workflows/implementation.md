@@ -82,7 +82,7 @@ testing/
 └── harnesses/
     └── index.ts         # Test harnesses
 
-spx/{capability}/{feature}/tests/   # Co-located tests (CODE framework)
+spx/{capability}/{feature}/tests/   # Co-located tests (Outcome Engineering framework)
 ├── core.unit.test.ts               # Level 1
 └── core.integration.test.ts        # Level 2
 ```

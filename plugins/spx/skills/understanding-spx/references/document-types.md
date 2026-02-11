@@ -1,6 +1,6 @@
 # Document Types and Requirements
 
-Complete reference of all document types in the CODE framework hierarchy and their requirements.
+Complete reference of all document types in the Outcome Engineering framework hierarchy and their requirements.
 
 ## Work Item Hierarchy
 
@@ -133,7 +133,7 @@ If a PRD exists at a level but the corresponding spec file is missing, offer to 
 
 Status is derived from whether tests pass, not from directory location or spec content.
 
-## Test Co-location (CODE Framework)
+## Test Co-location (Outcome Engineering Framework)
 
 Tests are co-located with their specs in `spx/.../tests/`.
 

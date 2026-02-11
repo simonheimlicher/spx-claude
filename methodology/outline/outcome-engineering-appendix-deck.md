@@ -1,4 +1,4 @@
-# Appendix: Customer Outcome Driven Engineering (CODE)
+# Appendix: Outcome Engineering framework
 
 Everything below is implementation detail. It matters, but it should serve the operating system—not become it.
 

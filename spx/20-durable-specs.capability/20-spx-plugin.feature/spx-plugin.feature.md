@@ -2,7 +2,7 @@
 
 ## Observable Outcome
 
-The spx plugin skills work with the CODE structure: `spx/` root, `outcomes.yaml` for state, no TRDs, co-located tests.
+The spx plugin skills work with the Outcome Engineering structure: `spx/` root, `outcomes.yaml` for state, no TRDs, co-located tests.
 
 ## Skills to Update
 
@@ -11,7 +11,7 @@ The spx plugin skills work with the CODE structure: `spx/` root, `outcomes.yaml`
 | managing-specs      | Update paths from `specs/work/` to `spx/`, remove TRD templates, add `outcomes.yaml` creation, update BSP discovery |
 | understanding-specs | Update hierarchy traversal to `spx/`, remove TRD verification, add `outcomes.yaml` reading                          |
 | writing-prd         | Update output paths to `spx/`, no other changes                                                                     |
-| writing-trd         | **DELETE** - TRDs no longer exist in CODE                                                                           |
+| writing-trd         | **DELETE** - TRDs no longer exist in Outcome Engineering                                                            |
 
 ## Key Changes
 
@@ -35,7 +35,7 @@ The spx plugin skills work with the CODE structure: `spx/` root, `outcomes.yaml`
 
 ### writing-trd
 
-1. **Delete entirely** - TRDs dropped from CODE model
+1. **Delete entirely** - TRDs dropped from Outcome Engineering framework
 
 ## Tests
 

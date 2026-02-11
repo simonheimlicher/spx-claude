@@ -885,7 +885,7 @@ export default defineConfig({
 
 ---
 
-## Test Organization (CODE Framework)
+## Test Organization (Outcome Engineering Framework)
 
 Tests are co-located with specs in `spx/`. Level is indicated by suffix:
 

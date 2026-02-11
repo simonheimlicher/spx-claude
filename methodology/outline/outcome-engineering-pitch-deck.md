@@ -1,4 +1,4 @@
-# Customer Outcome Driven Engineering (CODE)
+# Outcome Engineering framework
 
 ## An operating system for predictable product momentum in teams of 50–500 engineers
 
@@ -8,7 +8,7 @@ VP Engineering, CTOs, and engineering leaders who are accountable for outcomes, 
 
 ### The promise
 
-CODE replaces backlog-driven delivery with a durable, test-proven product structure that:
+Outcome Engineering replaces backlog-driven delivery with a durable, test-proven product structure that:
 
 - makes dependencies obvious without “blocked-by” bureaucracy
 - turns specs into durable system knowledge instead of disposable tickets
@@ -19,7 +19,7 @@ This is not a new agile flavor. It’s an organizational operating system: **a c
 
 ---
 
-## The problem CODE solves
+## The problem Outcome Engineering solves
 
 ### Backlogs create debt psychology
 
@@ -44,11 +44,11 @@ Leaders then reach for tighter governance, more ceremonies, more reporting—oft
 
 ---
 
-## The CODE alternative: durable product structure and proven outcomes
+## The Outcome Engineering framework alternative: durable product structure and proven outcomes
 
 ### A different mental model
 
-CODE treats development as converting **potential into reality**:
+Outcome Engineering treats development as converting **potential into reality**:
 
 - a spec defines a desired state of the world (potential)
 - tests are executable proof that the state is real (reality)
@@ -66,23 +66,23 @@ Instead of an infinite backlog, you maintain a **Product Tree**:
 
 The Product Tree is a map of the product, not a list of work.
 
-### Concrete Ceiling: if you can’t test it, it’s not ready for engineering
+### Structured Outcome Requirement: if you can't test it, it's not ready for engineering
 
-Engineering systems should not accept vague intent. In CODE:
+Engineering systems should not accept vague intent. In Outcome Engineering:
 
-- items must be concrete enough to express as behavior
-- behavior must be expressible as scenarios (Given/When/Then)
-- if it can’t be expressed that way, it belongs in discovery—not delivery
+- items must be concrete enough to express as structured outcomes
+- outcomes must be typed (Scenario, Mapping, Conformance, or Property) with referenced test files
+- if it can't be expressed that way, it belongs in discovery—not delivery
 
-This single constraint eliminates most “wishlist rot” and reduces thrash from ambiguous scope.
+This single constraint eliminates most "wishlist rot" and reduces thrash from ambiguous scope.
 
 ---
 
-## How leaders use CODE
+## How leaders use Outcome Engineering
 
 ### 1. Create alignment without bureaucracy
 
-CODE encodes dependency order directly into the structure, so teams can align without meetings:
+Outcome Engineering encodes dependency order directly into the structure, so teams can align without meetings:
 
 - dependency order is visible at a glance
 - parallel work is explicit and safe
@@ -97,11 +97,11 @@ Instead of asking “are we on track?”, leaders can ask:
 - Where is potential energy building up (pending/stale work)?
 - Which capability areas lack deep coverage?
 
-CODE makes those answers measurable and auditable.
+Outcome Engineering makes those answers measurable and auditable.
 
 ### 3. Enable agentic development without chaos
 
-CODE is designed to be discoverable by both humans and coding agents:
+Outcome Engineering is designed to be discoverable by both humans and coding agents:
 
 - structure carries context
 - specs avoid brittle references
@@ -112,13 +112,13 @@ This is a practical foundation for scaling AI-assisted engineering without losin
 
 ---
 
-## How CODE fits into existing toolchains
+## How Outcome Engineering fits into existing toolchains
 
-CODE is **tool-agnostic** at the operating-system level. Most organizations will implement it inside existing work systems like [Jira](https://atlassian.com/jira) or [Linear](https://linear.app)
+Outcome Engineering is **tool-agnostic** at the operating-system level. Most organizations will implement it inside existing work systems like [Jira](https://atlassian.com/jira) or [Linear](https://linear.app)
 
 The key distinction:
 
-- **CODE defines the operating rules and contracts**
+- **Outcome Engineering defines the operating rules and contracts**
 - your tooling (Jira/Linear/etc.) hosts the workflow UI and reporting surface
 
 A typical mapping looks like this:
@@ -163,7 +163,7 @@ These aren’t semantics. They shape what teams optimize for.
 
 ### Phase 2: Pilot (4–8 weeks)
 
-- implement CODE conventions for a bounded scope
+- implement Outcome Engineering conventions for a bounded scope
 - establish evidence and validation mechanics
 - build leader dashboards (momentum + drift)
 - train teams in spec and outcome discipline
@@ -189,4 +189,4 @@ If your organization struggles with any of these:
 - “done” that isn’t durable
 - AI-assisted development that increases churn
 
-…then CODE offers a practical, verifiable alternative: **make product intent durable, make outcomes provable, and make momentum measurable.**
+…then Outcome Engineering offers a practical, verifiable alternative: **make product intent durable, make outcomes provable, and make momentum measurable.**

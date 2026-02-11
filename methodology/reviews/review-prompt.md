@@ -22,7 +22,7 @@ Backlogs frame development as **debt reduction**. You start each sprint already 
 
 ## The Momentum Alternative
 
-CODE replaces the backlog with a **Product Tree**—a living structure where ideas must earn their place through concrete definition.
+Outcome Engineering replaces the backlog with a **Product Tree**—a living structure where ideas must earn their place through concrete definition.
 
 **The fundamental shift:**
 
@@ -31,7 +31,7 @@ CODE replaces the backlog with a **Product Tree**—a living structure where ide
 | Reducing debt      | Creating and realizing potential |
 | Checking off tasks | Growing observable capabilities  |
 | Sprint velocity    | Continuous coherent growth       |
-| Infinite wishlist  | Concrete ceiling                 |
+| Infinite wishlist  | Structured outcome requirement   |
 
 ### Creating Potential
 
@@ -39,19 +39,19 @@ When you write a spec, you aren't adding to a pile. You are **creating potential
 
 The work of engineering is converting potential into reality. Tests are the proof that conversion happened. The outcome ledger records when each piece of potential became real.
 
-### The Concrete Ceiling
+### Structured Outcome Requirement
 
 > "It is not possible to add an infinite number of ideas that will never ship."
 
-This is CODE's most radical constraint. You cannot dump vague ideas into the system. Every idea must be concrete enough to fit the physics of the product:
+This is Outcome Engineering's most radical constraint. You cannot dump vague ideas into the system. Every idea must be concrete enough to fit the physics of the product:
 
 ```
-NN-slug.capability/ → NN-slug.feature/ → NN-slug.story/ → scenarios (Gherkin)
+NN-slug.capability/ → NN-slug.feature/ → NN-slug.story/ → structured outcomes
 ```
 
-If you can't express it as a Gherkin scenario with Given/When/Then, it doesn't belong in the engineering system. This naturally filters wishlist items, scope creep, and "wouldn't it be nice if" features.
+Every outcome must be expressed as a typed, structured outcome (Scenario, Mapping, Conformance, or Property), have referenced test files, and pass agentic review. The quality gate is verified coherence between specs, tests, and passing tests — not syntactic constraints.
 
-**The Concrete Ceiling is not gatekeeping—it's quality control.** Ideas that can't be expressed concretely aren't ready for engineering. They belong in discovery, not delivery.
+This naturally filters wishlist items, scope creep, and "wouldn't it be nice if" features. Ideas that can't be expressed as structured outcomes aren't ready for engineering. They belong in discovery, not delivery.
 
 ## BSP: Binary Space Partitioning for Dependencies
 
@@ -342,17 +342,17 @@ The tools follow the language. Change how you talk, and the process changes with
 
 ## Summary
 
-The Product Tree replaces the infinite backlog with a coherent, growable structure. The Concrete Ceiling ensures only well-defined work enters the system. Momentum metrics measure growth rather than debt reduction.
+The Product Tree replaces the infinite backlog with a coherent, growable structure. The structured outcome requirement ensures only well-defined work enters the system. Momentum metrics measure growth rather than debt reduction.
 
 **The key insight:** Development isn't about emptying a pile. It's about growing a tree—creating potential and converting it to reality, one proven behavior at a time.
 
 ---
 
-# Customer Outcome Driven Engineering (CODE)
+# Outcome Engineering framework
 
 ## Rationale
 
-CODE treats specs as durable, version-controlled product structure—not "work to implement." The `spx/` tree is the always-current map of the product. Each container holds its spec, tests, and outcome ledger together, so agents can discover, validate, and evolve the system with minimal guesswork. Outcomes are proven by the outcome ledger, validated at precommit and insured by CI.
+Outcome Engineering treats specs as durable, version-controlled product structure—not "work to implement." The `spx/` tree is the always-current map of the product. Each container holds its spec, tests, and outcome ledger together, so agents can discover, validate, and evolve the system with minimal guesswork. Outcomes are proven by the outcome ledger, validated at precommit and insured by CI.
 
 **Important**: Use the `spx` CLI for all structural operations (like `gh` for GitHub).
 
@@ -529,7 +529,7 @@ THEN [expected result]
 - **Test strategy** documents approach without duplicating test logic
 - **Harness references** point to the harness spec (the durable contract), not the implementation code
 - **Prose requirements** capture intent that tests alone cannot express
-- **Outcomes** use the same numbered Gherkin pattern as stories for consistency
+- **Outcomes** use typed structured patterns (Scenario, Mapping, Conformance, Property) for consistency
 - **Architectural Constraints** reference ADRs that impose requirements on this container
 
 ---
@@ -599,7 +599,7 @@ AND {additional assertion}
 
 ### Rationale
 
-- **Gherkin is source of truth**—tests implement it, spec doesn't contain code
+- **Structured outcomes are source of truth**—tests implement them, spec doesn't contain code
 - **Test Files table** is the contract—harness references here, not in separate sections
 - **Analysis section proves examination**—agent looked before coding, but implementation may diverge
 - **No completion criteria**—stories are atomic; the outcome ledger is the contract

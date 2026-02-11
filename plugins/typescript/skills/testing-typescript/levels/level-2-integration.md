@@ -60,7 +60,7 @@ A test harness is the infrastructure that lets you run tests against a real depe
 
 ---
 
-## File Location & Naming (CODE Framework)
+## File Location & Naming (Outcome Engineering Framework)
 
 Tests are co-located with specs in `spx/`. Level is indicated by suffix naming:
 

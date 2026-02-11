@@ -50,7 +50,7 @@
     {
       "name": "spx",
       "source": "./plugins/spx",
-      "description": "CODE framework (spx/): /writing-prd, /managing-spx, /understanding-spx"
+      "description": "Outcome Engineering (spx/): /writing-prd, /managing-spx, /understanding-spx"
     }
   ]
 }

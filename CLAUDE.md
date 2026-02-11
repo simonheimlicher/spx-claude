@@ -314,7 +314,7 @@ Complete Python development workflow with testing, implementation, and review.
 
 ## Specs Plugin (Legacy)
 
-Legacy `specs/` directory support. Use for projects that haven't migrated to CODE framework.
+Legacy `specs/` directory support. Use for projects that haven't migrated to Outcome Engineering framework.
 
 ### Skills
 
@@ -325,9 +325,9 @@ Legacy `specs/` directory support. Use for projects that haven't migrated to COD
 | `/managing-specs`      | Create and manage specs: capabilities, features, stories, PRDs, TRDs, ADRs |
 | `/understanding-specs` | Read all specs before starting work to load requirements and context       |
 
-## SPX Plugin (CODE Framework)
+## SPX Plugin (Outcome Engineering Framework)
 
-Spec-driven development with CODE (Customer Outcome Driven Engineering) framework.
+Spec-driven development with Outcome Engineering framework.
 
 ### Skills
 
@@ -347,10 +347,10 @@ Spec-driven development with CODE (Customer Outcome Driven Engineering) framewor
 
 ### Disambiguation: specs/ vs spx/
 
-| Directory | System         | Skills                                              |
-| --------- | -------------- | --------------------------------------------------- |
-| `specs/`  | Legacy         | `specs:understanding-specs`, `specs:managing-specs` |
-| `spx/`    | CODE framework | `spx:understanding-spx`, `spx:managing-spx`         |
+| Directory | System                        | Skills                                              |
+| --------- | ----------------------------- | --------------------------------------------------- |
+| `specs/`  | Legacy                        | `specs:understanding-specs`, `specs:managing-specs` |
+| `spx/`    | Outcome Engineering framework | `spx:understanding-spx`, `spx:managing-spx`         |
 
 If both directories exist, ask the user which system to use.
 
@@ -366,10 +366,10 @@ Certain skills must be invoked **automatically** when specific conditions are me
 
 **FIRST**, check which directory exists:
 
-| Directory | System         | Use Skills From |
-| --------- | -------------- | --------------- |
-| `spx/`    | CODE framework | `spx` plugin    |
-| `specs/`  | Legacy         | `specs` plugin  |
+| Directory | System                        | Use Skills From |
+| --------- | ----------------------------- | --------------- |
+| `spx/`    | Outcome Engineering framework | `spx` plugin    |
+| `specs/`  | Legacy                        | `specs` plugin  |
 
 If both exist, ask the user which system to use.
 
@@ -400,7 +400,7 @@ If both exist, ask the user which system to use.
 - Create work items with incorrect BSP numbering
 - Generate requirements documents with wrong structure
 
-See [spx/CLAUDE.md](spx/CLAUDE.md) for CODE framework rules, [specs/CLAUDE.md](specs/CLAUDE.md) for legacy rules.
+See [spx/CLAUDE.md](spx/CLAUDE.md) for Outcome Engineering framework rules, [specs/CLAUDE.md](specs/CLAUDE.md) for legacy rules.
 
 ## Naming Skills
 
@@ -790,7 +790,7 @@ spx-claude/
 │   │       ├── understanding-specs/
 │   │       ├── writing-prd/
 │   │       └── writing-trd/
-│   ├── spx/                      # Version: 0.1.8 (CODE framework)
+│   ├── spx/                      # Version: 0.5.0 (Outcome Engineering framework)
 │   │   └── skills/
 │   │       ├── managing-spx/
 │   │       ├── understanding-spx/
@@ -803,7 +803,7 @@ spx-claude/
 │       │   └── auto-typescript.md
 │       └── skills/
 │           └── (6 skills)
-├── spx/                           # Specs as durable map (CODE model)
+├── spx/                           # Specs as durable map (Outcome Engineering framework)
 │   ├── CLAUDE.md                 # Specs directory guide
 │   ├── spx-claude.prd.md         # Product requirements
 │   ├── NN-{slug}.adr.md          # Product-wide ADRs (interleaved)

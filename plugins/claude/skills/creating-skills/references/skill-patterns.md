@@ -456,7 +456,7 @@ Gather context to ensure successful implementation:
 
 ```yaml
 ---
-name: code-analyzer
+name: outcome-engineering-analyzer
 description: |
   Analyze codebases for patterns, issues, and improvements.
   Use when users ask to review code, find patterns,

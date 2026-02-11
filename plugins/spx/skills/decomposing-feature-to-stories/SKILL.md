@@ -2,11 +2,11 @@
 name: decomposing-feature-to-stories
 description: |
   Break down a feature into story specs. Use when decomposing a significant slice into atomic implementation units.
-  Stories must be expressible as Gherkin scenarios. Aim for ≤7 stories per feature.
+  Stories must be expressible as structured outcomes. Aim for ≤7 stories per feature.
 ---
 
 <objective>
-Transform Feature specs into well-scoped Story specs by identifying which outcomes are atomic (should become stories) vs integration-level (should stay in feature). Each story is an atomic implementation unit—something that can be understood, implemented, and tested as a single coherent piece, expressible as Gherkin scenarios.
+Transform Feature specs into well-scoped Story specs by identifying which outcomes are atomic (should become stories) vs integration-level (should stay in feature). Each story is an atomic implementation unit—something that can be understood, implemented, and tested as a single coherent piece, expressible as structured outcomes (Scenario, Mapping, Conformance, or Property).
 
 **⚠️ CRITICAL:** Do NOT remove all outcomes from the feature. Features MUST keep their integration outcomes and quality gates. Only MOVE atomic outcomes to stories.
 
@@ -18,7 +18,7 @@ Transform Feature specs into well-scoped Story specs by identifying which outcom
 
 You must understand:
 
-- Story = atomic implementation unit (expressible as Gherkin)
+- Story = atomic implementation unit (expressible as structured outcomes)
 - Feature should have ≤7 stories
 - Stories prove themselves through passing tests
 - The tree can start small (1 story) and grow organically
@@ -28,7 +28,7 @@ You must understand:
 <quick_start>
 
 1. Read the feature spec completely
-2. Identify atomic pieces—each expressible as Gherkin
+2. Identify atomic pieces—each expressible as a structured outcome
 3. Each story should be implementable as a single coherent unit
 4. Create story specs with BSP numbering based on dependencies
 5. Aim for ≤7 stories (if more, feature may need splitting)
@@ -67,15 +67,16 @@ Read the feature and ask: **"What atomic behaviors make up this feature?"**
 | Processing steps   | "Load file", "Transform data", "Save result"      |
 | Error handling     | "Handle invalid input", "Recover from failure"    |
 
-**Key test:** Can each piece be expressed as a Gherkin scenario?
+**Key test:** Can each piece be expressed as a structured outcome?
 
-```gherkin
-GIVEN [precondition]
-WHEN [action]
-THEN [expected result]
-```
+The most common type is a Scenario (Gherkin), but consider all four outcome types:
 
-If you can't write the Gherkin, the piece isn't well-defined enough.
+- **Scenario** (∃): Specific case with Given/When/Then
+- **Mapping** (∀ finite): Every member of an enumerable set produces expected output
+- **Conformance**: Output satisfies an external tool or standard
+- **Property** (∀ infinite): Universal statement holds across a domain
+
+If you can't write a clear structured outcome, the piece isn't well-defined enough.
 
 ## Step 2: Verify Atomicity
 
@@ -84,7 +85,7 @@ If you can't write the Gherkin, the piece isn't well-defined enough.
 For each potential story, ask:
 
 ```
-□ Can I write clear Gherkin for this?
+□ Can I write a clear structured outcome for this?
 □ Can I implement this without partial states?
 □ Does it have clear acceptance criteria?
 □ Is it a single concern, not multiple behaviors bundled?
@@ -102,7 +103,7 @@ For each potential story, ask:
 - It's really part of another story's implementation
 - It has no user-visible behavior
 - It's a technical detail, not a behavior
-- You can't write meaningful Gherkin for it
+- You can't write a meaningful structured outcome for it
 
 ## Step 3: Check the 7-Story Limit
 
@@ -214,7 +215,7 @@ AND {additional assertion}
 For each story:
 
 ```
-□ Is expressible as Gherkin scenarios
+□ Is expressible as structured outcomes
 □ Is atomic—implementable as single unit
 □ Has clear acceptance criteria
 □ BSP reflects dependencies
@@ -231,7 +232,7 @@ For each story:
 
 **Analysis:**
 
-| Atomic behavior                    | Gherkin possible?  | Story?  |
+| Atomic behavior                    | Outcome possible?  | Story?  |
 | ---------------------------------- | ------------------ | ------- |
 | Parse username/password from input | YES                | YES     |
 | Validate password against hash     | YES                | YES     |
@@ -395,21 +396,23 @@ RIGHT:
 
 ## Signals You're at Wrong Level
 
-| Signal                        | Problem                      |
-| ----------------------------- | ---------------------------- |
-| Can't write Gherkin           | Not well-defined             |
-| Multiple GIVEN/WHEN/THEN sets | Multiple stories             |
-| "And also..." in description  | Multiple stories             |
-| No user-visible behavior      | May be implementation detail |
-| Need >7 stories               | Feature too large            |
+| Signal                              | Problem                      |
+| ----------------------------------- | ---------------------------- |
+| Can't express as structured outcome | Not well-defined             |
+| Multiple GIVEN/WHEN/THEN sets       | Multiple stories             |
+| "And also..." in description        | Multiple stories             |
+| No user-visible behavior            | May be implementation detail |
+| Need >7 stories                     | Feature too large            |
 
 </anti_patterns>
 
-<gherkin_quality>
+<outcome_quality>
 
-## Writing Good Gherkin
+## Writing Good Outcomes
 
-**Good Gherkin is specific and testable:**
+Outcomes must be specific and testable regardless of type.
+
+### Scenario (most common)
 
 ```gherkin
 # GOOD
@@ -426,13 +429,58 @@ WHEN data is sent
 THEN it works correctly
 ```
 
-**The Gherkin test:**
+### Mapping
 
-- Can someone implement tests from this Gherkin alone?
+```markdown
+# GOOD — finite set, each row verifiable
+
+| IR Expression | Expected Verilog |
+| ------------- | ---------------- |
+| `Add(a, b)`   | `a + b`          |
+| `Sub(a, b)`   | `a - b`          |
+| `Neg(a)`      | `-a`             |
+
+# BAD — no expected output
+
+| IR Expression |
+| ------------- |
+| `Add(a, b)`   |
+```
+
+### Conformance
+
+```markdown
+# GOOD — external oracle is specific
+
+Conforms to: Verilator 5.x --lint-only
+Predicate: Zero warnings, zero errors
+
+# BAD — no verifiable predicate
+
+Conforms to: "industry standards"
+```
+
+### Property
+
+```markdown
+# GOOD — domain and predicate are precise
+
+Property: For all (signal_type, width, op) ∈ SignalType × [1..64] × ArithOp,
+op(signal_type(width), signal_type(width)).type == int.
+Test: @given(signal_types(), widths(), arith_ops())
+
+# BAD — no testable predicate
+
+Property: Arithmetic works for all types
+```
+
+**The outcome quality test:**
+
+- Can someone implement tests from this outcome alone?
 - Is every assertion verifiable?
-- Are the preconditions specific enough?
+- Does the outcome type match the quantifier intent?
 
-</gherkin_quality>
+</outcome_quality>
 
 <success_criteria>
 
@@ -440,7 +488,7 @@ Decomposition complete when:
 
 - [ ] Feature KEEPS integration and quality gate outcomes
 - [ ] Only atomic outcomes are MOVED to stories
-- [ ] Each story is expressible as Gherkin scenarios
+- [ ] Each story is expressible as structured outcomes
 - [ ] Each story is atomic and implementable as single unit
 - [ ] Total stories ≤7 (or feature needs splitting)
 - [ ] BSP ordering reflects dependencies

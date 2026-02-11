@@ -108,7 +108,7 @@ None of these narrate how the product got here. The product tree has no memory â
 
 <what_never_happens>
 
-**These backlog operations DO NOT EXIST in CODE:**
+**These backlog operations DO NOT EXIST in Outcome Engineering:**
 
 | Operation                | Why it doesn't exist                                 |
 | ------------------------ | ---------------------------------------------------- |
@@ -201,7 +201,7 @@ Specs are permanent product documentation. The story "User can reset password" w
 
 **Mistake 4: Thinking in sprints/iterations**
 
-CODE has no sprints. Work flows continuously. Realization happens when tests pass and outcomes are claimed.
+Outcome Engineering has no sprints. Work flows continuously. Realization happens when tests pass and outcomes are claimed.
 
 **Mistake 5: Asking about "backlog grooming"**
 

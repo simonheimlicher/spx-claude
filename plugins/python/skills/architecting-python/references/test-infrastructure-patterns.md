@@ -75,7 +75,7 @@ project/
 │   └── harnesses/
 │       ├── __init__.py
 │       └── cli.py          # CLIHarness, etc.
-└── specs/                  # Co-located tests (per CODE framework)
+└── specs/                  # Co-located tests (per Outcome Engineering framework)
     └── .../tests/
         └── test_foo.py     # from mypackage_testing.fixtures import create_user
 ```

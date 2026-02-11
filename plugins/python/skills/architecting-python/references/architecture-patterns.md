@@ -427,7 +427,7 @@ project/
 │   ├── __init__.py
 │   ├── fixtures/           # Test data factories
 │   └── harnesses/          # Test infrastructure (CLI harness, etc.)
-└── spx/                    # Specs as durable map (CODE framework)
+└── spx/                    # Specs as durable map (Outcome Engineering framework)
     ├── CLAUDE.md           # Navigation and work item management
     └── NN-{slug}.capability/
         └── NN-{slug}.feature/

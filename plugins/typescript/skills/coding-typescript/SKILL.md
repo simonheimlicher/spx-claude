@@ -191,7 +191,7 @@ The `/testing-typescript` skill provides:
 - Dependency injection patterns (NO MOCKING)
 - Behavior-only testing approach
 - Test organization for debuggability
-- Test co-location in CODE framework
+- Test co-location in Outcome Engineering framework
 
 **Quick Reference - Testing Levels:**
 
@@ -285,11 +285,11 @@ Determine your mode from the input, then follow the appropriate workflow.
 
 <reference_index>
 
-| File                                   | Purpose                               |
-| -------------------------------------- | ------------------------------------- |
-| `references/code-patterns.md`          | Subprocess, resource cleanup, config  |
-| `references/test-patterns.md`          | Debuggability-first test organization |
-| `references/verification-checklist.md` | Pre-submission verification           |
+| File                                         | Purpose                               |
+| -------------------------------------------- | ------------------------------------- |
+| `references/outcome-engineering-patterns.md` | Subprocess, resource cleanup, config  |
+| `references/test-patterns.md`                | Debuggability-first test organization |
+| `references/verification-checklist.md`       | Pre-submission verification           |
 
 </reference_index>
 

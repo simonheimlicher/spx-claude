@@ -22,7 +22,7 @@ This is a **reference skill** providing domain knowledge for migration operation
 
 <objective>
 
-Provide the domain knowledge needed to migrate capabilities from the legacy `specs/work/` structure to the CODE framework `spx/` structure, including naming conventions, test reverse-graduation, and coverage verification.
+Provide the domain knowledge needed to migrate capabilities from the legacy `specs/work/` structure to the Outcome Engineering framework `spx/` structure, including naming conventions, test reverse-graduation, and coverage verification.
 
 This skill is referenced by:
 
@@ -314,7 +314,7 @@ ls specs/.../tests/test_foo.py  # Found!
 
 <target_system>
 
-## Target System: spx/ (CODE Framework)
+## Target System: spx/ (Outcome Engineering Framework)
 
 ```text
 spx/
@@ -350,7 +350,7 @@ spx/
 
 ## Naming Convention Transformation
 
-| Element            | Legacy (specs/)                     | CODE (spx/)                    |
+| Element            | Legacy (specs/)                     | Outcome Engineering (spx/)     |
 | ------------------ | ----------------------------------- | ------------------------------ |
 | Directory pattern  | `{type}-{BSP}_{slug}/`              | `{BSP}-{slug}.{type}/`         |
 | Capability example | `capability-27_spec-domain/`        | `27-spec-domain.capability/`   |
@@ -466,7 +466,7 @@ Example:
 
 <test_file_naming>
 
-## Test File Naming in CODE Framework
+## Test File Naming in Outcome Engineering Framework
 
 ### Determining Test Level
 

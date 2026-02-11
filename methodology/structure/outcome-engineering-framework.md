@@ -1,8 +1,8 @@
-# Customer Outcome Driven Engineering (CODE)
+# Outcome Engineering framework
 
 ## Rationale
 
-CODE treats specs as durable, version-controlled product structure—not "work to implement." The `spx/` tree is the always-current map of the product. Each container holds its spec, tests, and outcome ledger together, so agents can discover, validate, and evolve the system with minimal guesswork. Outcomes are proven by the outcome ledger, validated at precommit and insured by CI.
+Outcome Engineering treats specs as durable, version-controlled product structure—not "work to implement." The `spx/` tree is the always-current map of the product. Each container holds its spec, tests, and outcome ledger together, so agents can discover, validate, and evolve the system with minimal guesswork. Outcomes are proven by the outcome ledger, validated at precommit and insured by CI.
 
 **Important**: Use the `spx` CLI for all structural operations (like `gh` for GitHub).
 
@@ -179,7 +179,7 @@ THEN [expected result]
 - **Test strategy** documents approach without duplicating test logic
 - **Harness references** point to the harness spec (the durable contract), not the implementation code
 - **Prose requirements** capture intent that tests alone cannot express
-- **Outcomes** use the same numbered Gherkin pattern as stories for consistency
+- **Outcomes** use typed structured patterns (Scenario, Mapping, Conformance, Property) for consistency
 - **Architectural Constraints** reference ADRs that impose requirements on this container
 
 ---
@@ -249,7 +249,7 @@ AND {additional assertion}
 
 ### Rationale
 
-- **Gherkin is source of truth**—tests implement it, spec doesn't contain code
+- **Structured outcomes are source of truth**—tests implement them, spec doesn't contain code
 - **Test Files table** is the contract—harness references here, not in separate sections
 - **Analysis section proves examination**—agent looked before coding, but implementation may diverge
 - **No completion criteria**—stories are atomic; the outcome ledger is the contract

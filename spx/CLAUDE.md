@@ -1,10 +1,10 @@
-# spx/ Directory Guide (CODE Framework)
+# spx/ Directory Guide (Outcome Engineering Framework)
 
 This guide explains WHEN to invoke spx skills. It is a **router** that tells you which skill to use. The skills themselves contain the HOW (detailed procedures, templates, structure definitions).
 
 ---
 
-## Structure Overview (CODE Model)
+## Structure Overview (Outcome Engineering)
 
 The `spx/` tree is the always-current map of the product. Nothing moves because work is "done"—specs are a durable map, not a backlog.
 

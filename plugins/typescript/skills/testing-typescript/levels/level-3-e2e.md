@@ -72,7 +72,7 @@ beforeAll(() => {
 
 ---
 
-## File Location & Naming (CODE Framework)
+## File Location & Naming (Outcome Engineering Framework)
 
 Tests are co-located with specs in `spx/`. Level is indicated by suffix naming:
 

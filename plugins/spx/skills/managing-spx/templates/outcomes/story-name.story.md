@@ -6,7 +6,7 @@
 
 ## Outcomes
 
-### 1. [Outcome name]
+### 1. [Outcome name] (Scenario)
 
 ```gherkin
 GIVEN [precondition]
@@ -41,13 +41,13 @@ AND [additional assertion]
 
 ---
 
-### 2. [Second outcome if needed]
+### 2. [Outcome name] (Property)
 
-```gherkin
-GIVEN [precondition]
-WHEN [action]
-THEN [expected result]
-```
+**Property:** For all [variable] ∈ [domain], [predicate holds].
+
+**Domain:** [description of the value space]
+
+**Test:** [property-based test framework call]
 
 #### Test Files
 

@@ -32,7 +32,7 @@ ADRs say "when you do X, do it THIS way." They constrain implementation.
 
 | ❌ Never in ADR     | Why not                               | Where it belongs  |
 | ------------------- | ------------------------------------- | ----------------- |
-| Outcomes (Gherkin)  | ADRs don't describe states to achieve | Spec              |
+| Outcomes            | ADRs don't describe states to achieve | Spec              |
 | Test files          | ADRs don't get tested                 | Spec's test table |
 | Implementation code | ADRs govern, don't implement          | Story's Analysis  |
 | Work to be done     | ADRs create no work                   | Spec outcomes     |
@@ -99,7 +99,7 @@ Specs define states that should exist. Each level has specific content.
 | Success Metric            |     ✓      |    —    |   —   | Contract     | `/reviewing-{language}` |
 | Requirements              |     ✓      |    ✓    |   —   | Contract     | `/reviewing-{language}` |
 | Test Strategy             |     ✓      |    ✓    |   —   | Contract     | `/reviewing-{language}` |
-| Outcomes (Gherkin)        |     ✓      |    ✓    |   ✓   | Contract     | `/reviewing-{language}` |
+| Outcomes (structured)     |     ✓      |    ✓    |   ✓   | Contract     | `/reviewing-{language}` |
 | Test File Table           |     ✓      |    ✓    |   ✓   | **Contract** | `/reviewing-{language}` |
 | Analysis                  |     —      |    —    |   ✓   | **Context**  | `/reviewing-{language}` |
 | Architectural Constraints |     ✓      |    ✓    |   ✓   | Contract     | `/reviewing-{language}` |
@@ -111,11 +111,11 @@ Specs define states that should exist. Each level has specific content.
 
 ### Outcome Scoping
 
-| Container  | Outcomes describe...                   | Example                                     | Verified by             |
-| ---------- | -------------------------------------- | ------------------------------------------- | ----------------------- |
-| Capability | Complete user journeys                 | "User authenticates and accesses dashboard" | `/reviewing-{language}` |
-| Feature    | Integration (stories working together) | "Master-slave loopback works"               | `/reviewing-{language}` |
-| Story      | Atomic behavior                        | "SPI master transmits in mode 0"            | `/reviewing-{language}` |
+| Container  | Outcomes describe...                   | Example                                                                                                                           | Verified by             |
+| ---------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| Capability | Complete user journeys                 | "User authenticates and accesses dashboard" (Scenario)                                                                            | `/reviewing-{language}` |
+| Feature    | Integration (stories working together) | "Master-slave loopback works" (Scenario)                                                                                          | `/reviewing-{language}` |
+| Story      | Atomic behavior                        | "SPI master transmits in mode 0" (Scenario), "All IR types → valid Verilog" (Mapping), "Arithmetic always returns int" (Property) | `/reviewing-{language}` |
 
 ### The Integration Test
 
@@ -143,7 +143,8 @@ Quality gates are typically **Feature outcomes** because they verify combined ou
 ```
 /reviewing-{language} checks:
 □ Outcomes are states, not tasks
-□ Gherkin is specific and testable
+□ Outcome type matches quantifier intent (Scenario for ∃, Mapping for finite ∀, Property for infinite ∀)
+□ Outcome notation is specific and testable
 □ Test file references resolve to actual files (contract — stale links = defect)
 □ Story outcomes are atomic
 □ Feature outcomes require integration
@@ -206,7 +207,7 @@ A **Capability** CAN have Level 1 tests (for pure logic verification).
 ┌─────────────────────────────────────────┐
 │                 SPEC                     │
 │       "This state should exist"          │
-│         (Gherkin outcomes)               │
+│       (structured outcomes)              │
 │                                         │
 │  Verified by: /reviewing-{lang}         │
 └────────────────┬────────────────────────┘

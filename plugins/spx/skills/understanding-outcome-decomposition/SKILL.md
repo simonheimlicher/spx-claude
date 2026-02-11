@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep
 ---
 
 <objective>
-Teach the human interpretation of CODE framework levels. This skill explains WHAT belongs at each level based on scope, sizing, and vertical slicing—enabling agents to correctly decompose work without conflating levels.
+Teach the human interpretation of Outcome Engineering framework levels. This skill explains WHAT belongs at each level based on scope, sizing, and vertical slicing—enabling agents to correctly decompose work without conflating levels.
 </objective>
 
 <essential_principles>
@@ -72,11 +72,11 @@ The ADR (and PDR) doesn't get tests. The ENABLER that satisfies the shared need 
 - Passing tests = realizing potential (proving the state exists)
 - The tree grows coherently—ideas must connect to existing structure
 
-**The Concrete Ceiling (for outcomes):**
+**Structured Outcome Requirement:**
 
-> If you can't express it as a Gherkin scenario with Given/When/Then, it's not an outcome and doesn't belong in a spec.
+> Every outcome must be expressed as a typed, structured outcome (Scenario, Mapping, Conformance, or Property), have referenced test files, and pass agentic review. This is the quality gate — not syntactic constraints, but verified coherence between specs, tests, and passing tests.
 
-Note: ADRs and PDRs don't have Gherkin—they GOVERN, they don't describe outcomes. The ceiling applies to outcomes in specs, not to all content in the engineering system.
+Note: ADRs and PDRs don't have outcomes—they GOVERN. The requirement applies to outcomes in specs. See `references/outcome-types.md` for the four outcome types and their notations.
 
 **Principle 11:**
 
@@ -85,7 +85,7 @@ Note: ADRs and PDRs don't have Gherkin—they GOVERN, they don't describe outcom
 </essential_principles>
 
 <quick_start>
-This skill provides mental models for CODE decomposition. Read it BEFORE using:
+This skill provides mental models for Outcome Engineering decomposition. Read it BEFORE using:
 
 - `/decomposing-prd-to-capabilities`
 - `/decomposing-capability-to-features`
@@ -97,7 +97,7 @@ Key questions for each level:
 | -------------- | --------------------------------------------------- | ---------------------------- |
 | **Capability** | "What can the product DO?"                          | Cross-cutting vertical slice |
 | **Feature**    | "What significant slice can be done in ≤7 stories?" | At most 7 atomic stories     |
-| **Story**      | "What's the atomic unit?"                           | Single Gherkin scenario(s)   |
+| **Story**      | "What's the atomic unit?"                           | Structured outcomes          |
 
 </quick_start>
 
@@ -190,7 +190,7 @@ A story is the **atomic unit of implementation**—something that can be underst
 
 **Key characteristics:**
 
-- Expressible as Gherkin scenario(s)
+- Expressible as structured outcomes (Scenario, Mapping, Conformance, or Property)
 - Atomic—can be implemented without partial states
 - Has clear acceptance criteria
 - Up to 9 sibling stories per feature (but aim for ≤7)
@@ -262,13 +262,13 @@ Ask: "What atomic pieces make up this feature?"
 
 Each piece should be:
 
-- Expressible as Gherkin
+- Expressible as a structured outcome
 - Implementable as a single unit
 - Clearly testable
 
 **The key question at every level:**
 
-> Can this be expressed as Gherkin scenarios? If not, decompose further or clarify requirements.
+> Can this be expressed as a structured outcome (Scenario, Mapping, Conformance, or Property)? If not, decompose further or clarify requirements.
 
 </decomposition_principles>
 
@@ -396,7 +396,7 @@ RIGHT:
 
 **Why this is wrong:**
 
-1. **Existence of code doesn't validate structure** - The CODE framework requires stories regardless of implementation state
+1. **Existence of code doesn't validate structure** - The Outcome Engineering framework requires stories regardless of implementation state
 2. **Feature-level tests are never "comprehensive enough"** - They rarely do property-based testing, edge case coverage, or atomic verification
 3. **"Flat structure works" is backlog thinking** - Specs are permanent documentation, not work tracking
 4. **Completed ≠ correctly structured** - Legacy code often lacks proper decomposition
@@ -404,7 +404,7 @@ RIGHT:
 **RIGHT response when finding implementation without stories:**
 
 ```
-"Feature has implementation but no stories. This violates CODE framework.
+"Feature has implementation but no stories. This violates Outcome Engineering framework.
 Recommend decomposing into stories to enable:
 - Atomic verification of each behavior
 - Property-based testing at story level
@@ -420,12 +420,12 @@ Recommend decomposing into stories to enable:
 
 ## What Goes Where (Summary)
 
-| Type     | Purpose                | Contains                | Verified by                          |
-| -------- | ---------------------- | ----------------------- | ------------------------------------ |
-| **ADR**  | GOVERNS how (arch)     | Constraints, rationale  | `/reviewing-{language}-architecture` |
-| **PDR**  | GOVERNS what (product) | Product invariants      | Product/UX review                    |
-| **Spec** | DESCRIBES outcomes     | Gherkin, test refs      | `/reviewing-{language}`              |
-| **Test** | PROVES existence       | Executable verification | `/reviewing-{language}-tests`        |
+| Type     | Purpose                | Contains                       | Verified by                          |
+| -------- | ---------------------- | ------------------------------ | ------------------------------------ |
+| **ADR**  | GOVERNS how (arch)     | Constraints, rationale         | `/reviewing-{language}-architecture` |
+| **PDR**  | GOVERNS what (product) | Product invariants             | Product/UX review                    |
+| **Spec** | DESCRIBES outcomes     | Structured outcomes, test refs | `/reviewing-{language}`              |
+| **Test** | PROVES existence       | Executable verification        | `/reviewing-{language}-tests`        |
 
 **The Flow:**
 
@@ -441,10 +441,11 @@ ADR/PDR constrains → Spec defines WHAT → Test PROVES → Ledger RECORDS
 
 ## References
 
-| File                                | Purpose                                          |
-| ----------------------------------- | ------------------------------------------------ |
-| `references/what-goes-where.md`     | What content belongs in ADRs, PDRs, Specs, Tests |
-| `references/level-decision-tree.md` | Decision flowchart for container levels          |
+| File                                | Purpose                                                      |
+| ----------------------------------- | ------------------------------------------------------------ |
+| `references/what-goes-where.md`     | What content belongs in ADRs, PDRs, Specs, Tests             |
+| `references/level-decision-tree.md` | Decision flowchart for container levels                      |
+| `references/outcome-types.md`       | Four outcome types: Scenario, Mapping, Conformance, Property |
 
 </reference_index>
 

@@ -2,7 +2,7 @@
 
 ## Observable Outcome
 
-Core plugin commands (handoff, pickup) work with CODE structure if they reference specs.
+Core plugin commands (handoff, pickup) work with Outcome Engineering structure if they reference specs.
 
 ## Commands to Evaluate
 

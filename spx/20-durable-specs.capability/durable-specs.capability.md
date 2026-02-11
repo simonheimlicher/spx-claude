@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Migrate all plugins from the current `specs/work/backlog|doing|done/` structure to the CODE (Customer Outcome Driven Engineering) model where specs are a durable map that never moves.
+Migrate all plugins from the current `specs/work/backlog|doing|done/` structure to the Outcome Engineering framework where specs are a durable map that never moves.
 
 ## Success Metric
 
@@ -10,9 +10,9 @@ Migrate all plugins from the current `specs/work/backlog|doing|done/` structure 
 - **Target**: All plugins reference `spx/` paths, use co-located tests, understand `outcomes.yaml`
 - **Measurement**: All plugin skills/commands pass validation with new structure
 
-## Key Changes from Current to CODE
+## Key Changes from Current to Outcome Engineering
 
-| Aspect         | Current                           | CODE                                 |
+| Aspect         | Current                           | Outcome Engineering                  |
 | -------------- | --------------------------------- | ------------------------------------ |
 | Root directory | `specs/`                          | `spx/`                               |
 | Work state     | `backlog/doing/done/` directories | `outcomes.yaml` per container        |

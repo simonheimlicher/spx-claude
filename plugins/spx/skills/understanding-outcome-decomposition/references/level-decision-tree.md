@@ -47,7 +47,7 @@ START: Given work to place in the tree
               ▼
 ┌─────────────────────────────────────┐
 │ Is this ATOMIC?                     │
-│ (Expressible as Gherkin scenarios)  │
+│ (Expressible as structured outcomes) │
 │                                     │
 │ Examples:                           │
 │ - "Reset password"                  │
@@ -70,7 +70,7 @@ START: Given work to place in the tree
 | ------------------------------ | -------------------------- | ---------- |
 | What can the product DO?       | Large cross-cutting area   | Capability |
 | What slice fits in ≤7 stories? | Significant vertical slice | Feature    |
-| What's the atomic unit?        | Single Gherkin scenario(s) | Story      |
+| What's the atomic unit?        | Structured outcomes        | Story      |
 
 ## The 7-Story Test
 
@@ -100,7 +100,7 @@ NO  → Split into multiple features
 
 1. Product ability? → NO
 2. Significant slice? → NO, it's one piece of login
-3. Atomic? → YES, expressible as Gherkin
+3. Atomic? → YES, expressible as structured outcome
 4. → **Story**: `21-validate-hash.story/`
 
 ### Example 4: "Complete E-commerce Checkout" (too big)
@@ -173,6 +173,6 @@ One capability, one feature, one story. This is fine.
 | Signal                                    | Problem               | Fix                               |
 | ----------------------------------------- | --------------------- | --------------------------------- |
 | Feature with >7 stories                   | Too large             | Split into features               |
-| Story that's vague                        | Not ready             | Clarify with Gherkin              |
+| Story that's vague                        | Not ready             | Clarify with structured outcome   |
 | Capability with 1 tiny feature            | May be too small      | Consider if it's really a feature |
 | Feature outcomes duplicate story behavior | Violates Principle 11 | Remove duplicate outcomes         |

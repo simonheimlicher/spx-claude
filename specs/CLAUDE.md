@@ -1,19 +1,19 @@
 # specs/ Directory Guide (LEGACY)
 
-> **⚠️ LEGACY SYSTEM**: The `specs/` directory structure is legacy. New projects use the CODE framework with `spx/` directory. This guide applies ONLY to projects that still use `specs/`.
+> **⚠️ LEGACY SYSTEM**: The `specs/` directory structure is legacy. New projects use the Outcome Engineering framework with `spx/` directory. This guide applies ONLY to projects that still use `specs/`.
 
 ## 🚨 DISAMBIGUATION: specs/ vs spx/
 
 **Before proceeding, determine which system this project uses:**
 
-| Directory | System         | Skills to Use                                       |
-| --------- | -------------- | --------------------------------------------------- |
-| `specs/`  | Legacy         | `specs:understanding-specs`, `specs:managing-specs` |
-| `spx/`    | CODE framework | `spx:understanding-spx`, `spx:managing-spx`         |
+| Directory | System                        | Skills to Use                                       |
+| --------- | ----------------------------- | --------------------------------------------------- |
+| `specs/`  | Legacy                        | `specs:understanding-specs`, `specs:managing-specs` |
+| `spx/`    | Outcome Engineering framework | `spx:understanding-spx`, `spx:managing-spx`         |
 
 **If BOTH directories exist**: Ask the user which system they want to work with.
 
-**If NEITHER exists**: Ask the user if they want to set up specs (legacy) or spx (CODE framework).
+**If NEITHER exists**: Ask the user if they want to set up specs (legacy) or spx (Outcome Engineering framework).
 
 **Fully qualified skill names** (required when both plugins are installed):
 
@@ -22,7 +22,7 @@
 /specs:understanding-specs
 /specs:managing-specs
 
-# CODE framework spx/ projects
+# Outcome Engineering framework spx/ projects
 /spx:understanding-spx
 /spx:managing-spx
 ```

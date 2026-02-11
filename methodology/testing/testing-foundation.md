@@ -496,7 +496,7 @@ Randomized data generation with seeding for reproducibility. Always derive seed 
 
 ---
 
-## Co-located Tests (CODE Framework)
+## Co-located Tests (Outcome Engineering Framework)
 
 Tests stay with their specs permanently. No graduation.
 

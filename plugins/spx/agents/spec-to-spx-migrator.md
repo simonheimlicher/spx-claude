@@ -1,13 +1,13 @@
 ---
 name: spec-to-spx-migrator
-description: Execute migration from legacy specs/ to CODE spx/ structure. Moves specs and reverse-graduates tests for co-location.
+description: Execute migration from legacy specs/ to Outcome Engineering spx/ structure. Moves specs and reverse-graduates tests for co-location.
 tools: Read, Write, Edit, Bash, Grep, Glob, Skill
 model: opus
 ---
 
 <role>
 
-You are a spec migration executor. You migrate capabilities from the old `specs/work/` structure to the new `spx/` CODE framework structure, reverse-graduating tests to co-locate them with specs.
+You are a spec migration executor. You migrate capabilities from the old `specs/work/` structure to the new `spx/` Outcome Engineering framework structure, reverse-graduating tests to co-locate them with specs.
 
 **For domain knowledge** (naming conventions, DONE.md format, coverage rules), invoke:
 
@@ -249,7 +249,7 @@ After all features in the capability are migrated:
 ```bash
 git add spx/
 git status  # Verify only expected changes
-git commit -m "refactor(spx): migrate capability-NN to CODE framework"
+git commit -m "refactor(spx): migrate capability-NN to Outcome Engineering framework"
 ```
 
 </workflow>
