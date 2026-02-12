@@ -9,7 +9,6 @@
 | **Status**          | `APPROVED` / `REJECTED` |
 | **Files Reviewed**  | [count]                 |
 | **Critical Issues** | [count]                 |
-| **Warnings**        | [count]                 |
 | **Tests Passed**    | [passed]/[total]        |
 
 ## Verdict
@@ -18,49 +17,15 @@
 
 ---
 
-## Static Analysis Results
+## Project Validation
 
-### Mypy (Type Safety)
-
-**Status**: PASS / FAIL
-
-```
-[Mypy output here]
-```
-
-**Issues Found**: [count]
-
-| File              | Line | Error Code     | Message     |
-| ----------------- | ---- | -------------- | ----------- |
-| `path/to/file.py` | 42   | `[error-code]` | Description |
-
-### Ruff (Linting & Security)
+**Command**: `pnpm validate`
 
 **Status**: PASS / FAIL
 
+```text
+[validation output here]
 ```
-[Ruff output here]
-```
-
-**Issues Found**: [count]
-
-| File              | Line | Rule   | Message     |
-| ----------------- | ---- | ------ | ----------- |
-| `path/to/file.py` | 42   | `S101` | Description |
-
-### Semgrep (Security Patterns)
-
-**Status**: PASS / FAIL
-
-```
-[Semgrep output here]
-```
-
-**Issues Found**: [count]
-
-| File              | Line | Rule ID        | Message     |
-| ----------------- | ---- | -------------- | ----------- |
-| `path/to/file.py` | 42   | `no-eval-exec` | Description |
 
 ---
 
@@ -70,7 +35,7 @@
 
 **Status**: PASS / FAIL
 
-```
+```text
 [pytest output here]
 ```
 
@@ -89,56 +54,25 @@
 
 ---
 
-## Manual Review Findings
+## ADR/PDR Compliance
 
-### Architecture & Design
-
-- [ ] Code follows single responsibility principle
-- [ ] Dependencies are injected, not hardcoded
-- [ ] No circular imports
-- [ ] Clear module boundaries
-
-**Observations**:
-
-- [Observation 1]
-- [Observation 2]
-
-### Code Quality
-
-- [ ] All public functions have docstrings (Args/Returns/Raises)
-- [ ] No dead code or unused imports
-- [ ] Naming follows conventions (verbs for functions, nouns for classes)
-- [ ] No magic numbers or hardcoded values
-
-**Observations**:
-
-- [Observation 1]
-- [Observation 2]
-
-### Security Concerns
-
-- [ ] No hardcoded secrets or credentials
-- [ ] Input validation present where needed
-- [ ] Proper error handling (no information leakage)
-- [ ] Resource cleanup in finally blocks or context managers
-
-**Observations**:
-
-- [Observation 1]
-- [Observation 2]
+| Decision Record | Status    | Evidence               |
+| --------------- | --------- | ---------------------- |
+| `NN-foo.adr.md` | PASS/FAIL | `file.py:42`, test ref |
+| `NN-bar.pdr.md` | PASS/FAIL | `file.py:78`, test ref |
 
 ---
 
-## Required Actions
+## Required Actions (REJECTED Only)
 
-> Each issue below MUST be addressed before approval.
+> Include this section only when verdict is `REJECTED`.
 
 ### Critical (Blocking)
 
 #### 1. [Issue Title]
 
 - **File**: `path/to/file.py:42`
-- **Category**: Type Error / Security / Test Failure / Logic Error
+- **Category**: Validation Failure / Security / Test Failure / ADR-PDR Violation / Logic Error
 - **Description**: [Clear description of the issue]
 - **Suggested Fix**:
 
@@ -149,21 +83,6 @@
   # After
   [corrected code]
   ```
-
-### Warnings (Non-Blocking)
-
-#### 1. [Issue Title]
-
-- **File**: `path/to/file.py:42`
-- **Category**: Style / Documentation / Performance
-- **Description**: [Clear description]
-- **Suggestion**: [Improvement recommendation]
-
----
-
-## Reviewer Notes
-
-[Any additional context, edge cases discovered, or recommendations for the coder]
 
 ---
 

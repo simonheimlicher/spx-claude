@@ -55,10 +55,10 @@ grep -rn "@given\|hypothesis" {test_dir}
 <verdict>
 There is no middle ground. No "mostly good." No "acceptable with caveats."
 
-- **APPROVE**: Tests provide genuine evidence for all outcomes at appropriate levels
+- **APPROVED**: Tests provide genuine evidence for all outcomes at appropriate levels
 - **REJECT**: Any deficiency, missing link, silent skip, or evidentiary gap
 
-A missing comma is REJECT. A philosophical disagreement about test structure is REJECT. If it's not APPROVE, it's REJECT.
+A missing comma is REJECT. A philosophical disagreement about test structure is REJECT. If it's not APPROVED, it's REJECT.
 </verdict>
 
 <context>
@@ -427,7 +427,7 @@ grep -rn "assert.*==" {test_dir} | grep -E "[0-9]+"
 - [ ] Magic values use named constants (or are self-documenting)
 - [ ] Test organization checklist passes
 
-If all gates passed, issue APPROVE. Otherwise, REJECT with detailed findings.
+If all gates passed, issue APPROVED. Otherwise, REJECT with detailed findings.
 </phase>
 
 </review_protocol>
@@ -474,7 +474,7 @@ Failures from actual usage:
 </failure_modes>
 
 <concrete_examples>
-**Example 1: APPROVE verdict**
+**Example 1: APPROVED verdict**
 
 Reviewing `spx/01-uart/03-transmitter.story/`
 
@@ -515,7 +515,7 @@ $ grep -rn "def test_" tests/ | grep -v "-> None"
 ✓ All test functions have -> None
 ```
 
-**Verdict: APPROVE** - All outcomes have genuine evidentiary coverage at appropriate levels.
+**Verdict: APPROVED** - All outcomes have genuine evidentiary coverage at appropriate levels.
 
 ---
 
@@ -548,7 +548,7 @@ CI environment doesn't have Verilator installed. Test is silently skipped. CI go
 ```markdown
 ## Test Review: {container_path}
 
-### Verdict: APPROVE
+### Verdict: APPROVED
 
 All outcomes have genuine evidentiary coverage at appropriate levels.
 
@@ -563,10 +563,6 @@ All outcomes have genuine evidentiary coverage at appropriate levels.
 | Decision Record | Status    |
 | --------------- | --------- |
 | {name}          | Compliant |
-
-### Notes
-
-{Any observations about test quality, structural issues for future work, etc.}
 ```
 
 </approve_template>
@@ -637,19 +633,19 @@ Quick reference for common rejection triggers:
 <success_criteria>
 Task is complete when:
 
-- [ ] Verdict is APPROVE or REJECT (no middle ground)
+- [ ] Verdict is APPROVED or REJECT (no middle ground)
 - [ ] All 6 phases executed in order (or stopped at first REJECT)
 - [ ] All gates passed (or documented why gate failed)
 - [ ] Property-based test coverage verified for parsers/serializers/math/algorithms
 - [ ] Each rejection reason has file:line location
 - [ ] Evidentiary gap explained (how tests could pass while outcome fails)
-- [ ] Output follows specified format (APPROVE or REJECT template)
+- [ ] Output follows specified format (APPROVED or REJECT template)
 
 **Verification command**:
 
 ```bash
 # Your output should contain exactly one of these:
-grep -c "### Verdict: APPROVE" review_output.md  # Should be 1 for approve
+grep -c "### Verdict: APPROVED" review_output.md  # Should be 1 for approve
 grep -c "### Verdict: REJECT" review_output.md   # Should be 1 for reject
 ```
 

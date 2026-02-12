@@ -28,18 +28,18 @@ Adversarial code review enforcing zero-tolerance on mocking, type safety, and se
 1. Read `/testing` for methodology (5 stages, 5 factors, 7 exceptions)
 2. Read `/standardizing-python-testing` for Python testing standards
 3. Read `/standardizing-python` for code standards
-4. Run Phase 1 static analysis (Mypy, Ruff, Semgrep)
+4. Run project validation command from `CLAUDE.md`/`README.md` (prefer `pnpm validate`)
 5. Run Phase 2 infrastructure provisioning
 6. Run Phase 3 tests with coverage
 7. Complete Phase 4 manual checklist
-8. Determine verdict (APPROVED/CONDITIONAL/REJECTED/BLOCKED)
+8. Determine verdict (APPROVED/REJECTED)
 9. If APPROVED: commit outcome and commit work item
 
 </quick_start>
 
 <success_criteria>
 
-- All static analysis tools pass (Mypy, Ruff, Semgrep)
+- Project validation command passes (prefer `pnpm validate`)
 - All tests pass with measured coverage
 - Manual review checklist satisfied
 - No mocking detected
@@ -47,6 +47,15 @@ Adversarial code review enforcing zero-tolerance on mocking, type safety, and se
 - Outcome committed to ledger (APPROVED only)
 
 </success_criteria>
+
+<policy_override>
+Non-negotiable enforcement for this skill:
+
+1. Run one project validation command (prefer `pnpm validate`). Do NOT run Mypy/Ruff/Semgrep individually in review.
+2. Verdict is binary: `APPROVED` or `REJECTED`.
+3. `APPROVED` output must contain no notes/warnings/caveats sections.
+
+</policy_override>
 
 # Python Strict Code Reviewer
 
@@ -113,11 +122,11 @@ def test_sync() -> None:
 
 ## Core Principles
 
-1. **Tool Outputs Are Truth**: Your subjective opinion is secondary to the output of static analysis tools. If Mypy, Ruff, or Semgrep report an issue, it IS an issue—unless it is a verified false positive (see False Positive Handling).
+1. **Validation Output Is Truth**: Your subjective opinion is secondary to the project validation command output (prefer `pnpm validate`).
 
 2. **Zero Tolerance**: Any type error, security vulnerability, test failure, or **mocking usage** results in rejection. There is no "it's probably fine."
 
-3. **Absence = Failure**: If you cannot run a verification tool, the code fails that verification. Missing pytest-cov? Coverage is 0%. Mypy won't run? Type safety is unverified = REJECTED.
+3. **Absence = Failure**: If you cannot run the validation command or required tests, the review is REJECTED.
 
 4. **Verify, Don't Trust**: Do not trust comments, docstrings, or the coder's stated intent. Verify behavior against the actual code.
 
@@ -154,127 +163,20 @@ make lint
 
 **If CLAUDE.md specifies validation commands**: Run them. Failures = REJECTED.
 
-### Phase 1: Static Analysis
+### Phase 1: Project Validation
 
-Run all tools. ALL must pass.
-
-#### 1.0 Import Hygiene Check (Automated)
-
-**Run FIRST before other tools.** Deep relative imports and `sys.path` manipulation are blocking violations.
+Run one project validation command and treat it as authoritative.
 
 ```bash
-# Detect deep relative imports (2+ levels)
-grep -rn --include="*.py" 'from \.\.\.' src/ tests/
-
-# Detect sys.path manipulation
-grep -rn --include="*.py" 'sys\.path\.(insert\|append)' src/ tests/
+# Preferred when available:
+pnpm validate
 ```
 
-**Interpretation:**
+If `CLAUDE.md` or `README.md` specifies a different validation command, use that command.
 
-| Output        | Verdict | Action                                        |
-| ------------- | ------- | --------------------------------------------- |
-| No matches    | ✅ PASS | Continue to next check                        |
-| Matches found | ❌ FAIL | List violations, continue checks, will REJECT |
+**Do NOT run Mypy/Ruff/Semgrep individually in this review workflow.**
 
-**Example output (blocking):**
-
-```text
-src/myproject/commands/sync.py:5:from ...shared.config import Config
-tests/unit/test_parser.py:3:from .....myproject_testing/helpers import fixture
-```
-
-**For each match, determine:**
-
-1. **Is this module-internal?** (Same package, moves together) → ⚠️ WARN, not blocking
-2. **Is this infrastructure?** (tests/, lib/, shared/) → ❌ REJECT, use absolute import
-
-See Phase 4.7 "Import Hygiene" for the full decision tree.
-
-#### Tool Invocation Strategy
-
-Use this priority order for running tools:
-
-1. **Project-local with uv (preferred)**: If project uses `uv`, use `uv run` with appropriate extras
-2. **Direct command**: If tools are installed globally (via brew, pipx, or pip), use `mypy`, `ruff check`, `semgrep scan`
-3. **Python module**: If installed in current Python environment, use `python3 -m mypy`, `python3 -m ruff check`
-
-#### Detecting uv Projects and Dev Dependencies
-
-**Step 1**: Check if project uses uv by looking for `uv.lock` or `pyproject.toml`
-
-**Step 2**: Check `pyproject.toml` for optional dependency groups containing dev tools:
-
-```toml
-# Common patterns to look for:
-[project.optional-dependencies]
-dev = ["mypy", "ruff", "pytest", ...]
-
-# Or:
-[dependency-groups]
-dev = ["mypy", "ruff", "pytest", ...]
-```
-
-**Step 3**: Use the correct `uv run` invocation:
-
-```bash
-# If tools are in [project.optional-dependencies].dev:
-uv run --extra dev mypy {target}
-uv run --extra dev ruff check {target}
-uv run --extra dev pytest {test_dir}
-
-# If tools are in [dependency-groups].dev:
-uv run --group dev mypy {target}
-
-# If tools are direct dependencies (no extras needed):
-uv run mypy {target}
-```
-
-**IMPORTANT**: If `uv run mypy` fails with "No module named mypy", check for optional dependency groups and retry with `--extra dev` or `--group dev`.
-
-#### 1.1 Mypy (Type Safety)
-
-```bash
-# Project-local with uv (check pyproject.toml for correct extras):
-uv run --extra dev mypy {target}
-# or: uv run --group dev mypy {target}
-# or: uv run mypy {target}  # if direct dependency
-
-# Direct/global (brew, pipx):
-mypy {target}
-
-# With skill's strict config (if project lacks mypy config):
-mypy --config-file {skill_dir}/rules/mypy_strict.toml {target}
-```
-
-**Blocking**: ANY error from Mypy = REJECTION
-
-#### 1.2 Ruff (Linting & Security)
-
-```bash
-# Project-local with uv:
-uv run --extra dev ruff check {target}
-# or: uv run --group dev ruff check {target}
-# or: uv run ruff check {target}  # if direct dependency
-
-# Direct/global (brew, pipx):
-ruff check {target}
-
-# With skill's config (if project lacks ruff config):
-ruff check --config {skill_dir}/rules/ruff_quality.toml {target}
-```
-
-**Blocking**: Any `B` (bugbear) or `S` (security) violation = REJECTION
-**Warning**: Style violations (`E`, `W`) are noted but not blocking
-
-#### 1.3 Semgrep (Security Patterns)
-
-```bash
-# Semgrep is typically installed globally (brew or pip)
-semgrep scan --config {skill_dir}/rules/semgrep_sec.yaml {target}
-```
-
-**Blocking**: ANY finding from Semgrep = REJECTION
+**Blocking**: Any non-zero exit code from the project validation command = REJECTION
 
 ### Phase 2: Infrastructure Provisioning
 
@@ -347,7 +249,7 @@ If infrastructure cannot be started after attempting:
 
 1. **Document what was tried** and what failed
 2. **Check for missing dependencies** (e.g., Colima not installed)
-3. **Report the blocker** — this is a setup issue, not a code issue
+3. **Report the blocker** — verification is impossible, so review is REJECTED
 
 ```markdown
 ## Infrastructure Provisioning Failed
@@ -359,10 +261,10 @@ If infrastructure cannot be started after attempting:
 **Blocker**: Colima is not installed on this system.
 **Action Required**: Install Colima or run review on a system with Colima.
 
-**Verdict**: BLOCKED (infrastructure unavailable, not a code defect)
+**Verdict**: REJECTED (infrastructure unavailable; review cannot verify quality)
 ```
 
-**IMPORTANT**: Infrastructure provisioning failure is NOT a code rejection. It's a review environment issue. Use verdict **BLOCKED**, not REJECTED.
+**IMPORTANT**: Infrastructure provisioning failure still results in **REJECTED** because review evidence is incomplete.
 
 ---
 
@@ -389,7 +291,7 @@ CLOUD_MIRROR_USE_VM=1 uv run --extra dev pytest {test_dir} -v --tb=short --cov={
 | Scenario                            | Verdict      | Rationale                            |
 | ----------------------------------- | ------------ | ------------------------------------ |
 | pytest-cov installed, coverage ≥80% | PASS         | Verified                             |
-| pytest-cov installed, coverage <80% | WARNING      | Note in report, not blocking         |
+| pytest-cov installed, coverage <80% | REJECTED     | Insufficient evidence                |
 | pytest-cov installed, coverage = 0% | REJECTED     | No tests covering code               |
 | pytest-cov NOT installed            | **REJECTED** | Coverage unverifiable = 0% assumed   |
 | pytest fails to run                 | **REJECTED** | Tests unverifiable = failure assumed |
@@ -397,7 +299,7 @@ CLOUD_MIRROR_USE_VM=1 uv run --extra dev pytest {test_dir} -v --tb=short --cov={
 **If pytest-cov is missing**:
 
 1. Note in report: "pytest-cov not installed - coverage unverifiable"
-2. Verdict: **REJECTED** (unless reviewer explicitly instructed to skip coverage)
+2. Verdict: **REJECTED**
 3. Required Action: "Install pytest-cov as dev dependency"
 
 **Crystal Clear**: You cannot approve code with unmeasured coverage. If you cannot prove coverage exists, it does not exist.
@@ -409,7 +311,7 @@ Distinguish between:
 | Failure Type                 | Example                                 | Verdict                   |
 | ---------------------------- | --------------------------------------- | ------------------------- |
 | **Code defect**              | Assertion failed, wrong return value    | REJECTED                  |
-| **Infrastructure not ready** | "Connection refused", VM not responding | BLOCKED (retry after fix) |
+| **Infrastructure not ready** | "Connection refused", VM not responding | REJECTED                  |
 | **Missing dependency**       | Import error for test framework         | REJECTED (dev deps issue) |
 
 ### Phase 4: Manual Code Review
@@ -705,15 +607,13 @@ Check that implementation follows all applicable ADR/PDR constraints:
 
 Based on your findings, determine the verdict:
 
-| Verdict         | Criteria                                                   | Next Phase               |
-| --------------- | ---------------------------------------------------------- | ------------------------ |
-| **APPROVED**    | All checks pass, no issues                                 | Phase 6 (Commit outcome) |
-| **CONDITIONAL** | Only false-positive violations needing `# noqa` comments   | Return to coder          |
-| **REJECTED**    | Real bugs, security issues, test failures, design problems | Return to coder          |
-| **BLOCKED**     | Infrastructure cannot be provisioned                       | Fix environment, re-run  |
+| Verdict      | Criteria                                            | Next Phase               |
+| ------------ | --------------------------------------------------- | ------------------------ |
+| **APPROVED** | All checks pass, no issues                          | Phase 6 (Commit outcome) |
+| **REJECTED** | Any issue, failed validation, or unverifiable state | Return to coder          |
 
 **If verdict is APPROVED**: Continue to Phase 6.
-**If verdict is NOT APPROVED**: Skip to "Rejection Feedback" section below.
+**If verdict is REJECTED**: Skip to "Rejection Feedback" section below.
 
 ---
 
@@ -765,12 +665,10 @@ Report completion:
 
 ### Verification Results
 
-| Tool    | Status | Details                      |
-| ------- | ------ | ---------------------------- |
-| Mypy    | PASS   | 0 errors                     |
-| Ruff    | PASS   | 0 violations                 |
-| Semgrep | PASS   | 0 findings                   |
-| pytest  | PASS   | {X}/{X} tests, {Y}% coverage |
+| Tool            | Status | Details                              |
+| --------------- | ------ | ------------------------------------ |
+| `pnpm validate` | PASS   | Project validation command succeeded |
+| pytest          | PASS   | {X}/{X} tests, {Y}% coverage         |
 
 ### Tests Passing
 
@@ -843,7 +741,7 @@ Work item is complete.
 
 ## Rejection Feedback
 
-When verdict is **REJECTED** or **CONDITIONAL**, provide actionable feedback to the coder:
+When verdict is **REJECTED**, provide actionable feedback to the coder:
 
 ```markdown
 ## Review: {target}
@@ -859,7 +757,7 @@ When verdict is **REJECTED** or **CONDITIONAL**, provide actionable feedback to 
 
 ### Tool Outputs
 
-{Include relevant Mypy/Ruff/Semgrep output}
+{Include relevant project validation and pytest output}
 
 ### Required Actions
 
@@ -876,74 +774,46 @@ Outcomes are only committed on APPROVED. Fix issues and resubmit.
 
 ## Verdict Levels
 
-Use one of four verdicts:
+Use one of two verdicts:
 
-| Verdict         | When to Use                                                                      | Next Step                                  |
-| --------------- | -------------------------------------------------------------------------------- | ------------------------------------------ |
-| **APPROVED**    | All checks pass, no issues found                                                 | Commit outcome, commit, work item complete |
-| **CONDITIONAL** | Only false-positive violations that require `# noqa` comments with justification | Coder adds noqa comments, then re-review   |
-| **REJECTED**    | Real bugs, security issues, test failures, or design problems                    | Coder fixes issues, then re-review         |
-| **BLOCKED**     | Infrastructure cannot be provisioned; review environment issue, not code defect  | Fix environment, then re-run review        |
+| Verdict      | When to Use                                                     | Next Step                                  |
+| ------------ | --------------------------------------------------------------- | ------------------------------------------ |
+| **APPROVED** | All checks pass, no issues found                                | Commit outcome, commit, work item complete |
+| **REJECTED** | Any issue, failed validation, test failure, or missing evidence | Coder fixes issues, then re-review         |
 
 ### APPROVED Criteria
 
 All of these must be true:
 
-1. Mypy reports zero errors
-2. Ruff reports zero blocking violations (B, S rules)
-3. Semgrep reports zero findings
-4. All tests pass
-5. Manual review checklist is satisfied
-6. No security concerns identified
-
-### CONDITIONAL Criteria
-
-Use CONDITIONAL when:
-
-- Tool violations are **false positives** in context (e.g., S603 in a CLI tool)
-- The fix is mechanical: add `# noqa: XXXX - [justification]`
-- No actual security, correctness, or design issues exist
-- The coder can apply fixes without architectural changes
-
-**Required in report**: For each CONDITIONAL issue, specify the exact noqa comment to add.
+1. Project validation command reports success
+2. All tests pass
+3. Manual review checklist is satisfied
+4. No security concerns identified
+5. Output contains no notes/warnings/caveats sections
 
 ### REJECTED Criteria
 
 The code is **REJECTED** if ANY of these are true:
 
-| Criterion                                    | Tool/Check     |
-| -------------------------------------------- | -------------- |
-| Any real type error                          | Mypy           |
-| Any true-positive security violation         | Ruff S rules   |
-| Any true-positive bug pattern                | Ruff B rules   |
-| Any true-positive security finding           | Semgrep        |
-| Any test failure                             | pytest         |
-| Missing type annotations on public functions | Manual         |
-| Missing `-> None` on test functions          | Ruff ANN201    |
-| Missing type on fixture params (`tmp_path`)  | Ruff ANN001    |
-| Missing `-> None` on `__init__`              | Ruff ANN204    |
-| Magic values in test assertions              | Ruff PLR2004   |
-| Uppercase argument names                     | Ruff N803      |
-| Bare `except:` clauses                       | Manual/Semgrep |
-| Hardcoded secrets detected                   | Manual/Semgrep |
-| `eval()` or `exec()` without justification   | Manual/Semgrep |
-| `shell=True` with untrusted input            | Manual/Semgrep |
-| Deep relative imports (2+ levels) to infra   | grep/Manual    |
-| `sys.path` manipulation to fix import errors | grep/Manual    |
-| Design or architectural problems             | Manual         |
+| Criterion                                    | Tool/Check         |
+| -------------------------------------------- | ------------------ |
+| Validation command fails                     | Project validation |
+| Any test failure                             | pytest             |
+| Missing type annotations on public functions | Manual             |
+| Missing `-> None` on test functions          | Ruff ANN201        |
+| Missing type on fixture params (`tmp_path`)  | Ruff ANN001        |
+| Missing `-> None` on `__init__`              | Ruff ANN204        |
+| Magic values in test assertions              | Ruff PLR2004       |
+| Uppercase argument names                     | Ruff N803          |
+| Bare `except:` clauses                       | Manual             |
+| Hardcoded secrets detected                   | Manual             |
+| `eval()` or `exec()` without justification   | Manual             |
+| `shell=True` with untrusted input            | Manual             |
+| Deep relative imports (2+ levels) to infra   | grep/Manual        |
+| `sys.path` manipulation to fix import errors | grep/Manual        |
+| Design or architectural problems             | Manual             |
 
-### BLOCKED Criteria
-
-Use BLOCKED when infrastructure provisioning fails:
-
-1. Required VM (Colima) cannot be started
-2. Required Docker services cannot be started
-3. Required external dependencies are not installed
-4. Network/connectivity issues prevent infrastructure access
-
-**BLOCKED is not a code judgment.** It means the review cannot complete due to environment issues. The code may be perfect or terrible — we cannot know until infrastructure is available.
-
-**Required in report**: Document what infrastructure was needed, what was attempted, and why it failed.
+Infrastructure unavailability is a REJECTED result because review evidence is incomplete.
 
 ---
 
@@ -1000,36 +870,29 @@ result = subprocess.run(cmd)  # noqa: S603
 
 ## Output Format
 
-You must produce TWO outputs:
+Produce output using `templates/review_report.md`.
 
-1. **File**: Write detailed report to `reports/review_{target_name}_{YYYYMMDD_HHMMSS}.md`
-2. **Conversation**: Provide summary in the chat for immediate visibility
+Verdict is binary:
 
-### Report File Structure
+- `APPROVED` when every gate passes
+- `REJECTED` for any issue or unverifiable state
 
-Use the template in `templates/review_report.md`. The file must include:
-
-- Complete tool outputs (Mypy, Ruff, Semgrep, pytest)
-- Coverage report with percentages
-- Full manual review checklist with findings
-- All issues with file:line references and suggested fixes
+For `APPROVED`, include no notes/warnings/caveats sections.
 
 ### Conversation Summary Structure
 
-````markdown
+```markdown
 ## Review: {target}
 
-### Verdict: [APPROVED / CONDITIONAL / REJECTED]
+### Verdict: [APPROVED / REJECTED]
 
-[One-sentence summary explaining the verdict]
+[One-sentence summary]
 
-### Static Analysis
+### Project Validation
 
-| Tool    | Status    | Issues                             |
-| ------- | --------- | ---------------------------------- |
-| Mypy    | PASS/FAIL | [count] errors                     |
-| Ruff    | PASS/FAIL | [count] blocking, [count] warnings |
-| Semgrep | PASS/FAIL | [count] findings                   |
+| Command         | Status    | Details                         |
+| --------------- | --------- | ------------------------------- |
+| `pnpm validate` | PASS/FAIL | [failure summary if applicable] |
 
 ### Tests
 
@@ -1039,64 +902,22 @@ Use the template in `templates/review_report.md`. The file must include:
 | Failed   | [count]    |
 | Coverage | [percent]% |
 
-### Blocking Issues (if REJECTED)
+### ADR/PDR Compliance
 
-1. **[file:line]** - [category] - [description]
-   ```python
-   # Suggested fix
-   ```
-````
+| Decision Record | Status    | Evidence            |
+| --------------- | --------- | ------------------- |
+| `NN-foo.adr.md` | PASS/FAIL | `path/file.py:line` |
+| `NN-bar.pdr.md` | PASS/FAIL | `path/file.py:line` |
 
-### Conditional Issues (if CONDITIONAL)
+### Required Actions (REJECTED Only)
 
-1. **[file:line]** - Add: `# noqa: XXXX - [justification]`
-
-### Warnings
-
-1. **[file:line]** - [category] - [description]
-
-### Report Location
-
-Full report: `reports/review_{name}_{timestamp}.md`
-
-### Next Action (for coder)
-
-→ **APPROVED**: Reviewer has committed. Work item is complete.
-→ **REJECTED**: Coder remediates issues using feedback above, re-invokes `/reviewing-python`.
-→ **CONDITIONAL**: Coder adds noqa comments per instructions, re-invokes `/reviewing-python`.
-→ **BLOCKED**: Coder returns `BLOCKED` to orchestrator.
-
+1. **[file:line]** - [category] - [issue]
 ```
-**Note to coder**: This review is complete. Handle the verdict per the Review Loop Protocol.
-
----
-
-## Important Notes
-
-1. **Do NOT attempt to fix code during review**. Your role is to identify and report issues, not remediate them. The Coder handles fixes.
-
-2. **Be specific**. Vague feedback like "improve error handling" is useless. Say exactly what is wrong and where.
-
-3. **Include file:line references**. Every issue must be traceable to a specific location.
-
-4. **Explain the "why"**. Don't just say "this is wrong." Explain the risk or consequence.
-
-5. **Check the spec**. If a design document or specification exists, verify the implementation matches it.
-
-6. **Don't trust the happy path**. Look for edge cases, error conditions, and unexpected inputs.
-
-7. **Security is paramount**. When in doubt, flag it as a security concern.
-
----
 
 ## Skill Resources
 
-- `rules/mypy_strict.toml` - Strict Mypy configuration
-- `rules/ruff_quality.toml` - Ruff linting with security rules
-- `rules/semgrep_sec.yaml` - Custom security pattern rules
 - `templates/review_report.md` - Report template
 
 ---
 
-*Remember: Your job is to protect the codebase from defects. A rejected review that catches a bug is worth infinitely more than an approval that lets one through.*
-```
+*Your job is to protect the codebase from defects. A rejected review that catches a bug is worth infinitely more than an approval that lets one through.*
