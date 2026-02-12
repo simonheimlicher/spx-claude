@@ -47,12 +47,10 @@ Report verification completion.
 
 ### Verification
 
-| Tool    | Status | Details                      |
-| ------- | ------ | ---------------------------- |
-| tsc     | PASS   | 0 errors                     |
-| eslint  | PASS   | 0 violations                 |
-| Semgrep | PASS   | 0 findings                   |
-| vitest  | PASS   | {X}/{X} tests, {Y}% coverage |
+| Tool            | Status | Details                      |
+| --------------- | ------ | ---------------------------- |
+| `pnpm validate` | PASS   | Project validation succeeded |
+| vitest          | PASS   | {X}/{X} tests, {Y}% coverage |
 
 ### Tests Passing
 

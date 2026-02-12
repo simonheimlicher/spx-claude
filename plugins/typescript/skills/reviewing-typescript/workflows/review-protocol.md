@@ -3,9 +3,8 @@
 ## Phase 0: Identify Scope
 
 1. Determine the target files/directories to review
-2. Check if project has configs in `tsconfig.json`, `eslint.config.js`
-3. If project configs exist, prefer them; otherwise use skill's strict configs
-4. **Check CLAUDE.md for project-specific validation commands**
+2. Check `CLAUDE.md`/`README.md` for the project validation command
+3. Prefer project command over tool-by-tool execution
 
 ### Project-Specific Commands
 
@@ -25,9 +24,9 @@ make lint
 
 **If CLAUDE.md specifies validation commands**: Run them. Failures = REJECTED.
 
-## Phase 1: Static Analysis
+## Phase 1: Project Validation
 
-Run all tools. ALL must pass.
+Run exactly one project validation command. Do not run `tsc`, `eslint`, or `semgrep` individually during review.
 
 ### 1.0 Import Hygiene Check (Automated)
 
@@ -54,57 +53,20 @@ tests/unit/parser.test.ts:3:import { helper } from "../../../test-utils/fixtures
 
 **For each match, determine:**
 
-1. **Is this module-internal?** (Same module, moves together) → ⚠️ WARN, not blocking
+1. **Is this module-internal?** (Same module, moves together) → ❌ REJECT, must use alias
 2. **Is this a stable location?** (lib/, tests/helpers/, shared/) → ❌ REJECT, must use alias
 
 See `references/manual-review-checklist.md` → "Import Hygiene" for the full decision tree.
 
-### Tool Invocation Strategy
+### 1.1 Validation Command
 
-Priority order:
-
-1. **npm scripts (preferred)**: `npm run typecheck`, `npm run lint`
-2. **npx (fallback)**: `npx tsc --noEmit`, `npx eslint src/`
-3. **Direct command**: `tsc`, `eslint` if globally installed
-
-### Detecting Project Configuration
+Use the project command from `CLAUDE.md` first. If unspecified, prefer:
 
 ```bash
-# Check for npm scripts
-cat package.json | jq '.scripts'
-
-# Use correct invocation:
-npm run typecheck  # If scripts defined
-npx tsc --noEmit   # If no scripts
+pnpm validate
 ```
 
-### 1.1 TypeScript Compiler (Type Safety)
-
-```bash
-npm run typecheck
-# Or: npx tsc --noEmit
-```
-
-**Blocking**: ANY error from tsc = REJECTION
-
-### 1.2 ESLint (Linting & Security)
-
-```bash
-npm run lint
-# Or: npx eslint src/ test/
-```
-
-**Blocking**: Any error-level violation = REJECTION
-**Warning**: Warning-level violations are noted but not blocking
-
-### 1.3 Semgrep (Security Patterns)
-
-```bash
-semgrep scan --config {skill_dir}/rules/semgrep_sec.yaml src/
-# Or: semgrep scan --config auto src/
-```
-
-**Blocking**: ANY finding from Semgrep = REJECTION
+**Blocking**: Any non-zero exit code = REJECTION
 
 ## Phase 2: Infrastructure Provisioning
 
@@ -142,7 +104,7 @@ If infrastructure cannot start:
 
 1. Document what was tried and what failed
 2. Report the blocker
-3. Use verdict **BLOCKED**, not REJECTED
+3. Use verdict **REJECTED**
 
 ```markdown
 ## Infrastructure Provisioning Failed
@@ -151,7 +113,7 @@ If infrastructure cannot start:
 **Attempted**: `docker compose up -d`
 **Error**: `docker: command not found`
 
-**Verdict**: BLOCKED (infrastructure unavailable, not a code defect)
+**Verdict**: REJECTED (infrastructure unavailable; review cannot verify quality)
 ```
 
 ## Phase 3: Test Execution
@@ -170,7 +132,7 @@ npx vitest run --coverage
 | Scenario                      | Verdict      | Rationale              |
 | ----------------------------- | ------------ | ---------------------- |
 | Coverage ≥80%                 | PASS         | Verified               |
-| Coverage <80%                 | WARNING      | Note in report         |
+| Coverage <80%                 | REJECTED     | Insufficient evidence  |
 | Coverage = 0%                 | REJECTED     | No tests covering code |
 | Coverage plugin NOT installed | **REJECTED** | Coverage unverifiable  |
 | vitest fails to run           | **REJECTED** | Tests unverifiable     |
@@ -182,7 +144,7 @@ npx vitest run --coverage
 | Failure Type           | Example                         | Verdict  |
 | ---------------------- | ------------------------------- | -------- |
 | **Code defect**        | Assertion failed                | REJECTED |
-| **Infrastructure**     | "Connection refused"            | BLOCKED  |
+| **Infrastructure**     | "Connection refused"            | REJECTED |
 | **Missing dependency** | Import error for test framework | REJECTED |
 
 ## Phase 4: Manual Code Review
@@ -202,12 +164,10 @@ Key areas:
 
 Based on findings:
 
-| Verdict         | Criteria                                  | Next Phase             |
-| --------------- | ----------------------------------------- | ---------------------- |
-| **APPROVED**    | All checks pass, no issues                | Phase 6 (Verification) |
-| **CONDITIONAL** | Only false-positive violations            | Return to coder        |
-| **REJECTED**    | Real bugs, security issues, test failures | Return to coder        |
-| **BLOCKED**     | Infrastructure cannot be provisioned      | Fix environment        |
+| Verdict      | Criteria                                  | Next Phase             |
+| ------------ | ----------------------------------------- | ---------------------- |
+| **APPROVED** | All checks pass, no issues                | Phase 6 (Verification) |
+| **REJECTED** | Real bugs, security issues, test failures | Return to coder        |
 
 **If verdict is APPROVED**: Continue to `workflows/verification-protocol.md`
-**If verdict is NOT APPROVED**: Return rejection feedback
+**If verdict is REJECTED**: Return rejection feedback

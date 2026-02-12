@@ -28,12 +28,13 @@ Adversarial code review enforcing zero-tolerance on mocking, type safety, and se
 <quick_start>
 
 1. Read `/testing-typescript` for methodology and test level decisions
-2. Run Phase 1 static analysis (tsc, ESLint, Semgrep)
-3. Run Phase 2 infrastructure provisioning
-4. Run Phase 3 tests with coverage
-5. Complete Phase 4 manual checklist (including ADR/PDR compliance)
-6. Determine verdict (APPROVED/CONDITIONAL/REJECTED/BLOCKED)
-7. If APPROVED: commit outcome and commit work item
+2. Run the project validation command from `CLAUDE.md`/`README.md` (prefer `pnpm validate`)
+3. Do NOT run `tsc`, `eslint`, or `semgrep` individually in review
+4. Run Phase 2 infrastructure provisioning
+5. Run Phase 3 tests with coverage
+6. Complete Phase 4 manual checklist (including ADR/PDR compliance)
+7. Determine verdict (APPROVED/REJECTED)
+8. If APPROVED: commit outcome and commit work item
 
 </quick_start>
 
@@ -43,8 +44,8 @@ Adversarial code review enforcing zero-tolerance on mocking, type safety, and se
 - If you cannot **verify** something is correct, it is **incorrect**
 - **REJECT any use of mocking** — only dependency injection is acceptable
 - "It works on my machine" is not evidence. Tool output is evidence.
-- Tool outputs are truth. Your subjective opinion is secondary.
-- Absence = Failure. If you cannot run a verification tool, the code fails.
+- Project validation output is truth. Your subjective opinion is secondary.
+- Absence = Failure. If the project validation command cannot run, the review is REJECTED.
 
 </essential_principles>
 
@@ -108,25 +109,22 @@ If you're reviewing code for a spec-driven work item (story/feature/capability),
 
 <verdict_definitions>
 
-| Verdict         | Criteria                                                   | Next Phase          |
-| --------------- | ---------------------------------------------------------- | ------------------- |
-| **APPROVED**    | All checks pass, no issues                                 | Commit outcome      |
-| **CONDITIONAL** | Only false-positive violations needing disable comments    | Coder adds comments |
-| **REJECTED**    | Real bugs, security issues, test failures, design problems | Coder fixes issues  |
-| **BLOCKED**     | Infrastructure cannot be provisioned                       | Fix environment     |
+| Verdict      | Criteria                        | Next Phase         |
+| ------------ | ------------------------------- | ------------------ |
+| **APPROVED** | All checks pass, no issues      | Commit outcome     |
+| **REJECTED** | Any issue or unverifiable state | Coder fixes issues |
 
 **APPROVED Criteria** (all must be true):
 
-1. tsc reports zero errors
-2. eslint reports zero error-level violations
-3. Semgrep reports zero findings
-4. All tests pass
-5. Manual review checklist satisfied
-6. No security concerns identified
+1. Project validation command passes (prefer `pnpm validate`)
+2. All tests pass
+3. Manual review checklist satisfied
+4. No security concerns identified
+5. Output contains no notes/warnings/caveats sections
 
 **REJECTED Criteria** (any triggers rejection):
 
-- Any real type error (tsc)
+- Project validation command fails
 - Any true-positive security violation
 - Any test failure
 - Missing type annotations on public functions
@@ -148,7 +146,7 @@ Execute these phases IN ORDER. Do not skip phases.
 | 8     | Commit (APPROVED)       | `workflows/commit-protocol.md`       |
 
 **If verdict is APPROVED**: Continue to Phase 6.
-**If verdict is NOT APPROVED**: Skip verification and commit, return feedback.
+**If verdict is REJECTED**: Skip verification and commit, return feedback.
 </review_phases>
 
 <reference_index>
@@ -163,22 +161,22 @@ Execute these phases IN ORDER. Do not skip phases.
 
 <workflows_index>
 
-| Workflow                             | Purpose                               |
-| ------------------------------------ | ------------------------------------- |
-| `workflows/review-protocol.md`       | Static analysis, tests, manual review |
-| `workflows/verification-protocol.md` | Verify tests pass, commit outcomes    |
-| `workflows/commit-protocol.md`       | Stage and commit approved work        |
+| Workflow                             | Purpose                                  |
+| ------------------------------------ | ---------------------------------------- |
+| `workflows/review-protocol.md`       | Project validation, tests, manual review |
+| `workflows/verification-protocol.md` | Verify tests pass, commit outcomes       |
+| `workflows/commit-protocol.md`       | Stage and commit approved work           |
 
 </workflows_index>
 
 <tool_resources>
 
-| File                         | Purpose                         |
-| ---------------------------- | ------------------------------- |
-| `rules/tsconfig.strict.json` | Strict TypeScript configuration |
-| `rules/eslint.config.js`     | ESLint with security rules      |
-| `rules/semgrep_sec.yaml`     | Custom security pattern rules   |
-| `templates/review_report.md` | Report template                 |
+| File                         | Purpose                      |
+| ---------------------------- | ---------------------------- |
+| `rules/tsconfig.strict.json` | Project validation reference |
+| `rules/eslint.config.js`     | Project validation reference |
+| `rules/semgrep_sec.yaml`     | Project validation reference |
+| `templates/review_report.md` | Report template              |
 
 </tool_resources>
 
@@ -187,17 +185,15 @@ Execute these phases IN ORDER. Do not skip phases.
 ```markdown
 ## Review: {target}
 
-### Verdict: [APPROVED / CONDITIONAL / REJECTED / BLOCKED]
+### Verdict: [APPROVED / REJECTED]
 
 [One-sentence summary]
 
-### Static Analysis
+### Project Validation
 
-| Tool    | Status    | Issues                           |
-| ------- | --------- | -------------------------------- |
-| tsc     | PASS/FAIL | [count] errors                   |
-| eslint  | PASS/FAIL | [count] errors, [count] warnings |
-| Semgrep | PASS/FAIL | [count] findings                 |
+| Tool                               | Status    | Issues                   |
+| ---------------------------------- | --------- | ------------------------ |
+| validate command (`pnpm validate`) | PASS/FAIL | [failure summary if any] |
 
 ### Tests
 
@@ -221,7 +217,7 @@ Full report: `reports/review_{name}_{timestamp}.md`
 <success_criteria>
 Review is complete when:
 
-- [ ] All static analysis tools run (tsc, eslint, Semgrep)
+- [ ] Project validation command run (`pnpm validate` when available)
 - [ ] All tests executed with coverage measured
 - [ ] Manual review checklist completed
 - [ ] Verdict determined and documented

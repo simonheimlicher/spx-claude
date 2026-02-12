@@ -9,7 +9,6 @@
 | **Status**          | `APPROVED` / `REJECTED` |
 | **Files Reviewed**  | [count]                 |
 | **Critical Issues** | [count]                 |
-| **Warnings**        | [count]                 |
 | **Tests Passed**    | [passed]/[total]        |
 
 ## Verdict
@@ -18,49 +17,15 @@
 
 ---
 
-## Static Analysis Results
+## Project Validation
 
-### TypeScript Compiler (Type Safety)
-
-**Status**: PASS / FAIL
-
-```
-[tsc output here]
-```
-
-**Issues Found**: [count]
-
-| File              | Line | Error Code | Message     |
-| ----------------- | ---- | ---------- | ----------- |
-| `path/to/file.ts` | 42   | `TS2345`   | Description |
-
-### ESLint (Linting & Security)
+**Command**: `pnpm validate`
 
 **Status**: PASS / FAIL
 
+```text
+[validation output here]
 ```
-[eslint output here]
-```
-
-**Issues Found**: [count]
-
-| File              | Line | Rule                                 | Message     |
-| ----------------- | ---- | ------------------------------------ | ----------- |
-| `path/to/file.ts` | 42   | `@typescript-eslint/no-explicit-any` | Description |
-
-### Semgrep (Security Patterns)
-
-**Status**: PASS / FAIL
-
-```
-[Semgrep output here]
-```
-
-**Issues Found**: [count]
-
-| File              | Line | Rule ID                        | Message     |
-| ----------------- | ---- | ------------------------------ | ----------- |
-| `path/to/file.ts` | 42   | `typescript-command-injection` | Description |
 
 ---
 
@@ -70,7 +35,7 @@
 
 **Status**: PASS / FAIL
 
-```
+```text
 [vitest output here]
 ```
 
@@ -87,78 +52,27 @@
 | ----------- | ---------------------- | -------------------- |
 | `test_name` | `test/file.test.ts:42` | Brief failure reason |
 
-### Coverage Report
+---
 
-| File            | Statements | Branches | Functions | Lines    |
-| --------------- | ---------- | -------- | --------- | -------- |
-| `src/module.ts` | 85%        | 80%      | 90%       | 85%      |
-| **Total**       | **[X]%**   | **[Y]%** | **[Z]%**  | **[W]%** |
+## ADR/PDR Compliance
+
+| Decision Record | Status    | Evidence               |
+| --------------- | --------- | ---------------------- |
+| `NN-foo.adr.md` | PASS/FAIL | `file.ts:42`, test ref |
+| `NN-bar.pdr.md` | PASS/FAIL | `file.ts:78`, test ref |
 
 ---
 
-## Manual Review Findings
+## Required Actions (REJECTED Only)
 
-### Architecture & Design
-
-- [ ] Code follows single responsibility principle
-- [ ] Dependencies are injected, not hardcoded
-- [ ] No circular imports
-- [ ] Clear module boundaries
-
-**Observations**:
-
-- [Observation 1]
-- [Observation 2]
-
-### Code Quality
-
-- [ ] All public functions have JSDoc (@param/@returns/@throws)
-- [ ] No dead code or unused imports
-- [ ] Naming follows conventions (verbs for functions, nouns for classes)
-- [ ] No magic numbers or hardcoded values
-
-**Observations**:
-
-- [Observation 1]
-- [Observation 2]
-
-### Security Concerns
-
-- [ ] No hardcoded secrets or credentials
-- [ ] Input validation present where needed
-- [ ] Proper error handling (no information leakage)
-- [ ] Resource cleanup in finally blocks
-
-**Observations**:
-
-- [Observation 1]
-- [Observation 2]
-
-### Testing Quality
-
-- [ ] Tests use dependency injection, not mocking
-- [ ] Tests verify behavior, not implementation
-- [ ] Test levels and behavior match ADR/PDR constraints
-- [ ] Named test values (not anonymous objects)
-- [ ] Debuggability-first organization
-
-**Observations**:
-
-- [Observation 1]
-- [Observation 2]
-
----
-
-## Required Actions
-
-> Each issue below MUST be addressed before approval.
+> Include this section only when verdict is `REJECTED`.
 
 ### Critical (Blocking)
 
 #### 1. [Issue Title]
 
 - **File**: `path/to/file.ts:42`
-- **Category**: Type Error / Security / Test Failure / Logic Error
+- **Category**: Validation Failure / Security / Test Failure / ADR-PDR Violation / Logic Error
 - **Description**: [Clear description of the issue]
 - **Suggested Fix**:
   ```typescript
@@ -168,21 +82,6 @@
   // After
   [corrected code]
   ```
-
-### Warnings (Non-Blocking)
-
-#### 1. [Issue Title]
-
-- **File**: `path/to/file.ts:42`
-- **Category**: Style / Documentation / Performance
-- **Description**: [Clear description]
-- **Suggestion**: [Improvement recommendation]
-
----
-
-## Reviewer Notes
-
-[Any additional context, edge cases discovered, or recommendations for the coder]
 
 ---
 
