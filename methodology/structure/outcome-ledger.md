@@ -1,6 +1,6 @@
 # Outcome Ledger
 
-The outcome ledger records verification state for the Product Tree. Each container MAY have an `outcomes.yaml` file that claims its tests pass.
+The outcome ledger records verification state for the Product Tree. Each container MAY have an `assertions.yaml` file that claims its tests pass.
 
 ## Format
 
@@ -22,7 +22,7 @@ descendants:
 | `tests[].file`                | Test filename relative to container's `tests/` |
 | `tests[].passed_at`           | ISO 8601 timestamp when test passed            |
 | `descendants[].path`          | Child container directory name                 |
-| `descendants[].outcomes_blob` | Git blob SHA of child's outcomes.yaml          |
+| `descendants[].outcomes_blob` | Git blob SHA of child's assertions.yaml        |
 
 ## Container States
 
@@ -38,7 +38,7 @@ States are mutually exclusive. Every container is in exactly one state.
 
 ## Tree Coupling
 
-Parent outcomes.yaml stores `outcomes_blob` for each child. When a child's outcomes.yaml changes:
+Parent assertions.yaml stores `outcomes_blob` for each child. When a child's assertions.yaml changes:
 
 1. Child's Git blob changes
 2. Parent's stored `outcomes_blob` no longer matches
@@ -66,12 +66,12 @@ spx spx test --all
 
 ### `spx spx claim [container [--tree] | --all]`
 
-Assert tests pass and update outcomes.yaml.
+Assert tests pass and update assertions.yaml.
 
 ```bash
 spx spx claim spx/21-auth.capability/22-login.feature/10-parse.story/
 # 1. Run story's tests
-# 2. All pass? Update outcomes.yaml
+# 2. All pass? Update assertions.yaml
 # 3. Any fail? Error, cannot claim
 
 spx spx claim spx/21-auth.capability/ --tree
@@ -86,7 +86,7 @@ Check that claims hold by running claimed tests.
 
 ```bash
 spx spx verify --all
-# Run all tests listed in outcomes.yaml files
+# Run all tests listed in assertions.yaml files
 # Report: Passing or Regressed
 ```
 
@@ -99,7 +99,7 @@ spx spx status --all
 # Show tree with states: Unknown, Pending, Stale, Claimed
 ```
 
-Note: `status` shows "Claimed" for containers with outcomes.yaml. Use `verify` to confirm Passing vs Regressed.
+Note: `status` shows "Claimed" for containers with assertions.yaml. Use `verify` to confirm Passing vs Regressed.
 
 ## State Computation
 
@@ -153,6 +153,6 @@ spx spx verify --all
 
 ## Verification Reduction
 
-Only tests in outcomes.yaml are run during `verify`. Containers without outcomes.yaml (Unknown/Pending) are not verified—there's nothing claimed to check.
+Only tests in assertions.yaml are run during `verify`. Containers without assertions.yaml (Unknown/Pending) are not verified—there's nothing claimed to check.
 
 This provides test reduction: verify runs claimed tests, not all possible tests.

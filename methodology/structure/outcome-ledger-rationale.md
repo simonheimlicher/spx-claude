@@ -17,7 +17,7 @@ Git provides content integrity. The outcome ledger provides verification state. 
 
 ## Why We Don't Store Spec/Test/Implementation Blobs
 
-Early designs stored `spec_blob` and `test_blob` in outcomes.yaml to detect staleness:
+Early designs stored `spec_blob` and `test_blob` in assertions.yaml to detect staleness:
 
 ```yaml
 # REJECTED DESIGN
@@ -31,7 +31,7 @@ tests:
 
 1. **Incomplete coverage**: We cannot store implementation blobs without enumerating all source files each test depends on. The staleness detection would miss implementation changes.
 
-2. **Duplicates Git's job**: Git already tracks content. Storing blobs in outcomes.yaml partially duplicates Git's Merkle tree, but incompletely.
+2. **Duplicates Git's job**: Git already tracks content. Storing blobs in assertions.yaml partially duplicates Git's Merkle tree, but incompletely.
 
 3. **False confidence**: If spec_blob and test_blob match, we might skip running tests—but implementation could have changed, causing failures.
 
@@ -49,7 +49,7 @@ descendants:
 
 **This provides tree coupling:**
 
-1. Child claims tests pass → child's outcomes.yaml updated
+1. Child claims tests pass → child's assertions.yaml updated
 2. Child's Git blob changes
 3. Parent's stored `outcomes_blob` no longer matches
 4. Parent is Stale → must re-claim
@@ -79,7 +79,7 @@ Structure:
 
 ```
 A: code + spec + tests (code commit)
-B: outcomes.yaml only (outcome commit)
+B: assertions.yaml only (outcome commit)
 ```
 
 Detect staleness via `git diff A..HEAD`.
@@ -134,18 +134,18 @@ Store only descendant outcomes_blobs. Get tree coupling without duplicating Git.
 
 **The word "claim" is intentionally precise:**
 
-outcomes.yaml is a claim that can be verified independently. Timestamps are metadata, not evidence. Anyone can checkout the commit and run the claimed tests to verify the claim.
+assertions.yaml is a claim that can be verified independently. Timestamps are metadata, not evidence. Anyone can checkout the commit and run the claimed tests to verify the claim.
 
 ## Epistemology: Claims vs Proofs
 
 The outcome ledger provides **claims**, not **proofs**.
 
-| Aspect                | Claim                       | Proof                               |
-| --------------------- | --------------------------- | ----------------------------------- |
-| What outcomes.yaml is | Assertion that tests passed | Would require cryptographic witness |
-| Timestamps            | Metadata (when claim made)  | Not evidence                        |
-| Verification          | Run tests independently     | Would be redundant if proven        |
-| Trust model           | Verify by re-running        | Trust the signature                 |
+| Aspect                  | Claim                       | Proof                               |
+| ----------------------- | --------------------------- | ----------------------------------- |
+| What assertions.yaml is | Assertion that tests passed | Would require cryptographic witness |
+| Timestamps              | Metadata (when claim made)  | Not evidence                        |
+| Verification            | Run tests independently     | Would be redundant if proven        |
+| Trust model             | Verify by re-running        | Trust the signature                 |
 
 This is appropriate because:
 
@@ -159,8 +159,8 @@ The ledger reduces tests via a simple rule:
 
 **Only run tests that are claimed to pass.**
 
-- `verify` runs tests in outcomes.yaml
-- Containers without outcomes.yaml are not verified (nothing claimed)
+- `verify` runs tests in assertions.yaml
+- Containers without assertions.yaml are not verified (nothing claimed)
 - Unknown/Pending containers don't block verification
 
 This is NOT about skipping tests for "unchanged" code (unreliable). It's about knowing WHICH tests to run: the claimed ones.
@@ -169,12 +169,12 @@ This is NOT about skipping tests for "unchanged" code (unreliable). It's about k
 
 The design ensures every container is in exactly one state:
 
-| State     | Detection                             |
-| --------- | ------------------------------------- |
-| Unknown   | No tests/ directory or empty          |
-| Pending   | Tests exist, not all in outcomes.yaml |
-| Stale     | Descendant outcomes_blob mismatch     |
-| Passing   | verify succeeds                       |
-| Regressed | verify fails                          |
+| State     | Detection                               |
+| --------- | --------------------------------------- |
+| Unknown   | No tests/ directory or empty            |
+| Pending   | Tests exist, not all in assertions.yaml |
+| Stale     | Descendant outcomes_blob mismatch       |
+| Passing   | verify succeeds                         |
+| Regressed | verify fails                            |
 
 These states are mutually exclusive and collectively exhaustive.
