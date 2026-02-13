@@ -180,7 +180,7 @@ AND {additional assertion}
 - **Structured output specifications are source of truth**—tests implement them, spec doesn't contain code
 - **Test Files table** is the contract—harness references here, not in separate sections
 - **Analysis section proves examination**—agent looked before coding, but implementation may diverge
-- **No completion criteria**—stories are atomic; the assertion ledger records which outputs are proven
+- **No completion criteria**—stories are atomic; the test record tracks which outputs are validated
 - **No inline code**—code in specs drifts from actual implementation
 
 ---
@@ -232,13 +232,13 @@ Test level is in the filename suffix:
 
 ### Path Derivation
 
-For each `test_file` in `assertions.yaml`, SPX derives the runnable path as:
+For each `test_file` in `test-record.yaml`, SPX derives the runnable path as:
 
 ```text
 <node>/tests/<test_file>
 ```
 
-The `tests/` prefix is never stored in `assertions.yaml`.
+The `tests/` prefix is never stored in `test-record.yaml`.
 
 ### Test Runner Configuration
 
@@ -271,13 +271,13 @@ project/
         ├── test-infrastructure.capability.md
         ├── 10-cli-harness.feature/
         │   ├── cli-harness.feature.md
-        │   ├── assertions.yaml
+        │   ├── test-record.yaml
         │   └── tests/                    # Tests for the harness itself
         │       ├── setup.unit.test.ts
         │       └── isolation.integration.test.ts
         └── 20-e2e-harness.feature/
             ├── e2e-harness.feature.md
-            ├── assertions.yaml
+            ├── test-record.yaml
             └── tests/
 ```
 
@@ -288,7 +288,7 @@ project/
 ### Why Harnesses Need Specs
 
 1. **Harness bugs break all dependent tests** - high impact requires tracking
-2. **Harness refactoring needs regression protection** - the assertion ledger detects breakage
+2. **Harness refactoring needs regression protection** - the test record detects breakage
 3. **Harness capabilities need documentation** - what can tests rely on?
 4. **Harness dependencies need index ordering** - tests depend on harness (lower index)
 
@@ -347,7 +347,7 @@ it("runs spx spec next", async () => {
 | Test file deleted but still in ledger | Phantom - blocks commit    |
 | New test file not yet in ledger       | In progress - OK           |
 
-For detailed validation rules, see [outcome-ledger.md](outcome-ledger.md)
+For detailed validation rules, see [test-record.md](test-record.md)
 
 ---
 
@@ -361,24 +361,24 @@ spx/
     test-infrastructure.capability.md
     10-cli-harness.feature/
       cli-harness.feature.md
-      assertions.yaml
+      test-record.yaml
       tests/
         setup.unit.test.ts
   15-validation.capability/
     validation.capability.md
-    assertions.yaml
+    test-record.yaml
     tests/
       validation.e2e.test.ts
     21-isolated-test-fixtures.adr.md
     21-testable-validation.feature/
       testable-validation.feature.md
-      assertions.yaml
+      test-record.yaml
       tests/
         validation.integration.test.ts
       04-level-2-integration-only.adr.md
       47-validation-commands.story/
         validation-commands.story.md
-        assertions.yaml
+        test-record.yaml
         tests/
           commands.unit.test.ts
 ```
