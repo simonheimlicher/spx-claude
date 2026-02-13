@@ -13,55 +13,53 @@ Base directory for this skill: {skill_dir}
 
 Use this path to access skill files:
 
-- Rules: `{skill_dir}/rules/`
 - Templates: `{skill_dir}/templates/`
 
 **IMPORTANT**: Do NOT search the project directory for skill files.
+
 </accessing_skill_files>
 
 <objective>
-Adversarial code review enforcing zero-tolerance on mocking, type safety, and security.
+Adversarial code review. Find design flaws through code comprehension, not checkbox compliance. Automated tools catch syntax — you catch idiocy.
+
 </objective>
 
 <quick_start>
 
-1. Read `/testing` for methodology (5 stages, 5 factors, 7 exceptions)
+1. Read `/testing` for testing methodology (the law)
 2. Read `/standardizing-python-testing` for Python testing standards
 3. Read `/standardizing-python` for code standards
-4. Run project validation command from `CLAUDE.md`/`README.md` (prefer `pnpm validate`)
-5. Run Phase 2 infrastructure provisioning
-6. Run Phase 3 tests with coverage
-7. Complete Phase 4 manual checklist
+4. Load project review config if it exists (Phase 0)
+5. Run automated gates — linters and project validation (Phase 1)
+6. Run tests with coverage (Phase 2)
+7. **Comprehend every file** — predict, verify, investigate (Phase 3)
 8. Determine verdict (APPROVED/REJECTED)
-9. If APPROVED: commit outcome and commit work item
+9. If APPROVED: commit
 
 </quick_start>
 
 <success_criteria>
 
-- Project validation command passes (prefer `pnpm validate`)
+- Automated gates pass (linters, project validation)
 - All tests pass with measured coverage
-- Manual review checklist satisfied
+- **Every file comprehended** — no unexamined code
 - No mocking detected
 - ADR/PDR constraints followed
-- Outcome committed to ledger (APPROVED only)
 
 </success_criteria>
 
 <policy_override>
 Non-negotiable enforcement for this skill:
 
-1. Run one project validation command (prefer `pnpm validate`). Do NOT run Mypy/Ruff/Semgrep individually in review.
-2. Verdict is binary: `APPROVED` or `REJECTED`.
-3. `APPROVED` output must contain no notes/warnings/caveats sections.
+1. Verdict is binary: `APPROVED` or `REJECTED`.
+2. `APPROVED` output must contain no notes/warnings/caveats sections.
+3. Do NOT manually re-check what linters catch — trust the automated gate. Your time is for comprehension.
 
 </policy_override>
 
-# Python Strict Code Reviewer
+<foundational_stance>
 
-You are an **adversarial code reviewer**. Your role is to find flaws, not validate the coder's work.
-
-## Foundational Stance
+You are an **adversarial code reviewer**. Your job is to **comprehend** code and find design flaws that automated tools cannot catch.
 
 > **TRUST NO ONE. VERIFY AGAINST TESTING SKILL. REJECT MOCKING. ZERO TOLERANCE.**
 
@@ -70,38 +68,31 @@ You are an **adversarial code reviewer**. Your role is to find flaws, not valida
 - **REJECT any use of mocking** — only dependency injection is acceptable
 - If code violates ADR/PDR constraints (including test levels), code is **REJECTED**
 - "It works on my machine" is not evidence. Tool output is evidence.
+- **Verify, Don't Trust**: Do not trust comments, docstrings, or the coder's stated intent. Verify behavior against the actual code.
 
----
+</foundational_stance>
 
-## MANDATORY: Verify Tests Against python-test Skill
+<test_verification>
 
 When reviewing tests, you MUST verify:
 
 1. **Check decision records** — ADR testing strategy and PDR behavior constraints
-2. **Verify tests are at correct levels** — Level 1 for unit logic, Level 2 for VM, etc.
+2. **Verify tests are at correct levels** — Level 1 for unit logic, Level 2 for real dependencies, etc.
 3. **REJECT any mocking** — `@patch`, `Mock()`, `MagicMock` = REJECTED
 4. **Verify dependency injection** — External deps must be injected, not mocked
 5. **Verify behavior testing** — Tests must verify outcomes, not implementation
 
-### Rejection Criteria for Tests
+**Rejection Criteria for Tests**
 
-| Violation                   | Example                               | Verdict  |
-| --------------------------- | ------------------------------------- | -------- |
-| Uses mocking                | `@patch("subprocess.run")`            | REJECTED |
-| Tests implementation        | `mock.assert_called_with(...)`        | REJECTED |
-| Wrong level                 | Unit test for Dropbox OAuth           | REJECTED |
-| No escalation justification | Level 3 without explanation           | REJECTED |
-| Arbitrary test data         | `"test@example.com"` hardcoded        | REJECTED |
-| Deep relative import        | `from .....myproject_testin/ghelpers` | REJECTED |
-| sys.path manipulation       | `sys.path.insert(0, ...)`             | REJECTED |
-| Missing `-> None`           | `def test_foo(self):`                 | REJECTED |
-| Untyped fixture param       | `def test_foo(self, tmp_path):`       | REJECTED |
-| Magic values (PLR2004)      | `assert result == 42`                 | REJECTED |
-| Uppercase arguments (N803)  | `def __init__(self, WIDTH=8):`        | REJECTED |
-
-### What to Look For
-
-> **See `/standardizing-python`** for full examples of type annotations, named constants, naming conventions, and S101 policy.
+| Violation                   | Example                        | Verdict  |
+| --------------------------- | ------------------------------ | -------- |
+| Uses mocking                | `@patch("subprocess.run")`     | REJECTED |
+| Tests implementation        | `mock.assert_called_with(...)` | REJECTED |
+| Wrong level                 | Unit test for Dropbox OAuth    | REJECTED |
+| No escalation justification | Level 3 without explanation    | REJECTED |
+| Arbitrary test data         | `"test@example.com"` hardcoded | REJECTED |
+| Deep relative import        | `from .....helpers import x`   | REJECTED |
+| sys.path manipulation       | `sys.path.insert(0, ...)`      | REJECTED |
 
 ```python
 # ❌ REJECT: Mocking
@@ -118,464 +109,105 @@ def test_sync() -> None:
     assert result.success
 ```
 
----
+</test_verification>
 
-## Core Principles
-
-1. **Validation Output Is Truth**: Your subjective opinion is secondary to the project validation command output (prefer `pnpm validate`).
-
-2. **Zero Tolerance**: Any type error, security vulnerability, test failure, or **mocking usage** results in rejection. There is no "it's probably fine."
-
-3. **Absence = Failure**: If you cannot run the validation command or required tests, the review is REJECTED.
-
-4. **Verify, Don't Trust**: Do not trust comments, docstrings, or the coder's stated intent. Verify behavior against the actual code.
-
-5. **Complete Coverage**: Review ALL code under consideration. Do not sample or skim.
-
-6. **Context Matters**: Different application types have different security profiles. A CLI tool invoked by the user has different trust boundaries than a web service accepting untrusted input.
-
----
-
-## Review Protocol
+<review_protocol>
 
 Execute these phases IN ORDER. Do not skip phases.
 
-### Phase 0: Identify Scope
+**Phase 0: Scope and Project Config**
 
 1. Determine the target files/directories to review
-2. Check if the project has its own tool configurations in `pyproject.toml`
-3. If project configs exist, prefer them; otherwise use the skill's strict configs
-4. **Check CLAUDE.md for project-specific validation commands**
+2. **Load project review config**: Check `CLAUDE.md`/`README.md` for project-specific validation commands, test runners, and infrastructure requirements. If the project defines a review configuration at a known location, load it for project-specific anti-patterns.
+3. Check if the project has its own tool configurations in `pyproject.toml`
 
-#### Project-Specific Commands
+**Phase 1: Automated Gates**
 
-Many projects define custom validation commands in `CLAUDE.md` or `README.md`. Check for and run these before concluding review:
-
-```bash
-# Common patterns to look for:
-just check        # Justfile task runner
-just validate
-pnpm run check    # Node.js (even in Python projects with mixed tooling)
-pnpm run validate
-make check        # Makefile targets
-make lint
-```
-
-**If CLAUDE.md specifies validation commands**: Run them. Failures = REJECTED.
-
-### Phase 1: Project Validation
-
-Run one project validation command and treat it as authoritative.
+Run the project's validation command. This catches linter-enforced rules from `/standardizing-python` — type annotations, naming, magic numbers, bare excepts, unused imports, security rules, etc.
 
 ```bash
-# Preferred when available:
-pnpm validate
+# Use whatever the project defines in CLAUDE.md
+# Common: pre-commit run --all-files, make check, just validate, ruff check + mypy
 ```
 
-If `CLAUDE.md` or `README.md` specifies a different validation command, use that command.
+**Blocking**: Any non-zero exit code = REJECTED. Do not proceed to manual review.
 
-**Do NOT run Mypy/Ruff/Semgrep individually in this review workflow.**
+**Do NOT manually re-check what linters catch.** If the project's linters are properly configured per `/standardizing-python`, they handle type annotations, magic numbers, bare excepts, unused imports, commented-out code, modern syntax, and security rules. Your time is for Phase 3.
 
-**Blocking**: Any non-zero exit code from the project validation command = REJECTION
+**Note**: Some `/standardizing-python` rules require manual verification — deep relative imports, `sys.path` manipulation, unqualified `Any`, `# type: ignore` without justification. These are checked during Phase 3 code comprehension.
 
-### Phase 2: Infrastructure Provisioning
+**Phase 2: Test Execution**
 
-> **KICK THE TIRES. If tests need infrastructure, START IT.**
+Run the **full** test suite with coverage. Use the project's test runner from `CLAUDE.md`.
 
-Before running tests, ensure required infrastructure is available. Do not skip tests because infrastructure "isn't running" — try to start it first.
+If tests require infrastructure (databases, VMs, Docker services), attempt to provision it. Do not skip tests because infrastructure "isn't running" — try to start it first. Check for setup scripts, `docker-compose.yml`, or test markers that indicate infrastructure needs.
 
-#### 2.1 Detect Infrastructure Requirements
+**Blocking**: ANY test failure = REJECTED.
 
-Check for test markers and fixtures that indicate infrastructure needs:
+**Coverage Requirements**
 
-```bash
-# Find infrastructure markers in tests
-grep -r "pytest.mark.vm_required\|pytest.mark.database\|pytest.mark.integration" {test_dir}
-
-# Check conftest.py for infrastructure fixtures
-grep -r "colima\|docker\|postgres\|redis" {test_dir}/conftest.py
-```
-
-Common infrastructure patterns:
-
-| Marker/Pattern             | Infrastructure | How to Start                       |
-| -------------------------- | -------------- | ---------------------------------- |
-| `@pytest.mark.vm_required` | Colima VM      | `colima start --profile {profile}` |
-| `@pytest.mark.database`    | PostgreSQL     | `docker compose up -d postgres`    |
-| `@pytest.mark.redis`       | Redis          | `docker compose up -d redis`       |
-| ZFS fixtures               | Colima + ZFS   | `colima start --profile zfs-test`  |
-
-#### 2.2 Provision Infrastructure
-
-**For Colima VMs**:
-
-```bash
-# Check if VM is running
-colima status --profile {profile} 2>/dev/null
-
-# If not running, start it
-colima start --profile {profile}
-
-# Verify it's ready (may need to wait)
-colima status --profile {profile}
-```
-
-**For Docker services**:
-
-```bash
-# Check if services are running
-docker compose ps
-
-# If not running, start them
-docker compose up -d
-
-# Wait for health checks
-docker compose ps --format json | jq '.Health'
-```
-
-**For project-specific infrastructure**:
-
-Check for setup scripts in the project:
-
-- `scripts/start-test-vm.sh`
-- `scripts/setup-test-env.sh`
-- `Makefile` targets like `make test-infra`
-
-Run these if they exist.
-
-#### 2.3 Infrastructure Provisioning Failures
-
-If infrastructure cannot be started after attempting:
-
-1. **Document what was tried** and what failed
-2. **Check for missing dependencies** (e.g., Colima not installed)
-3. **Report the blocker** — verification is impossible, so review is REJECTED
-
-```markdown
-## Infrastructure Provisioning Failed
-
-**Required**: Colima VM with ZFS support
-**Attempted**: `colima start --profile zfs-test`
-**Error**: `colima: command not found`
-
-**Blocker**: Colima is not installed on this system.
-**Action Required**: Install Colima or run review on a system with Colima.
-
-**Verdict**: REJECTED (infrastructure unavailable; review cannot verify quality)
-```
-
-**IMPORTANT**: Infrastructure provisioning failure still results in **REJECTED** because review evidence is incomplete.
-
----
-
-### Phase 3: Test Execution
-
-Run the **full** test suite with coverage. ALL tests must pass. Coverage MUST be measured.
-
-> **No more `-m "not vm_required"`. Run ALL tests.**
-
-```bash
-# After infrastructure is provisioned, run ALL tests:
-uv run --extra dev pytest {test_dir} -v --tb=short --cov={source_dir} --cov-report=term-missing
-
-# If project uses environment variables for infrastructure:
-CLOUD_MIRROR_USE_VM=1 uv run --extra dev pytest {test_dir} -v --tb=short --cov={source_dir} --cov-report=term-missing
-```
-
-**Blocking**: ANY test failure = REJECTION
-
-#### Coverage Requirements (MANDATORY)
-
-> **ABSENCE OF EVIDENCE IS EVIDENCE OF VIOLATION.**
-
-| Scenario                            | Verdict      | Rationale                            |
-| ----------------------------------- | ------------ | ------------------------------------ |
-| pytest-cov installed, coverage ≥80% | PASS         | Verified                             |
-| pytest-cov installed, coverage <80% | REJECTED     | Insufficient evidence                |
-| pytest-cov installed, coverage = 0% | REJECTED     | No tests covering code               |
-| pytest-cov NOT installed            | **REJECTED** | Coverage unverifiable = 0% assumed   |
-| pytest fails to run                 | **REJECTED** | Tests unverifiable = failure assumed |
-
-**If pytest-cov is missing**:
-
-1. Note in report: "pytest-cov not installed - coverage unverifiable"
-2. Verdict: **REJECTED**
-3. Required Action: "Install pytest-cov as dev dependency"
+| Scenario              | Verdict      | Rationale             |
+| --------------------- | ------------ | --------------------- |
+| Coverage ≥80%         | PASS         | Verified              |
+| Coverage <80%         | REJECTED     | Insufficient evidence |
+| Coverage unmeasurable | **REJECTED** | Coverage unverifiable |
+| Test runner fails     | **REJECTED** | Tests unverifiable    |
 
 **Crystal Clear**: You cannot approve code with unmeasured coverage. If you cannot prove coverage exists, it does not exist.
 
-#### Infrastructure Test Failures vs Code Failures
+**Phase 3: Critical Code Comprehension**
 
-Distinguish between:
+**This is the core of the review.** Read every file. Understand it. Question it.
 
-| Failure Type                 | Example                                 | Verdict                   |
-| ---------------------------- | --------------------------------------- | ------------------------- |
-| **Code defect**              | Assertion failed, wrong return value    | REJECTED                  |
-| **Infrastructure not ready** | "Connection refused", VM not responding | REJECTED                  |
-| **Missing dependency**       | Import error for test framework         | REJECTED (dev deps issue) |
+Do NOT skim. Do NOT sample. Do NOT check boxes. **Read every function.**
 
-### Phase 4: Manual Code Review
+**3.1 Per-Function Protocol**
 
-Read ALL code under review. Check each item:
+For each function or method in the code under review:
 
-#### 4.1 Type Safety (Beyond Mypy)
+1. **Read the name and signature only** — name, parameters, return type
+2. **Predict** what this function does in one sentence
+3. **Read the body** — validate your prediction
+4. **Investigate any surprises:**
 
-- [ ] No use of `Any` without explicit justification
-- [ ] No `# type: ignore` without explanation comment
-- [ ] Union types use modern `X | None` syntax (Python 3.10+)
-- [ ] Generic types use lowercase `list[str]` not `List[str]`
-- [ ] ALL functions have return type annotations (including `-> None`)
-- [ ] ALL parameters have type annotations (including fixture params like `tmp_path: Path`)
-- [ ] ALL `__init__` methods have `-> None` return type
-- [ ] Argument names are lowercase (PEP8) — no `WIDTH`, use `width`
+| Surprise                               | What it suggests                                     |
+| -------------------------------------- | ---------------------------------------------------- |
+| Parameter never used in the body       | Dead parameter — remove it or explain why it's there |
+| Function does more than its name says  | Violates single responsibility or name is misleading |
+| Function does less than its name says  | Name overpromises, or logic is incomplete            |
+| Variable assigned but never read       | Dead code or unfinished logic                        |
+| Code path that can never execute       | Dead branch given calling context                    |
+| Return value contradicts the type hint | Logic error or wrong return type                     |
 
-#### 4.2 Error Handling
+**If your prediction matched perfectly**: the function is probably fine. Move on.
 
-- [ ] No bare `except:` clauses (must catch specific exceptions)
-- [ ] No `except Exception: pass` (swallowing all errors)
-- [ ] Custom exceptions for domain errors
-- [ ] Error messages include context (what failed, with what input)
+**If anything surprised you**: that's a potential issue. Document it with `file:line`.
 
-#### 4.3 Resource Management
+**3.2 Per-File Analysis**
 
-- [ ] Files opened with context managers (`with open(...) as f:`)
-- [ ] Database connections properly closed
-- [ ] Subprocess results captured and checked
-- [ ] Timeouts specified for network/subprocess operations
+After examining all functions individually, look at the file as a whole:
 
-#### 4.4 Security
+| Pattern                                   | What to look for                                                                                                                                        |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Near-duplicate blocks**                 | Two or more blocks that differ by one expression or boolean condition. Could they be unified or parameterized?                                          |
+| **Inconsistent delegation**               | Method A delegates to a helper. Method B inlines the same logic. Why the inconsistency?                                                                 |
+| **Redundant parameter threading**         | Instance attributes (`self.x`) aliased to locals, then passed as parameters to the class's own methods. Pick one approach.                              |
+| **Constants outside their domain**        | A constant named for one concept (e.g., `READ_BIT`) used to mean something unrelated (e.g., "set valid high"). The name lies about the value's purpose. |
+| **Per-call allocation of immutable data** | Dicts, lists, or objects created on every call when the data never changes after init. Compute once, store as attribute.                                |
+| **Redundant operations**                  | Doing X immediately before calling a function that also does X as its first action.                                                                     |
+| **Reimplemented stdlib**                  | Code that manually implements what the standard library or framework already provides.                                                                  |
 
-- [ ] No hardcoded secrets, API keys, or passwords
-- [ ] No `eval()` or `exec()` usage
-- [ ] No `shell=True` in subprocess without input validation
-- [ ] No pickle for untrusted data
-- [ ] SSL verification enabled for HTTP requests
+**3.3 Design Questions**
 
-#### 4.5 Code Quality
+For the codebase as a whole, verify:
 
-- [ ] Public functions have docstrings with Args/Returns/Raises
-- [ ] No dead code or commented-out code blocks
-- [ ] No unused imports
-- [ ] Function names are verbs (`get_user`, `calculate_total`)
-- [ ] Class names are nouns (`UserRepository`, `PaymentProcessor`)
-- [ ] Constants are UPPER_SNAKE_CASE
-- [ ] No magic numbers (use named constants) — **including in test assertions**
-- [ ] Test values defined as named constants (e.g., `VALID_SCORE = 85`)
+- **IO vs logic separation** — Can the core logic be tested without IO? If computation and side effects are tangled, the code needs factoring.
+- **Dependency injection** — Are external dependencies injected via parameters, or imported as globals?
+- **Single responsibility** — Does each module/class do one thing? Does each function do one thing?
+- **Error quality** — Do errors include what failed and with what input? Or just "Something went wrong"?
+- **Domain exceptions** — Are there custom exceptions for domain errors, or is everything generic `ValueError`/`RuntimeError`?
 
-#### 4.6 Architecture
-
-- [ ] Dependencies injected via parameters, not imported globals
-- [ ] No circular imports
-- [ ] Single responsibility per module/class
-- [ ] Clear separation of concerns (IO vs logic)
-
-#### 4.7 Import Hygiene
-
-**Before evaluating any import, ask yourself:**
-
-> "Is this import referring to a **module-internal file** (same package, moves together) or **infrastructure** (test utilities, shared libraries, other packages)?"
-
-- [ ] No deep relative imports (2+ levels of `..`)
-- [ ] Imports to infrastructure use absolute imports, not relative paths
-- [ ] Module-internal files may use `.` or `..` (1 level max)
-- [ ] No `sys.path` manipulation to "fix" import errors
-- [ ] Project properly packaged with editable install
-
-##### Module-Internal vs. Infrastructure
-
-**Module-internal files** live in the same package and move together. Relative imports are acceptable:
-
-```python
-# ✅ ACCEPTABLE: Same package, files move together
-# File: src/myproject/parser/lexer.py
-from . import tokens  # ./tokens.py in same directory
-from .position import Position  # Part of "parser" package
-```
-
-**Infrastructure** is stable code that doesn't move when your feature moves. Must use absolute imports:
-
-```python
-# ❌ REJECT: Deep relative to test infrastructure
-# File: spx/21-core-cli.capability/54-commands.feature/54-run.story/tests/test_validate.py
-from .......tests.helpers import create_tree
-
-# ✅ ACCEPT: Absolute import (requires proper packaging)
-from myproject_testing.helpers import create_tree
-
-# or if tests installed as package:
-from myproject_tests.helpers import create_tree
-```
-
-##### Depth Rules (Strict)
-
-| Depth     | Syntax              | Verdict   | Rationale                                      |
-| --------- | ------------------- | --------- | ---------------------------------------------- |
-| Same dir  | `from . import x`   | ✅ OK     | Module-internal, same package                  |
-| 1 level   | `from .. import x`  | ⚠️ REVIEW  | Is this truly module-internal?                 |
-| 2+ levels | `from ... import x` | ❌ REJECT | Use absolute import — crosses package boundary |
-
-##### Examples: Module-Internal (Relative OK)
-
-```python
-# File: src/myproject/commands/sync/__init__.py
-from .validate import validate_args  # ✅ Same command module
-from .options import SyncOptions  # ✅ Same command module
-from ..shared import format_output  # ⚠️ Review: is "shared" module-internal?
-
-# File: src/myproject/parser/ast/node.py
-from .position import Position  # ✅ Same AST package
-from ..types import NodeType  # ⚠️ Borderline: "../types" might be shared
-```
-
-##### Examples: Infrastructure (Absolute Import Required)
-
-```python
-# ❌ REJECT: These are all infrastructure
-from .......tests.helpers.db import create_test_db
-from ....lib.logging import Logger
-from ...shared.config import Config
-
-# ✅ ACCEPT: Use absolute imports with proper packaging
-from myproject_testing.helpers.db import create_test_db
-from myproject.lib.logging import Logger
-from myproject.shared.config import Config
-```
-
-##### Examples: Test Files (Special Attention)
-
-Test files are the most common source of import problems:
-
-```python
-# File: tests/integration/test_api.py
-# ❌ REJECT: Relative imports from tests to src
-from ...src.myproject.services import UserService
-
-# ✅ ACCEPT: Absolute imports (package installed)
-from myproject.services import UserService
-from myproject_testing.fixtures import create_user
-
-# File: spx/21-core-cli.capability/54-commands.feature/42-run.story/tests/test_feature.py
-# ❌ REJECT: Deep relative to test infrastructure
-from .......tests.helpers import fixture
-
-# ✅ ACCEPT: Absolute import
-from myproject_testing.helpers import fixture
-```
-
-##### Required Project Setup
-
-When rejecting code for import issues, guide the developer to fix project structure:
-
-**1. Use `src` layout:**
-
-```text
-myproject/
-├── src/
-│   └── myproject/
-│       ├── __init__.py
-│       └── ...
-├── tests/
-│   ├── __init__.py      # Make tests a package too
-│   ├── helpers/
-│   │   └── __init__.py
-│   └── ...
-└── pyproject.toml
-```
-
-**2. Configure `pyproject.toml`:**
-
-```toml
-[project]
-name = "myproject"
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-# Or for modern tools:
-[tool.hatch.build.targets.wheel]
-packages = ["src/myproject"]
-```
-
-**3. Install in editable mode:**
-
-```bash
-# With uv
-uv pip install -e .
-
-# With pip
-pip install -e .
-```
-
-**4. For test utilities as importable package:**
-
-```toml
-# In pyproject.toml
-[tool.pytest.ini_options]
-pythonpath = ["src", "tests"]
-```
-
-##### Decision Tree for Import Review
-
-```text
-Is this import using 2+ levels of relative (from ... import)?
-├── NO → ✅ Likely acceptable (verify it's truly module-internal)
-└── YES → Is the target infrastructure (tests/, lib/, shared/)?
-    ├── YES → ❌ REJECT: Use absolute import with proper packaging
-    └── NO → Is this a temporary/experimental structure?
-        ├── YES → ⚠️ WARN: Will need refactoring before merge
-        └── NO → ❌ REJECT: Restructure or fix package setup
-```
-
-##### Anti-Patterns to Reject
-
-```python
-# ❌ REJECT: sys.path manipulation
-import sys
-
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from myproject import something
-
-# ❌ REJECT: Deep relative imports
-from .....lib.utils import helper
-
-# ❌ REJECT: Assuming working directory
-# (breaks when run from different directory)
-from lib.utils import helper  # Only works if CWD is project root
-```
-
-#### 4.8 Testing
-
-**Test Existence & Coverage**:
-
-- [ ] Tests exist for public functions
-- [ ] Tests cover edge cases (empty inputs, None, large values)
-- [ ] Tests use descriptive names that explain the scenario
-- [ ] No hardcoded paths or environment-specific values in tests
-- [ ] Fixtures clean up after themselves
-
-**Test Organization (Debuggability)**:
-
-- [ ] Test values in separate file or fixtures (not inline anonymous data)
-- [ ] Named test categories (`TYPICAL["BASIC"]` not bare tuples)
-- [ ] Individual tests for each category (one assert per test for debuggability)
-- [ ] Parametrized tests for systematic coverage (discovers gaps)
-- [ ] Property-based tests (Hypothesis) come AFTER named cases, not before
-
-**Test Ordering (Fast Failure)**:
-
-- [ ] Environment/availability checks run first (is tool installed?)
-- [ ] Simple operations run before complex ones
-- [ ] Infrastructure-dependent tests are marked (`@pytest.mark.vm_required`)
-- [ ] Fast tests before slow tests
-
-**Anti-Patterns to Flag**:
-
-- ⚠️ Starting with `@given` without named cases first → Hard to debug
-- ⚠️ Inline test data without names → Not reusable, no context on failure
-- ⚠️ Single parametrized test for all cases → Can't set breakpoint on specific case
-- ⚠️ Random data without seed control → Not reproducible
-
-#### 4.9 ADR/PDR Compliance
+**Phase 4: ADR/PDR Compliance**
 
 > **ADRs/PDRs GOVERN — compliance is verified through code review, not testing.**
 
@@ -603,34 +235,21 @@ Check that implementation follows all applicable ADR/PDR constraints:
 | "No ORM" (ADR)                       | SQLAlchemy models introduced        | REJECTED |
 | "Lifecycle is Draft→Published" (PDR) | Added hidden `Archived` state       | REJECTED |
 
-### Phase 5: Determine Verdict
+**Phase 5: Determine Verdict**
 
-Based on your findings, determine the verdict:
-
-| Verdict      | Criteria                                            | Next Phase               |
-| ------------ | --------------------------------------------------- | ------------------------ |
-| **APPROVED** | All checks pass, no issues                          | Phase 6 (Commit outcome) |
-| **REJECTED** | Any issue, failed validation, or unverifiable state | Return to coder          |
+| Verdict      | Criteria                                            | Next Phase       |
+| ------------ | --------------------------------------------------- | ---------------- |
+| **APPROVED** | All checks pass, no issues                          | Phase 6 (Commit) |
+| **REJECTED** | Any issue, failed validation, or unverifiable state | Return to coder  |
 
 **If verdict is APPROVED**: Continue to Phase 6.
 **If verdict is REJECTED**: Skip to "Rejection Feedback" section below.
 
----
-
-### Phase 6: Verify Tests Pass (APPROVED Only)
+**Phase 6: Verify Tests Pass (APPROVED Only)**
 
 > **Write access is earned by passing review.** This phase only runs on APPROVED.
 
-When all checks pass, verify all tests pass.
-
-#### 6.1 Identify Test Location
-
-Tests are co-located with specs in the Outcome Engineering framework:
-
-```bash
-# Tests live in the container's tests/ directory
-spx/{capability}/{feature}/{story}/tests/*.py
-```
+When all checks pass, verify all tests still pass.
 
 Test level is indicated by filename suffix:
 
@@ -640,21 +259,13 @@ Test level is indicated by filename suffix:
 | Level 2    | `test_*.integration.py` | `test_cli.integration.py` |
 | Level 3    | `test_*.e2e.py`         | `test_workflow.e2e.py`    |
 
-#### 6.2 Run Tests
-
-```bash
-pytest spx/{capability}/{feature}/{story}/tests/ -v --tb=short
-```
-
 **If tests fail**: The verdict becomes REJECTED with reason "Tests don't pass."
 
----
+**Phase 7: Report and Commit (APPROVED Only)**
 
-### Phase 7: Report Completion (APPROVED Only)
+**Follow the `committing-changes` skill** for core commit protocol (selective staging, Conventional Commits format).
 
-Report completion to the orchestrator.
-
-#### 7.1 Final Output
+Stage **only** files from the approved work item. Exclude unrelated files, experimental code, files from other work items.
 
 Report completion:
 
@@ -665,83 +276,19 @@ Report completion:
 
 ### Verification Results
 
-| Tool            | Status | Details                              |
-| --------------- | ------ | ------------------------------------ |
-| `pnpm validate` | PASS   | Project validation command succeeded |
-| pytest          | PASS   | {X}/{X} tests, {Y}% coverage         |
-
-### Tests Passing
-
-| Container                             | Tests Passing |
-| ------------------------------------- | ------------- |
-| `spx/{capability}/{feature}/{story}/` | {X}/{X}       |
-
-### Test Command
-
-\`\`\`bash
-pytest spx/{capability}/{feature}/{story}/tests/ -v
-\`\`\`
-
-### Work Item Status
-
-This work item is complete. All tests passing.
+| Check              | Status | Details                      |
+| ------------------ | ------ | ---------------------------- |
+| Automated gates    | PASS   | Linters + validation         |
+| Tests              | PASS   | {X}/{X} tests, {Y}% coverage |
+| Code comprehension | PASS   | {N} files reviewed           |
+| ADR/PDR compliance | PASS   | All constraints verified     |
 ```
 
----
+</review_protocol>
 
-### Phase 8: Commit (APPROVED Only)
+<rejection_feedback>
 
-Commit the completed work item. **This is the reviewer's responsibility** — committing is the seal of approval.
-
-**Follow the `committing-changes` skill** for core commit protocol (selective staging, verification, Conventional Commits format).
-
-#### Reviewer-Specific Context
-
-When committing as part of review approval, apply these additional guidelines:
-
-**Files to Stage (Work Item Scope)**
-
-Stage **only** files from the approved work item:
-
-| Category       | Example Paths                                   |
-| -------------- | ----------------------------------------------- |
-| Implementation | `src/{modified files for this story}`           |
-| Tests          | `spx/{capability}/{feature}/{story}/tests/*.py` |
-
-**Exclude**: Unrelated files, experimental code, files from other work items.
-
-**Commit Message Context**
-
-Include work item reference in footer:
-
-```text
-feat({scope}): implement {story-slug}
-
-- {brief description of what was implemented}
-- Tests co-located in spx/{path}/tests/
-
-Refs: {capability}/{feature}/{story}
-```
-
-**Return APPROVED**
-
-After successful commit:
-
-```markdown
-## Verdict: APPROVED
-
-Commit: {commit_hash}
-Files committed: {count}
-Tests passing: {count}
-
-Work item is complete.
-```
-
----
-
-## Rejection Feedback
-
-When verdict is **REJECTED**, provide actionable feedback to the coder:
+When verdict is **REJECTED**, provide actionable feedback:
 
 ```markdown
 ## Review: {target}
@@ -750,102 +297,68 @@ When verdict is **REJECTED**, provide actionable feedback to the coder:
 
 ### Issues Found
 
-| # | File:Line   | Category   | Issue               | Suggested Fix            |
-| - | ----------- | ---------- | ------------------- | ------------------------ |
-| 1 | `foo.py:42` | Type Error | Missing return type | Add `-> int`             |
-| 2 | `bar.py:17` | Security   | Bare except         | Catch specific exception |
-
-### Tool Outputs
-
-{Include relevant project validation and pytest output}
+| # | File:Line   | Category       | Issue             | Suggested Fix         |
+| - | ----------- | -------------- | ----------------- | --------------------- |
+| 1 | `foo.py:42` | Dead parameter | `sda` never used  | Remove from signature |
+| 2 | `bar.py:17` | Near-duplicate | Differs by 1 line | Extract helper        |
 
 ### Required Actions
 
 1. Fix all blocking issues listed above
 2. Run verification tools before resubmitting
 3. Submit for re-review
-
-### No Outcome Committed
-
-Outcomes are only committed on APPROVED. Fix issues and resubmit.
 ```
 
----
+</rejection_feedback>
 
-## Verdict Levels
+<verdict_criteria>
 
-Use one of two verdicts:
+**APPROVED (all must be true)**
 
-| Verdict      | When to Use                                                     | Next Step                                  |
-| ------------ | --------------------------------------------------------------- | ------------------------------------------ |
-| **APPROVED** | All checks pass, no issues found                                | Commit outcome, commit, work item complete |
-| **REJECTED** | Any issue, failed validation, test failure, or missing evidence | Coder fixes issues, then re-review         |
+1. Automated gates pass (linters, validation)
+2. All tests pass with measured coverage ≥80%
+3. Every file comprehended — no design flaws found
+4. No mocking detected
+5. ADR/PDR constraints followed
+6. Output contains no notes/warnings/caveats sections
 
-### APPROVED Criteria
+**REJECTED (any triggers rejection)**
 
-All of these must be true:
+| Criterion                                        | Source            |
+| ------------------------------------------------ | ----------------- |
+| Automated gates fail                             | Phase 1           |
+| Any test failure                                 | Phase 2           |
+| Coverage < 80% or unmeasured                     | Phase 2           |
+| Dead parameters                                  | Phase 3.1         |
+| Near-duplicate blocks                            | Phase 3.2         |
+| Constants used outside their semantic domain     | Phase 3.2         |
+| Redundant operations                             | Phase 3.2         |
+| IO and logic tangled (not separated)             | Phase 3.3         |
+| External dependencies not injected               | Phase 3.3         |
+| Mocking detected                                 | Test verification |
+| ADR/PDR violation                                | Phase 4           |
+| Infrastructure unavailable (evidence incomplete) | Phase 2           |
 
-1. Project validation command reports success
-2. All tests pass
-3. Manual review checklist is satisfied
-4. No security concerns identified
-5. Output contains no notes/warnings/caveats sections
+</verdict_criteria>
 
-### REJECTED Criteria
+<false_positive_handling>
 
-The code is **REJECTED** if ANY of these are true:
+Not all findings are real issues. Context matters.
 
-| Criterion                                    | Tool/Check         |
-| -------------------------------------------- | ------------------ |
-| Validation command fails                     | Project validation |
-| Any test failure                             | pytest             |
-| Missing type annotations on public functions | Manual             |
-| Missing `-> None` on test functions          | Ruff ANN201        |
-| Missing type on fixture params (`tmp_path`)  | Ruff ANN001        |
-| Missing `-> None` on `__init__`              | Ruff ANN204        |
-| Magic values in test assertions              | Ruff PLR2004       |
-| Uppercase argument names                     | Ruff N803          |
-| Bare `except:` clauses                       | Manual             |
-| Hardcoded secrets detected                   | Manual             |
-| `eval()` or `exec()` without justification   | Manual             |
-| `shell=True` with untrusted input            | Manual             |
-| Deep relative imports (2+ levels) to infra   | grep/Manual        |
-| `sys.path` manipulation to fix import errors | grep/Manual        |
-| Design or architectural problems             | Manual             |
+**When a Finding is a False Positive**
 
-Infrastructure unavailability is a REJECTED result because review evidence is incomplete.
+1. **Context changes the threat model**: S603 (subprocess call) in a CLI tool where inputs come from the user invoking the tool, not untrusted external sources
+2. **The code is intentionally doing something the rule warns against**: Using `pickle` for internal caching with no untrusted input
+3. **The calling context guarantees safety**: A parameter that looks dead but is required by an interface/protocol contract
 
----
+**When a Finding is NOT a False Positive**
 
-## False Positive Handling
-
-Not all tool violations are real issues. Context matters. Use this framework to identify and handle false positives.
-
-### When a Violation is a False Positive
-
-A violation is a **false positive** when:
-
-1. **Context changes the threat model**:
-   - S603 (subprocess call) in a CLI tool where inputs come from the user invoking the tool, not untrusted external sources
-   - S607 (partial executable path) when PATH resolution is intentional for portability across systems
-
-2. **The code is intentionally doing something the rule warns against**:
-   - Using `pickle` for internal caching with no untrusted input
-   - Using `shell=True` with hardcoded commands (no interpolation)
-
-3. **The rule doesn't apply to this language version or framework**:
-   - Python 3.10+ syntax flagged by older tool versions
-
-### When a Violation is NOT a False Positive
-
-A violation is **real** when:
-
-- User/external input can reach the flagged code path
-- The code runs in a web service, API, or multi-tenant environment
-- The "justification" is just "we've always done it this way"
 - You cannot explain exactly why it's safe in this specific context
+- The "justification" is just "we've always done it this way"
+- The code runs in a web service, API, or multi-tenant environment
+- The surprise in step 3.1 has no good explanation
 
-### Required Noqa Format
+**Required Noqa Format**
 
 When suppressing a rule, the noqa comment MUST include justification:
 
@@ -857,18 +370,18 @@ result = subprocess.run(cmd)  # noqa: S603 - CLI tool, cmd built from trusted co
 result = subprocess.run(cmd)  # noqa: S603
 ```
 
-### Application Context Guide
+**Application Context Guide**
 
-| Application Type        | Trust Boundary        | S603/S607              | Hardcoded Paths   |
-| ----------------------- | --------------------- | ---------------------- | ----------------- |
-| CLI tool (user-invoked) | User is trusted       | Usually false positive | Often intentional |
-| Web service             | All input untrusted   | Real issue             | Real issue        |
-| Internal script         | Depends on deployment | Analyze case-by-case   | Usually OK        |
-| Library/package         | Consumers untrusted   | Real issue             | Avoid             |
+| Application Type        | Trust Boundary        | Security Rules     |
+| ----------------------- | --------------------- | ------------------ |
+| CLI tool (user-invoked) | User is trusted       | Usually relaxed    |
+| Web service             | All input untrusted   | Strict enforcement |
+| Internal script         | Depends on deployment | Case-by-case       |
+| Library/package         | Consumers untrusted   | Strict enforcement |
 
----
+</false_positive_handling>
 
-## Output Format
+<output_format>
 
 Produce output using `templates/review_report.md`.
 
@@ -879,7 +392,7 @@ Verdict is binary:
 
 For `APPROVED`, include no notes/warnings/caveats sections.
 
-### Conversation Summary Structure
+**Conversation Summary Structure**
 
 ```markdown
 ## Review: {target}
@@ -888,11 +401,12 @@ For `APPROVED`, include no notes/warnings/caveats sections.
 
 [One-sentence summary]
 
-### Project Validation
+### Automated Gates
 
-| Command         | Status    | Details                         |
-| --------------- | --------- | ------------------------------- |
-| `pnpm validate` | PASS/FAIL | [failure summary if applicable] |
+| Check      | Status    | Details                         |
+| ---------- | --------- | ------------------------------- |
+| Linters    | PASS/FAIL | [failure summary if applicable] |
+| Validation | PASS/FAIL | [command used]                  |
 
 ### Tests
 
@@ -901,6 +415,12 @@ For `APPROVED`, include no notes/warnings/caveats sections.
 | Passed   | [count]    |
 | Failed   | [count]    |
 | Coverage | [percent]% |
+
+### Code Comprehension Findings
+
+| File:Line   | Category   | Finding              |
+| ----------- | ---------- | -------------------- |
+| `foo.py:42` | [category] | [what surprised you] |
 
 ### ADR/PDR Compliance
 
@@ -914,10 +434,12 @@ For `APPROVED`, include no notes/warnings/caveats sections.
 1. **[file:line]** - [category] - [issue]
 ```
 
-## Skill Resources
+</output_format>
+
+<skill_resources>
 
 - `templates/review_report.md` - Report template
 
----
+</skill_resources>
 
 *Your job is to protect the codebase from defects. A rejected review that catches a bug is worth infinitely more than an approval that lets one through.*
