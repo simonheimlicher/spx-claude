@@ -1,6 +1,6 @@
 # Outcome Engineering framework
 
-**Opportunity Tree** — business understanding (Linear, Jira):
+**Opportunity Tree** — product discovery (Linear, Notion):
 
 ```text
 Customer Billing Problems
@@ -13,7 +13,7 @@ Customer Billing Problems
     └── Support annual billing cycle
 ```
 
-**Outcome Tree** — engineering truth (git):
+**Outcome Tree** — testable specs (git):
 
 ```text
 spx/
@@ -38,9 +38,9 @@ spx/
 
 Outcome Engineering replaces the backlog with an **Outcome Tree** — a durable, version-controlled product structure where every node is an outcome hypothesis. The tree grows coherently: you cannot have a feature without a capability, or a story without a feature. Ideas earn their place through concrete definition — each must decompose into typed assertions (Scenario, Mapping, Conformance, Property) with referenced test files.
 
-The Outcome Tree translates business understanding into engineering truth. Discovery tools (Linear, Jira) host the opportunities and goals that drive tree evolution. The Outcome Tree itself lives in the repository — co-location with tests and evidence enables atomic commits, content-addressable staleness detection, and unified code review.
+Discovery tools (Linear, Notion) capture the opportunities and goals that drive what gets built. The Outcome Tree lives in the repository as the specification layer — co-location with tests and evidence enables atomic commits, content-addressable staleness detection, and unified code review.
 
-Tests prove that outputs are correct; they do not prove that outcomes were achieved — that requires real users (see [Program Logic Chain](outcome-engineering-plc.md) for the formal distinction). The assertion ledger records which outputs have been proven — a verification layer that Git's content integrity alone cannot provide.
+Tests validate that outputs are correct; they do not validate that outcomes were achieved — that requires real users (see [Program Logic Chain](outcome-engineering-plc.md) for the formal distinction). The assertion record tracks which outputs have been validated — something Git's content integrity alone cannot answer.
 
 Specs create potential. Tests realize it. The tree doesn't shrink as work completes; it grows as the product grows. (For the full philosophy, see [Potential → Reality](../perspective/product-tree.md).)
 
@@ -68,17 +68,15 @@ This separation is the key to durability:
 - Restructuring the tree = changing which outcomes matter (rare, deliberate)
 - Pruning a node = admitting the outcome hypothesis did not pan out (healthy, explicit)
 
-### What tests actually prove
+### What tests validate
 
-The spec section labeled "Assertions" contains **structured output specifications** — GIVEN/WHEN/THEN scenarios, mappings, conformance checks, and property assertions. These are locally provable prerequisites for the outcome hypothesis stated in Purpose.
+| Spec section              | Locally testable?          |
+| ------------------------- | -------------------------- |
+| Purpose                   | No — requires real users   |
+| Assertions                | Yes — tests validate these |
+| Architectural Constraints | Checked through review     |
 
-| Spec section              | Locally provable?       |
-| ------------------------- | ----------------------- |
-| Purpose                   | No — requires users     |
-| Assertions                | Yes — tests prove these |
-| Architectural Constraints | Verified through review |
-
-Each assertion is a testable claim about what the software does. Tests prove assertions. The assertion ledger records which assertions have been proven.
+Assertions are structured output specifications — Scenarios, Mappings, Conformance checks, Properties — that constitute testable claims about what the software does. Before tests validate them, assertions represent potential: places where implementation can deliver value against spec. After tests validate them, assertions become results tracked in the assertion record.
 
 ---
 
@@ -88,7 +86,7 @@ Each assertion is a testable claim about what the software does. Tests prove ass
    The tree evolves with business goals and understanding of user needs, not due to implementation progress. When the tree changes, tests change and any in-progress work that no longer serves a failing test aborts immediately.
 
 2. **Failing tests reveal potential**
-   Failing tests indicate potential for implementation to deliver value against spec. The assertion ledger tracks where implementation matches spec.
+   Failing tests indicate potential for implementation to deliver value against spec. The assertion record tracks where implementation matches spec.
 
 3. **Assertions harden through the pipeline**
    Tests provide tentative assertions during development and immutable evidence after CI.
@@ -99,10 +97,10 @@ Each assertion is a testable claim about what the software does. Tests prove ass
    Each node describes its own contribution. Parent nodes never reference child breakdowns — the tree structure encodes the decomposition.
 
 2. **Co-location**
-   Each node holds its spec, tests, and assertion ledger together. No parallel trees.
+   Each node holds its spec, tests, and assertion record together. No parallel trees.
 
-3. **The product verifies itself**
-   The Outcome Tree drives the evolution of the implementation; code follows suit. For this to hold, the product must include everything needed to continuously verify its own assertions through test harnesses that are part of the product's implementation.
+3. **The product tests itself**
+   The Outcome Tree drives the evolution of the implementation; code follows suit. For this to hold, the product must include everything needed to continuously test its own assertions through test harnesses that are part of the product's implementation.
 
 ---
 
@@ -128,38 +126,38 @@ spx/
         tests/
 ```
 
-Each node contains its spec (`{slug}.{type}.md`), assertion ledger (`assertions.yaml`), and tests (`tests/`). ADRs are interleaved flat files at any level. Index ordering encodes dependencies — lower indices are dependencies, same index means parallel work. See [Fractional Indexing](outcome-engineering-reference.md#fractional-indexing) for insertion algorithms.
+Each node contains its spec (`{slug}.{type}.md`), assertion record (`assertions.yaml`), and tests (`tests/`). ADRs are interleaved flat files at any level. Index ordering encodes dependencies — lower indices are dependencies, same index means parallel work. See [Fractional Indexing](outcome-engineering-reference.md#fractional-indexing) for insertion algorithms.
 
 For spec formats, naming conventions, and test infrastructure details, see [Outcome Engineering Reference](outcome-engineering-reference.md).
 
 ---
 
-## Assertion Ledger
+## Assertion Record
 
-Each node MAY have an `assertions.yaml` file listing tests that currently pass. This is the **machine-verifiable proof** that outputs are correct—the record of which output specifications have been proven.
+Each node MAY have an `assertions.yaml` — the record of which assertions have been validated by tests. Where the spec defines potential, the assertion record tracks what has been realized.
 
 ### Purpose
 
-The assertion ledger answers a question Git cannot: "Did this content pass tests, and when?"
-
-Git provides cryptographic integrity of content (a Merkle tree of blobs). The assertion ledger provides verification state—a separate Merkle tree tracking which tests pass and how nodes relate to each other.
+Git tracks content integrity (a Merkle tree of blobs) but cannot answer: which outputs have been validated, and are those results still current? The assertion record provides this — tracking which tests pass, when they passed, and how nodes relate to each other.
 
 ### Key Properties
 
-- **Incomplete ledgers are valid** - A node with 2 of 5 tests passing is in progress, not broken
-- **Never hand-edited** - Generated by `spx spx assert`, verified by `spx spx verify`
-- **Tree coupling** - Parent ledgers reference child ledgers, creating a hierarchy of verification state
-- **States are derived** - Unknown, Pending, Stale, Passing, Regressed—computed from ledger contents
+- **Incomplete records show remaining potential** — A node with 2 of 5 tests passing has potential, not problems
+- **Never hand-edited** — Generated by `spx spx assert`, checked by `spx spx verify`
+- **Tree coupling** — Parent records reference child records, creating a status hierarchy
+- **States are derived** — Computed from record contents, never manually assigned
 
 ### Node States
 
-| State         | Condition                           | Required Action     |
-| ------------- | ----------------------------------- | ------------------- |
-| **Unknown**   | No tests exist                      | Write tests         |
-| **Pending**   | Tests exist, not all asserted       | Fix code or assert  |
-| **Stale**     | Descendant assertions_blob mismatch | Re-assert           |
-| **Passing**   | All tests pass, blobs match         | None                |
-| **Regressed** | Asserted test fails                 | Investigate and fix |
+States trace the path from potential to validated:
+
+| State         | Condition                           | Meaning                             |
+| ------------- | ----------------------------------- | ----------------------------------- |
+| **Unknown**   | No tests exist                      | Potential not yet defined           |
+| **Pending**   | Tests exist, not all asserted       | Potential defined, not yet realized |
+| **Passing**   | All tests pass, blobs match         | Assertions fully validated          |
+| **Stale**     | Descendant assertions_blob mismatch | Results need re-testing             |
+| **Regressed** | Asserted test fails                 | Results contradicted                |
 
 ### Commands
 
@@ -170,17 +168,15 @@ spx spx verify <node>   # Check that assertions hold
 spx spx status <node>   # Show states without running tests
 ```
 
-For detailed format specification and design rationale, see [outcome-ledger.md](outcome-ledger.md)
-
 ---
 
 ## Development Flow
 
-1. **Write spec**: state the outcome hypothesis (Purpose), define assertions (testable output specifications), and describe test strategy
-2. **Implement**: write code and tests that prove the outputs
-3. **Assert outputs**: run `spx spx assert <node>` to update the assertion ledger
-4. **Commit**: spec + implementation + tests + assertions.yaml together
-5. **Precommit**: validates no regressions, no phantoms, no staleness
-6. **CI**: re-runs validation as immutable evidence
+1. **Write spec** — State the outcome hypothesis (Purpose), define assertions as testable output specifications, describe test strategy. The spec creates potential: failing tests that reveal where implementation can deliver value.
+2. **Implement** — Write code and tests that realize the potential defined by the spec. Each passing test closes the gap between spec and reality.
+3. **Assert** — Run `spx spx assert <node>` to record validated assertions. Tentative during development — assertions harden as they move through the pipeline.
+4. **Commit** — Spec, implementation, tests, and assertions.yaml together in a single atomic change. Co-location keeps everything self-contained.
+5. **Precommit** — Catches regressions, phantoms, and staleness. The product tests itself before the change leaves the developer's machine.
+6. **CI** — Re-runs the same checks as the permanent record. What was tentative during development becomes immutable.
 
 For precommit validation scenarios, see [Outcome Engineering Reference](outcome-engineering-reference.md#precommit-validation).
