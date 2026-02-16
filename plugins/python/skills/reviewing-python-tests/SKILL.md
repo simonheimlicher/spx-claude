@@ -9,7 +9,7 @@ Determine if tests provide genuine evidence that outcomes are fulfilled through 
 
 **THE ADVERSARIAL QUESTION:**
 
-> How could these tests pass while the outcome remains unfulfilled?
+> How could these tests pass while the assertion remains unfulfilled?
 
 If you can answer that question, the tests are **REJECTED**.
 </objective>
@@ -69,7 +69,7 @@ This skill protects the test suite from phantom evidence. A single evidentiary g
 Execute these phases IN ORDER. Stop at first REJECT.
 
 <phase name="spec_structure_validation">
-For each outcome in the spec, verify:
+For each assertion in the spec, verify:
 
 **1.1 Outcome Format**
 
@@ -107,7 +107,7 @@ def test_uart_tx():
 
 This is distinct from the **Analysis section** (stories only), which documents the agent's codebase examination. Analysis references may diverge from implementation as understanding deepens — do NOT reject specs for stale Analysis references.
 
-Each outcome MUST have a Test Files table with valid Markdown links:
+Each assertion MUST have a Test Files table with valid Markdown links:
 
 ```markdown
 | File                                       | Level | Harness |
@@ -130,7 +130,7 @@ ls -la {container}/tests/{linked_file}
 
 **1.3 Level Appropriateness**
 
-Evidence lives at specific levels. Verify each outcome is tested at the correct level:
+Evidence lives at specific levels. Verify each assertion is tested at the correct level:
 
 | Evidence Type              | Minimum Level | Example                                  |
 | -------------------------- | ------------- | ---------------------------------------- |
@@ -139,9 +139,9 @@ Evidence lives at specific levels. Verify each outcome is tested at the correct 
 | Project-specific binary    | 2             | Verilator lint, external tool invocation |
 | Real credentials/services  | 3             | Cloud APIs, payment providers            |
 
-**If outcome is tested at wrong level**: REJECT.
+**If assertion is tested at wrong level**: REJECT.
 
-**If story-level outcome appears in feature spec**: Note as structural issue (stories should be created), but continue review.
+**If story-level assertion appears in feature spec**: Note as structural issue (stories should be created), but continue review.
 
 **GATE 1**: Before proceeding to Phase 2, verify:
 
@@ -157,15 +157,15 @@ For each test file, verify it provides genuine evidence.
 
 **2.1 The Adversarial Test**
 
-Ask: **How could this test pass while the outcome remains unfulfilled?**
+Ask: **How could this test pass while the assertion remains unfulfilled?**
 
-| Scenario                                                 | Verdict |
-| -------------------------------------------------------- | ------- |
-| Test asserts something other than what outcome specifies | REJECT  |
-| Test uses hardcoded values that happen to match          | REJECT  |
-| Test doesn't actually exercise the code path             | REJECT  |
-| Test mocks the thing it's supposed to verify             | REJECT  |
-| Test can pass with broken implementation                 | REJECT  |
+| Scenario                                                   | Verdict |
+| ---------------------------------------------------------- | ------- |
+| Test asserts something other than what assertion specifies | REJECT  |
+| Test uses hardcoded values that happen to match            | REJECT  |
+| Test doesn't actually exercise the code path               | REJECT  |
+| Test mocks the thing it's supposed to verify               | REJECT  |
+| Test can pass with broken implementation                   | REJECT  |
 
 **2.2 Dependency Availability**
 
@@ -207,7 +207,7 @@ def test_generates_lint_clean_verilog():
 
 **2.3 Harness Verification**
 
-If outcome specifies a harness in the Test Files table:
+If assertion specifies a harness in the Test Files table:
 
 1. Harness must exist and be specified (in `spx/` or `{project}_testing/`)
 2. Harness must have its own tests
@@ -223,7 +223,7 @@ ls -la {harness_path}
 
 **GATE 2**: Before proceeding to Phase 3, verify:
 
-- [ ] Each test file reviewed for adversarial test (can it pass while outcome fails?)
+- [ ] Each test file reviewed for adversarial test (can it pass while assertion fails?)
 - [ ] Ran grep for skipif patterns, evaluated each found
 - [ ] Any harnesses referenced have been verified to exist
 
@@ -538,7 +538,7 @@ tests/test_verilog_gen.unit.py:15:@pytest.mark.skipif(not verilator_available(),
 
 **How Tests Could Pass While Outcome Fails:**
 
-CI environment doesn't have Verilator installed. Test is silently skipped. CI goes green. The outcome "generates lint-clean Verilog" has zero verification. Users deploy code that produces invalid Verilog.
+CI environment doesn't have Verilator installed. Test is silently skipped. CI goes green. The assertion "generates lint-clean Verilog" has zero verification. Users deploy code that produces invalid Verilog.
 
 </concrete_examples>
 
@@ -602,7 +602,7 @@ All outcomes have genuine evidentiary coverage at appropriate levels.
 
 ### How Tests Could Pass While Outcome Fails
 
-{Explain the evidentiary gap - how could these tests go green while the promised outcome remains unfulfilled?}
+{Explain the evidentiary gap - how could these tests go green while the promised assertion remains unfulfilled?}
 ```
 
 </reject_template>
@@ -638,7 +638,7 @@ Task is complete when:
 - [ ] All gates passed (or documented why gate failed)
 - [ ] Property-based test coverage verified for parsers/serializers/math/algorithms
 - [ ] Each rejection reason has file:line location
-- [ ] Evidentiary gap explained (how tests could pass while outcome fails)
+- [ ] Evidentiary gap explained (how tests could pass while assertion fails)
 - [ ] Output follows specified format (APPROVED or REJECT template)
 
 **Verification command**:
@@ -652,7 +652,7 @@ grep -c "### Verdict: REJECT" review_output.md   # Should be 1 for reject
 </success_criteria>
 
 <cardinal_rule>
-**If you can explain how the tests could pass while the outcome remains unfulfilled, the tests are REJECTED.**
+**If you can explain how the tests could pass while the assertion remains unfulfilled, the tests are REJECTED.**
 
 Your job is to protect the test suite from phantom evidence. A rejected review that catches an evidentiary gap is worth infinitely more than an approval that lets one through.
 </cardinal_rule>

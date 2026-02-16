@@ -1,12 +1,12 @@
 # Program Logic Chain (PLC)
 
-The Program Logic Chain distinguishes what is locally provable from what requires real-world observation:
+The Program Logic Chain distinguishes what is locally testable from what requires real-world observation:
 
 ```text
 Resources → Activities → OUTPUTS → OUTCOMES → IMPACT
                             ↑           ↑          ↑
                        local tests   users      long-term
-                       (provable)    (observable) (measurable)
+                       (testable)    (observable) (measurable)
 ```
 
 - **Resources**: What the team invests (time, budget, infrastructure)
@@ -19,9 +19,9 @@ Resources → Activities → OUTPUTS → OUTCOMES → IMPACT
 
 Outcome Engineering operates in the **Outputs ↔ Outcomes** zone of the chain:
 
-- **Assertions** are structured output specifications — locally provable
-- **Purpose** states the outcome hypothesis — not locally provable
-- **Tests** prove outputs, not outcomes
+- **Assertions** are structured output specifications — locally testable
+- **Purpose** states the outcome hypothesis — not locally testable
+- **Tests** validate outputs, not outcomes
 
 Whether an outcome is achieved can only be measured in the real world; assertions cover what the product does — outputs — not whether those outputs achieve the desired outcome.
 

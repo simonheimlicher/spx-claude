@@ -94,12 +94,12 @@ spx/
 │
 ├── 21-test-harness.capability/
 │   ├── test-harness.capability.md
-│   ├── outcomes.yaml
+│   ├── status.yaml
 │   └── tests/
 │
 ├── 37-users.capability/
 │   ├── users.capability.md
-│   ├── outcomes.yaml
+│   ├── status.yaml
 │   │
 │   ├── 10-bootstrap.feature/
 │   │   └── bootstrap.feature.md
@@ -108,12 +108,12 @@ spx/
 │   │
 │   ├── 22-login.feature/
 │   │   ├── login.feature.md
-│   │   ├── outcomes.yaml
+│   │   ├── status.yaml
 │   │   │
 │   │   ├── 21-password-hashing.adr.md
 │   │   ├── 22-hash-password.story/
 │   │   │   ├── hash-password.story.md
-│   │   │   ├── outcomes.yaml
+│   │   │   ├── status.yaml
 │   │   │   └── tests/
 │   │   │       └── hash-password.unit.test.ts
 │   │   │
@@ -134,7 +134,7 @@ spx/
 Key observations:
 
 - BSP number sorts dependency order visually
-- status is derived from outcomes.yaml evidence, not a separate status field
+- status is derived from status.yaml evidence, not a separate status field
 - pruning a branch removes dependent work without orphaning tickets
 
 ⸻
@@ -264,7 +264,7 @@ ADR Constraint
 
 ---
 
-## Appendix H — Evidence ledger: outcomes.yaml
+## Appendix H — Test status: status.yaml
 
 ### H1. Format
 
@@ -286,7 +286,7 @@ descendants:
 | `tests[].file`                | Test filename relative to container's `tests/` |
 | `tests[].passed_at`           | ISO 8601 timestamp when test passed            |
 | `descendants[].path`          | Child container directory name                 |
-| `descendants[].outcomes_blob` | Git blob SHA of child's outcomes.yaml          |
+| `descendants[].outcomes_blob` | Git blob SHA of child's status.yaml            |
 
 ### H2. State derivation rules
 
@@ -300,7 +300,7 @@ descendants:
 
 ### H3. Tree coupling (Merkle property)
 
-Parent outcomes.yaml stores `outcomes_blob` for each child. When a child's outcomes.yaml changes:
+Parent status.yaml stores `outcomes_blob` for each child. When a child's status.yaml changes:
 
 1. Child's Git blob changes
 2. Parent's stored `outcomes_blob` no longer matches
@@ -315,22 +315,22 @@ This creates a Merkle tree of verification state, separate from Git's content Me
 
 Precommit is the primary feedback loop; CI is insurance.
 
-For each container with outcomes.yaml:
+For each container with status.yaml:
 
 1. **Phantom check**
-   Every file in outcomes.yaml must exist at `<container>/tests/<file>`
+   Every file in status.yaml must exist at `<container>/tests/<file>`
 
 2. **Regression check**
-   Run exactly the tests listed in outcomes.yaml
+   Run exactly the tests listed in status.yaml
    - If a claimed test fails → **Regressed** (block commit)
 
 3. **Descendant staleness check**
    For each `descendants[].outcomes_blob`:
-   - Compute current Git blob of child's outcomes.yaml
+   - Compute current Git blob of child's status.yaml
    - If mismatch → **Stale** (child changed, re-claim needed)
 
 4. **Progress rule**
-   Tests present but not in outcomes.yaml are "in progress" (not an error)
+   Tests present but not in status.yaml are "in progress" (not an error)
 
 ⸻
 
@@ -353,11 +353,11 @@ project/
 ├── test-infrastructure.capability.md
 ├── 10-cli-harness.feature/
 │ ├── cli-harness.feature.md
-│ ├── outcomes.yaml
+│ ├── status.yaml
 │ └── tests/
 └── 20-e2e-harness.feature/
 ├── e2e-harness.feature.md
-├── outcomes.yaml
+├── status.yaml
 └── tests/
 
 ⸻

@@ -86,7 +86,7 @@ Invoke `/reviewing-python-tests`:
 
 The reviewer will check:
 
-- Evidentiary value (can tests pass while outcome fails?)
+- Evidentiary value (can tests pass while assertion fails?)
 - Spec compliance (all outcomes covered?)
 - Standards compliance (markers, types, no mocking)
 

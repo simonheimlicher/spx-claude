@@ -340,7 +340,7 @@ Spec-driven development with Outcome Engineering framework.
 ### Core Principles
 
 - Specs are a durable map - nothing moves because work is "done"
-- Status tracked via `outcomes.yaml`, not directory location
+- Status tracked via `status.yaml`, not directory location
 - Tests co-located with specs in `spx/.../tests/`
 - No TRDs - technical details belong in `feature.md` itself
 - No test graduation - tests stay with their spec
@@ -809,7 +809,7 @@ spx-claude/
 │   ├── NN-{slug}.adr.md          # Product-wide ADRs (interleaved)
 │   └── NN-{slug}.capability/     # Capabilities with co-located tests
 │       ├── {slug}.capability.md
-│       ├── outcomes.yaml              # Test verification ledger
+│       ├── status.yaml              # Test status
 │       └── tests/
 └── CLAUDE.md                      # This file
 ```

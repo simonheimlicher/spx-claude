@@ -28,7 +28,7 @@ The 4-part progression (below) organizes tests to serve all three purposes simul
 
 ### The Question Per Outcome
 
-For every **functional outcome** or **quality constraint** in your work item, ask:
+For every **functional assertion** or **quality constraint** in your work item, ask:
 
 > **How can this be proven, and which combination of tests at which levels provides the adequate tradeoff between:**
 >
@@ -97,14 +97,14 @@ Consider a "copy to clipboard" React component. What combination proves it works
 - **Insight**: None about clipboard functionality
 - **Assumptions surfaced**: None - clipboard API not exercised
 - **Protection**: None for the actual feature
-- **Verdict**: Waste of effort for this outcome
+- **Verdict**: Waste of effort for this assertion
 
 **Level 3 E2E test**: Actually copies text in real browser
 
 - **Insight**: Full - proves the feature works as users experience it
 - **Assumptions surfaced**: Browser compatibility, permissions, HTTPS requirements
 - **Protection**: High - catches real-world regressions
-- **Verdict**: Essential for this outcome
+- **Verdict**: Essential for this assertion
 
 **Best combination**: Skip L1/L2 entirely, write L3 tests in target browsers.
 
@@ -500,14 +500,14 @@ Randomized data generation with seeding for reproducibility. Always derive seed 
 
 Tests stay with their specs permanently. No graduation.
 
-| Location                     | Level indicated by    | Purpose                       |
-| ---------------------------- | --------------------- | ----------------------------- |
-| `spx/.../tests/`             | Filename suffix       | All tests, co-located         |
-| `*.unit.test.{ts,py}`        | Level 1 (Unit)        | Pure logic, DI                |
-| `*.integration.test.{ts,py}` | Level 2 (Integration) | Real dependencies via harness |
-| `*.e2e.test.{ts,py}`         | Level 3 (E2E)         | Full system with credentials  |
+| Location                     | Level indicated by | Purpose                       |
+| ---------------------------- | ------------------ | ----------------------------- |
+| `spx/.../tests/`             | Filename suffix    | All tests, co-located         |
+| `*.unit.test.{ts,py}`        | Level 1            | Pure logic, DI                |
+| `*.integration.test.{ts,py}` | Level 2            | Real dependencies via harness |
+| `*.e2e.test.{ts,py}`         | Level 3            | Full system with credentials  |
 
-**The invariant**: All tests in `spx/.../tests/` MUST ALWAYS PASS. The `outcomes.yaml` file tracks verification.
+**The invariant**: All tests in `spx/.../tests/` MUST NOT PASS unless the spec has been implemented COMPLETELY. The `status.yaml` file tracks verification.
 
 **No graduation**: Tests remain co-located with their specs. Story tests become part of the feature's test suite, organized by filename rather than directory.
 

@@ -1,6 +1,6 @@
-# Test Record
+# Status File
 
-The test record tracks validation state for the Spec Tree. Each node MAY have a `test-record.yaml` file that records which tests pass.
+The status file tracks validation state for the Spec Tree. Each node MAY have a `status.yaml` file that records which tests pass.
 
 ## Format
 
@@ -22,7 +22,7 @@ descendants:
 | `tests[].file`              | Test filename relative to node's `tests/` |
 | `tests[].passed_at`         | ISO 8601 timestamp when test passed       |
 | `descendants[].path`        | Child node directory name                 |
-| `descendants[].record_blob` | Git blob SHA of child's test-record.yaml  |
+| `descendants[].record_blob` | Git blob SHA of child's status.yaml       |
 
 ## Node States
 
@@ -38,7 +38,7 @@ States are mutually exclusive. Every node is in exactly one state.
 
 ## Tree Coupling
 
-Parent test-record.yaml stores `record_blob` for each child. When a child's test-record.yaml changes:
+Parent status.yaml stores `record_blob` for each child. When a child's status.yaml changes:
 
 1. Child's Git blob changes
 2. Parent's stored `record_blob` no longer matches
@@ -66,12 +66,12 @@ spx test --all
 
 ### `spx record [node [--tree] | --all]`
 
-Record passing tests in test-record.yaml.
+Record passing tests in status.yaml.
 
 ```bash
 spx record spx/21-auth.capability/22-login.feature/10-parse.story/
 # 1. Run story's tests
-# 2. All pass? Update test-record.yaml
+# 2. All pass? Update status.yaml
 # 3. Any fail? Error, cannot record
 
 spx record spx/21-auth.capability/ --tree
@@ -86,7 +86,7 @@ Check that recorded results hold by running recorded tests.
 
 ```bash
 spx check --all
-# Run all tests listed in test-record.yaml files
+# Run all tests listed in status.yaml files
 # Report: Passing or Regressed
 ```
 
@@ -99,7 +99,7 @@ spx status --all
 # Show tree with states: Unknown, Pending, Stale, Recorded
 ```
 
-Note: `status` shows "Recorded" for nodes with test-record.yaml. Use `check` to confirm Passing vs Regressed.
+Note: `status` shows "Recorded" for nodes with status.yaml. Use `check` to confirm Passing vs Regressed.
 
 ## State Computation
 
@@ -153,6 +153,6 @@ spx check --all
 
 ## Test Reduction
 
-Only tests in test-record.yaml are run during `check`. Nodes without test-record.yaml (Unknown/Pending) are not checked — there's nothing recorded to check.
+Only tests in status.yaml are run during `check`. Nodes without status.yaml (Unknown/Pending) are not checked — there's nothing recorded to check.
 
 This provides test reduction: `check` runs recorded tests, not all possible tests.

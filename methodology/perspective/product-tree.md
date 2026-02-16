@@ -23,7 +23,7 @@ Outcome Engineering replaces the backlog with a **Product Tree**—a living stru
 
 When you write a spec, you aren't adding to a pile. You are **creating potential energy** in the system. The spec defines a state of the world that doesn't yet exist but should. This potential wants to become real.
 
-The work of engineering is converting potential into reality. Tests are the proof that conversion happened. The outcome ledger records when each piece of potential became real.
+The work of engineering is converting potential into reality. Tests are the proof that conversion happened. The test status records when each piece of potential became real.
 
 ### Structured Outcome Requirement
 
@@ -173,12 +173,12 @@ spx/
 │
 ├── 21-test-harness.capability/           # Infrastructure (dependency for others)
 │   ├── test-harness.capability.md
-│   ├── outcomes.yaml
+│   ├── status.yaml
 │   └── tests/
 │
 ├── 37-users.capability/                  # Functional (parallel with billing)
 │   ├── users.capability.md
-│   ├── outcomes.yaml
+│   ├── status.yaml
 │   │
 │   ├── 10-bootstrap.feature/             # Feature before any ADR
 │   │   └── bootstrap.feature.md
@@ -187,12 +187,12 @@ spx/
 │   │
 │   ├── 22-login.feature/                 # Feature depends on ADR 21
 │   │   ├── login.feature.md
-│   │   ├── outcomes.yaml
+│   │   ├── status.yaml
 │   │   │
 │   │   ├── 21-password-hashing.adr.md        # Feature-level ADR
 │   │   ├── 22-hash-password.story/           # Story depends on ADR 21
 │   │   │   ├── hash-password.story.md
-│   │   │   ├── outcomes.yaml
+│   │   │   ├── status.yaml
 │   │   │   └── tests/
 │   │   │       └── hash-password.unit.test.ts
 │   │   │
@@ -215,7 +215,7 @@ spx/
 - Directory format: `{BSP}-{slug}.{type}/` (BSP first, then slug, type suffix)
 - Spec file format: `{slug}.{type}.md` (matches directory naming)
 - ADR format: `{BSP}-{slug}.adr.md` (flat files, interleaved with containers)
-- Status derived from the outcome ledger, not a separate status file
+- Status derived from the test status, not a separate status file
 - Everything sorts by BSP number first—humans see dependency order at a glance
 
 ### Why a Tree?
@@ -302,7 +302,7 @@ When you create `54-export-csv.story/export-csv.story.md`, you're not adding to 
 
 ### Passing Tests = Realizing Potential
 
-When the outcome ledger records that all scenarios pass, potential has become reality. The story isn't "done" (done implies it goes away). The story is **realized**—it describes something true about the product.
+When the test status records that all scenarios pass, potential has become reality. The story isn't "done" (done implies it goes away). The story is **realized**—it describes something true about the product.
 
 ### Editing a Spec = Raising the Bar
 

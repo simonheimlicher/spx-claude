@@ -68,7 +68,7 @@ Extract from the spec:
 
 ### Step 2: Determine Test Levels
 
-For each outcome, apply the `/testing` methodology:
+For each assertion, apply the `/testing` methodology:
 
 | Evidence Type                   | Minimum Level |
 | ------------------------------- | ------------- |
@@ -121,7 +121,7 @@ For each rejection reason:
 | Rejection Category     | Fix Action                                           |
 | ---------------------- | ---------------------------------------------------- |
 | Missing `-> None`      | Add return type to test functions                    |
-| Evidentiary gap        | Rewrite test to actually verify the outcome          |
+| Evidentiary gap        | Rewrite test to actually verify the assertion        |
 | Mocking detected       | Replace with dependency injection                    |
 | Missing property tests | Add `@given` tests for parsers/serializers           |
 | Silent skip            | Change `skipif` to `pytest.fail()` for required deps |
@@ -164,7 +164,7 @@ Tests run and fail for expected reasons (RED phase complete).
 
 Before declaring tests complete:
 
-- [ ] Each Gherkin outcome has at least one test
+- [ ] Each Gherkin assertion has at least one test
 - [ ] Test level matches the evidence type (per `/testing` Stage 2)
 - [ ] File names include level suffix (`.unit.py`, `.integration.py`, `.e2e.py`)
 - [ ] All test functions have `-> None` return type
@@ -233,7 +233,7 @@ Tests pass checklist. Ready for re-review.
 Task is complete when:
 
 - [ ] Test files exist in `{story}/tests/` directory
-- [ ] Each outcome from spec has corresponding test(s)
+- [ ] Each assertion from spec has corresponding test(s)
 - [ ] Tests follow `/standardizing-python-testing` standards
 - [ ] Tests run and fail for expected reasons
 - [ ] All reviewer feedback addressed (if FIX mode)

@@ -1,8 +1,6 @@
 ---
 name: understanding-durable-map
-description: |
-  Foundational skill teaching that specs are permanent product documentation, not work items.
-  Use when agents think in tasks/backlogs, want to "close" items, or ask where "done" work goes.
+description: Specs are permanent product documentation, not work items. Use when agents think in tasks/backlogs, want to "close" items, or ask where "done" work goes.
 allowed-tools: Read, Glob, Grep
 ---
 
@@ -110,14 +108,14 @@ None of these narrate how the product got here. The product tree has no memory �
 
 **These backlog operations DO NOT EXIST in Outcome Engineering:**
 
-| Operation                | Why it doesn't exist                                 |
-| ------------------------ | ---------------------------------------------------- |
-| "Close this story"       | Stories are permanent; status is derived from ledger |
-| "Move to done folder"    | Nothing moves; tree structure is stable              |
-| "Archive completed work" | Realized specs are living documentation              |
-| "Delete after shipped"   | Specs describe what product IS                       |
-| "Sprint backlog"         | No sprints; continuous realization                   |
-| "Groom the backlog"      | Prune the tree (remove, don't groom)                 |
+| Operation                | Why it doesn't exist                                      |
+| ------------------------ | --------------------------------------------------------- |
+| "Close this story"       | Stories are permanent; status is derived from test status |
+| "Move to done folder"    | Nothing moves; tree structure is stable                   |
+| "Archive completed work" | Realized specs are living documentation                   |
+| "Delete after shipped"   | Specs describe what product IS                            |
+| "Sprint backlog"         | No sprints; continuous realization                        |
+| "Groom the backlog"      | Prune the tree (remove, don't groom)                      |
 
 **Status is DERIVED, not assigned:**
 
@@ -129,7 +127,7 @@ Stale     → Spec or dependency changed
 Regressed → Was passing, now fails
 ```
 
-You don't "mark as done"—you claim outcomes and the ledger records the proof.
+You don't "mark as done"—you claim outcomes and the test status records the proof.
 
 </what_never_happens>
 
@@ -193,7 +191,7 @@ Nowhere. It stays exactly where it is. A realized story is still a story—it's 
 
 **Mistake 2: Wanting to "close" or "complete" items**
 
-You don't close items. You claim outcomes. The ledger records what's proven.
+You don't close items. You claim outcomes. The test status records what's proven.
 
 **Mistake 3: Treating specs as temporary work items**
 
@@ -223,14 +221,14 @@ Specs narrate history when they say "We discovered...", "X has accumulated witho
 
 **When agent wants to... → Do this instead:**
 
-| Agent impulse                 | Correct action                            |
-| ----------------------------- | ----------------------------------------- |
-| "Close this story"            | Claim the outcome: `spx spx claim <path>` |
-| "Mark as done"                | Status is derived from passing tests      |
-| "Move to archive"             | Leave it—it's permanent documentation     |
-| "What's left in the backlog?" | `spx spec status --format table`          |
-| "Sprint planning"             | Look at BSP ordering for dependencies     |
-| "Estimate story points"       | Decompose until obvious, don't estimate   |
+| Agent impulse                 | Correct action                              |
+| ----------------------------- | ------------------------------------------- |
+| "Close this story"            | Claim the assertion: `spx spx claim <path>` |
+| "Mark as done"                | Status is derived from passing tests        |
+| "Move to archive"             | Leave it—it's permanent documentation       |
+| "What's left in the backlog?" | `spx spec status --format table`            |
+| "Sprint planning"             | Look at BSP ordering for dependencies       |
+| "Estimate story points"       | Decompose until obvious, don't estimate     |
 
 </quick_reference>
 

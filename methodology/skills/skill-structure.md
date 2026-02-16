@@ -38,8 +38,8 @@
 
 ### 6. Contract test lifecycle based on Outcome Engineering context
 
-6a. Create tests from outcome contracts in existing specs.
-6b. Refactor tests when outcome contracts or decisions change.
+6a. Create tests from assertion contracts in existing specs.
+6b. Refactor tests when assertion contracts or decisions change.
 6c. Update spec artifacts with test file references and adjust outcomes when new test evidence reveals gaps.
 
 ### Optional migration extension
@@ -123,7 +123,7 @@ ${UNDERSTANDING_SPX_DIR}/
 ├── references/
 │   ├── durable-map.md
 │   ├── decomposition-semantics.md
-│   ├── outcome-types.md
+│   ├── assertion-types.md
 │   └── ...
 └── templates/
     ├── product/
@@ -220,14 +220,14 @@ When invoked as postflight by action skills:
 
 ## Current skills disposition
 
-| Current skill                         | Disposition                                                                 |
-| ------------------------------------- | --------------------------------------------------------------------------- |
-| `understanding-durable-map`           | Absorbed into `understanding-spx` as reference material                     |
-| `understanding-outcome-decomposition` | Absorbed into `understanding-spx` as reference material                     |
-| `managing-spx`                        | Split: templates/structure → `understanding-spx`, workflows → action skills |
-| `decomposing-prd-to-capabilities`     | Absorbed into `decomposing-spx`                                             |
-| `decomposing-capability-to-features`  | Absorbed into `decomposing-spx`                                             |
-| `decomposing-feature-to-stories`      | Absorbed into `decomposing-spx`                                             |
-| `writing-prd`                         | Absorbed into `authoring-spx`                                               |
-| `migrating-spec-to-spx`               | Stays, moved to migration extension                                         |
-| `understanding-spx` (current)         | Rewritten as foundation skill                                               |
+| Current skill                           | Disposition                                                                 |
+| --------------------------------------- | --------------------------------------------------------------------------- |
+| `understanding-durable-map`             | Absorbed into `understanding-spx` as reference material                     |
+| `understanding-assertion-decomposition` | Absorbed into `understanding-spx` as reference material                     |
+| `managing-spx`                          | Split: templates/structure → `understanding-spx`, workflows → action skills |
+| `decomposing-prd-to-capabilities`       | Absorbed into `decomposing-spx`                                             |
+| `decomposing-capability-to-features`    | Absorbed into `decomposing-spx`                                             |
+| `decomposing-feature-to-stories`        | Absorbed into `decomposing-spx`                                             |
+| `writing-prd`                           | Absorbed into `authoring-spx`                                               |
+| `migrating-spec-to-spx`                 | Stays, moved to migration extension                                         |
+| `understanding-spx` (current)           | Rewritten as foundation skill                                               |

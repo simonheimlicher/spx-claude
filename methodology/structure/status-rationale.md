@@ -1,23 +1,23 @@
-# Test Record: Design Rationale
+# Status File: Design Rationale
 
-This document explains the design decisions behind the test record. For the specification, see [test-record.md](test-record.md).
+This document explains the design decisions behind the status file. For the specification, see [status.md](status.md).
 
-## The Duality: Git and the Test Record
+## The Duality: Git and the Status File
 
 Two parallel Merkle trees serve different purposes:
 
-| Aspect            | Git                             | Test Record                    |
+| Aspect            | Git                             | Status File                    |
 | ----------------- | ------------------------------- | ------------------------------ |
 | Question answered | "What is the content?"          | "Did this content pass tests?" |
 | Tracks            | Specs, tests, implementation    | Validation state               |
 | Merkle structure  | Content blobs → trees → commits | Descendant record_blobs        |
 | Basis             | Cryptographic (hash integrity)  | Empirical (run tests to check) |
 
-Git provides content integrity. The test record provides validation state. Neither duplicates the other's job.
+Git provides content integrity. The status file provides validation state. Neither duplicates the other's job.
 
 ## Why We Don't Store Spec/Test/Implementation Blobs
 
-Early designs stored `spec_blob` and `test_blob` in test-record.yaml to detect staleness:
+Early designs stored `spec_blob` and `test_blob` in status.yaml to detect staleness:
 
 ```yaml
 # REJECTED DESIGN
@@ -31,7 +31,7 @@ tests:
 
 1. **Incomplete coverage**: We cannot store implementation blobs without enumerating all source files each test depends on. The staleness detection would miss implementation changes.
 
-2. **Duplicates Git's job**: Git already tracks content. Storing blobs in test-record.yaml partially duplicates Git's Merkle tree, but incompletely.
+2. **Duplicates Git's job**: Git already tracks content. Storing blobs in status.yaml partially duplicates Git's Merkle tree, but incompletely.
 
 3. **False confidence**: If spec_blob and test_blob match, we might skip running tests—but implementation could have changed, causing failures.
 
@@ -49,7 +49,7 @@ descendants:
 
 **This provides tree coupling:**
 
-1. Child records passing tests → child's test-record.yaml updated
+1. Child records passing tests → child's status.yaml updated
 2. Child's Git blob changes
 3. Parent's stored `record_blob` no longer matches
 4. Parent is Stale → must re-record
@@ -79,7 +79,7 @@ Structure:
 
 ```text
 A: code + spec + tests (code commit)
-B: test-record.yaml only (recording commit)
+B: status.yaml only (recording commit)
 ```
 
 Detect staleness via `git diff A..HEAD`.
@@ -115,7 +115,7 @@ Store only descendant record_blobs. Get tree coupling without duplicating Git.
 
 - Tree coupling via record_blob
 - No content blob duplication
-- Clear separation: Git tracks content, test record tracks validation
+- Clear separation: Git tracks content, status file tracks validation
 
 ## Command Naming
 
@@ -136,18 +136,18 @@ Store only descendant record_blobs. Get tree coupling without duplicating Git.
 - `check` is plain — check that recorded results still hold
 - `verify` and `validate` sound heavier than the operation warrants
 
-**The test record is a record, not a claim:**
+**The status file is a record, not a claim:**
 
-test-record.yaml records which tests passed and when. Anyone can checkout the commit and re-run the tests to confirm. Timestamps are metadata. The record is independently checkable.
+status.yaml records which tests passed and when. Anyone can checkout the commit and re-run the tests to confirm. Timestamps are metadata. The record is independently checkable.
 
 ## Test Reduction
 
-The test record reduces tests via a simple rule:
+The status file reduces tests via a simple rule:
 
 **Only run tests that are recorded as passing.**
 
-- `check` runs tests in test-record.yaml
-- Nodes without test-record.yaml are not checked (nothing recorded)
+- `check` runs tests in status.yaml
+- Nodes without status.yaml are not checked (nothing recorded)
 - Unknown/Pending nodes don't block checking
 
 This is NOT about skipping tests for "unchanged" code (unreliable). It's about knowing WHICH tests to run: the recorded ones.
@@ -156,12 +156,12 @@ This is NOT about skipping tests for "unchanged" code (unreliable). It's about k
 
 The design ensures every node is in exactly one state:
 
-| State     | Detection                                |
-| --------- | ---------------------------------------- |
-| Unknown   | No tests/ directory or empty             |
-| Pending   | Tests exist, not all in test-record.yaml |
-| Stale     | Descendant record_blob mismatch          |
-| Passing   | check succeeds                           |
-| Regressed | check fails                              |
+| State     | Detection                           |
+| --------- | ----------------------------------- |
+| Unknown   | No tests/ directory or empty        |
+| Pending   | Tests exist, not all in status.yaml |
+| Stale     | Descendant record_blob mismatch     |
+| Passing   | check succeeds                      |
+| Regressed | check fails                         |
 
 These states are mutually exclusive and collectively exhaustive.

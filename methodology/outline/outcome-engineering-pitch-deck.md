@@ -125,7 +125,7 @@ A typical mapping looks like this:
 
 - Product Tree nodes map to issue hierarchy (initiatives/capabilities/features/stories)
 - BSP numbering maps to ordering fields or custom sort keys
-- outcomes evidence maps to CI links, test reports, and an “evidence ledger” field
+- outcomes evidence maps to CI links, test reports, and an “test status” field
 - drift and momentum metrics map to dashboards
 
 The result: your teams keep familiar tools, but your operating system becomes coherent.
