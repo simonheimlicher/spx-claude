@@ -1,26 +1,67 @@
-# From Adding Up Tasks to Inferring Work from Evolving Specs
+# From Managing Tasks to Evolving Outcome-Driven Specs
 
-[Spec-driven development](https://en.wikipedia.org/wiki/Spec-driven_development) saw a renaissance with AI coding tools. [Spec Kit](https://github.com/github/spec-kit), [Kiro](https://kiro.dev/), and [OpenSpec](https://openspec.dev/) share a common pattern: a one-off requirements document generates tasks, AI implements them, and the spec is done. Böckeler [calls this "spec-first"](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) — the spec exists to generate code and is discarded afterward. The product state is still the sum of completed tasks.
+Over the past decade, the thinking of product people moved from outputs to outcomes, helped by Melissa Perri's *Escaping the Build Trap*, Teresa Torres's *Continuous Discovery Habits*, and Josh Seiden's *Outcomes Over Output*. Thinking in outcomes means explicitly allowing iteration in outputs until a measurable outcome—typically a change in user behavior—was achieved or the hypothesis falsified and the opportunity scrapped.
 
-Melissa Perri's *Escaping the Build Trap*, Teresa Torres's *Continuous Discovery Habits*, and Josh Seiden's *Outcomes Over Output* moved the thinking of product people from outputs to outcomes, explicitly allowing iteration in outputs until a measurable outcome such as user behavior was achieved or the hypothesis falsified and the opportunity scrapped.
+On the engineering side, [spec-driven development](https://en.wikipedia.org/wiki/Spec-driven_development) saw a renaissance with AI coding tools. Böckeler [taxonomizes the emerging approaches](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) as *spec-first* (the spec generates tasks and is discarded), *spec-anchored* (the spec stays in the repo as living documentation), and *spec-as-source* (the spec is the source of truth that code is derived from). Tools like [Spec Kit](https://github.com/github/spec-kit), [Kiro](https://kiro.dev/), and [OpenSpec](https://openspec.dev/) span this spectrum. Yet even when specs are kept, the progress signal remains task completion, and the binding between spec, tests, and evidence of validation decays with every change.
 
-Task lists describe what was done. Specs traced to tests describe what must be true. Remaining work is the set of assertions not yet satisfied, not yet recorded, or no longer current. The **Spec Tree** is the data structure that makes this concrete — a git-native product structure where every node co-locates a spec, its tests, and a record of what's been validated. Outcome Engineering is the broader methodology; this document introduces the Spec Tree, its delivery substrate.
+Neither side closes the loop. Specs rot — written once, never updated after implementation has started, divorced from reality within days. Changes are instead specified with the minimal effort possible: one-off tickets or tasks in an endless Markdown file that are closed without regard to whether outcomes have been achieved. If product people deem that a hypothesis did not pan out, its spec in the form of closed tickets or checked off tasks, implementation and tests remain in the codebase — dead code nobody can safely remove.
 
-The Spec Tree emerged from years of building and maintaining products where the gap between what product teams intended and what engineers delivered widened with every sprint — not from lack of effort, but from the absence of a shared, testable structure that could evolve with both the business and the code.
+AI agents amplify the problem: they generate code with awareness of some of the constraints that might be encoded as so-called consitutions or steering documents yet they paper over contradictions and fill in the blanks with what they could find using search. Maintenance becomes a nightmare as the code base grows and new implementations of existing functionality, foundational code and test harnesses abound. Not even 100% test coverage says anything about whether the product is implemented as specified, or tests written by the same agent just verify its understanding of what it should have implemented. While Git diligently tracks every content change, it cannot answer whether the tests that pass still validate what the spec currently says.
+
+There has to be a better way.
+
+What if we relied on the strengths of AI agents to establish a context system that makes them thrive while still being maintained through conversations? Over the last 12 months, I have developed a methodology that would drive human product people and engineers up the walls yet allows agents to thrive. It rests on three principles:
+
+1. **Always be converging.** Iterate on a durable artifact, store all intermediate versions, never risk losing anything. Whatever the result of the latest well-intended but potentially entirely misguided action of an agent, you can go back to the prior iteration and try again with a different prompt, different context, or a different agent.
+2. **Never generate what can be derived deterministically.** If you know what you want the agent to base its actions on, provide it as deterministic context and keep it from grepping the codebase. Whenever you observe that it is looking for prior art, ask yourself if you should create or augment a skill so that you control what the agent considers worthy of imitation.
+3. **Expose the maximum leverage decisions, let the agent handle the rest.** Any operational system must expose the highest leverage decisions to a human — either ex ante or ex post — and use the enviable rigor and relentlessness of agents to update all dependent decisions when you change them.
+
+The **Spec Tree** is a git-native product structure built on these principles. Every node co-locates a spec, its tests, and a record that binds them — tracking not just what changed, but what's been validated and whether that validation is still current. Remaining work is the set of assertions not yet satisfied, not yet recorded, or no longer current.
+
+```text
+spx/
+  billing.prd.md                  # Product requirements
+  10-tax-compliance.adr.md        # Global constraint: tax rules
+  20-invoicing/                   # Broad yet clearly bounded context
+    invoicing.md       # Purpose + assertions
+    21-rounding-rules.adr.md      # Local constraint: rounding policy
+    record.yaml                   # Validation record
+    tests/
+    20-line-items/                # Smaller bounded context
+      line-items.md
+      record.yaml
+      tests/
+```
 
 ## Discovery shapes the Spec Tree, delivery iterates inside its nodes
 
+Every node co-locates a spec, its tests, and a record that binds them — tracking not just what changed, but what's been validated and whether that validation is still current. Remaining work is the set of assertions not yet satisfied, not yet recorded, or no longer current.
+
 The Spec Tree captures three layers:
 
-1. **Outcome hypotheses** from discovery crystallize as the tree's structure — which capabilities exist, how they decompose. The DAG evolves slowly and deliberately, constrained by the reality of what the product already is. Adding a capability or deprecating an existing one is a high-cost structural change that forces product people and engineers to reason together about the product surface.
+### 1. Outcome Hypotheses indicate the Value of implementing a sub tree
 
-2. **Concrete output specifications** — what the product should be and how it should behave — live inside each node as testable assertions. This is what makes remaining work formally identifiable: every assertion without a passing test is a gap between spec and reality.
+**Outcome hypotheses** from discovery crystallize as the tree's structure — which capabilities exist, how they decompose. The tree evolves slowly and deliberately, constrained by the reality of what the product already is. Adding a capability or deprecating an existing one is a high-cost structural change that forces product people and engineers to reason together about the product surface.
 
-3. **Verifiable implementation** via tests and `record.yaml` closes the loop. Tests validate assertions; records track which validations are current.
+### 2. Output and its assertions via tests specify the current best guess as to how we achidve the Outcome
 
-AI agents thrive in this structure. Instead of ingesting an entire codebase, an agent walks the Spec Tree from product level down to the target node, loading exactly the constraints (architecture decisions) and requirements (specs) at each level — a bounded, hierarchical context with a clear goal (the spec) and a definition of done (all assertions passing).
+**Concrete output specifications** — what the product should be and how it should behave — live inside each node as testable assertions. This is what makes remaining work formally identifiable: every assertion without a passing test is a gap between spec and implementation.
 
-## Spec Tree
+### 3. The specification lock file closees the loop
+
+**Verifiable implementation** via tests and `record.yaml` closes the loop. Tests validate assertions; records track which validations are current.
+
+- Outcome hypotheses (WHY)
+- Output specification made executable via per-level tests (WHAT)
+- Constraints product and architecture decision records.
+
+## Deterministic Context Ingestion (DCI)
+
+As opposed to probabilistic retrieval (RAG), which guesses which spec and code files might be relevant based on their content similarity, the Spec Tree enables *Deterministic Context Ingestion.* More specitifally, the contex is determined by a small command line utitlity (`spx`) that is invoked by the command the user issues to the agent automatically. The `spx` CLI walks the tree from product level down to the target node and loads the PRD, the decision records, and for each level the bounded context comprising a tree of bounded contexts.
+
+The record also serves as a guardrail: if an agent refactors code but breaks the record, it has changed behavior the spec didn't authorize.
+
+## Schema of the Spec Tree
 
 Instead of figuring out what the product is by adding up completed tasks, remaining work is discovered through assertions at every level and tracked as not-yet-passing tests.
 
@@ -32,22 +73,24 @@ The Spec Tree is a git-native product structure (the `spx/` directory) where eac
 
 ```text
 spx/
-  billing.prd.md
-  20-invoicing/
-    invoicing.capability.md
-    record.yaml
+  billing.prd.md                  # Product requirements
+  10-tax-compliance.adr.md        # Global constraint: tax rules
+  20-invoicing/                   # Broad yet clearly bounded context
+    invoicing.md       # Purpose + assertions
+    21-rounding-rules.adr.md      # Local constraint: rounding policy
+    record.yaml                   # Validation record
     tests/
-    20-line-items/
-      line-items.feature.md
+    20-line-items/                # Smaller bounded context
+      line-items.md
       record.yaml
       tests/
     37-usage-breakdown/
   37-cancellation/
-    cancellation.capability.md
+    cancellation.md
   54-annual-billing/
 ```
 
-For example, `invoicing.capability.md` might contain:
+For example, `invoicing.md` might contain:
 
 > **Purpose:** We believe showing itemized charges will reduce billing support tickets.
 >
@@ -102,6 +145,8 @@ This separation is the key to durability:
 - Restructuring the tree = changing which outcomes matter (rare, deliberate)
 - Pruning a node = admitting this wasn't worth building (healthy, explicit)
 
+Pruning also acts as garbage collection. Because tests are co-located with specs, deleting a node removes its tests. Implementation code that was only exercised by those tests loses coverage — CI exposes the dead code. Deleting the spec forces you to clean up the implementation.
+
 ### What tests validate
 
 | Spec section              | Locally testable?          |
@@ -144,18 +189,18 @@ Assertions are structured output claims — Scenarios, Mappings, Conformance che
 spx/
   {product-slug}.prd.md
   NN-{slug}.adr.md
-  NN-{slug}.capability/
-    {slug}.capability.md
+  NN-{slug}/
+    {slug}.md
     record.yaml
     tests/
     NN-{slug}.adr.md
-    NN-{slug}.feature/
-      {slug}.feature.md
+    NN-{slug}/
+      {slug}.md
       record.yaml
       tests/
       NN-{slug}.adr.md
-      NN-{slug}.story/
-        {slug}.story.md
+      NN-{slug}/
+        {slug}.md
         record.yaml
         tests/
 ```
@@ -172,7 +217,7 @@ Each node MAY have a `record.yaml` — a record of which assertions have been va
 
 ### Purpose
 
-Git tracks content integrity (a Merkle tree of blobs) but cannot answer: which outputs have been validated, and are those results still current? The record provides this — tracking which tests pass and how nodes relate to each other.
+Git tracks **content integrity** — a Merkle tree of blobs that knows when files change. But it cannot track **semantic integrity**: which outputs have been validated, and are those results still current? A spec can change while its tests still pass against the old behavior. The record closes this gap — binding a specific version of a spec to the specific version of the tests that validated it.
 
 ### Key Properties
 
@@ -196,7 +241,7 @@ States reflect validation progress:
 
 Stale and Regressed states block merge. Unspecified, Unverified, and Pending are informational — they indicate work in progress, not problems.
 
-For example, when `invoicing.capability.md` changes, `spx check` flags the node and every record downstream as Stale — no manual triage needed.
+For example, when `invoicing.md` changes, `spx check` flags the node and every record downstream as Stale — no manual triage needed.
 
 ### Merge conflicts
 
