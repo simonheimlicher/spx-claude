@@ -38,7 +38,7 @@ While DCI is vastly superior to vector-search RAG, traversing a deep tree and in
 - *Draft:* "Whatever the result of the latest well-intended but potentially entirely misguided action of an agent, you can go back..."
 - *Revision:* "Agents will hallucinate. ABC ensures every hallucination is reversible, repeatable, and isolated."
 
-4. **Vary Sentence Length:** Your draft has a rhythmic, medium-length cadence typical of generated text. Break it up. Follow a long, complex explanation of DCI with a two-word punch. (e.g., *"It guesses. DCI knows."*)
-5. **Sharpen the "Broken Loop" Metaphor:** "Specs rot" is good. Push it further. Use visceral engineering verbs: Specs *ossify*, tests *decouple*, and context *fractures*.
+1. **Vary Sentence Length:** Your draft has a rhythmic, medium-length cadence typical of generated text. Break it up. Follow a long, complex explanation of DCI with a two-word punch. (e.g., *"It guesses. DCI knows."*)
+2. **Sharpen the "Broken Loop" Metaphor:** "Specs rot" is good. Push it further. Use visceral engineering verbs: Specs *ossify*, tests *decouple*, and context *fractures*.
 
 Would you like to focus on refining the mechanical explanation of how the `spx-lock.yaml` file actually works in practice, or should we iterate on rewriting the "Broken Loop" section with more specific battle scars?
