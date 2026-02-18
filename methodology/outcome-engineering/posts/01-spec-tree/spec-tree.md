@@ -1,10 +1,10 @@
-# The Spec Tree: A Git-Native Structure for Agentic Development
+# The Spec Tree: A Spec-as-Source Methodology for Human—Agent Collaboration
 
 On a human team, "how things are done around here" is culture — the rationale behind decisions, the constraints everyone "just knows," the conventions picked up at the coffee machine. Nobody writes it all down because nobody has to: humans absorb enough through proximity, conversation, and memory to make reasonable decisions most of the time.
 
 Agents have none of that. They don't attend standups, they don't overhear hallway debates, they don't remember what was tried last quarter. Every piece of tacit knowledge that a human teammate would absorb by osmosis must be written down, or the agent will infer its own version — confidently and wrong. Drift is the default.
 
-Over the past decade, the thinking of product people moved from outputs to outcomes, helped by Melissa Perri's *Escaping the Build Trap*, Teresa Torres's *Continuous Discovery Habits*, and Josh Seiden's *Outcomes Over Output*. Thinking in outcomes means explicitly allowing iteration in outputs until a measurable outcome — typically a change in user behavior — was achieved or the hypothesis falsified and the opportunity scrapped.
+These are not new problems — agents just make them acute. Over the past decade, the thinking of product people moved from outputs to outcomes, helped by Melissa Perri's *Escaping the Build Trap*, Teresa Torres's *Continuous Discovery Habits*, and Josh Seiden's *Outcomes Over Output*. Thinking in outcomes means explicitly allowing iteration in outputs until a measurable outcome — typically a change in user behavior — was achieved or the hypothesis falsified and the opportunity scrapped.
 
 On the engineering side, [spec-driven development](https://en.wikipedia.org/wiki/Spec-driven_development) saw a renaissance with AI coding tools. Böckeler [taxonomizes the emerging approaches](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html) as *spec-first* (the spec generates tasks and is discarded), *spec-anchored* (the spec stays in the repo as living documentation), and *spec-as-source* (the spec is the source of truth that code is derived from). Tools like [Spec Kit](https://github.com/github/spec-kit), [Kiro](https://kiro.dev/), and [OpenSpec](https://openspec.dev/) span this spectrum. Yet even when specs are kept, the progress signal remains task completion, and the binding between spec, tests, and evidence of validation decays with every change.
 
@@ -35,9 +35,7 @@ Three guidelines follow from this. They are not abstractions; they are practical
 
 > Iterate on a durable artifact in small, reviewable steps such that each step is reversible and repeatable, and each reduces uncertainty about what the system should do.
 
-Agents will get things wrong. ABC ensures every mistake is reversible: go back one step and try again with a different prompt, different context, or a different agent.
-
-**Design implication:** *The system must be Git-native and track validation history as a generated file within the repo like a package lock file, not just code history.*
+Agents will get things wrong. ABC ensures every mistake is reversible: go back one step and try again with a different prompt, different context, or a different agent. The system must be Git-native and track validation state as a generated file within the repo — like a package lock file, not just code history.
 
 ### Guideline: Determinism
 
@@ -45,179 +43,229 @@ Agents will get things wrong. ABC ensures every mistake is reversible: go back o
 
 If you know what you want the agent to base its actions on, provide it as deterministic context and keep it from grepping the codebase. Whenever you observe that it is looking for prior art, ask yourself if you should create or augment a skill so that you control what the agent considers worthy of imitation.
 
-Wherever a deterministic mechanism can replace a probabilistic one, use it: curate context rather than letting agents search the codebase, link traceability explicitly rather than inferring it, let pre-commit hooks catch what agent judgment would miss. Reserve the generative capacity of agents for the parts that require it.
-
-**Design implication:** *Global and local constraints (Product Decision Records and Architecture Decision Records) must be co-located with the specs they apply to.*
+Wherever a deterministic mechanism can replace a probabilistic one, use it: curate context rather than letting agents search the codebase, link traceability explicitly rather than inferring it, let pre-commit hooks catch what agent judgment would miss. Reserve the generative capacity of agents for the parts that require it. Global and local constraints — Product Decision Records (PDRs capture product constraints such as pricing, compliance, and retention that must hold across a subtree) and Architecture Decision Records (ADRs) — must be co-located with the specs they apply to.
 
 ### Guideline: Leverage
 
 > Expose the maximum leverage decisions, let the agent handle the rest.
 
-Any operational system must expose the highest leverage decisions to a human — either ex ante or ex post — and use the industriousness of agents to update all dependent decisions when you change them.
+Any operational system must expose the highest leverage decisions to a human — either ex ante or ex post — and use the industriousness of agents to update all dependent decisions when you change them. The structure must separate what the product should do (spec) from whether it does it (tests + lock file).
 
-**Design implication:** *The structure must separate what the product should do (spec) from whether it does it (tests + lock file).*
+These guidelines are design constraints, not abstractions. Together they point toward a specific kind of artifact: a maintained system of record that captures both what a team decided and why — where the spec is not a planning document that rots after sprint one, but the product's source of truth.
 
-These guidelines are design constraints. What if the durable artifact in ABC were the spec itself — not a one-off planning document, but a maintained system of record that captures both what a team decided and why? Define enduring outcomes at higher levels, evolving outputs at lower levels, make tacit knowledge explicit as decision records — and derive remaining work as failing tests. This would be unacceptable overhead for humans. But agents are tireless and precise — they can maintain this structure as a side effect of doing the work.
+What would such a system look like? Define enduring outcomes at higher levels, evolving outputs at lower levels. Make tacit knowledge explicit as decision records. Derive remaining work not from a task list, but from assertions not yet validated.
+
+The overhead would be unacceptable for humans. But agents are cheap to rerun and good at mechanical bookkeeping — they can maintain this structure as a side effect of doing the work.
+
+I had to discard a core assumption to arrive at this: specs are not for planning. The spec is the product's source of truth — what the product should do, expressed as testable assertions. With this inversion, my conversation with agents shifts from directing implementation to maintaining what the product should do. The agent detects what code needs to change by running the tests; how it addresses the gap is driven by skills. If the gap is large, agents make plans, adjust them, and discard them after execution. The plan is disposable because the spec is durable.
 
 ## The Spec Tree
 
-The **Spec Tree** is a git-native product structure built on these constraints. It is both unnecessary and unmaintainable without AI agents — and that is the point. Every node co-locates a spec, its tests, and a lock file that binds them — tracking not just what changed, but what's been validated and whether that validation is still current. Remaining work is not a list of tasks to complete. It is the set of assertions not yet satisfied, not yet stored in a lock file, or no longer current — progress measured by assertions validated, not tickets closed.
+The **Spec Tree** is a git-native product structure built on these constraints. Every node co-locates a spec, its tests, and a lock file that binds them — tracking not just what changed, but what has been validated and whether that validation is still current. Remaining work is the set of assertions not yet satisfied or no longer current — progress measured by assertions validated, not tickets closed.
 
-Consider this example of a Spec Tree:
+### Building the tree
+
+Start with the product outcome hypothesis:
 
 ```text
 spx/
-  billing.product.md              # Product outcome hypothesis
-  10-auth.enabler/                # Enabler: authentication serves all outcome nodes
-    auth.md                       # Spec: starts with ## Enables
-    spx-lock.yaml
-    tests/
-  10-tax-compliance.pdr.md        # Product constraint as enduring deterministic context
-  20-invoicing.outcome/           # Outcome node: customer-facing capability
-    invoicing.md                  # Spec: starts with ## Outcome
-    15-rounding-rules.adr.md      # Node-specific constraint: rounding policy
-    spx-lock.yaml                 # Per-node lock file binding spec to test results
-    tests/                        # Tests that verify the functional assertions of the spec
-    20-line-items.outcome/        # Nested outcome node
-      line-items.md
-      spx-lock.yaml
-      tests/
-    20-aggregate-statistics.enabler/  # Enabler: exists to serve sibling outcomes
-      aggregate-statistics.md     # Spec: starts with ## Enables
-      spx-lock.yaml
-      tests/
-    37-usage-breakdown.outcome/
-  37-cancellation.outcome/
-    cancellation.md
-  54-annual-billing.outcome/
+└── product.product.md
 ```
 
-### Outcome nodes and enabler nodes
+`product.product.md` captures why this product should exist and what change in user behavior it aims to achieve.
 
-Directories carry a type suffix: `.outcome` for customer-facing capabilities, `.enabler` for nodes that exist to serve other nodes. An outcome node answers "what should the product do?"; an enabler node answers "what does this subtree need in order to work?" If all its dependent outcomes were removed, the enabler would go with them. `20-aggregate-statistics.enabler/` exists to serve `20-line-items.outcome/` and `37-usage-breakdown.outcome/`; it has no independent reason to exist. The spec file inside reflects this: outcome specs start with `## Outcome`, enabler specs with `## Enables`.
-
-### Co-located decision records for product (PDR) and architecture (ADR) decisions
-
-The tree interleaves decision records (ADRs/PDRs) as siblings of the specs they constrain. A decision is not a separate artifact filed elsewhere; it is a sibling constraint to the code it governs. When an agent works on `20-invoicing.outcome/`, it cannot miss `10-tax-compliance.pdr.md` sitting right next to the spec.
-
-### Fractional indexing
-
-Numeric prefixes use gaps (10, 15, 20, 37, 54) so new nodes can be inserted between existing ones without renumbering — the same [fractional indexing](https://www.figma.com/blog/realtime-editing-of-ordered-sequences/) scheme Figma uses for layer ordering.
-
-Why gaps matter: suppose you start with sequential numbering and later discover that invoicing needs a tax compliance constraint first. With sequential numbers, you renumber everything. With gaps, you insert:
+Add the first customer-facing capability as an **outcome node** — a directory with the `.outcome` suffix:
 
 ```text
-10-tax-compliance.pdr.md        # Inserted before existing nodes
-20-invoicing.outcome/           # Unchanged
-37-cancellation.outcome/        # Unchanged
+spx/
+├── product.product.md
+└── 37-users.outcome/
+    └── users.md
 ```
 
-Nodes with the same prefix are independent — they all depend on what comes before them, but not on each other. `20-line-items.outcome/` and `20-aggregate-statistics.enabler/` can be completed in any order. This makes parallel work visible in the directory listing.
+An outcome node answers "what should the product do?" The spec file inside is `{slug}.md` — no type suffix, no numeric prefix.
 
-## Outcome hypotheses shape the tree structure
+As the tree deepens, decisions crystallize. An authentication strategy needs to be settled before implementing login. The decision record lives right next to the code it constrains:
 
-The Spec Tree captures three layers:
+```text
+spx/
+├── product.product.md
+└── 37-users.outcome/
+    ├── users.md
+    ├── 21-auth-strategy.adr.md
+    └── 22-login.outcome/
+        ├── login.md
+        ├── 21-password-hashing.adr.md
+        ├── spx-lock.yaml
+        ├── tests/
+        ├── 22-hash-password.outcome/
+        │   ├── hash-password.md
+        │   ├── spx-lock.yaml
+        │   └── tests/
+        └── 22-verify-password.outcome/
+            ├── verify-password.md
+            └── tests/
+```
 
-### 1. Outcome hypotheses indicate the value of implementing a subtree
+Numeric prefixes use gaps (10, 21, 22, 37) so new nodes can be inserted between existing ones without renumbering — the same [fractional indexing](https://www.figma.com/blog/realtime-editing-of-ordered-sequences/) scheme Figma uses for layer ordering. `22-hash-password.outcome/` and `22-verify-password.outcome/` share a prefix because they are independent — they can be completed in any order.
 
-**Outcome hypotheses** from discovery crystallize as the tree's structure — which capabilities exist, how they decompose. The tree evolves slowly and deliberately, constrained by the reality of what the product already is. Adding a capability or deprecating an existing one is a high-cost structural change that forces product people and engineers to reason together about the product surface.
+The product grows. A data retention policy applies across the entire product. A test harness serves all outcome nodes. Billing is a parallel capability, independent of users:
 
-### 2. Output assertions create remaining work
+```text
+spx/
+├── product.product.md
+├── 10-data-retention.pdr.md
+├── 21-test-harness.enabler/
+│   ├── test-harness.md
+│   ├── spx-lock.yaml
+│   └── tests/
+├── 37-users.outcome/
+│   ├── users.md
+│   ├── 21-auth-strategy.adr.md
+│   ├── 22-login.outcome/
+│   │   ├── login.md
+│   │   ├── 21-password-hashing.adr.md
+│   │   ├── spx-lock.yaml
+│   │   ├── tests/
+│   │   ├── 22-hash-password.outcome/
+│   │   │   ├── hash-password.md
+│   │   │   ├── spx-lock.yaml
+│   │   │   └── tests/
+│   │   └── 22-verify-password.outcome/
+│   │       ├── verify-password.md
+│   │       └── tests/
+│   └── 37-profile.outcome/
+│       └── profile.md
+├── 37-billing.outcome/
+│   └── billing.md
+└── 54-linter.enabler/
+    └── linter.md
+```
 
-What the product should be and how it should behave lives inside each node as testable assertions. Each assertion must make clear how sufficient evidence can be gathered by local tests. Writing a spec creates remaining work: every assertion without a passing test is a gap between what is defined and what is proven, waiting to be closed.
+**Enabler nodes** (`.enabler` suffix) exist to serve other nodes. `21-test-harness.enabler/` at the root level serves all outcome nodes in the product; if the product were retired, the test harness would go with it. Position in the tree implies scope: a root-level enabler serves all outcomes; a nested enabler serves only its siblings within the same subtree. Enabler specs start with `## Enables`; outcome specs with `## Outcome`.
 
-### 3. The lock file closes the loop
+When a behavior spans multiple nodes — "cancelling a subscription voids pending invoices" touches both cancellation and billing — the assertion lives in the lowest common ancestor. The ancestor's spec captures cross-cutting behaviors; child nodes handle their local concerns.
 
-Tests close the gap. `spx-lock.yaml` records the closure. Like a package lock file, it is generated (by `spx lock`), deterministic, and committed to the repo.
+## What a node looks like
 
-To make drift mechanically visible, the lock file directly references Git's internal object model: `blob` hashes for file contents and `tree` hashes for directory contents.
-
-### What a node looks like inside
-
-The spec at `20-invoicing.outcome/invoicing.md`:
+The spec at `22-login.outcome/login.md`:
 
 ```markdown
 ## Outcome
 
-We believe showing itemized charges will reduce billing support tickets.
+Users can log in with their email and password.
+
+### Depends on
+
+- ../../21-test-harness.enabler/
 
 ### Assertions
 
-- GIVEN a multi-service invoice WHEN the user opens it THEN each charge shows service name, quantity, and unit price
-- GIVEN a charge with tax WHEN tax compliance is enabled THEN the tax amount and rate appear on a separate line
-- GIVEN an empty invoice WHEN the user opens it THEN a message explains that no charges exist for the period
+- Valid credentials return a session token ([test](tests/login.unit.test.ts))
+- Invalid credentials fail with a clear error message ([test](tests/login.unit.test.ts))
+- Expired session tokens require re-authentication ([test](tests/login.integration.test.ts))
 ```
 
-The lock file at `20-invoicing.outcome/spx-lock.yaml`:
+Every assertion links to the test file meant to prove it. The invariant: every assertion must be covered by at least one test file. Agents must not change spec or tests without re-locking; while a lock file is stale, neither the spec being in sync with the tests nor the tests passing should be assumed.
+
+`### Depends on` declares which nodes this spec depends on. Fractional indexing orders nodes for human scanning and decision scoping — decisions at lower indices constrain everything above them — but spec-to-spec dependencies are declared, not inferred from position.
+
+The lock file at `22-login.outcome/spx-lock.yaml`:
 
 ```yaml
+schema: spx-lock/v1
 blob: f4a1b2c
 tests:
-  - path: tests/invoicing.unit.test.ts
+  - path: tests/login.unit.test.ts
     blob: 8c3d2e1
-  - path: tests/invoicing.integration.test.ts
+  - path: tests/login.integration.test.ts
     blob: 2a7f9b4
-descendants:
-  - path: 20-line-items.outcome/
-    tree: a3f2b7c
-  - path: 20-aggregate-statistics.enabler/
-    tree: 9bc4e1d
-  - path: 37-usage-breakdown.outcome/
-    tree: e7d1f42
 ```
 
-Every `blob` field is a Git blob hash — the same content-addressable hash Git computes for file contents. Every `tree` field is a Git tree hash — the hash Git computes for directory contents. `spx lock` computes these before commit; when Git stores the files, the hashes must match.
+Every `blob` is a Git blob hash — the same content-addressable hash Git computes for file contents. `spx lock` writes the lock file only when all tests pass — the lock is a seal of trust, not a record of results.
 
-Remember the failure mode from earlier — a spec changes, tests still pass for the old behavior? Here is exactly how the lock file catches it: edit `invoicing.md` and its Git blob hash changes. The `blob` in the lock file no longer matches. The node is stale. The same applies to test files: change a test and its `blob` breaks. For descendants, if any file inside `20-line-items.outcome/` is modified, Git computes a new tree hash for that directory. The parent's `tree` hash no longer matches. Staleness propagates upward through Git's native data model; validation propagates downward through `spx lock`.
+Edit `login.md` and its Git blob hash changes. The `blob` in the lock file no longer matches. The node is stale — visibly, before anyone runs a test. Change a test file and its `blob` breaks the same way. `spx verify` compares hashes without running tests; `spx lock` runs tests and regenerates the seal.
 
-Because the lock file contains only hashes — no timestamps — `spx lock` is reentrant: running it twice on the same state produces the same file. Two agents working on the same node with the same state produce identical lock files.
+Because the lock file contains only hashes — no timestamps — `spx lock` is reentrant: running it twice on the same state produces the same file. Two agents working on the same node with the same state produce identical lock files. After a branch merge, `spx lock` regenerates lock files the same way `npm install` regenerates a package lock.
+
+Each node's lock file tracks only its own spec and tests. Subtree validity is checked by walking the tree: `spx verify --tree` examines each descendant independently. A leaf change does not invalidate the root.
 
 ## Deterministic context injection
 
-In most agentic workflows, context is assembled heuristically — search, embeddings, tool-use defaults. The selection is hard to review and unstable as the repo grows. The Spec Tree enables deterministic context injection: the `spx` CLI walks the tree from the product level down to the target node and injects exactly two types of files:
+In most agentic workflows, context is assembled heuristically — search, embeddings, tool-use defaults. The selection is hard to review and unstable as the repo grows. The Spec Tree enables deterministic context injection: the `spx` CLI walks the tree from the product level down to the target node and applies two rules:
 
-1. **Decision records** (ADRs/PDRs) at higher levels and lower indices — tacit knowledge made explicit.
-2. **Specs** (`.outcome`/`.enabler`) at higher levels and lower indices — the context the node exists within.
+1. **Decision records** (ADRs/PDRs) at ancestor levels and lower indices are injected — tacit knowledge made explicit.
+2. **Declared dependencies** — specs that the target node references via `### Depends on` — are injected.
 
-Test harnesses are purposefully excluded; the test strategy is already defined within the specs. If an agent is assigned to work on `30-discounts.outcome`, deterministic context injection provides the following:
+Ancestor specs along the path are always included. Test files are excluded; the test strategy is defined within the specs.
+
+If an agent is assigned `22-login.outcome`, deterministic context injection provides:
 
 ```text
 spx/
-  05-data-retention.pdr.md               <-- INJECTED (Root-level decision)
-  10-tax-compliance.pdr.md               <-- INJECTED (Root-level decision)
-  20-invoicing.outcome/
-    invoicing.md                         <-- INJECTED (Parent spec)
-    15-rounding-rules.adr.md             <-- INJECTED (Parent decision)
-    20-line-items.outcome/
-      line-items.md                      <-- INJECTED (Lower-index sibling spec)
-      tests/                             -- Ignored
-    30-discounts.outcome/                [TARGET NODE]
-      discounts.md                       <-- INJECTED (Target spec)
-      spx-lock.yaml                      -- Ignored
-      tests/                             -- Ignored
-  50-reporting.outcome/                  -- Ignored (Higher index)
+  product.product.md                   <-- INJECTED (Root spec)
+  10-data-retention.pdr.md             <-- INJECTED (Root decision)
+  21-test-harness.enabler/
+    test-harness.md                    <-- INJECTED (Declared dependency)
+  37-users.outcome/
+    users.md                           <-- INJECTED (Ancestor spec)
+    21-auth-strategy.adr.md            <-- INJECTED (Ancestor decision)
+    22-login.outcome/                  [TARGET NODE]
+      login.md                         <-- INJECTED (Target spec)
+      spx-lock.yaml                    -- Ignored
+      tests/                           -- Ignored
+  37-billing.outcome/                  -- Ignored (Not an ancestor)
+  54-linter.enabler/                   -- Ignored (Not declared)
 ```
 
-The agent sees exactly the context it needs. It doesn't search the codebase for "prior art"; the tree provides the authoritative context deterministically. Because the tree is traversable top-down, an agent can always resume work even if prior changes haven't fully propagated.
+The agent sees exactly the context it declared or inherited. It doesn't search the codebase for "prior art"; the tree provides the authoritative context deterministically. Because the tree is traversable top-down, an agent can always resume work even if prior changes haven't fully propagated.
 
-The lock file also serves as a guardrail: if an agent refactors code but breaks the lock file, it has changed behavior the spec didn't authorize.
+A mismatch between the lock file and the current state of spec or tests does not mean behavior changed — it means the evidence is stale. Tests detect behavioral drift; the lock makes it visible when the evidence needs refreshing.
 
-If the deterministic context payload for a single node exceeds 50,000 tokens, it serves as an architectural warning. If a component requires that much context to be understood, an agent will struggle to operate on it reliably regardless of context window size. The structure forces architectural boundaries.
+If the deterministic context payload for a single node routinely exceeds an agent's reliable working set, the tree is telling you the component is doing too much. The structure forces architectural boundaries: when a node requires too much context, it is a signal to decompose further.
+
+## The operational loop
+
+```text
+$ spx status --tree 37-users.outcome
+37-users.outcome/                  needs work (no lock file)
+  22-login.outcome/                stale
+    login.md changed               (was f4a1b2c, now 91d0a77)
+  22-login.outcome/
+    22-hash-password.outcome/      valid
+    22-verify-password.outcome/    needs work (no lock file)
+  37-profile.outcome/              needs work (no lock file)
+
+$ spx lock 22-login.outcome
+Running tests...
+  tests/login.unit.test.ts         2 passed
+  tests/login.integration.test.ts  1 passed
+Lock regenerated: 22-login.outcome/spx-lock.yaml
+
+$ spx verify --tree 37-users.outcome
+37-users.outcome/                  needs work
+  22-login.outcome/                valid
+    22-hash-password.outcome/      valid
+    22-verify-password.outcome/    needs work
+  37-profile.outcome/              needs work
+```
+
+`spx verify` is cheap — it compares hashes without running tests. `spx lock` is authoritative — it runs tests and regenerates the seal. `spx verify --lock` does both: verify first, and if stale, lock. This last form is designed for pre-commit hooks; in CI, `spx lock` must produce zero changes.
 
 ## What's actually new here
 
-ADRs, specs, and tests are not new. Monorepo conventions and co-location are not new. What the Spec Tree adds:
+ADRs, specs, and tests are not new. Monorepo conventions and co-location are not new. The Spec Tree combines two independently valuable mechanisms in a single structure:
 
-- **Spec assertions as first-class, test-addressable objects.** Each assertion in a spec has a corresponding test. Progress is measured by assertions validated, not tasks completed.
-- **A lock file with invalidation semantics.** The lock file binds spec content to test results via Git blob and tree hashes. When either side changes, the hash no longer matches and the binding breaks visibly. This is the mechanism that makes drift detectable rather than silent.
-- **Deterministic context assembly from tree structure.** The path from root to node defines exactly what context an agent receives. No search, no heuristics, no embeddings — just the tree.
+**Drift detection via lock file.** Git blob hashes bind spec content to test evidence. When either side changes, the hash breaks and the node is visibly stale — before anyone runs a test. This works regardless of how context is assembled.
 
-The assumption I had to discard to arrive at this was that specs are for planning. They are not. The spec is the product's source of truth — what the product should do, expressed as testable assertions. With this inversion, my conversation with agents shifts from directing implementation to maintaining what the product should do. The agent detects what code needs to change by running the tests; how it addresses the gap is driven by skills. If the gap is large, agents make plans, adjust them, and discard them after execution. The plan is disposable because the spec is durable.
+**Deterministic context from tree structure.** The path from root to node, combined with explicit dependency declarations, defines what context an agent receives. Decisions scope by index; spec dependencies by declaration. This works regardless of whether a lock file exists.
 
-## What this does and does not guarantee
+Each stands on its own. Together they close the loop: the lock file shows *whether* the spec is validated; the tree controls *what context* an agent uses to do the validation. Both are maintained by agents as a side effect of doing the work.
 
-The Spec Tree can prove that the implemented system matches the assertions someone chose to write and test. It cannot prove that those assertions are the right ones, or that shipping them changes user behavior. That requires discovery and instrumentation — concerns outside the repo. What the Spec Tree closes is the loop *inside* the repo: the gap between what the spec currently says and what the tests currently validate. For agentic development, closing this loop is the prerequisite for everything else.
+The Spec Tree can prove that the implemented system matches the assertions someone chose to write and test. It cannot prove that those assertions are the right ones — that requires discovery and instrumentation outside the repo. What it closes is the loop *inside* the repo: the gap between what the spec currently says and what the tests currently validate. For agentic development, closing this loop is the prerequisite for everything else.
 
 ## What's next
 
-This post introduced the Spec Tree as a structure — one that can always be reconstructed lossily from the product level down. The next posts in this series will cover the agent skills that make the structure operational — how agents maintain, review, and remediate code within the constraints the tree defines — and how the methodology extends beyond the repo to connect spec-level assertions to product-level outcomes.
+This post introduced the Spec Tree as a structure — one that encodes what the product should do (specs with assertions) and what has been validated (lock files with blob hashes). The tree can always be reconstructed from the product level down because the structure is the specification; what is lost in reconstruction is the validation state, which `spx lock` regenerates by running tests.
+
+The next posts in this series will cover the agent skills that make the structure operational — how agents maintain, review, and remediate code within the constraints the tree defines — and how the methodology extends beyond the repo to connect spec-level assertions to product-level outcomes.
