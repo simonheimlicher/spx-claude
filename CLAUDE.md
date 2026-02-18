@@ -821,3 +821,7 @@ spx-claude/
 - Most changes = PATCH version bump
 - New items or major changes = MINOR version bump
 - Major version stays at 0.x.x unless user requests otherwise
+
+## How to commit
+
+Always invoke the skill `/committing-changes` and adhere to its git commit message guidance.
