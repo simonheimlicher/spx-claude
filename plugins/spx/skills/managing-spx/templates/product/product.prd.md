@@ -33,9 +33,9 @@ A PRD is ready for implementation when all sections below contain complete infor
 
 This PRD follows the three-level testing methodology for acceptance validation:
 
-- **Level 1 (Unit)**: Component logic with dependency injection. No external systems.
-- **Level 2 (Integration)**: Real infrastructure via test harnesses. No mocking.
-- **Level 3 (E2E)**: Real credentials and services. Full user workflows validating measurable outcome.
+- **Level 1**: Component logic with dependency injection. No external systems.
+- **Level 2**: Real infrastructure via test harnesses. No mocking.
+- **Level 3**: Real credentials and services. Full user workflows validating measurable outcome.
 
 **Build confidence bottom-up**: Level 1 → Level 2 → Level 3.
 

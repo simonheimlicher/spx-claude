@@ -52,17 +52,17 @@ Invoke with **FULL work item path**:
 
 ```bash
 # ALWAYS use full path (REQUIRED)
-/understanding-specs 10-cli.capability/20-commands.feature/30-build.story
+/understanding-spx 10-cli.capability/20-commands.feature/30-build.story
 ```
 
 **🚨 NEVER use bare story/feature numbers** - BSP numbers are sibling-unique, not globally unique:
 
 ```bash
 # ❌ WRONG: Ambiguous - which story-30?
-/understanding-specs 30-build.story
+/understanding-spx 30-build.story
 
 # ✅ CORRECT: Unambiguous full path
-/understanding-specs 10-cli.capability/20-commands.feature/30-build.story
+/understanding-spx 10-cli.capability/20-commands.feature/30-build.story
 ```
 
 The skill will:

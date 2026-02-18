@@ -26,9 +26,9 @@ Use this path to access skill files:
 
 **Three-level testing methodology:**
 
-- **Level 1 (Unit)**: Pure logic, dependency injection, no external systems
-- **Level 2 (Integration)**: Real infrastructure via documented test harnesses
-- **Level 3 (E2E)**: Real credentials and services, full user workflows
+- **Level 1**: Pure logic, dependency injection, no external systems
+- **Level 2**: Real infrastructure via documented test harnesses
+- **Level 3**: Real credentials and services, full user workflows
 
 **Questioning principles:**
 
