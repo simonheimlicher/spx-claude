@@ -65,7 +65,7 @@ I had to discard a core assumption to arrive at this: specs are not for planning
 
 ## The Spec Tree
 
-The **Spec Tree** is a git-native product structure, managed by the `spx` CLI, built on these constraints. Every node co-locates a spec, its tests, and a lock file that binds them — tracking not just what changed, but what has been validated and whether that validation is still current. Remaining work is the set of assertions not yet satisfied or no longer current — progress measured by assertions validated, not tickets closed.
+The **Spec Tree** is a git-native product structure, managed by the `spx` CLI, built on these constraints. Git-native is deliberate: blob hashes, co-location, and deterministic context all depend on file content being in the repo. Agents are increasingly optimized for finding and editing local files; how well they navigate an organization's third-party knowledge base is not something I would bet on. Every node co-locates a spec, its tests, and a lock file that binds them — tracking not just what changed, but what has been validated and whether that validation is still current. Remaining work is the set of assertions not yet satisfied or no longer current — progress measured by assertions validated, not tickets closed.
 
 ### Building the tree
 
@@ -78,7 +78,7 @@ spx/
 
 `spx-cli.product.md` captures why this product should exist and what change in user behavior it aims to achieve. The filename convention is `{product-name}.product.md`.
 
-Decisions crystallize before implementation begins. A PDR (Product Decision Record) establishes a product constraint; ADRs (Architecture Decision Records) capture technical choices. Enablers provide infrastructure that higher-index nodes depend on:
+Decisions crystallize before implementation begins. A PDR (Product Decision Record) establishes a product constraint; ADRs (Architecture Decision Records) capture technical choices. The human makes the decision; agents create the record and propagate changes through dependent nodes. Enablers provide infrastructure that higher-index nodes depend on:
 
 ```text
 spx/
@@ -163,7 +163,7 @@ spx/
 
 **Enabler nodes** (`.enabler` suffix) exist to serve other nodes — infrastructure that would be removed if all its dependents were retired. **Outcome nodes** (`.outcome` suffix) each express one hypothesis and the testable assertions that define its output. Position in the tree implies scope: `21-test-harness.enabler/` at the root level serves all nodes in the product; `21-parent-child-links.enabler/` nested inside `54-spx-tree-interpretation.outcome/` serves only its sibling nodes and their descendants. The spec file inside each node is `{slug}.md` — no type suffix, no numeric prefix. Enabler specs start with `## Enables`; outcome specs with `## Outcome`.
 
-When a behavior spans multiple nodes, the assertion lives in the lowest common ancestor. The ancestor's spec captures cross-cutting behaviors; child nodes handle their local concerns.
+When a behavior spans multiple nodes, the assertion lives in the lowest common ancestor. The ancestor's spec captures cross-cutting behaviors; child nodes handle their local concerns. If an ancestor accumulates too many cross-cutting assertions, that is a signal to extract a shared enabler at a lower index.
 
 Adding a new outcome — say, formatting `spx` output as JSON or as a table — means inserting a child node under `76-cli-integration.outcome/`:
 
@@ -178,7 +178,7 @@ Adding a new outcome — say, formatting `spx` output as JSON or as a table — 
     └── cli-integration.integration.test.ts
 ```
 
-No sibling at the root level is affected. Growth is bounded: a new node touches only its parent and ancestors, never its siblings.
+No sibling at the root level is affected. Growth is bounded: a new node touches only its parent and ancestors, never its siblings. The tree need not be right from the start — fractional indexing absorbs insertions without renumbering, and because each lock file tracks only its own spec and tests, restructuring a subtree does not invalidate sibling nodes.
 
 ## What a node looks like
 
@@ -210,7 +210,7 @@ tests:
     blob: 9d4e5f2
 ```
 
-Every `blob` is a Git blob hash — the same content-addressable hash Git computes for file contents. The lock file is written only when all tests pass — it records that the spec and its tests were in agreement at the time of writing, not that they still are.
+Every `blob` is a Git blob hash — the same content-addressable hash Git computes for file contents. Because blob hashes track content, not paths, renaming a file does not invalidate its hash — update the path in the lock file and the blob still matches. The lock file is written only when all tests pass — it records that the spec and its tests were in agreement at the time of writing, not that they still are.
 
 Edit `status-rollup.md` and its Git blob hash changes. The `blob` in the lock file no longer matches. The node is stale — visibly, before anyone runs a test. Change a test file and its `blob` breaks the same way.
 
@@ -254,7 +254,7 @@ A mismatch between the lock file and the current state of spec or tests does not
 
 If the deterministic context payload for a single node routinely exceeds an agent's reliable working set, the tree is telling you the component is doing too much. The structure forces architectural boundaries: when a node requires too much context, it is a signal to decompose further.
 
-The tree is designed for tree filesystem browsers — VS Code, Neovim (neo-tree, nvim-tree), JetBrains IDEs. When navigating to a node, a human opens the ancestor chain — the same bounded context that deterministic injection provides to the agent. ADRs and PDRs sit as files in each directory, discoverable without opening any subdirectory. Sibling nodes are visible but need not be opened.
+The tree is designed for tree filesystem browsers — VS Code, Neovim (neo-tree, nvim-tree), JetBrains IDEs. When navigating to a node, a human opens the ancestor chain — the same deterministic context that injection provides to the agent. ADRs and PDRs sit as files in each directory, discoverable without opening any subdirectory. Sibling nodes are visible but need not be opened.
 
 ## The operational loop
 
@@ -299,10 +299,10 @@ Each stands on its own. Together they close the loop: the lock file shows *wheth
 
 Both mechanisms accept explicit trade-offs. Markdown links between assertions and test files are automatically validatable — the lock file detects when either has changed without the other. Deterministic context injection provides what we would ask a human to read before working on a node, not what is guaranteed to be both sufficient and minimal. The agent is made aware of what exists; it is not prevented from exploring further. This is a more targeted version of constitutions and steering documents — tailored to each node the agent accesses, not applied globally.
 
-The Spec Tree makes the state of the product readable — which assertions hold, which are stale, which have no evidence yet — and ensures every agent works from the same deterministic context. The next posts will address how agents maintain this structure and how assertion-level validation connects to product-level outcomes.
+The Spec Tree makes the state of the product readable — which assertions hold, which are stale, which have no evidence yet — and ensures every agent works from the same deterministic context.
 
 ## What's next
 
 This post introduced the Spec Tree as a structure — one that encodes what users should be able to do (specs with assertions) and what has been validated (lock files with blob hashes). The tree can always be reconstructed from the product level down because the structure is the specification; what is lost in reconstruction is the validation state, which `spx lock` regenerates by running tests.
 
-The next posts in this series will cover the agent skills that make the structure operational — how agents maintain, review, and remediate code within the constraints the tree defines — and how the methodology extends beyond the repo to connect spec-level assertions to product-level outcomes.
+The next posts will cover the agent skills that make this structure operational — how agents maintain, review, and remediate code within the constraints the tree defines — and how the methodology extends beyond the repo to connect assertion-level validation to product-level outcomes.
