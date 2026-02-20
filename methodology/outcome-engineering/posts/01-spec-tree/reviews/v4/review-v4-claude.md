@@ -1,0 +1,51 @@
+This is close to publishable. The incremental tree-building is a major pedagogical improvement — it transforms the Spec Tree from an abstract structure into something the reader watches grow. The operational loop section with `spx status/lock/verify` gives the reader their first concrete taste of what *using* this feels like. The lock file simplification (no more descendants/tree hashes, each node tracks only itself) is both cleaner and more defensible. And moving "the plan is disposable because the spec is durable" earlier was the right call.
+
+The remaining issues are fewer and more surgical.
+
+---
+
+## 1. Naming, positioning, wording, examples, and conceptual rigor
+
+**The subtitle "A Spec-as-Source Methodology for Human—Agent Collaboration" front-loads jargon the reader hasn't encountered yet.** "Spec-as-Source" references Böckeler's taxonomy, which doesn't appear until paragraph four. A reader who hasn't read that taxonomy will parse this as generic buzzwords. Either move the Böckeler reference into the opening or use a subtitle that stands on its own. Something that communicates the actual thesis — specs as durable source of truth, progress measured by validated assertions — would serve better than a taxonomy label.
+
+Also: the em dash between "Human" and "Agent" is typographically nonstandard. If you mean a collaborative relationship, an en dash (Human–Agent) or slash (Human/Agent) is more conventional. An em dash reads as an interruption.
+
+**The dependency model has a tension you should resolve explicitly.** You write: "decisions at lower indices constrain everything above them — but spec-to-spec dependencies are declared, not inferred from position." This means the same numeric prefix system has two different semantics depending on node type: for decision records, position implies scope; for specs, it doesn't. That's workable but potentially confusing. One clarifying sentence would help — something like "Index ordering governs *constraint scope* (which decisions apply); `### Depends on` governs *implementation dependency* (which specs must be satisfied first)."
+
+**The `### Depends on` syntax introduces a question about circular dependencies.** If node A depends on node B and node B depends on node A, what happens? If the tree structure prevents this by construction (ancestors can't depend on descendants), say so. If it's possible between siblings, say how `spx` handles it. This is the kind of edge case that signals whether the system is thought through.
+
+**`spx verify --lock` is a confusing name.** "Verify, and if stale, lock" is two distinct operations behind one flag. A reader (or user) would reasonably expect `--lock` to mean "only check the lock file" or "require a lock file to exist." Consider `spx verify --fix` or `spx verify --update` — something that signals the write behavior. Minor, but CLI naming compounds over time.
+
+**"spx lock writes the lock file only when all tests pass — the lock is a seal of trust, not a record of results."** This is the right design, but you don't say what happens when tests *fail*. Does `spx lock` exit with an error and leave the old lock file in place? Does it delete the lock file to mark the node as explicitly broken? The failure mode matters as much as the success mode, and for a methodology post, showing that you've thought about failures is more credible than only showing the happy path.
+
+**The spec example uses plain-English assertions with test links, which is much better than GIVEN/WHEN/THEN.** But the assertion format raises a new question: how does `spx` parse these? Is the invariant "every assertion must link to at least one test file" enforced syntactically (by parsing the Markdown links) or by convention? If syntactically, that's worth noting — it means `spx` has opinions about Markdown structure. If by convention, it means agents can silently violate it.
+
+**The incremental tree-building section is the best part of the post but it's long.** Three snapshots of the growing tree, plus explanatory paragraphs between each, pushes this section past the point where a reader can hold the full structure in their head. Consider whether the second snapshot (adding auth-strategy and login) could be cut, going directly from "one outcome node" to "full product." The auth example is already shown in detail in the "What a node looks like" section, so it appears twice.
+
+**"If the deterministic context payload for a single node routinely exceeds an agent's reliable working set, the tree is telling you the component is doing too much."** — This is better positioned than in v3 but "routinely exceeds an agent's reliable working set" is vague. The previous version's "50,000 tokens" was concrete. You don't have to commit to a specific number in the methodology, but a concrete example — "if injecting context for a single node fills half a 200k context window, that's a signal" — gives the reader something to calibrate against.
+
+---
+
+## 2. Strongest counterarguments
+
+**"This only works for greenfield projects."** The post now builds the tree incrementally, which implies starting from scratch. But most teams have an existing codebase. How do you retrofit a Spec Tree onto a product that already has 200 files of undocumented behavior? If the answer is "you don't — you grow the tree from the current product level down, and existing code without specs is treated as unvalidated," say that. If bootstrapping is covered in a later post, forward-reference it. Right now, the reader who has a real codebase has no path into the methodology.
+
+**"Assertions coupled to specific test files are fragile."** The spec links each assertion to a test file path. Rename the test file, move it, split it — and the spec breaks. This is a deliberate coupling (it's the whole point of traceability), but the reader will wonder about the maintenance cost. How does `spx` handle test file renames? Does it update the spec automatically, or does the spec go stale? A sentence acknowledging this trade-off — explicit coupling over implicit inference, at the cost of keeping links current — would show you've weighed it.
+
+**"You haven't shown that agents can actually maintain this."** The post makes a strong claim: "agents can maintain this structure as a side effect of doing the work." But you never show an agent doing it. The operational loop shows `spx` commands, which a human or a CI pipeline runs. Where does the agent enter? Does the agent run `spx lock` after modifying code? Does it update the spec when it changes behavior? A concrete example — even a two-line pseudocode interaction — of an agent's workflow within the Spec Tree would make the claim tangible rather than promissory.
+
+**The merge conflict concern is now partially addressed** ("After a branch merge, `spx lock` regenerates lock files the same way `npm install` regenerates a package lock"). But the analogy actually highlights the problem: `npm install` after a merge is notoriously painful and often produces unexpected results. If `spx lock` truly produces deterministic output from the same state, the merge story is actually *better* than npm's — say so more confidently. "Unlike package lock files, `spx-lock.yaml` is fully deterministic: discard both sides and regenerate. The merge strategy is always 'ours, then relock.'"
+
+---
+
+## 3. Top 5 suggestions on writing style
+
+1. **The post is now too long for a Part 1.** You've added the incremental tree-building, the operational loop, and expanded the DCI section — all good additions individually, but the total word count has grown substantially. A Part 1 should leave the reader wanting more, not exhausted. Consider whether the operational loop section (`spx status`, `spx lock`, `spx verify`) could move to Part 2 alongside agent skills, since it's really about *using* the tree rather than *understanding* it. This would also give Part 2 a stronger opening.
+
+2. **The guidelines section is less formulaic now, but "ABC — Always Be Converging" still sticks out.** You've integrated the design implications inline (good), but the mnemonic remains. In v1 I suggested dropping it; by v4, it's the last remaining piece of branding-over-substance. The guideline's content is strong enough to not need a catchy acronym. "Always Be Converging" also carries the Glengarry Glen Ross baggage I mentioned in round one, which will read as either try-hard or dated depending on the reader. Consider just calling it "Convergence" to match the naming pattern of the other two ("Determinism," "Leverage").
+
+3. **You've developed a strong closing cadence — use it once, not three times.** "The plan is disposable because the spec is durable," "the lock is a seal of trust, not a record of results," and "progress measured by assertions validated, not tickets closed" are all excellent aphoristic lines. But stacking three of these across the post creates a rhythm that reads as rehearsed. Pick the one that carries the most weight (I'd argue it's the first), give it the most prominent position, and let the others land more quietly — embedded in explanatory paragraphs rather than set up as punchlines.
+
+4. **The two bullet-point lists (artifacts vs. assumptions, and "What's actually new") work well.** But check that you're not using bullets elsewhere where prose would be stronger. The DCI injection rules ("1. Decision records… 2. Declared dependencies…") could be a single sentence: "The CLI injects decision records from ancestor levels and specs declared as dependencies." Numbered lists imply a sequence or priority that doesn't exist here.
+
+5. **Your strongest writing is in the transitions you're not explicitly marking.** "Drift is the default" at the end of paragraph two. "The failure mode is predictable" at the end of "The Broken Loop." These land because they're earned by the preceding argument, not announced. By contrast, "These are not new problems — agents just make them acute" is an explicit signpost that tells the reader what to think rather than letting them arrive there. Trust the structure more. If the opening two paragraphs about tacit knowledge lead naturally into the literature review, the reader will make the connection. If they don't, the signpost won't save it.
