@@ -1,3 +1,26 @@
+I have developed a spec-anchored development framework that is part of a more comprehensive methodology named "Outcome Engineering".
+
+As a first step, I want to publish a blog post on my public website, simon.heimlicher.com.
+
+Here is v6. This version has been through five review rounds (ChatGPT, Claude, Gemini each round). Major changes since v5:
+
+- Opening restructured around three named failure modes: value drift, heuristic context, spec-test drift
+- Title expanded: "Making Value Explicit, Spec–Test Drift Visible, and Agent Context Deterministic"
+- Outcome hypothesis introduced before the guidelines (not buried in a bridge paragraph)
+- Inversion ("specs are not for planning") moved earlier for stronger positioning
+- "What's actually new" expanded to three mechanisms mapping to the three failure modes
+- Preempted counterarguments: git-native rationale, ADR agent maintenance, tree evolution, cross-cutting enablers
+- Command explanations reformatted as scannable list
+- Closing sections merged to eliminate redundant Part 2 forward pointer
+
+Critically review this draft of part 1 of a series of posts about the Outcome Engineering Methodology I am developing.
+
+1. What would you change in terms of naming, positioning, wording, examples and the underlying rigorous concepts before making it public?
+2. What would be the strongest concerns and counter arguments and how would you adjust the post to avoid them?
+3. What are your top 5 suggestions to improve the writing style to sound more like me rather than LLM-generated slop?
+
+---
+
 # The Spec Tree: Making Value Explicit, Spec–Test Drift Visible, and Agent Context Deterministic
 
 "How things are done around here" is culture — constraints earned over the lifetime of a team, rarely written down because humans reconstruct them from proximity, conversation, and memory.
