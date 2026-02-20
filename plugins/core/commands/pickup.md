@@ -2,7 +2,14 @@
 name: pickup
 description: Load a handoff document to continue previous work
 argument-hint: [--list]
-allowed-tools: Read, Bash(spx:*), Bash(git:*), AskUserQuestion
+allowed-tools:
+  - Read
+  - Glob
+  - Bash(mv:*)
+  - Bash(mkdir:*)
+  - Bash(find:*)
+  - Bash(git:*)
+  - AskUserQuestion
 ---
 
 ## Current Context
@@ -11,30 +18,50 @@ allowed-tools: Read, Bash(spx:*), Bash(git:*), AskUserQuestion
 !`git status --short || echo "Not in a git repo"`
 
 **Available sessions:**
-!`spx session list`
+!`find .spx/sessions/todo -name '*.md' -type f 2>/dev/null | sort`
 
 Load a handoff document from `.spx/sessions/todo/` to continue previous work in the current context.
 
-## Session Commands
+## Session Operations
 
-All session management uses `spx session` CLI commands:
+All session management uses direct filesystem operations — no external CLI required.
+
+### Directory Structure
+
+```
+.spx/sessions/
+├── todo/      # Available for pickup
+├── doing/     # Currently claimed
+└── archive/   # Completed
+```
+
+### Listing Sessions
 
 ```bash
-# List sessions by status
-spx session list [--status todo|doing|archive] [--json]
+# Todo sessions (available for pickup)
+find .spx/sessions/todo -name '*.md' -type f 2>/dev/null | sort
 
-# Claim a session (move todo -> doing)
-spx session pickup [id] [--auto]
-
-# Show session content
-spx session show <id>
+# Doing sessions (currently claimed)
+find .spx/sessions/doing -name '*.md' -type f 2>/dev/null | sort
 ```
+
+### Claiming a Session
+
+```bash
+# Move from todo to doing (use -i to avoid clobbering)
+mkdir -p .spx/sessions/doing
+mv -i .spx/sessions/todo/<session-id>.md .spx/sessions/doing/<session-id>.md
+```
+
+### Reading Session Content
+
+Use the **Read** tool on the session file to view its content.
 
 ## Behavior
 
 ### Default (no arguments)
 
-Claim and load the **highest priority** (or oldest if same priority) session using `--auto`.
+Claim and load the **highest priority** (or oldest if same priority) session.
 
 ### With `--list` flag
 
@@ -44,49 +71,55 @@ Present all available todo sessions and use `AskUserQuestion` tool to let the us
 
 ## Workflow
 
-### 1. List Available Sessions
+### 1. Find Available Sessions
 
-```bash
-# List all todo sessions
-spx session list --status todo
+Use Glob to find all todo sessions:
 
-# Or get JSON for parsing
-spx session list --status todo --json
 ```
+Glob: .spx/sessions/todo/*.md
+```
+
+If no sessions found, report "No handoff sessions found" and suggest using `/handoff`.
 
 ### 2a. Default Mode (auto-claim)
 
-1. Claim the highest priority available session:
-   ```bash
-   spx session pickup --auto
-   ```
-   The CLI handles:
-   - Selecting highest priority (or oldest if tied)
-   - Atomic move from `todo/` to `doing/`
-   - Outputting `<PICKUP_ID>...</PICKUP_ID>` marker for `/handoff` to find
-   - Displaying the claimed session content
+1. **Read each todo session** to extract priority from YAML frontmatter:
+   - Look for `priority:` in the `---` frontmatter block
+   - Priority values: `high`, `medium`, `low` (default: `medium`)
 
-2. Present formatted summary including:
+2. **Select the best session**:
+   - Sort by priority: `high` > `medium` > `low`
+   - Within same priority, pick the oldest (earliest timestamp in filename)
+
+3. **Claim the session** by moving it to `doing/`:
+   ```bash
+   mkdir -p .spx/sessions/doing
+   mv -i .spx/sessions/todo/<session-id>.md .spx/sessions/doing/<session-id>.md
+   ```
+
+4. **Emit the pickup marker** for `/handoff` to find later:
+   `<PICKUP_ID><session-id></PICKUP_ID>`
+
+5. **Read the claimed session** using the Read tool on `.spx/sessions/doing/<session-id>.md`
+
+6. **Present formatted summary** including:
    - Metadata (timestamp, branch, project)
    - Original task
    - Work remaining
-   - Note that this session has been claimed for this session
+   - Note that this session has been claimed for this conversation
 
-3. Offer to read files mentioned in the handoff if they exist
+7. **Offer to read files** mentioned in the handoff if they exist
 
 ### 2b. List Mode (`--list` flag)
 
-1. Get all todo sessions:
-   ```bash
-   spx session list --status todo --json
-   ```
+1. **Find all todo sessions** using Glob: `.spx/sessions/todo/*.md`
 
-2. Parse each session to extract:
-   - Session ID (e.g., `2026-01-08_16-30-22`)
-   - Priority and tags from metadata
+2. **Read each session** to extract:
+   - Session ID from filename (e.g., `2026-01-08_16-30-22`)
+   - Priority and tags from YAML frontmatter
    - Original task from `<original_task>` section
 
-3. Use `AskUserQuestion` tool to present options:
+3. **Use `AskUserQuestion` tool** to present options:
    - **Question**: "Which handoff would you like to load?"
    - **Header**: "Handoff"
    - **Options**: Each session with format:
@@ -121,12 +154,15 @@ Example `AskUserQuestion` call:
 }
 ```
 
-1. After user selection, claim the chosen session:
+4. **Claim the selected session**:
    ```bash
-   spx session pickup <selected-session-id>
+   mkdir -p .spx/sessions/doing
+   mv -i .spx/sessions/todo/<selected-session-id>.md .spx/sessions/doing/<selected-session-id>.md
    ```
 
-2. Present the claimed session content
+5. **Emit the pickup marker**: `<PICKUP_ID><session-id></PICKUP_ID>`
+
+6. **Present the claimed session content**
 
 ### 3. Present Handoff Content
 
@@ -188,10 +224,13 @@ Use `/handoff` to create a handoff document.
 **Only doing sessions exist**:
 
 ```
-Found only doing sessions - these are claimed by active sessions.
+Found only doing sessions — these are claimed by active sessions.
+```
 
-Current doing sessions:
-[list from: spx session list --status doing]
+List doing sessions:
+
+```bash
+find .spx/sessions/doing -name '*.md' -type f 2>/dev/null | sort
 ```
 
 Present options via `AskUserQuestion`:
@@ -204,8 +243,9 @@ Present options via `AskUserQuestion`:
 ```
 Warning: Session [id] appears to be corrupted or incomplete.
 Showing raw content:
-[show file content via spx session show <id>]
 ```
+
+Read the file directly with the Read tool.
 
 ## Examples
 
@@ -229,7 +269,7 @@ Showing raw content:
 - Handle missing sections gracefully
 - Priority order: high > medium > low (oldest first within same priority)
 - Limit list to most recent 10 sessions to keep UI manageable
-- CLI handles atomic operations - no manual file moves needed
+- POSIX `mv` is atomic at the filesystem level — safe for parallel agents
 
 ## Self-Organizing Handoff System
 
@@ -237,22 +277,21 @@ This command works with `/handoff` to create a self-organizing handoff workflow:
 
 **The Claim Mechanism:**
 
-1. `/pickup` claims a session using `spx session pickup`
-2. CLI atomically moves session from `todo/` to `doing/`
-3. Only one agent can successfully claim each session
-4. Agent works on the claimed session throughout the conversation
+1. `/pickup` claims a session by moving it from `todo/` to `doing/`
+2. POSIX `mv` is atomic — only one agent can successfully claim each session
+3. Agent works on the claimed session throughout the conversation
 
 **Automatic Cleanup:**
 
 - When the session ends with `/handoff`, it:
   - Creates a new session in `todo/`
-  - Deletes the `doing/` session (superseded by new handoff)
+  - Archives the `doing/` session (superseded by new handoff)
   - Leaves only available `todo/` sessions
 
 **Parallel Agent Safety:**
 
 - Multiple agents can run `/pickup` simultaneously
-- CLI ensures atomic operations - no race conditions
+- `mv -i` prevents clobbering if two agents race for the same session
 - Priority-based selection with FIFO within same priority
 - No duplicate work
 
@@ -260,4 +299,4 @@ This command works with `/handoff` to create a self-organizing handoff workflow:
 
 - `todo/*.md` = Available for pickup
 - `doing/*.md` = Currently being worked on
-- `archive/*.md` = Completed (future)
+- `archive/*.md` = Completed
