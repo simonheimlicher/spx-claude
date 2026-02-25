@@ -30,7 +30,7 @@ argument-hint: [files-to-stage]
 **Call the Skill tool NOW** with the context above:
 
 ```json
-Skill tool → { "skill": "core:committing-changes" }
+Skill tool → { "skill": "spx:committing-changes" }
 ```
 
 Do NOT proceed manually. The skill contains the commit protocol.
