@@ -238,6 +238,17 @@ Frontend design and coding skills and commands.
 | -------------------- | -------------------------------------------------------- |
 | `designing-frontend` | Create distinctive, production-grade frontend interfaces |
 
+## Prose Plugin
+
+Prose craft skills for writing and reviewing.
+
+### Skills
+
+| Skill              | Purpose                                                   |
+| ------------------ | --------------------------------------------------------- |
+| `/writing-prose`   | Write varied, specific, human prose (always active)       |
+| `/reviewing-prose` | Review and edit prose for formulaic patterns (on request) |
+
 ## Test Plugin (`/testing`)
 
 The test plugin provides BDD testing methodology with three-level testing:
@@ -769,7 +780,7 @@ spx-claude/
 │   ├── code/                     # Version: 0.0.3
 │   │   └── skills/
 │   │       └── coding-autonomously/
-│   ├── core/                     # Version: 0.4.21
+│   ├── core/                     # Version: 0.4.26
 │   │   ├── commands/
 │   │   │   ├── commit.md
 │   │   │   ├── handoff.md
@@ -784,6 +795,10 @@ spx-claude/
 │   │   │   └── auto-python.md
 │   │   └── skills/
 │   │       └── (6 skills)
+│   ├── prose/                    # Version: 0.1.0
+│   │   └── skills/
+│   │       ├── reviewing-prose/
+│   │       └── writing-prose/
 │   ├── specs/                    # Version: 0.4.7 (legacy)
 │   │   └── skills/
 │   │       ├── managing-specs/

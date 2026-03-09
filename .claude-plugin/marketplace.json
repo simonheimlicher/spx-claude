@@ -51,6 +51,16 @@
       "name": "spx",
       "source": "./plugins/spx",
       "description": "Outcome Engineering (spx/): /writing-prd, /managing-spx, /understanding-spx"
+    },
+    {
+      "name": "prose",
+      "source": "./plugins/prose",
+      "description": "Prose craft: /writing-prose (always active), /reviewing-prose (on request)"
+    },
+    {
+      "name": "spec-tree",
+      "source": "./plugins/spec-tree",
+      "description": "Spec Tree: /understanding, /contextualizing, /authoring, /decomposing, /refactoring, /aligning, /testing"
     }
   ]
 }
