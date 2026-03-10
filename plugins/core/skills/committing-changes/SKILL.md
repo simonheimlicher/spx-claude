@@ -11,9 +11,10 @@ Write effective git commit messages following Conventional Commits standard with
 
 1. **Run project validation first**: Check CLAUDE.md for `just check`, `pnpm run check`, etc.
 2. Review changes: `git status`, `git diff`
-3. Stage specific files: `git add path/to/file.ts` (never `git add .`)
-4. Write message: `type(scope): description` (imperative, under 50 chars)
-5. Commit following verification protocol below
+3. **Classify changes by concern** — group by type+scope, split if multiple groups
+4. Stage specific files for ONE concern: `git add path/to/file.ts` (never `git add .`)
+5. Write message: `type(scope): description` (imperative, under 50 chars)
+6. Commit, then repeat from step 4 for remaining concerns
 
 </quick_start>
 
@@ -21,8 +22,9 @@ Write effective git commit messages following Conventional Commits standard with
 
 A successful commit has:
 
+- Concerns classified before staging (type+scope grouping applied)
+- One concern per commit (split when types or scopes differ)
 - Selective staging (specific files, not `git add .`)
-- Atomic change (single logical purpose)
 - Conventional Commits format (type, optional scope, imperative description)
 - No debug code or unintended files
 - Clean diff review confirms expected changes only
@@ -79,6 +81,51 @@ This skill may be referenced during the commit phase of a code review. In that c
 The reviewing skill provides the specific file list and work item context. This skill provides the commit protocol mechanics.
 
 </review_workflow_context>
+
+<concern_separation>
+
+**MANDATORY: Analyze before staging. Never stage everything then ask about splitting.**
+
+After gathering context (`git status`, `git diff`), classify every changed and untracked file by concern before touching `git add`. A concern is one logical purpose that gets one commit type and one scope.
+
+**Classification procedure:**
+
+1. List every changed/untracked file.
+2. Assign each file a commit type (`spec`, `feat`, `fix`, `refactor`, `docs`, etc.).
+3. Assign each file a scope (module, plugin, component).
+4. Group files that share the same type AND scope — each group is one commit.
+
+**Split signals — if ANY of these are true, you MUST split into multiple commits:**
+
+- Files need different commit types (e.g., `spec` for a design doc + `feat` for implementation)
+- Files belong to different scopes (e.g., `methodology/` spec + `plugins/` code)
+- Changes serve different purposes even within the same directory
+- A design/spec document and its implementation are both present
+
+**Commit ordering:**
+
+When splitting, commit in dependency order:
+
+1. Specs and design documents first (they define what follows)
+2. Infrastructure and enablers second
+3. Implementation last
+4. Tests alongside whatever they test
+
+**Example:**
+
+```text
+Changed files:
+  methodology/skills/skill-structure.md   → spec(spec-tree)
+  plugins/spec-tree/**                     → feat(spec-tree)
+
+→ Two commits:
+  1. spec(spec-tree): define methodology
+  2. feat(spec-tree): add plugin implementation
+```
+
+**Never ask the user whether to split.** Apply the classification procedure. If the result is multiple groups, commit them separately. Separation of concerns is not a preference — it is a requirement.
+
+</concern_separation>
 
 <verification_protocol>
 
