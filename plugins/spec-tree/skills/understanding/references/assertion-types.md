@@ -1,5 +1,5 @@
 <overview>
-Every assertion in an outcome spec must be one of four structured types. The type determines how the assertion is tested.
+Every assertion in a node spec must be one of five structured types. The first four are machine-testable. Compliance captures constraints requiring human or agent judgment.
 
 | Type            | Quantifier                      | Test strategy   | Use when                                      |
 | --------------- | ------------------------------- | --------------- | --------------------------------------------- |
@@ -7,6 +7,7 @@ Every assertion in an outcome spec must be one of four structured types. The typ
 | **Mapping**     | For all over a finite set       | Parameterized   | Input-output correspondence over known values |
 | **Conformance** | External oracle                 | Tool validation | Must match an external standard or schema     |
 | **Property**    | For all over a type/value space | Property-based  | Invariant that must hold for all valid inputs |
+| **Compliance**  | ALWAYS/NEVER behavioral rules   | Review or test  | Constraints from decisions, semantic rules    |
 
 </overview>
 
@@ -78,28 +79,56 @@ A property assertion states something that must be true for all valid inputs, no
 
 </property>
 
+<compliance>
+
+**Quantifier:** ALWAYS/NEVER — behavioral rules that constrain the node's output.
+
+A compliance assertion states a rule the node's output must always or never exhibit. Some trace back to a PDR or ADR decision; others are intrinsic to the node itself.
+
+```markdown
+- ALWAYS: page presents the OSS tier as the full core toolchain — PDR-15 positions open-source as complete ([review](../../15-product-offering.pdr.md))
+- NEVER: reference XiperHLS — deferred per PDR-15 ([test](tests/open-source.unit.test.ts))
+```
+
+**Test strategy:** Review (`[review]`) for semantic constraints requiring human or agent judgment. Test (`[test]`) when the constraint is automatable (e.g., string absence).
+
+**When to use:** PDR/ADR compliance rules, semantic constraints that can't be falsified by regex, behavioral boundaries that define what the node must not do.
+
+</compliance>
+
 <choosing_type>
 
-1. Can you enumerate all cases? → **Mapping**
-2. Is there an external reference to match? → **Conformance**
-3. Must it hold for all inputs (not just examples)? → **Property**
-4. Is it a specific interaction or journey? → **Scenario**
+1. Is it a behavioral rule (ALWAYS/NEVER) from a decision or semantic constraint? → **Compliance**
+2. Can you enumerate all cases? → **Mapping**
+3. Is there an external reference to match? → **Conformance**
+4. Must it hold for all inputs (not just examples)? → **Property**
+5. Is it a specific interaction or journey? → **Scenario**
 
-When in doubt, start with **Scenario**. Promote to **Mapping** when you discover the domain is finite. Promote to **Property** when you realize the assertion should hold universally.
+When in doubt, start with **Scenario**. Promote to **Mapping** when you discover the domain is finite. Promote to **Property** when you realize the assertion should hold universally. Use **Compliance** when the constraint is about what the node must always or never do.
 
 </choosing_type>
 
 <mixing_types>
 
-A single outcome spec can contain assertions of different types. Group them by type for readability:
+A single spec can contain assertions of different types. Group them under typed headings:
 
 ```markdown
-### Assertions
+## Assertions
 
-- Given a tree with one stale child, parent reports stale ([test](tests/status.unit.test.ts))
-- Given a tree with all valid children, parent reports valid ([test](tests/status.unit.test.ts))
+### Scenarios
+
+- Given a tree with one stale child, when status is computed, parent reports stale ([test](tests/status.unit.test.ts))
+- Given a tree with all valid children, when status is computed, parent reports valid ([test](tests/status.unit.test.ts))
+
+### Mappings
+
 - State mapping: no lock = needs-work, matching = valid, mismatched = stale ([test](tests/status.unit.test.ts))
+
+### Properties
+
 - Status rollup is deterministic: same tree always produces same status ([test](tests/status.unit.test.ts))
 ```
+
+Only include headings for assertion types that apply.
 
 </mixing_types>

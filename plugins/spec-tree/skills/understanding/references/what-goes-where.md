@@ -60,7 +60,7 @@ Every artifact in the Spec Tree has a specific purpose. Content placed in the wr
 **Contains:**
 
 - What this enabler provides and why dependents need it
-- Assertions with test links — what must be true about this infrastructure
+- Assertions specifying output — what must be true about this infrastructure
 
 **Does NOT contain:** Outcome hypotheses, user behavior claims.
 
@@ -68,12 +68,12 @@ Every artifact in the Spec Tree has a specific purpose. Content placed in the wr
 
 <outcome_spec>
 
-**Purpose:** DESCRIBES a hypothesis about what change a behavior will produce.
+**Purpose:** DESCRIBES a hypothesis connecting a testable output to user behavior change and business impact.
 
 **Contains:**
 
-- Outcome hypothesis — "We believe that [X] will [Y]"
-- Assertions with test links — testable claims that define the output
+- Three-part hypothesis: WE BELIEVE THAT [output] WILL [outcome] CONTRIBUTING TO [impact]
+- Assertions specifying the output — locally verifiable by tests or review
 
 **Does NOT contain:** Architecture decisions (→ ADR), product constraints (→ PDR), implementation details.
 

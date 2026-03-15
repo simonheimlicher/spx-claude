@@ -13,14 +13,21 @@ Enablers exist to serve other nodes. They provide shared infrastructure, utiliti
 **Spec format:**
 
 ```markdown
+# Node Name
+
 ## Enables
 
 [What this enabler provides to its dependents and why they need it]
 
-### Assertions
+## Assertions
 
-- Assertion text ([test](tests/file.unit.test.ts))
-- Another assertion ([test](tests/file.unit.test.ts))
+### Scenarios
+
+- Given context, when action, then result ([test](tests/file.unit.test.ts))
+
+### Compliance
+
+- ALWAYS: behavioral rule — reason
 ```
 
 **Examples:**
@@ -41,34 +48,41 @@ Enablers exist to serve other nodes. They provide shared infrastructure, utiliti
 <outcome>
 
 **Directory suffix:** `.outcome`
-**Spec header:** `## Outcome`
-**Purpose:** Hypothesis about what change a behavior will produce, verified by testable assertions.
+**Purpose:** Hypothesis connecting a testable output to a measurable change in user behavior and its expected business impact.
 
-Outcomes are the nodes that deliver value. Each outcome expresses one hypothesis and the assertions that define what must be true for the hypothesis to become verifiable.
+The hypothesis has three parts:
+
+- **Output** — what the software does. Assertions specify this. Locally verifiable by tests or review.
+- **Outcome** — measurable change in user behavior the output is expected to produce. Requires real users to validate.
+- **Impact** — business value: increase revenue, sustain revenue, reduce costs, or avoid costs.
+
+Assertions specify the **output** — not the outcome or impact. You can test what the software does; you can only hypothesize about the user behavior change and business value it leads to.
 
 **Spec format:**
 
 ```markdown
-## Outcome
+# Node Name
 
-We believe that [hypothesis about what change this behavior will produce].
+WE BELIEVE THAT [output]
+WILL [outcome]
+CONTRIBUTING TO [impact]
 
-### Assertions
+## Assertions
 
-- Assertion text ([test](tests/file.unit.test.ts))
-- Another assertion ([test](tests/file.unit.test.ts))
+### Scenarios
+
+- Given context, when action, then result ([test](tests/file.unit.test.ts))
+
+### Compliance
+
+- ALWAYS: behavioral rule — reason
 ```
-
-**Examples:**
-
-- "We believe that aggregating child node states into a parent status will let developers identify stale subtrees without inspecting each node individually."
-- "We believe that formatting output as a tree will let developers scan product status at a glance."
 
 **When to create an outcome:**
 
 - The behavior has direct or indirect user-facing value
-- You can express a hypothesis about what change it produces
-- You can define assertions that are testable
+- You can express a hypothesis about what change its output produces
+- You can define assertions that specify the output
 
 </outcome>
 
@@ -96,7 +110,7 @@ NN-slug.{enabler|outcome}/
 
 - Co-located in `tests/` within the node directory
 - Named with test level suffix: `.unit.test.{ext}`, `.integration.test.{ext}`, `.e2e.test.{ext}`
-- Every assertion in the spec must link to at least one test file
+- Assertions specify output, verified by test (`[test]`) or review (`[review]`)
 
 </common_structure>
 

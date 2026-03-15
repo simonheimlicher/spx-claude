@@ -24,7 +24,7 @@ Invoke `/understanding` before any spec-tree work. The skill reads 6 reference f
 2. **LOAD ONCE** — Check for `<SPEC_TREE_FOUNDATION>` marker before loading. If present, skip.
 3. **SPECS ARE PERMANENT** — The Spec Tree is a durable map. Nothing moves, nothing closes. Read `references/durable-map.md`.
 4. **TWO NODE TYPES** — Enablers (infrastructure) and outcomes (hypothesis + assertions). No other node types exist. Read `references/node-types.md`.
-5. **ASSERTIONS LINK TO TESTS** — Every outcome assertion must link to at least one test file. The lock file binds them.
+5. **ASSERTIONS SPECIFY OUTPUT** — Assertions specify what the software does, locally verifiable by automated tests or agent review. The lock file binds spec to evidence.
 6. **DETERMINISTIC CONTEXT** — The tree structure defines what context an agent receives. No keyword search, no heuristics. This is handled by `/contextualizing`.
 7. **ATEMPORAL VOICE** — Specs state product truth. Never narrate history. Flag temporal language as a quality issue.
 
@@ -36,7 +36,7 @@ Invoke `/understanding` before any spec-tree work. The skill reads 6 reference f
 2. Read all reference files:
    - `references/durable-map.md` — specs as permanent truth, atemporal voice
    - `references/node-types.md` — enabler vs outcome, spec format, lock files
-   - `references/assertion-types.md` — scenario, mapping, conformance, property
+   - `references/assertion-types.md` — scenario, mapping, conformance, property, compliance
    - `references/decomposition-semantics.md` — when to nest, depth heuristics
    - `references/ordering-rules.md` — sparse integer ordering, dependency encoding
    - `references/what-goes-where.md` — ADR/PDR/spec/test content taxonomy
