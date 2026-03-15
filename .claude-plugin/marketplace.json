@@ -50,7 +50,12 @@
     {
       "name": "spx",
       "source": "./plugins/spx",
-      "description": "Outcome Engineering (spx/): /writing-prd, /managing-spx, /understanding-spx"
+      "description": "SPX core: /committing-changes, /commit, /handoff, /pickup"
+    },
+    {
+      "name": "spx-legacy",
+      "source": "./plugins/spx-legacy",
+      "description": "Legacy Outcome Engineering (spx/): /writing-prd, /managing-spx, /understanding-spx, /decomposing-*, migration agents"
     },
     {
       "name": "prose",
